@@ -1,0 +1,1420 @@
+---
+import "../styles/global.css";
+
+const BRAND = "CIVIL HOUSE MAKELAARS";
+const TAGLINE = "Structured representation. Clean decisions. Calm closings.";
+const AREA = "Amsterdam • Haarlem • Utrecht (and nearby)";
+const EMAIL = "office@civilhouse.nl";
+const PHONE = "+31 6 5531 2408";
+const TEL = PHONE.replace(/\s/g, "");
+const YEAR = new Date().getFullYear();
+
+// Stock images (Unsplash)
+const HERO_IMG =
+  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&fm=jpg&q=80&w=2400";
+const DETAIL_IMG =
+  "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&fm=jpg&q=80&w=2400";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} — Real Estate Office</title>
+    <meta
+      name="description"
+      content="A Dutch real estate office built like an execution desk: evidence-led pricing, careful presentation, disciplined negotiation, and a clean handover."
+    />
+
+    <style>
+      :root{
+        --bg0:#07080b;
+        --bg1:#0c0e14;
+        --ink:#f4f6fb;
+        --mut:rgba(244,246,251,.70);
+        --mut2:rgba(244,246,251,.56);
+        --line:rgba(244,246,251,.14);
+        --line2:rgba(244,246,251,.08);
+        --brass:#caa86d;
+        --brass2:#ead7b5;
+        --cold:rgba(170,210,255,.10);
+        --warm:rgba(202,168,109,.12);
+        
+        /* WIDENED LAYOUT */
+        --max: 1480px; 
+        --pad: 24px;
+        --r: 16px;
+        --shadow: 0 26px 70px rgba(0,0,0,.34);
+
+        /* Mouse Tracking */
+        --mouse-x: 50%;
+        --mouse-y: 50%;
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; }
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+        background:
+          radial-gradient(1100px 680px at 14% 18%, var(--warm), transparent 60%),
+          radial-gradient(980px 640px at 86% 72%, var(--cold), transparent 62%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        overflow-x: hidden;
+      }
+
+      a{ color:inherit; text-decoration:none; }
+      a:hover{ text-decoration:underline; text-underline-offset: 3px; }
+
+      /* --- INDEX BUTTON --- */
+      .index-btn {
+        position: fixed;
+        top: 24px;
+        left: 24px;
+        z-index: 100;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--mut);
+        padding: 10px 18px;
+        border: 1px solid var(--line);
+        background: rgba(12, 14, 20, 0.8);
+        backdrop-filter: blur(8px);
+        border-radius: 99px;
+        transition: all 0.3s ease;
+      }
+      .index-btn:hover {
+        border-color: var(--brass);
+        color: var(--brass);
+        box-shadow: 0 0 20px rgba(202,168,109, 0.15);
+        text-decoration: none;
+      }
+
+      /* --- ANIMATIONS & EFFECTS --- */
+      .wrap{
+        width:min(var(--max), calc(100% - 2*var(--pad)));
+        margin: 0 auto;
+        padding: 40px 0 80px;
+      }
+
+      /* Scroll Reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Topo veil + Drift */
+      .veil{
+        position:relative;
+        border: 1px solid var(--line2);
+        border-radius: var(--r);
+        background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+        box-shadow: var(--shadow);
+        overflow:hidden;
+      }
+      .veil:before{
+        content:"";
+        position:absolute;
+        inset:-50%;
+        width: 200%;
+        height: 200%;
+        opacity:.55;
+        background-image:
+          linear-gradient(90deg, rgba(255,255,255,.02), transparent 22%, rgba(255,255,255,.02) 44%, transparent 66%, rgba(255,255,255,.02)),
+          repeating-linear-gradient(135deg, rgba(202,168,109,.055) 0px, rgba(202,168,109,.055) 1px, transparent 1px, transparent 22px);
+        pointer-events:none;
+        mix-blend-mode: screen;
+        animation: drift 120s linear infinite;
+      }
+      @keyframes drift {
+        0% { transform: translate(0,0); }
+        100% { transform: translate(-40px, -40px); }
+      }
+
+      /* Spotlight Effect */
+      .spotlight { position: relative; }
+      .spotlight::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+        z-index: 2;
+        border-radius: inherit;
+      }
+      .spotlight:hover::after { opacity: 1; }
+
+      .inner{ position:relative; padding: 32px 32px 36px; z-index: 2; }
+
+      /* Header bar */
+      .bar{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:baseline;
+        justify-content:space-between;
+        gap: 12px 16px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--line2);
+      }
+      .brand{
+        line-height:1.05;
+        display:flex;
+        flex-direction:column;
+        gap: 10px;
+      }
+      .brand .kicker{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-weight: 900;
+        letter-spacing: .18em;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: rgba(244,246,251,.84);
+      }
+      .pin{
+        width:10px; height:10px; border-radius:999px;
+        background: radial-gradient(circle at 30% 30%, rgba(234,215,181,.9), rgba(202,168,109,.35));
+        box-shadow: 0 0 20px rgba(202,168,109,.22);
+        border: 1px solid rgba(202,168,109,.35);
+        flex: 0 0 auto;
+        animation: pulse-pin 3s infinite ease-in-out;
+      }
+      @keyframes pulse-pin {
+        0%, 100% { box-shadow: 0 0 20px rgba(202,168,109,.22); transform: scale(1); }
+        50% { box-shadow: 0 0 35px rgba(202,168,109,.6); transform: scale(1.1); }
+      }
+      .brand .title{
+        font-weight: 950;
+        letter-spacing: -0.03em;
+        font-size: clamp(28px, 3.6vw, 46px);
+      }
+      .brand .sub{
+        color: var(--mut);
+        font-size: 15px;
+        line-height: 1.65;
+        max-width: 78ch;
+      }
+
+      .desk{
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        gap: 10px;
+      }
+      .desk .meta{
+        color: var(--mut2);
+        font-size: 12.5px;
+        line-height: 1.55;
+        text-align:right;
+      }
+      .desk .meta b{ color: rgba(244,246,251,.88); font-weight: 850; }
+
+      .actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 10px;
+        justify-content:flex-end;
+      }
+      .btn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap: 10px;
+        padding: 12px 20px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,.06);
+        color: rgba(244,246,251,.92);
+        font-weight: 900;
+        letter-spacing: .02em;
+        font-size: 12px;
+        transition: all .2s ease;
+        white-space: nowrap;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn:after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.5s ease;
+      }
+      .btn:hover:after { transform: translateX(100%); }
+      .btn:hover{
+        transform: translateY(-2px);
+        border-color: rgba(202,168,109,.38);
+        box-shadow: 0 14px 34px rgba(202,168,109,.12);
+      }
+      .btn.primary{
+        color:#0c0e14;
+        background: linear-gradient(180deg, rgba(234,215,181,.92), rgba(202,168,109,.70));
+        border-color: rgba(202,168,109,.52);
+      }
+
+      /* Hero stage */
+      .stage{
+        margin-top: 32px;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 24px;
+        align-items:stretch;
+      }
+      .hero{
+        flex: 1 1 520px;
+        border-radius: 14px;
+        overflow:hidden;
+        border: 1px solid var(--line2);
+        background: rgba(255,255,255,.04);
+        min-height: 380px;
+        position:relative;
+        transition: border-color 0.3s ease;
+      }
+      .hero:hover { border-color: rgba(202,168,109,.3); }
+      .hero img{
+        width:100%;
+        height:100%;
+        object-fit: cover;
+        display:block;
+        filter: saturate(1.03) contrast(1.02);
+        transition: transform 0.8s ease;
+      }
+      .hero:hover img { transform: scale(1.02); }
+      .hero:after{
+        content:"";
+        position:absolute;
+        inset:0;
+        background: linear-gradient(90deg, rgba(12,14,20,.55), transparent 62%);
+        pointer-events:none;
+      }
+      .hero-note{
+        position:absolute;
+        left: 20px;
+        bottom: 20px;
+        max-width: 56ch;
+        color: rgba(244,246,251,.86);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .hero-note .cap{
+        display:inline-block;
+        margin-bottom: 8px;
+        font-weight: 950;
+        letter-spacing: .18em;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: rgba(234,215,181,.92);
+      }
+
+      .panel{
+        flex: 0 0 380px;
+        border-radius: 14px;
+        border: 1px solid rgba(202,168,109,.20);
+        background:
+          linear-gradient(180deg, rgba(202,168,109,.12), rgba(255,255,255,.04));
+        padding: 24px;
+        position:relative;
+        overflow:hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .panel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      }
+      .panel:before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background:
+          radial-gradient(520px 220px at 18% 18%, rgba(234,215,181,.14), transparent 60%),
+          radial-gradient(520px 260px at 78% 78%, rgba(170,210,255,.08), transparent 60%);
+        pointer-events:none;
+        opacity:.8;
+      }
+      .panel > *{ position:relative; }
+
+      .panel h2{
+        margin:0;
+        font-size: 14px;
+        font-weight: 950;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: rgba(244,246,251,.84);
+      }
+      .panel p{
+        margin: 12px 0 0;
+        color: var(--mut);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .triage{
+        margin-top: 16px;
+        display:flex;
+        flex-direction:column;
+        gap: 12px;
+      }
+      .tri{
+        border: 1px solid rgba(244,246,251,.10);
+        border-radius: 12px;
+        padding: 16px;
+        background: rgba(255,255,255,.04);
+        transition: background 0.3s ease, border-color 0.3s ease;
+      }
+      .tri:hover {
+        background: rgba(255,255,255,.08);
+        border-color: rgba(202,168,109,.3);
+      }
+      .tri .t{
+        display:flex;
+        align-items:baseline;
+        justify-content:space-between;
+        gap: 10px;
+      }
+      .tri .t b{
+        font-weight: 950;
+        letter-spacing: -0.01em;
+        font-size: 15px;
+      }
+      .tri .t span{
+        color: rgba(234,215,181,.86);
+        font-weight: 900;
+        font-size: 12px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+      .tri .d{
+        margin-top: 6px;
+        color: var(--mut);
+        font-size: 13.5px;
+        line-height: 1.6;
+      }
+
+      /* Tool Zones */
+      .zone{
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line2);
+      }
+      .zone h3{
+        margin:0;
+        font-size: 14px;
+        font-weight: 950;
+        letter-spacing: .20em;
+        text-transform: uppercase;
+        color: rgba(244,246,251,.78);
+      }
+      .zone .hint{
+        margin-top: 12px;
+        color: var(--mut);
+        font-size: 15px;
+        line-height: 1.7;
+        max-width: 86ch;
+      }
+
+      .tool{
+        margin-top: 20px;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 20px;
+        align-items:flex-start;
+      }
+      .form{
+        flex: 1 1 360px;
+        border-radius: 14px;
+        border: 1px solid rgba(202,168,109,.22);
+        background: rgba(255,255,255,.04);
+        padding: 20px;
+        transition: box-shadow 0.3s ease;
+      }
+      .form:focus-within {
+        box-shadow: 0 0 30px rgba(202,168,109,0.1);
+      }
+      .stack{
+        display:flex;
+        flex-direction:column;
+        gap: 16px;
+      }
+      label{
+        display:flex;
+        flex-direction:column;
+        gap: 8px;
+        font-size: 12.5px;
+        color: rgba(244,246,251,.86);
+        font-weight: 800;
+        letter-spacing: .02em;
+      }
+      input, select, textarea{
+        appearance:none;
+        border: 1px solid rgba(244,246,251,.14);
+        background: rgba(12,14,20,.55);
+        color: rgba(244,246,251,.92);
+        border-radius: 12px;
+        padding: 12px;
+        font: inherit;
+        outline:none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      textarea{ min-height: 100px; resize: vertical; }
+      input:focus-visible, select:focus-visible, textarea:focus-visible{
+        border-color: rgba(202,168,109,.42);
+        box-shadow: 0 0 0 3px rgba(202,168,109,.18);
+      }
+
+      .tool-actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 12px;
+        margin-top: 4px;
+        align-items:center;
+      }
+      .small{
+        font-size: 12.5px;
+        color: var(--mut2);
+        line-height: 1.55;
+      }
+
+      .output{
+        flex: 1 1 360px;
+        border-radius: 14px;
+        border: 1px solid var(--line2);
+        background: rgba(255,255,255,.03);
+        overflow:hidden;
+      }
+      .out-top{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px 12px;
+        padding: 16px;
+        border-bottom: 1px solid var(--line2);
+        background: rgba(255,255,255,.04);
+      }
+      .out-top b{
+        font-weight: 950;
+        letter-spacing: .14em;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: rgba(234,215,181,.92);
+      }
+      .clip{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(244,246,251,.14);
+        background: rgba(255,255,255,.06);
+        padding: 9px 14px;
+        font-weight: 900;
+        font-size: 12px;
+        cursor:pointer;
+        transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+      }
+      .clip:hover{
+        transform: translateY(-1px);
+        border-color: rgba(202,168,109,.36);
+        box-shadow: 0 14px 30px rgba(202,168,109,.10);
+      }
+      .clip:disabled{
+        opacity:.55;
+        cursor:not-allowed;
+        transform:none;
+        box-shadow:none;
+      }
+
+      pre{
+        margin:0;
+        padding: 16px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        color: rgba(244,246,251,.88);
+      }
+
+      /* --- NEW SIMULATOR STYLES --- */
+      .sim-layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 14px;
+      }
+      
+      .sim-input-panel {
+        background: rgba(255,255,255,.04);
+        border: 1px solid rgba(244,246,251,.1);
+        border-radius: 12px;
+        padding: 20px;
+      }
+
+      .range-wrapper {
+        margin-bottom: 20px;
+      }
+      .range-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+        color: var(--mut);
+      }
+      .range-val {
+        color: var(--brass);
+      }
+      
+      input[type=range] {
+        -webkit-appearance: none;
+        width: 100%;
+        background: transparent;
+      }
+      input[type=range]::-webkit-slider-track {
+        width: 100%;
+        height: 6px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 3px;
+      }
+      input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 18px;
+        width: 18px;
+        border-radius: 50%;
+        background: var(--brass);
+        border: 2px solid #0c0e14;
+        cursor: pointer;
+        margin-top: -6px;
+        box-shadow: 0 0 10px rgba(202,168,109, 0.5);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      input[type=range]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(202,168,109,0.5);
+      }
+
+      .sim-dashboard {
+        background: linear-gradient(135deg, rgba(20,20,25,1), rgba(10,10,12,1));
+        border: 1px solid var(--brass);
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .meter-container {
+        width: 100%;
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        margin: 20px 0;
+        overflow: hidden;
+      }
+      .meter-fill {
+        height: 100%;
+        background: var(--brass);
+        width: 0%;
+        transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.5s ease;
+      }
+
+      .score-display {
+        font-size: 64px;
+        font-weight: 900;
+        color: var(--ink);
+        line-height: 1;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 0 20px rgba(202,168,109,0.3);
+      }
+      
+      .score-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--mut);
+        margin-top: 8px;
+      }
+
+      .sim-feedback {
+        margin-top: 16px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--brass);
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 16px;
+        width: 100%;
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 11px;
+        color: var(--mut2);
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Representation ribbon */
+      .ribbon{
+        margin-top: 14px;
+        border-top: 1px solid var(--line2);
+      }
+      .rep{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 10px 14px;
+        align-items:baseline;
+        justify-content:space-between;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line2);
+        transition: background 0.3s ease;
+      }
+      .rep:hover { background: rgba(255,255,255,0.03); }
+      .rep:last-child{ border-bottom:none; }
+      .rep .left{
+        display:flex;
+        flex-direction:column;
+        gap: 6px;
+        min-width: 240px;
+      }
+      .rep .left b{
+        font-weight: 950;
+        letter-spacing: -0.01em;
+        font-size: 15px;
+      }
+      .rep .left span{
+        color: var(--mut2);
+        font-size: 12.5px;
+        letter-spacing: .10em;
+        text-transform: uppercase;
+      }
+      .rep .right{
+        color: var(--mut);
+        font-size: 14px;
+        line-height: 1.6;
+        max-width: 70ch;
+        text-align:right;
+      }
+
+      /* Standards */
+      .standards{
+        margin-top: 14px;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 14px;
+        align-items:stretch;
+      }
+      .std{
+        flex: 1 1 280px;
+        border-radius: 14px;
+        border: 1px solid rgba(244,246,251,.10);
+        background: rgba(255,255,255,.04);
+        padding: 16px 16px 14px;
+        transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        
+        /* New: Button Reset Props */
+        text-align: left;
+        cursor: pointer;
+        display: block; /* Ensure it behaves like a block button */
+      }
+      .std:hover {
+        border-color: rgba(202,168,109,.3);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      }
+      .std b{
+        display:block;
+        font-weight: 950;
+        letter-spacing: .10em;
+        text-transform: uppercase;
+        font-size: 12px;
+        color: rgba(244,246,251,.86);
+      }
+      .std p{
+        margin: 8px 0 0;
+        color: var(--mut);
+        font-size: 13.5px;
+        line-height: 1.7;
+      }
+
+      /* Expanded Content in Cards */
+      .std-content {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.4s ease-out;
+      }
+      .std.active .std-content {
+        grid-template-rows: 1fr;
+      }
+      .glass-bar {
+        overflow: hidden;
+      }
+      .glass-inner {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(12px);
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--ink);
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+      }
+
+      /* Close */
+      .close{
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line2);
+        display:flex;
+        flex-wrap:wrap;
+        gap: 14px;
+        align-items:center;
+        justify-content:space-between;
+      }
+      .close .note{
+        color: var(--mut2);
+        font-size: 12.5px;
+        line-height: 1.6;
+        max-width: 78ch;
+      }
+      .fine{
+        margin-top: 24px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line2);
+        color: rgba(244,246,251,.56);
+        font-size: 12px;
+        line-height: 1.6;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 10px 14px;
+        align-items:center;
+        justify-content:space-between;
+      }
+
+      /* Small screen */
+      @media (max-width: 860px){
+        .desk{ align-items:flex-start; }
+        .desk .meta{ text-align:left; }
+        .actions{ justify-content:flex-start; }
+        .panel{ flex-basis: 100%; }
+        .rep .right{ text-align:left; }
+      }
+
+      @media (prefers-reduced-motion: reduce){
+        .btn, .clip, .hero img, .pin, .reveal { transition:none !important; animation: none !important; opacity: 1 !important; transform: none !important; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="/" class="index-btn">Index</a>
+
+    <main class="wrap">
+      <section class="veil spotlight" aria-label="Civil House Makelaars homepage">
+        <div class="inner">
+          <header class="bar">
+            <div class="brand">
+              <div class="kicker"><span class="pin" aria-hidden="true"></span>{BRAND}</div>
+              <div class="title">{TAGLINE}</div>
+              <p class="sub">
+                We run representation like an execution desk: evidence-led pricing, deliberate presentation, disciplined negotiation, and a clean handover.
+                The calm you feel on closing day is engineered weeks earlier.
+              </p>
+            </div>
+
+            <div class="desk" aria-label="Office details and contact">
+              <div class="meta">
+                <div><b>Area</b> — {AREA}</div>
+                <div><b>Email</b> — <a href={`mailto:${EMAIL}`}>{EMAIL}</a></div>
+                <div><b>Phone</b> — <a href={`tel:${TEL}`}>{PHONE}</a></div>
+              </div>
+              <div class="actions">
+                <a class="btn primary" href="#dossier">Build your dossier</a>
+                <a class="btn" href={`tel:${TEL}`}>Call</a>
+                <a class="btn" href={`mailto:${EMAIL}?subject=${encodeURIComponent("Inquiry — representation")}`}>Email</a>
+              </div>
+            </div>
+          </header>
+
+          <section class="stage reveal" aria-label="Hero stage">
+            <figure class="hero spotlight">
+              <img src={HERO_IMG} alt="Modern residential exterior in soft, clean light." loading="eager" />
+              <div class="hero-note">
+                <span class="cap">Outcome posture</span><br />
+                Less noise. More control over price, timing, and terms.
+              </div>
+            </figure>
+
+            <aside class="panel spotlight" aria-label="Triage panel">
+              <h2>Choose the lane</h2>
+              <p>
+                Most real estate sites show listings. Ours shows the system that prevents friction.
+                Pick the lane that matches your situation.
+              </p>
+
+              <div class="triage" role="group" aria-label="Representation lanes">
+                <div class="tri">
+                  <div class="t"><b>Sell</b><span>Price + pace</span></div>
+                  <div class="d">Positioning, presentation, viewing cadence, negotiation — built to protect value and compress timelines.</div>
+                </div>
+                <div class="tri">
+                  <div class="t"><b>Buy</b><span>Win signal</span></div>
+                  <div class="d">Shortlists, viewing notes, bid design, term strategy — so you win without overreaching.</div>
+                </div>
+                <div class="tri">
+                  <div class="t"><b>Invest</b><span>Risk control</span></div>
+                  <div class="d">Screening rules, downside checks, and a clean “yes/no” memo before you commit.</div>
+                </div>
+              </div>
+            </aside>
+          </section>
+
+          <section class="zone reveal" id="dossier" aria-label="Listing readiness dossier builder">
+            <h3>Client Dossier Builder</h3>
+            <p class="hint">
+              A practical tool sellers and buyers rarely get: a one-page brief that cuts back-and-forth and prevents delays.
+              Everything stays on your device. Generate the dossier, copy it, send it when ready.
+            </p>
+
+            <div class="tool">
+              <form class="form spotlight" id="tool" aria-label="Dossier builder form">
+                <div class="stack">
+                  <label>
+                    Lane
+                    <select id="lane" name="lane" required>
+                      <option value="Sell" selected>Selling</option>
+                      <option value="Buy">Buying</option>
+                      <option value="Invest">Investing</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    City / area
+                    <input id="city" name="city" type="text" value="Amsterdam" required />
+                  </label>
+
+                  <label>
+                    Property type
+                    <select id="type" name="type" required>
+                      <option value="Apartment" selected>Apartment</option>
+                      <option value="Family home">Family home</option>
+                      <option value="Townhouse">Townhouse</option>
+                      <option value="Canal house">Canal house</option>
+                      <option value="New build">New build</option>
+                      <option value="Commercial unit">Commercial unit</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Target timeline (month/quarter)
+                    <input id="timing" name="timing" type="text" value="Next 8–12 weeks" required />
+                  </label>
+
+                  <label>
+                    Notes (priorities, constraints, dealbreakers)
+                    <textarea id="notes" name="notes">Calm process. Clear updates. No surprises.</textarea>
+                  </label>
+
+                  <div class="tool-actions">
+                    <button class="btn primary" type="button" id="build">Generate dossier</button>
+                    <span class="small" id="status">Generate to enable copy.</span>
+                  </div>
+                </div>
+              </form>
+
+              <section class="output spotlight" aria-label="Generated dossier output">
+                <div class="out-top">
+                  <b>Dossier output</b>
+                  <button class="clip" id="copy" type="button" disabled>Copy</button>
+                </div>
+                <pre id="out">
+Generate your dossier on the left.
+
+You’ll get:
+- a one-page brief
+- a tailored document checklist
+- a first-week action plan
+                </pre>
+              </section>
+            </div>
+          </section>
+
+          <section class="zone reveal" aria-label="Bid Impact Simulator">
+            <h3>Offer Signal Dashboard</h3>
+            <p class="hint">
+              Estimate how an offer reads to a seller. Price matters, but certainty and conditions often decide the win.
+            </p>
+            
+            <div class="sim-layout">
+              <div class="sim-input-panel spotlight">
+                <div class="range-wrapper">
+                  <div class="range-header">
+                    <span>Price vs Asking</span>
+                    <span class="range-val" id="priceVal">0%</span>
+                  </div>
+                  <input type="range" id="simPrice" min="-10" max="25" value="0" step="1">
+                </div>
+
+                <div class="stack">
+                  <label>
+                    Certainty of funds (30%)
+                    <select id="simFinance">
+                      <option value="1.0">Cash (Proof Ready)</option>
+                      <option value="0.9">High Equity / Bridge</option>
+                      <option value="0.7" selected>Standard Mortgage</option>
+                      <option value="0.5">High LTV / Unverified</option>
+                    </select>
+                  </label>
+                  <label>
+                    Conditions & timing (25%)
+                    <select id="simCond">
+                      <option value="1.0">No Conditions / Flexible</option>
+                      <option value="0.9">Inspection Only</option>
+                      <option value="0.7" selected>Standard Conditions</option>
+                      <option value="0.4">Sale of Own Home Required</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div class="sim-dashboard spotlight">
+                <div class="score-display" id="scoreOut">--</div>
+                <div class="score-label">Offer Strength Score</div>
+                
+                <div class="meter-container">
+                  <div class="meter-fill" id="meterFill"></div>
+                </div>
+
+                <div class="stat-row">
+                  <span>Overbid: <span id="overbidAmt" style="color:#fff;">€0</span></span>
+                  <span>Risk: <span id="riskLabel" style="color:#fff;">Medium</span></span>
+                </div>
+
+                <div class="sim-feedback" id="scoreAdvice">
+                  Configure variables to analyze offer signal.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="zone reveal" aria-label="Representation ribbon">
+            <h3>Selected representation</h3>
+            <p class="hint">
+              Not a noisy feed. Just the kinds of homes we take — and the execution posture behind them.
+            </p>
+
+            <div class="ribbon" role="list">
+              <div class="rep" role="listitem">
+                <div class="left">
+                  <b>Canal District Apartment</b>
+                  <span>Amsterdam • Demand control</span>
+                </div>
+                <div class="right">
+                  Daylight photography direction, copy that protects value, and a viewing cadence designed to reduce “tourist traffic”.
+                </div>
+              </div>
+
+              <div class="rep" role="listitem">
+                <div class="left">
+                  <b>Family Home (Corner Lot)</b>
+                  <span>Haarlem • Clean negotiation</span>
+                </div>
+                <div class="right">
+                  Pre-screened viewings, calm counter posture, and a handover pack that prevents last-minute stalls.
+                </div>
+              </div>
+
+              <div class="rep" role="listitem">
+                <div class="left">
+                  <b>New Build Unit</b>
+                  <span>Utrecht • Paperwork clarity</span>
+                </div>
+                <div class="right">
+                  Builder documentation mapped early, snag planning, and a timeline that keeps bank, notary, and buyer aligned.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="zone reveal" aria-label="Standards">
+            <h3>Standards we operate by</h3>
+            <p class="hint">
+              Small offices win by execution quality. These are our non-negotiables. Click to expand.
+            </p>
+
+            <div class="standards" role="group" aria-label="Operational standards">
+              <button class="std spotlight" onclick="toggleStd(this)" aria-expanded="false">
+                <b>Brief first</b>
+                <p>
+                  We start with constraints, timing, and decision rules — not opinions.
+                </p>
+                <div class="std-content">
+                    <div class="glass-bar">
+                        <div class="glass-inner">
+                            Before viewings or pricing debates, we document must-haves, dealbreakers, timeline pressure, and who decides. It saves weeks and prevents wasted motion.
+                        </div>
+                    </div>
+                </div>
+              </button>
+
+              <button class="std spotlight" onclick="toggleStd(this)" aria-expanded="false">
+                <b>Presentation direction</b>
+                <p>
+                  Listings are product launches. Light, sequence, copy, and cadence — engineered to protect value.
+                </p>
+                <div class="std-content">
+                    <div class="glass-bar">
+                        <div class="glass-inner">
+                            Every listing gets narrative control: time-of-day planning, staging priorities, photo order, and copy that signals value. Fewer browsers. More qualified demand.
+                        </div>
+                    </div>
+                </div>
+              </button>
+
+              <button class="std spotlight" onclick="toggleStd(this)" aria-expanded="false">
+                <b>Negotiation discipline</b>
+                <p>
+                  We reduce emotional drift. Offers are logged, terms are stress-tested, decisions stay calm.
+                </p>
+                <div class="std-content">
+                    <div class="glass-bar">
+                        <div class="glass-inner">
+                            You receive each offer as a clear comparison: price, conditions, financing certainty, timeline, and risk — plus a recommended next move. No guesswork, no whiplash.
+                        </div>
+                    </div>
+                </div>
+              </button>
+
+              <button class="std spotlight" onclick="toggleStd(this)" aria-expanded="false">
+                <b>Handover hygiene</b>
+                <p>
+                  Closing is a transfer. We keep documents, utilities, keys, and inspection notes tidy so nothing re-opens.
+                </p>
+                <div class="std-content">
+                    <div class="glass-bar">
+                        <div class="glass-inner">
+                            We run a handover checklist: meter readings, key inventory, utilities, notary alignment, and a clean archive. Loose ends cause disputes — we avoid them.
+                        </div>
+                    </div>
+                </div>
+              </button>
+            </div>
+          </section>
+
+          <section class="zone reveal" aria-label="Secondary visual">
+            <h3>Proof, quietly</h3>
+            <p class="hint">
+              Good representation is mostly invisible — until it saves you from a problem you didn’t see coming.
+            </p>
+
+            <figure class="hero spotlight" style="min-height: 260px;">
+              <img src={DETAIL_IMG} alt="Calm interior detail suggesting careful preparation and presentation." loading="lazy" />
+              <div class="hero-note">
+                <span class="cap">Presentation posture</span><br />
+                Less decoration. More signal.
+              </div>
+            </figure>
+          </section>
+
+          <section class="close reveal" aria-label="Close and contact">
+            <div class="note">
+              If you want to sell without chaos, or buy without guessing, start with the dossier.
+              We’ll reply with one clear next step — not a brochure.
+            </div>
+            <div class="actions">
+              <a class="btn primary" href={`mailto:${EMAIL}?subject=${encodeURIComponent("Inquiry — " + BRAND)}`}>Email the office</a>
+              <a class="btn" href={`tel:${TEL}`}>Call</a>
+            </div>
+          </section>
+
+          <footer class="fine" aria-label="Footer">
+            <span>© {YEAR} {BRAND}. Real estate office — sell, buy, invest (NL / EU on request).</span>
+            <span>Images: Unsplash (used under Unsplash License).</span>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        // --- 1. Mouse Tracking ---
+        document.body.addEventListener('mousemove', e => {
+            const x = e.clientX;
+            const y = e.clientY;
+            document.body.style.setProperty('--mouse-x', x + 'px');
+            document.body.style.setProperty('--mouse-y', y + 'px');
+        });
+
+        // --- 2. Scroll Reveal ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- 3. Number Animation Helper ---
+        function animateValue(obj: HTMLElement, start: number, end: number, duration: number) {
+            let startTimestamp: number | null = null;
+            const step = (timestamp: number) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // --- 4. Standards Toggle Logic (NEW) ---
+        (window as any).toggleStd = function(btn: HTMLElement) {
+            const isActive = btn.classList.contains('active');
+            
+            // Close others
+            document.querySelectorAll('.std').forEach(el => {
+                el.classList.remove('active');
+                el.setAttribute('aria-expanded', 'false');
+            });
+
+            if (!isActive) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        };
+
+        // --- DOSSIER LOGIC ---
+        const lane = document.getElementById("lane") as HTMLSelectElement | null;
+        const city = document.getElementById("city") as HTMLInputElement | null;
+        const type = document.getElementById("type") as HTMLSelectElement | null;
+        const timing = document.getElementById("timing") as HTMLInputElement | null;
+        const notes = document.getElementById("notes") as HTMLTextAreaElement | null;
+
+        const out = document.getElementById("out");
+        const build = document.getElementById("build");
+        const copy = document.getElementById("copy") as HTMLButtonElement | null;
+        const status = document.getElementById("status");
+
+        // --- SIMULATOR LOGIC ---
+        const simPrice = document.getElementById("simPrice") as HTMLInputElement | null;
+        const simFinance = document.getElementById("simFinance") as HTMLSelectElement | null;
+        const simCond = document.getElementById("simCond") as HTMLSelectElement | null;
+        
+        const priceVal = document.getElementById("priceVal");
+        const scoreOut = document.getElementById("scoreOut");
+        const meterFill = document.getElementById("meterFill");
+        const overbidAmt = document.getElementById("overbidAmt");
+        const riskLabel = document.getElementById("riskLabel");
+        const scoreAdvice = document.getElementById("scoreAdvice");
+
+        // Base amount for visual calculation (e.g. 500k)
+        const BASE_PRICE = 500000;
+
+        function updateSim() {
+          if(!simPrice || !simFinance || !simCond || !scoreOut || !priceVal || !meterFill) return;
+
+          const pPercent = parseInt(simPrice.value);
+          priceVal.textContent = (pPercent > 0 ? "+" : "") + pPercent + "%";
+          
+          if(overbidAmt) {
+            const addedVal = (BASE_PRICE * (pPercent / 100));
+            overbidAmt.textContent = (addedVal >= 0 ? "€+" : "€") + Math.abs(addedVal).toLocaleString();
+          }
+
+          // WEIGHTED ALGORITHM
+          let priceScore = 60 + (pPercent * 2);
+          if(priceScore > 100) priceScore = 100;
+          if(priceScore < 0) priceScore = 0;
+
+          const fFactor = parseFloat(simFinance.value);
+          const cFactor = parseFloat(simCond.value);
+          const riskFactor = fFactor * cFactor;
+
+          let finalScore = priceScore * riskFactor;
+          if (pPercent >= 0 && riskFactor >= 0.9) finalScore += 15; 
+
+          if (finalScore > 99) finalScore = 99;
+          if (finalScore < 1) finalScore = 1;
+          const scoreInt = Math.round(finalScore);
+
+          // Animate the score
+          const currentScore = parseInt(scoreOut.textContent === "--" ? "0" : scoreOut.textContent || "0");
+          animateValue(scoreOut, currentScore, scoreInt, 500);
+          
+          meterFill.style.width = scoreInt + "%";
+          if(scoreInt > 80) meterFill.style.backgroundColor = "#caa86d"; 
+          else if(scoreInt > 50) meterFill.style.backgroundColor = "#f4f6fb"; 
+          else meterFill.style.backgroundColor = "#718096";
+
+          if(riskLabel) {
+            if(riskFactor > 0.85) { riskLabel.textContent = "Low"; riskLabel.style.color = "#caa86d"; }
+            else if(riskFactor > 0.5) { riskLabel.textContent = "Medium"; riskLabel.style.color = "#fff"; }
+            else { riskLabel.textContent = "High"; riskLabel.style.color = "#ff4d4d"; }
+          }
+
+          if(scoreAdvice) {
+            if(scoreInt > 90) scoreAdvice.textContent = "Dominant signal. High probability of acceptance.";
+            else if(scoreInt > 75) scoreAdvice.textContent = "Strong contender. A small term tweak could seal it.";
+            else if(scoreInt > 50) scoreAdvice.textContent = "Competitive range. Needs cleaner terms or better timing.";
+            else if(riskFactor < 0.5) scoreAdvice.textContent = "Risk warning. Conditions are weighing down the offer.";
+            else scoreAdvice.textContent = "Below-market signal. Increase price or remove conditions.";
+          }
+        }
+
+        if(simPrice && simFinance && simCond) {
+            [simPrice, simFinance, simCond].forEach(el => el.addEventListener("input", updateSim));
+            updateSim(); 
+        }
+
+        // --- DOSSIER FUNCTIONS ---
+        if (!lane || !city || !type || !timing || !notes || !out || !build || !copy || !status) return;
+
+        function text(v: any){ return String(v || "").trim(); }
+
+        function docPack(situation: string){
+          if (situation === "Sell") {
+            return [
+              "Proof of ownership / title documents (what you have available)",
+              "Floor plan(s) and measurements (if available)",
+              "Energy performance document (where required)",
+              "Maintenance and renovation notes (receipts if relevant)",
+              "HOA / building documents (if applicable)",
+              "Utilities + practical handover details (meter readings, contracts)"
+            ];
+          }
+          if (situation === "Buy") {
+            return [
+              "Non-negotiables + budget ceiling (your decision rules)",
+              "Financing posture + timeline (decision speed)",
+              "Preferred neighborhoods and dealbreakers",
+              "Viewing notes template (signal, not emotion)",
+              "Offer posture (walk-away line + terms)"
+            ];
+          }
+          return [
+            "Target yield posture (what counts as a win)",
+            "Downside controls (vacancy, capex, exit)",
+            "Financing posture + timing constraints",
+            "Deal screening rules (yes/no gates)",
+            "Operating assumptions (rent, costs, risk)"
+          ];
+        }
+
+        function firstWeek(situation: string){
+          if (situation === "Sell") {
+            return [
+              "Week plan: brief → media direction → pricing posture → viewing cadence",
+              "Prepare: access plan + keys + one clean narrative of the home",
+              "Stability: decide negotiation posture before the first viewing"
+            ];
+          }
+          if (situation === "Buy") {
+            return [
+              "Week plan: shortlist → viewings → notes → offer posture",
+              "Speed: confirm decision lane and who signs off",
+              "Clarity: define dealbreakers before the first viewing"
+            ];
+          }
+          return [
+            "Week plan: screening rules → shortlist → downside scan → bid posture",
+            "Discipline: write the walk-away line before you tour",
+            "Clarity: decide what you will not compromise on"
+          ];
+        }
+
+        function generate(){
+          const s = text(lane!.value);
+          const c = text(city!.value);
+          const t = text(type!.value);
+          const ti = text(timing!.value);
+          const n = text(notes!.value);
+
+          const pack = docPack(s).map(x => `- ${x}`).join("\n");
+          const week = firstWeek(s).map(x => `- ${x}`).join("\n");
+
+          const body =
+`CIVIL HOUSE — CLIENT DOSSIER
+Situation: ${s}
+City / region: ${c}
+Property type: ${t}
+Target timeline: ${ti}
+
+Notes:
+${n}
+
+Document pack:
+${pack}
+
+First-week execution:
+${week}
+
+Contact:
+office@civilhouse.nl
+`;
+
+          out!.textContent = body;
+          copy!.disabled = false;
+          status!.textContent = "Generated. Copy when ready.";
+          return body;
+        }
+
+        build!.addEventListener("click", function(){
+          try { generate(); } catch(e){ status!.textContent = "Could not generate. Refresh and try again."; }
+        });
+
+        copy!.addEventListener("click", async function(){
+          const content = out!.textContent || "";
+          if (!content.trim()) return;
+
+          try{
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(content);
+              status!.textContent = "Copied to clipboard.";
+              return;
+            }
+          } catch(e) {}
+
+          const ta = document.createElement("textarea");
+          ta.value = content;
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          ta.style.top = "0";
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          try{
+            document.execCommand("copy");
+            status!.textContent = "Copied to clipboard.";
+          } catch(e){
+            status!.textContent = "Copy not available. Select text manually.";
+          }
+          document.body.removeChild(ta);
+        });
+      })();
+    </script>
+  </body>
+</html>

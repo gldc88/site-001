@@ -1,0 +1,726 @@
+---
+const BRAND = "Vulcanic Atelier";
+
+const NAV = [
+  { label: "Arrival", href: "#fault" },
+  { label: "Suites", href: "#strata" },
+  { label: "Forge", href: "#forge" },
+  { label: "Bookings", href: "#signal" },
+];
+
+const STRATA = [
+  { t: "Basalt Suites", d: "Eight suites only—stone baths, blackout drape, vented warmth, zero glare." },
+  { t: "Ash Bar", d: "Candlelight counter with capped seating. Walk-ins close the moment it fills." },
+  { t: "Thermal Deck", d: "Hot–cold circuit, rest pods, towel service on rotation. Quiet hours enforced." },
+  { t: "Obsidian Dining", d: "Reservation tasting. Allergies collected before arrival, pacing kept deliberate." },
+  { t: "Afterglow Service", d: "Concierge on-call, off-floor handling. Present when needed, invisible otherwise." },
+];
+
+const FORGE_SPECS = [
+  { k: "HEAT PROFILE", v: "Room-tuned" },
+  { k: "SOUND FLOOR", v: "≤ 28 dBA" },
+  { k: "GUEST LOAD", v: "24 max / night" },
+  { k: "ROUTING", v: "Split paths" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} — Volcanic Retreat</title>
+    <meta name="description" content="Reservation-only volcanic retreat: basalt suites, thermal deck, emberlight bar, and obsidian dining—warmth without the noise." />
+
+    <style>
+      :root{
+        --bg0:#040407;
+        --bg1:#070812;
+        --ash:#b9b3aa;
+        --ink:#e7e2d9;
+        --ink-dim:rgba(231,226,217,.72);
+
+        --magma-0:#ff3a1a;
+        --magma-1:#ff7a18;
+        --magma-2:#ffbf2a;
+
+        --max:1280px;
+        --pad:clamp(18px, 4.6vw, 64px);
+        --radius:14px;
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; scroll-behavior:smooth; }
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        background:
+          radial-gradient(1200px 700px at 18% 12%, rgba(255,122,24,.10), transparent 62%),
+          radial-gradient(900px 700px at 76% 18%, rgba(255,58,26,.08), transparent 62%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        overflow-x:hidden;
+      }
+
+      /* Basalt grain */
+      body::before{
+        content:"";
+        position:fixed; inset:0;
+        pointer-events:none;
+        background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+        opacity:.85;
+        z-index:0;
+      }
+
+      a{ color:inherit; text-decoration:none; }
+
+      .wrap{
+        position:relative;
+        z-index:3;
+        max-width:var(--max);
+        margin:0 auto;
+        padding: 0 var(--pad) 140px;
+      }
+
+      /* --- TEXT FX: THERMAL PHYSICS --- */
+      
+      /* 1. Slow Burn Fade In */
+      @keyframes burnIn {
+        0% { opacity: 0; filter: blur(4px) brightness(2); color: var(--magma-2); }
+        100% { opacity: 1; filter: blur(0) brightness(1); color: inherit; }
+      }
+      
+      /* 2. Magma Flow (Gradient Animation) */
+      @keyframes flowHeat {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* 3. Heat Haze (Text Vibration) */
+      @keyframes haze {
+        0% { transform: translateY(0) skewX(0); }
+        25% { transform: translateY(-0.5px) skewX(0.5deg); }
+        50% { transform: translateY(0.5px) skewX(-0.5deg); }
+        75% { transform: translateY(-0.2px) skewX(0.2deg); }
+        100% { transform: translateY(0) skewX(0); }
+      }
+
+      /* Utility Classes */
+      .text-burn { animation: burnIn 1.2s ease-out forwards; }
+      .text-haze:hover { animation: haze 2s infinite linear; color: var(--magma-2) !important; }
+      
+      .ember-hover { transition: color 0.3s ease, text-shadow 0.3s ease; }
+      .ember-hover:hover { 
+        color: var(--magma-1) !important; 
+        text-shadow: 0 0 12px rgba(255, 122, 24, 0.4);
+      }
+
+      /* ----------------------------- */
+
+      /* SYSTEM EXIT BUTTON */
+      .sys-exit{
+        position: fixed; top: 20px; left: 20px; z-index: 100;
+        display:flex; align-items:center; gap: 8px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(5,6,11,.85);
+        backdrop-filter: blur(8px);
+        font-family: ui-monospace, monospace;
+        font-size: 10px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: rgba(231,226,217,.6);
+        transition: all .2s ease;
+      }
+      .sys-exit:hover{
+        border-color: var(--magma-2);
+        color: var(--magma-2);
+        box-shadow: 0 0 20px rgba(255,191,42,.15);
+      }
+
+      /* MAGMA CURSOR (Reactive Borders) */
+      .magma-border{
+        position: relative;
+        /* Default border fallback */
+        border: 1px solid rgba(255,255,255,.07);
+        transition: transform .2s ease;
+      }
+      .magma-border::before {
+        content: ""; position: absolute; inset: -1px; z-index: -1; border-radius: inherit;
+        background: radial-gradient(300px circle at var(--x, 50%) var(--y, 50%), rgba(255, 122, 24, 0.6), transparent 40%);
+        opacity: 0; transition: opacity 0.3s ease;
+      }
+      .magma-border::after {
+        content: ""; position: absolute; inset: 1px; z-index: -1;
+        background: var(--card-bg, rgba(16,16,22,.6)); border-radius: inherit;
+      }
+      .magma-border:hover::before { opacity: 1; }
+      .magma-border:hover { transform: translateY(-2px); }
+
+      /* FX layers */
+      #ember-canvas{ position:fixed; inset:0; pointer-events:none; z-index:2; opacity:.55; }
+
+      .faultline{
+        position:fixed; inset:-20vh -10vw; pointer-events:none; z-index:2;
+        transform: rotate(-14deg) translateY(calc(var(--scroll) * -40px));
+        transition: transform 0.1s linear; opacity:.95;
+      }
+      .faultline::after{
+        content:""; position:absolute; left:50%; top:-10%; width: 14px; height: 140%;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg, transparent, rgba(255,58,26,.85) 16%, rgba(255,191,42,.7) 72%, transparent);
+        opacity: calc(.30 + (var(--scroll, 0) * .50));
+        filter: drop-shadow(0 0 22px rgba(255,122,24,.32));
+        border-radius: 999px;
+      }
+
+      /* Header */
+      .mast{
+        position:relative; padding: 34px 0 12px;
+        display:grid; grid-template-columns: 1fr auto; align-items:end; gap: 18px;
+      }
+      .brand .name{
+        font-size: 14px; letter-spacing:.22em; text-transform: uppercase;
+        color: rgba(255,191,42,.88); font-weight: 650;
+        text-shadow: 0 0 10px rgba(255,191,42,0.2); /* Subtle glow */
+      }
+      .brand .sub{
+        font-size: 12px; letter-spacing:.08em; color: rgba(231,226,217,.40);
+        max-width: 56ch; line-height:1.5;
+      }
+
+      .nav{ display:flex; gap: 10px; flex-wrap:wrap; justify-content:flex-end; }
+      .nav a{
+        font-size: 11px; letter-spacing:.18em; text-transform: uppercase;
+        color: rgba(231,226,217,.58); padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.02);
+        --card-bg: #0a0a0e;
+        cursor:pointer;
+        transition: color 0.3s;
+      }
+      .nav a:hover{ color: rgba(255,191,42,.92); text-shadow: 0 0 8px rgba(255,122,24,0.4); }
+
+      /* Spine Layout */
+      .spine{ position:relative; margin-top: 26px; }
+      .hero{
+        display:grid; grid-template-columns: 1.05fr .95fr; gap: clamp(18px, 4vw, 46px);
+        align-items: start; padding: 46px 0 18px;
+      }
+
+      /* H1 MAGMA FLOW */
+      .h1{
+        margin:0; font-size: clamp(46px, 6vw, 86px); line-height: 0.98;
+        letter-spacing: -0.02em; font-weight: 700;
+        position: relative;
+      }
+      .h1 .hot{
+        background: linear-gradient(90deg, var(--magma-0), var(--magma-1), var(--magma-2), var(--magma-0));
+        background-size: 200% auto;
+        -webkit-background-clip: text; background-clip:text; color: transparent;
+        filter: drop-shadow(0 0 18px rgba(255,122,24,.15));
+        display:inline-block;
+        animation: flowHeat 8s linear infinite; /* Living magma */
+      }
+      .h1:hover .hot{
+        filter: drop-shadow(0 0 30px rgba(255,122,24,.5));
+        transform: scale(1.01);
+      }
+
+      .lead{
+        margin-top: 22px; color: var(--ink-dim); line-height:1.8; font-size: 14px;
+        max-width: 58ch; border-left: 1px solid rgba(255,191,42,.20); padding-left: 18px;
+        opacity: 0.85; transition: opacity 0.3s;
+      }
+      .lead:hover { opacity: 1; color: #fff; }
+
+      .micro{ margin-top: 18px; display:flex; gap: 10px; flex-wrap:wrap; }
+      .pill{
+        font-size: 11px; letter-spacing:.14em; text-transform: uppercase;
+        color: rgba(231,226,217,.62); border-radius: 999px; padding: 10px 14px;
+        background: rgba(0,0,0,.28);
+        border: 1px solid rgba(255,255,255,.07);
+        transition: border-color 0.3s, color 0.3s, text-shadow 0.3s;
+        cursor:default;
+        --card-bg: #0a0a0e;
+      }
+      .pill:hover{ 
+        border-color: var(--magma-1); color: var(--magma-2); 
+        text-shadow: 0 0 8px rgba(255,191,42,0.4);
+      }
+      .pill.hot{
+        border-color: rgba(255,122,24,.26); background: rgba(255,122,24,.06);
+        color: rgba(255,191,42,.86);
+        animation: burnIn 1.5s ease-out; /* Entry flash */
+      }
+
+      /* Interactive Basalt Window */
+      .basalt{
+        position:relative; border-radius: var(--radius); overflow:hidden;
+        border: 1px solid rgba(255,255,255,.07);
+        background: radial-gradient(700px 340px at 22% 22%, rgba(255,122,24,.10), transparent 62%), #12121a;
+        box-shadow: 0 28px 80px rgba(0,0,0,.56); min-height: 420px;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .basalt:hover{ transform: scale(1.01); }
+
+      .basalt .core{
+        position:absolute; inset: 14px; border-radius: calc(var(--radius) - 2px);
+        overflow:hidden; border: 1px solid rgba(255,255,255,.06); background: #06060a;
+      }
+      .basalt .veins{
+        position:absolute; inset:-15%;
+        background:
+          radial-gradient(900px 380px at 20% 30%, rgba(255,58,26,.42), transparent 62%),
+          radial-gradient(700px 420px at 70% 70%, rgba(255,122,24,.32), transparent 66%);
+        filter: blur(10px); opacity: .65;
+        transform: translate(calc((var(--mx, .5) - .5) * 30px), calc((var(--my, .5) - .5) * 30px));
+        transition: transform 0.1s linear;
+      }
+      .basalt .aperture{
+        position:absolute; inset:0; --r: 140px; background: transparent;
+        -webkit-mask-image: radial-gradient(circle var(--r) at calc(var(--mx,.5) * 100%) calc(var(--my,.5) * 100%), #000, transparent 70%);
+        mask-image: radial-gradient(circle var(--r) at calc(var(--mx,.5) * 100%) calc(var(--my,.5) * 100%), #000, transparent 70%);
+        opacity: .92;
+      }
+      .basalt .aperture::before{
+        content:""; position:absolute; inset:-20%;
+        background: radial-gradient(520px 280px at 30% 40%, rgba(255,58,26,.90), transparent 62%);
+        filter: blur(10px);
+        transform: translate(calc((var(--mx, .5) - .5) * 40px), calc((var(--my, .5) - .5) * 40px));
+      }
+      .basalt .hud{
+        position:absolute; bottom: 16px; left: 16px; right: 16px;
+        display:flex; justify-content:space-between; gap: 10px; padding: 12px 14px;
+        border-radius: 999px; border: 1px solid rgba(255,255,255,.06);
+        background: rgba(0,0,0,.38); z-index:3; backdrop-filter: blur(10px);
+      }
+
+      /* Sections */
+      .block{ margin-top: 86px; position:relative; display:grid; grid-template-columns: 1fr; gap: 18px; }
+      .blockHead{
+        display:flex; justify-content:space-between; align-items:flex-end;
+        gap: 16px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.06);
+      }
+      .blockHead h2{ margin:0; font-size: 28px; font-weight: 700; transition: color 0.3s; }
+      .blockHead:hover h2 { color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+      .tag{ font-size: 11px; letter-spacing:.22em; text-transform: uppercase; color: rgba(255,191,42,.78); }
+
+      /* Reactive Strata Layers */
+      .strataGrid{ display:grid; grid-template-columns: 1.05fr .95fr; gap: 14px; align-items:stretch; }
+      .strataLeft{
+        border-radius: var(--radius); border: 1px solid rgba(255,255,255,.07);
+        background: linear-gradient(180deg, rgba(18,18,26,.55), rgba(0,0,0,.72));
+        overflow:hidden; box-shadow: 0 22px 70px rgba(0,0,0,.46); position:relative;
+      }
+      .layers{ position:absolute; inset:0; opacity:.95; }
+      .layer{
+        height: 20%; border-top: 1px solid rgba(255,255,255,.05);
+        background: linear-gradient(90deg, rgba(255,255,255,.03), transparent 40%, rgba(255,122,24,.06) 70%, transparent);
+        transform: skewX(-12deg) translateX(-10%);
+        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.4s ease;
+      }
+      .strataLeft:hover .layer:nth-child(1){ transform: skewX(-12deg) translateX(-5%); background: rgba(255,122,24,.10); }
+      .strataLeft:hover .layer:nth-child(2){ transform: skewX(-12deg) translateX(-7%); transition-delay: 0.05s; }
+      .strataLeft:hover .layer:nth-child(3){ transform: skewX(-12deg) translateX(-9%); transition-delay: 0.1s; }
+      .strataLeft:hover .layer:nth-child(4){ transform: skewX(-12deg) translateX(-11%); transition-delay: 0.15s; }
+      .strataLeft:hover .layer:nth-child(5){ transform: skewX(-12deg) translateX(-13%); transition-delay: 0.2s; }
+
+      .strataCopy{ position:relative; padding: 22px; z-index:2; pointer-events:none; }
+
+      .strataRight{ display:flex; flex-direction:column; gap: 10px; }
+
+      /* Chips with Magma Border */
+      .chip{
+        position:relative; padding: 18px; border-radius: 18px;
+        background: linear-gradient(180deg, rgba(16,16,22,.55), rgba(0,0,0,.70));
+        overflow:hidden; --card-bg: rgba(10,10,14,0.8);
+      }
+      .chip .t{ 
+        margin:0; font-weight: 720; font-size: 16px; letter-spacing: .01em; 
+        transition: color 0.3s;
+      }
+      /* Ash to Ember Hover on Titles */
+      .chip:hover .t { color: var(--magma-1); text-shadow: 0 0 10px rgba(255, 122, 24, 0.3); }
+      .chip .d{ margin-top: 8px; font-size: 13px; line-height:1.65; color: rgba(231,226,217,.64); }
+
+      /* Forge */
+      .forgeGrid{ display:grid; grid-template-columns: .95fr 1.05fr; gap: 14px; align-items:stretch; }
+      .forgePlate{
+        border-radius: var(--radius); border: 1px solid rgba(255,255,255,.07);
+        background: linear-gradient(180deg, rgba(16,16,22,.52), rgba(0,0,0,.72));
+        padding: 22px; box-shadow: 0 22px 70px rgba(0,0,0,.46);
+      }
+      .specs{ display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+      .spec{
+        border-radius: 16px; background: rgba(0,0,0,.30); padding: 14px;
+        --card-bg: #050508; transition: transform 0.2s;
+      }
+      .spec:hover { transform: translateY(-2px); }
+      .spec .v{ margin-top: 8px; font-weight: 780; color: rgba(255,191,42,.86); text-shadow: 0 0 8px rgba(255,191,42,0.2); }
+
+      /* Magma River (SVG) */
+      .river{
+        position:relative; border-radius: var(--radius); border: 1px solid rgba(255,255,255,.07);
+        overflow:hidden; background: linear-gradient(180deg, rgba(16,16,22,.55), rgba(0,0,0,.76));
+        box-shadow: 0 22px 70px rgba(0,0,0,.46); min-height: 360px;
+      }
+      .river svg{ width:100%; height:100%; display:block; }
+      .river svg path{ transition: opacity 0.5s ease; }
+      .river:hover svg path{ opacity: 1 !important; }
+
+      .river .caption{
+        position:absolute; top: 16px; right: 16px; font-size: 10px; letter-spacing:.22em;
+        text-transform: uppercase; color: rgba(231,226,217,.50);
+        border: 1px solid rgba(255,255,255,.06); border-radius: 999px;
+        padding: 10px 12px; background: rgba(0,0,0,.30); backdrop-filter: blur(10px);
+      }
+
+      /* Signal */
+      .signal{
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(16,16,22,.55), rgba(0,0,0,.78));
+        padding: 26px 22px; box-shadow: 0 22px 70px rgba(0,0,0,.46);
+        --card-bg: #08080c;
+      }
+      .signalRow{ margin-top: 18px; display:flex; gap: 10px; flex-wrap:wrap; align-items:center; }
+      .signal a{
+        display:inline-flex; align-items:center; gap:10px; border-radius: 999px;
+        padding: 12px 14px;
+        background: rgba(0,0,0,.28); color: rgba(231,226,217,.72);
+        font-size: 11px; letter-spacing:.18em; text-transform: uppercase;
+        --card-bg: #000;
+        cursor:pointer; transition: all 0.3s;
+      }
+      .signal a:hover{ 
+        color: rgba(255,191,42,.86); 
+        background: rgba(255, 122, 24, 0.1);
+        text-shadow: 0 0 10px rgba(255,191,42,0.4);
+      }
+
+      /* Reveal */
+      .reveal{ opacity:0; transform: translateY(18px); transition: opacity .9s cubic-bezier(.2,.9,.2,1), transform .9s cubic-bezier(.2,.9,.2,1); }
+      .reveal.on{ opacity:1; transform: translateY(0); }
+
+      /* Footer */
+      .foot{ margin-top: 90px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.06); color: rgba(231,226,217,.36); font-size: 11px; letter-spacing:.18em; text-transform: uppercase; }
+
+      /* Mobile */
+      @media (max-width: 920px){
+        .hero{ grid-template-columns: 1fr; }
+        .basalt{ min-height: 360px; }
+        .strataGrid{ grid-template-columns: 1fr; }
+        .forgeGrid{ grid-template-columns: 1fr; }
+        .nav{ justify-content:flex-start; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="/" class="sys-exit">
+      <i>[</i> SYSTEM EXIT <i>]</i>
+    </a>
+
+    <canvas id="ember-canvas" aria-hidden="true"></canvas>
+    <div class="faultline" aria-hidden="true"></div>
+
+    <div class="wrap" id="fault">
+      <header class="mast reveal">
+        <div class="brand">
+          <div class="name ember-hover">
+            {BRAND}
+          </div>
+          <div class="sub">Reservation-only volcanic retreat. Basalt suites, thermal deck, emberlight bar, and paced dining—warmth without the noise.</div>
+        </div>
+        <nav class="nav" aria-label="Primary">
+          {NAV.map((n) => <a href={n.href} class="magma-border ember-hover">{n.label}</a>)}
+        </nav>
+      </header>
+
+      <main class="spine">
+        <section class="hero">
+          <div class="reveal">
+            <h1 class="h1">Heat, under <span class="hot">control.</span></h1>
+            <div class="lead text-burn">
+              Built on basalt and ash—quiet by default. Suites stay low-lit, routes stay private, and the thermal circuit is scheduled so the atmosphere never tips into chaos.
+            </div>
+            <div class="micro">
+              <div class="pill hot magma-border text-haze">Reservation-only</div>
+              <div class="pill magma-border ember-hover">Thermal circuit</div>
+              <div class="pill magma-border ember-hover">Capped capacity</div>
+              <div class="pill magma-border ember-hover">Quiet hours</div>
+            </div>
+          </div>
+
+          <aside class="basalt reveal" id="slab" aria-label="Basalt window with magma reveal">
+            <div class="label" style="position:absolute; top:16px; left:16px; font-size:10px; letter-spacing:.2em; color:rgba(255,255,255,0.4);">THERMAL VIEW</div>
+            <div class="core" aria-hidden="true">
+              <div class="veins" aria-hidden="true"></div>
+              <div class="aperture" aria-hidden="true"></div>
+            </div>
+            <div class="hud" aria-hidden="true">
+              <div><div class="k">STONE</div><div class="v">BASALT</div></div>
+              <div style="text-align:right;"><div class="k">HEAT</div><div class="v">MAGMA</div></div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="block reveal" id="strata" aria-label="Strata section">
+          <div class="blockHead">
+            <h2>Strata</h2>
+            <div class="tag">Layered amenities</div>
+          </div>
+
+          <div class="strataGrid">
+            <div class="strataLeft" aria-label="Basalt strata visual">
+              <div class="layers" aria-hidden="true">
+                <div class="layer"></div><div class="layer"></div><div class="layer"></div><div class="layer"></div><div class="layer"></div>
+              </div>
+              <div class="strataCopy">
+                <p>Everything is staged in layers—sleep above, heat below, dining in between. You can move through the property without crossing crowds or noise.</p>
+              </div>
+            </div>
+
+            <div class="strataRight" aria-label="Amenity list">
+              {STRATA.slice(0, 3).map((s) => (
+                <article class="chip magma-border">
+                  <h3 class="t">{s.t}</h3>
+                  <div class="d">{s.d}</div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div class="strataRight" style="margin-top:10px;">
+            {STRATA.slice(3).map((s) => (
+              <article class="chip magma-border">
+                <h3 class="t">{s.t}</h3>
+                <div class="d">{s.d}</div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="block reveal" id="forge" aria-label="Forge section">
+          <div class="blockHead">
+            <h2>Forge</h2>
+            <div class="tag">Controlled intensity</div>
+          </div>
+
+          <div class="forgeGrid">
+            <div class="forgePlate" aria-label="Forge specs">
+              <div style="color:rgba(231,226,217,.72); line-height:1.8; font-size:14px;">
+                Climate, sound, and circulation are treated like engineering—so the space stays warm, the air stays clean, and movement stays discreet. No events. No loud groups.
+              </div>
+              <div class="specs" aria-label="Specifications">
+                {FORGE_SPECS.map((s) => (
+                  <div class="spec magma-border">
+                    <div class="k" style="font-size:10px; letter-spacing:0.15em; color:rgba(255,255,255,0.4);">{s.k}</div>
+                    <div class="v">{s.v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="river" aria-label="Magma river visual">
+              <div class="caption">MAGMA RIVER</div>
+              <svg viewBox="0 0 1200 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Abstract magma river">
+                <defs>
+                  <linearGradient id="hot" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="rgba(255,58,26,0.95)" />
+                    <stop offset="45%" stop-color="rgba(255,122,24,0.92)" />
+                    <stop offset="100%" stop-color="rgba(255,191,42,0.75)" />
+                  </linearGradient>
+                  <filter id="blurHot" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="10" result="b"/>
+                    <feComposite in="SourceGraphic" in2="b" operator="over"/>
+                  </filter>
+                  <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+                    <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .18 0"/>
+                  </filter>
+                </defs>
+                <rect x="0" y="0" width="1200" height="560" fill="rgba(0,0,0,0)" />
+                <g filter="url(#grain)"><rect x="0" y="0" width="1200" height="560" fill="rgba(255,255,255,0.05)" /></g>
+                <path d="M110 90 C 220 60, 330 140, 420 120 C 520 98, 590 40, 680 70 C 780 100, 820 200, 910 210 C 1010 220, 1050 150, 1140 180" fill="none" stroke="url(#hot)" stroke-width="26" stroke-linecap="round" filter="url(#blurHot)" opacity="0.55"/>
+                <path d="M110 90 C 220 60, 330 140, 420 120 C 520 98, 590 40, 680 70 C 780 100, 820 200, 910 210 C 1010 220, 1050 150, 1140 180" fill="none" stroke="url(#hot)" stroke-width="10" stroke-linecap="round" opacity="0.85"/>
+                <path d="M120 250 C 240 210, 360 320, 520 300 C 690 275, 760 220, 860 250 C 970 284, 1010 350, 1140 330" fill="none" stroke="rgba(255,191,42,0.22)" stroke-width="2" stroke-dasharray="6 10" opacity="0.9"/>
+                <path d="M80 420 C 220 430, 360 380, 520 420 C 700 465, 820 420, 980 450 C 1070 468, 1110 505, 1180 500" fill="none" stroke="rgba(255,122,24,0.20)" stroke-width="2" stroke-dasharray="4 12" opacity="0.9"/>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="block reveal" id="signal" aria-label="Signal section">
+          <div class="blockHead">
+            <h2>Signal</h2>
+            <div class="tag">Low-noise entry</div>
+          </div>
+          <div class="signal magma-border">
+            <p>
+              For availability and rates, use the contact form. We reply within 24 hours on weekdays.
+              Check-in 16:00 / Check-out 11:00. Quiet hours begin at 22:00 across all common spaces.
+            </p>
+            <div class="signalRow" aria-label="Links">
+              <a href="/contact" class="magma-border" aria-label="Contact link">Contact</a>
+              <a href="#fault" class="magma-border" aria-label="Back to top">Return</a>
+            </div>
+          </div>
+        </section>
+
+        <footer class="foot reveal">
+          © Vulcanic Atelier — reservations required • quiet by design • terms on request
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      interface Particle { x: number; y: number; vx: number; vy: number; r: number; a: number; kind: number; }
+
+      (function () {
+        const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        // Reveal Observer
+        if (!reduce) {
+          const obs = new IntersectionObserver((entries) => {
+            entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("on"); });
+          }, { threshold: 0.12 });
+          document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
+        } else {
+          document.querySelectorAll(".reveal").forEach((el) => el.classList.add("on"));
+        }
+
+        // Magma Cursor Tracking (Glow Borders)
+        (function() {
+            if(reduce) return;
+            const items = document.querySelectorAll('.magma-border') as NodeListOf<HTMLElement>;
+            items.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    el.style.setProperty('--x', `${x}px`);
+                    el.style.setProperty('--y', `${y}px`);
+                });
+            });
+        })();
+
+        // Scroll Parallax (Magma Spine / Faultline)
+        (function () {
+          let ticking = false;
+          const set = () => {
+            ticking = false;
+            const doc = document.documentElement;
+            const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+            const p = Math.min(1, Math.max(0, window.scrollY / max));
+            document.documentElement.style.setProperty("--scroll", String(p));
+          };
+          window.addEventListener("scroll", () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(set);
+          }, { passive: true });
+          set();
+        })();
+
+        // Basalt Interactive Window
+        (function () {
+          const slab = document.getElementById("slab");
+          if (!slab) return;
+          let rect: DOMRect | null = null;
+
+          const setVars = (x: number, y: number) => {
+            let nx = 0.5, ny = 0.5;
+            if (rect) {
+              nx = (x - rect.left) / Math.max(1, rect.width);
+              ny = (y - rect.top) / Math.max(1, rect.height);
+              nx = Math.max(0, Math.min(1, nx));
+              ny = Math.max(0, Math.min(1, ny));
+            }
+            slab.style.setProperty("--mx", String(nx));
+            slab.style.setProperty("--my", String(ny));
+          };
+
+          slab.addEventListener("pointerenter", () => { rect = slab.getBoundingClientRect(); }, { passive: true });
+          slab.addEventListener("pointermove", (e) => {
+            if (!rect) rect = slab.getBoundingClientRect();
+            setVars(e.clientX, e.clientY);
+          }, { passive: true });
+          slab.addEventListener("pointerleave", () => {
+            rect = null;
+            slab.style.setProperty("--mx", "0.5");
+            slab.style.setProperty("--my", "0.5");
+          }, { passive: true });
+        })();
+
+        // Ember Canvas (Particles)
+        (function () {
+          if (reduce) return;
+          const canvas = document.getElementById("ember-canvas") as HTMLCanvasElement | null;
+          if (!canvas) return;
+          const ctx = canvas.getContext("2d", { alpha: true });
+          if (!ctx) return;
+
+          let DPR = Math.min(2, window.devicePixelRatio || 1);
+          let w = 0, h = 0;
+          const parts: Particle[] = [];
+
+          const resize = () => {
+            w = Math.floor(window.innerWidth); h = Math.floor(window.innerHeight);
+            canvas.width = Math.floor(w * DPR); canvas.height = Math.floor(h * DPR);
+            canvas.style.width = w + "px"; canvas.style.height = h + "px";
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          };
+          window.addEventListener("resize", resize, { passive: true });
+          resize();
+
+          const seed = () => {
+            parts.length = 0;
+            const count = Math.round(Math.min(160, Math.max(90, (w * h) / 18000)));
+            for (let i = 0; i < count; i++) {
+              const kind = Math.random() < 0.36 ? 1 : 0;
+              parts.push({
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * (kind ? 0.20 : 0.07),
+                vy: (Math.random() - 0.5) * (kind ? 0.16 : 0.06) + (kind ? -0.03 : 0.02),
+                r: kind ? (Math.random() * 1.8 + 0.4) : (Math.random() * 1.2 + 0.3),
+                a: kind ? (Math.random() * 0.42 + 0.10) : (Math.random() * 0.18 + 0.04),
+                kind: kind
+              });
+            }
+          };
+          seed();
+
+          let last = performance.now();
+          const step = (now: number) => {
+            const dt = Math.min(40, now - last); last = now;
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = "rgba(0,0,0,0.06)"; ctx.fillRect(0, 0, w, h);
+
+            for (let j = 0; j < parts.length; j++) {
+              const p = parts[j];
+              p.x += p.vx * dt * 0.06; p.y += p.vy * dt * 0.06;
+              if (p.x < -30) p.x = w + 30; if (p.x > w + 30) p.x = -30;
+              if (p.y < -30) p.y = h + 30; if (p.y > h + 30) p.y = -30;
+
+              if (p.kind === 1) { // ember
+                ctx.beginPath(); ctx.fillStyle = "rgba(255,122,24," + p.a + ")";
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.strokeStyle = "rgba(255,58,26," + (p.a * 0.35) + ")";
+                ctx.lineWidth = 1; ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.vx * 20, p.y - p.vy * 20); ctx.stroke();
+              } else { // ash
+                ctx.beginPath(); ctx.fillStyle = "rgba(231,226,217," + (p.a * 0.55) + ")";
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+              }
+            }
+            requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        })();
+      })();
+    </script>
+  </body>
+</html>

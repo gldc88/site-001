@@ -1,0 +1,462 @@
+---
+const BRAND = "YOYOGI";
+
+const ROOMS = [
+  {
+    id: "01",
+    name: "Cedar Pavilion",
+    material: "Cedar & Glass",
+    desc: "Dry heat, cold rinse, then a quiet bed that turns your brain off.",
+    price: "From ¥85,000"
+  },
+  {
+    id: "02",
+    name: "Basalt Chamber",
+    material: "Raw Concrete",
+    desc: "Heavy walls, warm steam, and silence thick enough to lean on.",
+    price: "From ¥110,000"
+  },
+  {
+    id: "03",
+    name: "Washi Tea Room",
+    material: "Washi & Tatami",
+    desc: "Slow pour, soft light, breathwork that drops you back into your body.",
+    price: "From ¥65,000"
+  }
+];
+
+const MARQUEE_ITEMS = [
+  "YOYOGI, TOKYO", "///", "OPEN LATE", "///",
+  "THERMAL RESET", "///", "BREATHWORK SESSIONS", "///",
+  "LOW LIGHT ONLY", "///", "QUIET MEMBERSHIP", "///",
+  "YOYOGI, TOKYO", "///", "OPEN LATE", "///",
+  "THERMAL RESET", "///", "BREATHWORK SESSIONS", "///",
+  "LOW LIGHT ONLY", "///", "QUIET MEMBERSHIP", "///"
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} | Thermal Quiet</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Manrope:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        /* PALETTE: URUSHI NOIR */
+        --bg-hero: #000000;
+        --bg-body: #0F0D0C;
+        
+        --line-color: rgba(191, 168, 144, 0.15); 
+        
+        --text: #BFA890; /* Warm Sand */
+        --text-muted: #6B5A4E; /* Dark Earth */
+        --accent: #AA3322; /* Lacquer Red */
+        
+        --f-head: 'Italiana', serif;
+        --f-body: 'Manrope', sans-serif;
+        --f-mono: 'Space Mono', monospace;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; }
+
+      html, body {
+        background-color: var(--bg-body);
+        color: var(--text);
+        font-family: var(--f-body);
+        overflow-x: hidden;
+        height: 100%;
+      }
+
+      /* RESET */
+      a, span, p, h1, h2, h3, h4, h5, h6 {
+        text-decoration: none !important;
+        border-bottom: none !important;
+      }
+
+      /* --- 1. AMBIENT MOUSE LIGHT --- */
+      #ambient-light {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: 99;
+        pointer-events: none;
+        mix-blend-mode: screen; 
+        background: radial-gradient(2200px circle at 50% 50%, rgba(170, 51, 34, 0.06), transparent 60%);
+        transition: opacity 0.5s;
+      }
+
+      /* --- 2. NOISE TEXTURE --- */
+      .noise-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 98; 
+        pointer-events: none; opacity: 0.05;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      /* --- 3. KINETIC SEAL --- */
+      #kinetic-seal {
+        position: fixed; bottom: 40px; right: 40px;
+        width: 120px; height: 120px;
+        z-index: 100; pointer-events: none;
+        display: flex; align-items: center; justify-content: center;
+      }
+      #seal-svg {
+        width: 100%; height: 100%;
+        animation: rotateSlow 20s linear infinite;
+      }
+      #seal-center {
+        position: absolute; width: 8px; height: 8px; background: var(--accent);
+        border-radius: 50%; box-shadow: 0 0 15px var(--accent);
+      }
+
+      /* --- CURSOR --- */
+      #cursor {
+        position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+        background: var(--text); border-radius: 50%;
+        transform: translate(-50%, -50%); pointer-events: none; z-index: 9999;
+        mix-blend-mode: difference;
+      }
+      #cursor-follower {
+        position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+        border: 1px solid var(--text-muted); border-radius: 50%;
+        transform: translate(-50%, -50%); pointer-events: none; z-index: 9998;
+        transition: transform 0.1s; opacity: 0.6;
+      }
+
+      /* --- NAV --- */
+      nav {
+        position: fixed; top: 0; left: 0; width: 100%; padding: 40px 60px;
+        display: flex; justify-content: space-between; align-items: center; z-index: 100;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+      }
+      .brand { font-family: var(--f-head); font-size: 24px; letter-spacing: 0.05em; color: var(--text); }
+      .book-btn { 
+        border: 1px solid var(--line-color); padding: 12px 30px; 
+        font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; 
+        transition: 0.3s; color: var(--text);
+      }
+      .book-btn:hover { background: var(--text); color: var(--bg-hero); }
+
+      /* --- HERO --- */
+      .hero {
+        position: relative; height: 90vh; width: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background-color: var(--bg-hero);
+        z-index: 10;
+        border-bottom: 1px solid var(--line-color);
+      }
+      
+      #horizon-canvas { 
+        position: absolute; inset: 0; width: 100%; height: 100%; 
+        opacity: 0.6; 
+        z-index: 0; pointer-events: none; 
+      }
+      
+      .hero-vignette {
+        position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        background: radial-gradient(circle at center, transparent 20%, #000000 100%);
+      }
+
+      .hero-title {
+        position: relative; z-index: 20;
+        text-align: center;
+        font-family: var(--f-head); font-size: clamp(4rem, 13vw, 11rem);
+        line-height: 0.85; letter-spacing: -0.03em; color: var(--text);
+        opacity: 0; animation: fadeUp 1.5s ease forwards 0.5s;
+        text-shadow: 0 0 50px rgba(170, 51, 34, 0.2);
+      }
+
+      /* --- MARQUEE --- */
+      .marquee-wrap {
+        border-top: 1px solid var(--line-color);
+        border-bottom: 1px solid var(--line-color);
+        padding: 24px 0; overflow: hidden; white-space: nowrap;
+        background: var(--bg-body);
+        position: relative; z-index: 20;
+      }
+      .marquee-track { display: inline-flex; animation: scroll 60s linear infinite; }
+      .marquee-item {
+        font-family: var(--f-head); font-size: 16px; text-transform: uppercase; letter-spacing: 0.3em;
+        color: var(--text-muted); margin-right: 80px; transition: all 0.3s ease;
+      }
+      .marquee-item:hover { color: var(--text); text-shadow: 0 0 15px rgba(191, 168, 144, 0.6); }
+      .marquee-item.separator { color: var(--accent); opacity: 0.6; pointer-events: none; }
+
+      /* --- INTRO --- */
+      .intro { padding: 180px 60px; max-width: 1400px; margin: 0 auto; border-left: 1px solid var(--line-color); z-index: 10; position:relative; }
+      .intro-text {
+        font-family: var(--f-head); font-size: clamp(2.5rem, 5vw, 4rem);
+        line-height: 1.2; color: var(--text); 
+      }
+      .intro-text span { color: var(--accent); font-style: italic; }
+
+      /* --- STATS --- */
+      .stats {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        border-top: 1px solid var(--line-color); border-bottom: 1px solid var(--line-color);
+        margin-bottom: 160px; position: relative; z-index: 10;
+      }
+      .stat-box {
+        padding: 80px 40px; border-right: 1px solid var(--line-color);
+        display: flex; flex-direction: column; gap: 15px;
+        transition: background 0.3s;
+        background: transparent;
+      }
+      .stat-box:last-child { border-right: none; }
+      .stat-box:hover { background: rgba(191, 168, 144, 0.05); }
+      
+      .stat-num { 
+        font-family: var(--f-head); font-size: 4rem; line-height: 1; 
+        color: var(--text); font-weight: 400;
+      }
+      .stat-text {
+        font-family: var(--f-mono); font-size: 1.2rem; letter-spacing: 0.1em; 
+        color: var(--text); padding-top: 1.5rem; display: block;
+      }
+      .stat-label { 
+        font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; 
+        letter-spacing: 0.2em; color: var(--text-muted);
+      }
+
+      /* --- ROOMS --- */
+      .rooms { max-width: 1400px; margin: 0 auto; padding-bottom: 200px; border-right: 1px solid var(--line-color); position: relative; z-index: 10; }
+      .room-row {
+        display: grid; grid-template-columns: 120px 1fr auto; gap: 60px;
+        padding: 60px 40px; border-top: 1px solid var(--line-color);
+        transition: background 0.4s, padding 0.4s; align-items: baseline;
+      }
+      .room-row:last-child { border-bottom: 1px solid var(--line-color); }
+      .room-row:hover { background: rgba(170, 51, 34, 0.08); padding-left: 70px; } 
+
+      .r-id { font-family: var(--f-mono); font-size: 12px; color: var(--accent); }
+      .r-name { font-family: var(--f-head); font-size: 3.5rem; margin: 0; color: var(--text); }
+      .r-action { font-family: var(--f-mono); font-size: 12px; color: var(--text); }
+
+      /* MATERIAL LABEL */
+      .r-mat { 
+        font-family: var(--f-mono); 
+        font-size: 10px; 
+        text-transform: uppercase; 
+        color: var(--text-muted); 
+        letter-spacing: 0.1em;
+        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        display: inline-block;
+        transform-origin: left center;
+      }
+
+      /* DESCRIPTION TEXT */
+      .r-desc {
+        font-size: 12px; 
+        color: var(--text-muted); 
+        margin-top: 10px; 
+        max-width: 400px; 
+        font-family: var(--f-body);
+        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        transform-origin: left center;
+        display: block;
+      }
+
+      /* HOVER EFFECTS FOR MAT & DESC */
+      .room-row:hover .r-mat,
+      .room-row:hover .r-desc {
+        color: #FFFFFF;
+        transform: scale(1.02);
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+      }
+
+      /* --- FOOTER --- */
+      footer { padding: 100px 60px; display: flex; justify-content: space-between; border-top: 1px solid var(--line-color); position: relative; z-index: 10;}
+      .f-col { display: flex; flex-direction: column; gap: 20px; }
+      .f-link { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); transition: color 0.3s;}
+      .f-link:hover { color: var(--accent); }
+
+      @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+      @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+      @keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+      @media (max-width: 900px) {
+        .stats { grid-template-columns: 1fr 1fr; }
+        .stat-box { border-bottom: 1px solid var(--line-color); }
+        .room-row { grid-template-columns: 1fr; gap: 20px; }
+        .hero-title { font-size: 5rem; }
+        #kinetic-seal { bottom: 20px; right: 20px; width: 80px; height: 80px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="noise-overlay"></div>
+    <div id="ambient-light"></div>
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+    <div id="kinetic-seal">
+      <div id="seal-center"></div>
+      <svg id="seal-svg" viewBox="0 0 100 100">
+        <defs>
+          <path id="circle" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
+        </defs>
+        <text font-size="9" fill="#BFA890" font-family="Space Mono" letter-spacing="0.2em">
+          <textPath xlink:href="#circle">YOYOGI • URBAN BATHHOUSE • TOKYO • </textPath>
+        </text>
+      </svg>
+    </div>
+
+    <nav>
+      <a href="/" style="font-size:10px; letter-spacing:0.2em; color:var(--text-muted);">INDEX</a>
+      <div class="brand">YOYOGI</div>
+      <a href="#" class="book-btn">BOOK A SESSION</a>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-vignette"></div>
+      <canvas id="horizon-canvas"></canvas>
+      <h1 class="hero-title">THERMAL<br>QUIET</h1>
+    </header>
+
+    <div class="marquee-wrap">
+      <div class="marquee-track">
+        {MARQUEE_ITEMS.map(text => (
+          <span class={`marquee-item ${text === "///" ? "separator" : ""}`}>{text}</span>
+        ))}
+         {MARQUEE_ITEMS.map(text => (
+          <span class={`marquee-item ${text === "///" ? "separator" : ""}`}>{text}</span>
+        ))}
+      </div>
+    </div>
+
+    <section class="intro">
+      <h2 class="intro-text">
+        Tokyo pulls you forward. <br>
+        We pull you <span>back</span>, into <span>heat</span>, into <span>breath</span>.
+      </h2>
+    </section>
+
+    <section class="stats">
+      <div class="stat-box">
+        <span class="stat-num">03</span>
+        <span class="stat-label">Ritual Rooms</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">07</span>
+        <span class="stat-label">Thermal Steps</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">42</span>
+        <span class="stat-label">Minutes to Reset</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-text">UNTIMED</span>
+        <span class="stat-label">Stillness</span>
+      </div>
+    </section>
+
+    <section class="rooms">
+      <div style="padding: 0 40px 60px;">
+        <span style="font-family:'Space Mono', monospace; font-size:10px; letter-spacing:0.2em; color:var(--text-muted);">PRIVATE RITUAL ROOMS</span>
+      </div>
+      
+      {ROOMS.map(room => (
+        <a href="#" class="room-row">
+          <span class="r-id">ROOM {room.id}</span>
+          <div class="r-main">
+            <span class="r-mat">{room.material}</span>
+            <h3 class="r-name">{room.name}</h3>
+            <p class="r-desc">{room.desc}</p>
+          </div>
+          <div class="r-action">{room.price}</div>
+        </a>
+      ))}
+    </section>
+
+    <footer>
+      <div class="f-col">
+        <div class="brand">YOYOGI</div>
+        <span class="f-link" style="margin-top:10px;">Yoyogi, Tokyo</span>
+      </div>
+      <div class="f-col">
+        <a href="#" class="f-link">Instagram</a>
+        <a href="#" class="f-link">Book by Email</a>
+      </div>
+      <div class="f-col">
+        <a href="#" class="f-link">Policies</a>
+        <a href="#" class="f-link">House Notes</a>
+      </div>
+    </footer>
+
+    <script>
+      // 1. CURSOR + AMBIENT LIGHT
+      const cursor = document.getElementById('cursor');
+      const follower = document.getElementById('cursor-follower');
+      const ambient = document.getElementById('ambient-light');
+      
+      let mouseX = window.innerWidth / 2; 
+      let mouseY = window.innerHeight / 2;
+      let posX = mouseX, posY = mouseY; 
+      let lightX = mouseX, lightY = mouseY; 
+
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if(cursor) cursor.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+      });
+
+      function animate() {
+        posX += (mouseX - posX) * 0.15;
+        posY += (mouseY - posY) * 0.15;
+        if(follower) follower.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+
+        lightX += (mouseX - lightX) * 0.08; 
+        lightY += (mouseY - lightY) * 0.08;
+        
+        if(ambient) {
+          ambient.style.background = `radial-gradient(
+            2200px circle at ${lightX}px ${lightY}px, 
+            rgba(170, 51, 34, 0.06), 
+            transparent 60%
+          )`;
+        }
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      // 2. GENERATIVE ART
+      const canvas = document.getElementById('horizon-canvas');
+      if (canvas instanceof HTMLCanvasElement) {
+        const ctx = canvas.getContext('2d');
+        let w = 0, h = 0, t = 0;
+        
+        const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+        window.addEventListener('resize', resize);
+        resize();
+
+        function draw() {
+          if(!ctx) return;
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+          ctx.fillRect(0, 0, w, h);
+
+          const cy = h / 2;
+          ctx.beginPath();
+          for(let i = 0; i < w; i+=12) {
+            const y = cy + Math.sin(i * 0.003 + t) * 40;
+            const alpha = Math.abs(Math.sin(i*0.01+t)) * 0.4; 
+            ctx.fillStyle = `rgba(191, 168, 144, ${alpha})`;
+            ctx.fillRect(i, y, 1, 60); 
+            
+            if(Math.random() > 0.98) {
+               ctx.fillStyle = `rgba(170, 51, 34, 0.6)`;
+               ctx.fillRect(i, y, 2, 2); 
+            }
+          }
+          t += 0.008;
+          requestAnimationFrame(draw);
+        }
+        draw();
+      }
+    </script>
+  </body>
+</html>

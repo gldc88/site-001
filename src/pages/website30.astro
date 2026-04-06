@@ -1,0 +1,1172 @@
+---
+import "../styles/global.css";
+
+const BRAND = "OBSIDIAN MOTORS — PRIVATE SHOWROOM";
+const TAGLINE = "Acquire by intent. Not by pressure.";
+const YEAR = new Date().getFullYear();
+
+// Context: Automotive
+const PRODUCTS = [
+  {
+    id: "model-01-gt",
+    name: "Model 01 — Night Spec",
+    price: 89500,
+    body: "Coupe",
+    power: "V8",
+    stock: "Showroom",
+    note: "Matte black, carbon pack, fully inspected. Yes, the photo is a cabrio Lamborghini — we’re keeping it. Immediate handover.",
+    img: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Black performance car front view (and yes, it’s a cabrio)."
+  },
+  {
+    id: "model-02-suv",
+    name: "Model 02 — Range Authority",
+    price: 112000,
+    body: "SUV",
+    power: "Hybrid",
+    stock: "Inbound",
+    note: "Glacier white, winter package, family configuration. ETA confirmed — reserved viewings available.",
+    img: "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "White luxury SUV on rugged terrain."
+  },
+  {
+    id: "model-03-sport",
+    name: "Model 03 — Apex Carbon",
+    price: 145000,
+    body: "Coupe",
+    power: "V8",
+    stock: "Showroom",
+    note: "Carbon exterior set, ceramic brakes, low-mileage demonstrator. Delivered with fresh service and tire report.",
+    img: "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Blue performance coupe, rear three-quarter view."
+  },
+  {
+    id: "model-04-sedan",
+    name: "Model 04 — Executive",
+    price: 68000,
+    body: "Sedan",
+    power: "Electric",
+    stock: "Order",
+    note: "Long wheelbase. Silent cabin. Autopilot ready.",
+    img: "https://images.pexels.com/photos/3752169/pexels-photo-3752169.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Black executive sedan."
+  },
+  {
+    id: "model-05-classic",
+    name: "Model 05 — Heritage Manual",
+    price: 54000,
+    body: "Coupe",
+    power: "Classic",
+    stock: "Showroom",
+    note: "Restored chassis, manual gearbox, period-correct details. An analog drive with modern reliability checks.",
+    img: "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Red classic sports coupe in motion."
+  },
+  {
+    id: "model-06-interior",
+    name: "Model 06 — Quiet Lounge",
+    price: 92000,
+    body: "Sedan",
+    power: "Hybrid",
+    stock: "Order",
+    note: "Hand-stitched leather, walnut trim, acoustic glass. Build-to-order with a private spec session.",
+    img: "https://images.pexels.com/photos/100656/pexels-photo-100656.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Luxury car interior with leather seats and wood trim."
+  },
+  {
+    id: "model-07-concept",
+    name: "Model 07 — Vision Allocation",
+    price: 210000,
+    body: "Coupe",
+    power: "Electric",
+    stock: "Inbound",
+    note: "Active aero, launch control, limited allocation. Pre-approval recommended before reservation.",
+    img: "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Futuristic concept coupe detail under studio lighting."
+  }
+];
+
+const ANSWERS = [
+  {
+    id: "finance",
+    title: "Financing & Lease",
+    keywords: "finance lease loan bank monthly balloon",
+    body: "Clear structures, no theatre. We arrange finance, lease, and balloon options via partner banks — with a written quote you can actually compare."
+  },
+  {
+    id: "tradein",
+    title: "Trade-in value",
+    keywords: "trade exchange sell old value vin mileage",
+    body: "Send VIN + mileage + photos. We return a same-day valuation and a firm trade offer for most premium brands."
+  },
+  {
+    id: "warranty",
+    title: "Warranty & Service",
+    keywords: "warranty service repair maintenance inspection",
+    body: "Every handover includes an inspection summary and service posture. 4-year coverage on Stock/Order vehicles. 2-year heritage coverage on Classics (mechanicals)."
+  }
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} — Showroom</title>
+    <meta name="description" content="Obsidian Motors: A private digital showroom for curated performance, touring, and executive vehicles. Filter by body, power, and availability." />
+
+    <style>
+      :root{
+        --bg0:#0b0c10;
+        --bg1:#14161f;
+        --ink:#f0f2f5;
+        --mut:rgba(240,242,245,.68);
+        --mut2:rgba(240,242,245,.52);
+        --line:rgba(240,242,245,.14);
+        --line2:rgba(240,242,245,.08);
+        --r:4px;
+        --max:1400px;
+        --pad:24px;
+
+        --a:#ff4d4d; /* Brake light red */
+        --b:#4d79ff; /* Xenon blue */
+        --c:#ffffff; /* Headlight white */
+        --glow: 0 18px 70px rgba(77,121,255,.12);
+        --glow2: 0 14px 50px rgba(255,77,77,.08);
+        
+        --mx: 50%;
+        --my: 50%;
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; }
+      
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+        background-color: var(--bg0);
+        background-image:
+          radial-gradient(circle at var(--mx) var(--my), rgba(77,121,255,.15) 0%, transparent 45%),
+          radial-gradient(circle at calc(100% - var(--mx)) calc(100% - var(--my)), rgba(255,77,77,.08) 0%, transparent 50%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        background-attachment: fixed;
+        overflow-x: hidden;
+      }
+      
+      body.loading { overflow: hidden; }
+
+      a{ color:inherit; text-decoration:none; }
+      a:hover{ text-decoration: underline; text-underline-offset: 3px; }
+
+      /* --- IGNITION LOADER (UNIFIED DIAGONAL) --- */
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: #020203;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        perspective: 1200px;
+      }
+
+      .car-silhouette {
+        display: flex;
+        justify-content: space-between;
+        width: 700px;
+        transform-style: preserve-3d;
+      }
+
+      .headlight-unit {
+        position: relative;
+        width: 280px;
+        height: 60px;
+        background: #000;
+        border-radius: 4px 40px 10px 4px;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        opacity: 0;
+        animation: unitFade 0.5s ease forwards 0.2s;
+      }
+      
+      /* Right light is mirrored */
+      .headlight-unit.right {
+        transform: scaleX(-1);
+      }
+
+      /* Internal: Unified Matrix Beam */
+      .matrix-beam {
+        display: flex;
+        gap: 8px;
+        height: 40px;
+        flex: 1;
+        align-items: center;
+      }
+
+      .led {
+        flex: 1;
+        height: 100%;
+        background: rgba(255,255,255,0.1);
+        transform: skewX(-25deg);
+        border-radius: 2px;
+        opacity: 0;
+        /* Two-stage animation: Scan On -> Collective Flash */
+        animation: ledScan 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards, ledMainFlash 1.8s ease forwards 0.9s;
+      }
+
+      /* Staggered Scan Delays */
+      .led:nth-child(1) { animation-delay: 0.25s, 0.9s; }
+      .led:nth-child(2) { animation-delay: 0.3s, 0.9s; }
+      .led:nth-child(3) { animation-delay: 0.35s, 0.9s; }
+      .led:nth-child(4) { animation-delay: 0.4s, 0.9s; }
+      .led:nth-child(5) { animation-delay: 0.45s, 0.9s; }
+      .led:nth-child(6) { animation-delay: 0.5s, 0.9s; }
+      .led:nth-child(7) { animation-delay: 0.55s, 0.9s; }
+      .led:nth-child(8) { animation-delay: 0.6s, 0.9s; }
+      .led:nth-child(9) { animation-delay: 0.65s, 0.9s; }
+      .led:nth-child(10){ animation-delay: 0.7s, 0.9s; }
+
+      /* ANIMATIONS */
+      @keyframes unitFade { to { opacity: 1; } }
+
+      /* Stage 1: Scan On (White DRL style) */
+      @keyframes ledScan {
+        to { opacity: 1; background: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.6); }
+      }
+
+      /* Stage 2: Main Beam Flash (Blinding then Settle Blue/White) */
+      @keyframes ledMainFlash {
+        0% { background: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.6); opacity: 1; }
+        5% { background: #fff; box-shadow: 0 0 60px 30px rgba(255,255,255,1), 0 0 120px 60px rgba(77,121,255,0.8); transform: skewX(-25deg) scale(1.05); opacity: 1; } /* BLINDING FLASH */
+        20% { background: #e0eaff; box-shadow: 0 0 30px 10px rgba(77,121,255,0.6); transform: skewX(-25deg) scale(1); opacity: 1; } /* SETTLE */
+        100% { background: #e0eaff; box-shadow: 0 0 30px 10px rgba(77,121,255,0.6); transform: skewX(-25deg) scale(1); opacity: 1; }
+      }
+
+      /* Index Button */
+      .index-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+        padding: 8px 16px;
+        background: rgba(11,12,16,0.8);
+        border: 1px solid var(--line);
+        color: var(--mut);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        backdrop-filter: blur(4px);
+        transition: all 0.2s ease;
+        border-radius: 2px;
+        opacity: 0; 
+        animation: fadein 1s ease forwards 2.5s;
+      }
+      .index-btn:hover {
+        border-color: var(--c);
+        color: var(--c);
+        box-shadow: 0 0 15px rgba(255,255,255,0.1);
+        text-decoration: none;
+      }
+      @keyframes fadein { to { opacity: 1; } }
+
+      .wrap{
+        width:min(var(--max), calc(100% - 2*var(--pad)));
+        margin: 30px auto 60px;
+        opacity: 0;
+        animation: fadein 1s ease forwards 2.2s;
+      }
+
+      .skip{
+        position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;
+      }
+      .skip:focus{
+        left: 24px; top: 12px; width:auto; height:auto; padding: 10px 14px;
+        border: 1px solid var(--line); background: #000;
+        z-index: 50;
+      }
+
+      .topline{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 16px 20px;
+        align-items:center;
+        justify-content:space-between;
+        padding: 18px 24px;
+        border: 1px solid var(--line2);
+        border-radius: var(--r);
+        background: rgba(255,255,255,.03);
+        backdrop-filter: blur(10px);
+      }
+
+      .brand{
+        display:flex;
+        align-items:baseline;
+        gap: 12px;
+        line-height:1;
+        min-width: 220px;
+      }
+      .brand .mark{
+        width: 14px; height: 14px; transform: skew(-10deg);
+        background: linear-gradient(135deg, var(--c), var(--a));
+        box-shadow: 0 0 10px rgba(255,77,77,.4);
+        flex: 0 0 auto;
+      }
+      .brand .name{
+        font-weight: 900;
+        letter-spacing: .10em;
+        font-size: 14px;
+        text-transform: uppercase;
+        color: #fff;
+      }
+      .brand .tag{
+        color: var(--mut2);
+        font-size: 11px;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+
+      .search{
+        flex: 1 1 340px;
+        display:flex;
+        align-items:center;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+        padding: 8px 0;
+        background: transparent;
+      }
+      .search svg{ width: 16px; height: 16px; opacity:.6; }
+      .search input{
+        width: 100%;
+        border:0;
+        outline:0;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        font-size: 14px;
+      }
+      .search input::placeholder{ color: rgba(255,255,255,.3); }
+
+      .tools{
+        display:flex;
+        align-items:center;
+        gap: 14px;
+      }
+
+      .btn{
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap: 10px;
+        padding: 12px 18px;
+        border: 1px solid var(--line2);
+        background: rgba(255,255,255,.05);
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: .05em;
+        font-size: 11px;
+        text-transform: uppercase;
+        transition: all .2s ease;
+        user-select:none;
+        white-space:nowrap;
+      }
+      .btn:hover{
+        border-color: rgba(255,255,255,.3);
+        background: rgba(255,255,255,.08);
+      }
+      .btn:active{ transform: translateY(1px); }
+
+      .btn.prism{
+        border-color: var(--a);
+        background: linear-gradient(90deg, rgba(255,77,77,.1), transparent);
+      }
+
+      .count{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 4px;
+        background: var(--a);
+        color: #000;
+        font-size: 11px;
+        font-weight: 800;
+        border-radius: 2px;
+      }
+
+      .intro{
+        margin-top: 40px;
+        padding: 0 4px;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 20px 40px;
+        align-items:flex-end;
+        justify-content:space-between;
+      }
+      .intro h1{
+        margin:0;
+        font-size: clamp(32px, 4vw, 64px);
+        letter-spacing: -0.04em;
+        font-weight: 900;
+        line-height: 0.95;
+        max-width: 16ch;
+        text-transform: uppercase;
+      }
+      .intro p{
+        margin:0;
+        color: var(--mut);
+        font-size: 15px;
+        line-height: 1.6;
+        max-width: 50ch;
+      }
+
+      .micro{
+        margin-top: 14px;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 12px 16px;
+        color: var(--mut2);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .micro b{ color: #fff; }
+
+      .console{
+        margin-top: 40px;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,.02);
+        padding: 20px 0;
+      }
+      .console-top{
+        display:flex;
+        align-items:baseline;
+        justify-content:space-between;
+        margin-bottom: 16px;
+        padding: 0 4px;
+      }
+      .console h2{
+        margin:0;
+        font-size: 11px;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--a);
+      }
+      .applied{
+        color: var(--mut);
+        font-size: 12px;
+        font-family: monospace;
+      }
+      .knobs{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+      }
+      .knob{
+        flex: 1 1 200px;
+        background: var(--bg0);
+        padding: 16px 20px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 16px;
+      }
+      .knob .k{ display:flex; flex-direction:column; gap: 4px; }
+      .knob .k .l{
+        font-size: 10px;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--mut2);
+        font-weight: 700;
+      }
+      .knob .k .v{ font-size: 14px; font-weight: 700; color: #fff; }
+      .knob button{
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--mut);
+        padding: 6px 12px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor:pointer;
+        transition: all .2s ease;
+      }
+      .knob button:hover{ border-color: #fff; color: #fff; }
+
+      .reel{
+        margin-top: 40px;
+        border: 1px solid var(--line);
+        background: rgba(0,0,0,.3);
+        position: relative;
+      }
+      .reel-head{
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--line);
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      }
+      .reel-head .title{
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        font-size: 12px;
+        color: #fff;
+      }
+      .reel-head .hint{
+        color: var(--mut2);
+        font-size: 11px;
+        font-family: monospace;
+      }
+      
+      .reel-window { position: relative; }
+
+      ol.strip{
+        margin:0;
+        padding: 40px 24px;
+        list-style:none;
+        display:flex;
+        gap: 30px;
+        overflow-x:auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        cursor: grab;
+      }
+      ol.strip::-webkit-scrollbar { display: none; }
+      ol.strip.active { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+
+      .frame{
+        position: relative;
+        flex: 0 0 400px;
+        scroll-snap-align: center;
+        border: 1px solid var(--line);
+        background: var(--bg1);
+        user-select: none;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+      .frame:hover{ border-color: rgba(255,255,255,0.3); transform: translateY(-4px); }
+      
+      .frame img{
+        display:block;
+        width:100%;
+        height: 260px;
+        object-fit: cover;
+        filter: grayscale(20%) contrast(1.1);
+        pointer-events: none;
+        background: #111;
+        border-bottom: 1px solid var(--line);
+      }
+      .meta{
+        padding: 20px;
+        display:flex;
+        flex-direction:column;
+        gap: 12px;
+      }
+      .line1{
+        display:flex;
+        justify-content:space-between;
+        align-items: flex-start;
+      }
+      .pname{ font-weight: 700; font-size: 16px; color: #fff; }
+      .price{ font-weight: 700; font-size: 16px; color: var(--a); font-family: monospace; }
+      .note{ color: var(--mut); font-size: 13px; line-height: 1.5; min-height: 40px; }
+
+      .actions{
+        margin-top: 12px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        border-top: 1px solid var(--line2);
+        padding-top: 16px;
+      }
+      .pill{
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--mut2);
+      }
+      .add{
+        cursor:pointer;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: #fff;
+        padding: 8px 16px;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: all .2s ease;
+      }
+      .add:hover{ background: #fff; color: #000; }
+
+      .frame[hidden]{ display:none; }
+
+      /* PADDLES */
+      .paddle {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 56px; height: 56px;
+        background: rgba(0,0,0,0.8);
+        border: 1px solid var(--line);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.2s ease;
+      }
+      .paddle:hover { background: var(--a); border-color: var(--a); }
+      .paddle.prev { left: 0; border-right: none; border-radius: 0 4px 4px 0; }
+      .paddle.next { right: 0; border-left: none; border-radius: 4px 0 0 4px; }
+      .paddle svg { width: 24px; height: 24px; }
+
+      .viewer{
+        margin-top: 40px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,.02);
+      }
+      .viewer-top{
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--line);
+        display:flex;
+        justify-content:space-between;
+        align-items: center;
+      }
+      .viewer-top .t{
+        font-size: 11px;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--a);
+      }
+      .viewer-body{
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+      }
+      .heroimg{
+        border-right: 1px solid var(--line);
+        background: #000;
+        position: relative;
+        min-height: 400px;
+      }
+      .heroimg img{ width:100%; height: 100%; object-fit: cover; display:block; opacity: 0.9; }
+
+      .spec{ padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+      .spec h3{ margin:0; font-size: 32px; font-weight: 900; letter-spacing: -0.02em; color: #fff; }
+      .spec .sub{ margin-top: 16px; color: var(--mut); font-size: 15px; line-height: 1.6; max-width: 40ch; }
+      .spec .row{
+        margin-top: 32px;
+        display:flex;
+        gap: 16px;
+        align-items:center;
+      }
+
+      .answers{
+        margin-top: 60px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+      }
+      .ans{
+        padding: 30px;
+        background: var(--bg0);
+      }
+      .ans b{ display:block; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 10px; }
+      .ans p{ margin: 0; color: var(--mut); font-size: 14px; line-height: 1.6; }
+      .ans[hidden]{ display:none; }
+
+      footer{
+        margin-top: 60px;
+        border-top: 1px solid var(--line);
+        padding: 24px 0;
+        color: var(--mut2);
+        font-size: 12px;
+        font-family: monospace;
+      }
+
+      dialog{
+        border: 1px solid var(--line);
+        background: rgba(11,12,16,0.95);
+        backdrop-filter: blur(16px);
+        color: var(--ink);
+        box-shadow: 0 50px 100px rgba(0,0,0,.8);
+        width: min(800px, 100%);
+        padding: 0;
+      }
+      dialog::backdrop{ background: rgba(0,0,0,.7); }
+
+      .cart-top{
+        padding: 20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+      }
+      .cart-top h2{
+        margin:0;
+        font-size: 12px;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: #fff;
+      }
+      .cart-body{ padding: 24px; }
+
+      .cart-grid{
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+      }
+
+      .items ul{ margin:0; padding:0; list-style:none; }
+
+      .li{
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      }
+      .li:last-child{ border-bottom:none; }
+      .li .n{ font-weight: 700; font-size: 15px; color: #fff; }
+      .li .m{ color: var(--mut2); font-size: 12px; margin-top: 4px; font-family: monospace; }
+
+      .qty button{
+        width: 28px; height: 28px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: #fff;
+        cursor:pointer;
+      }
+      .qty .q{ min-width: 30px; text-align:center; font-family: monospace; }
+
+      .summary .k{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mut2); }
+      .summary .v{ margin-top: 8px; font-size: 24px; font-weight: 700; color: #fff; font-family: monospace; }
+
+      .deliv{ margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
+      .rad{ margin-top: 16px; display:flex; flex-direction:column; gap: 12px; }
+      .rad label{
+        display:flex; gap: 12px; align-items:flex-start;
+        padding: 12px; border: 1px solid var(--line);
+        cursor:pointer; transition: background 0.2s;
+      }
+      .rad label:hover { background: rgba(255,255,255,0.03); }
+      .rad small{ display:block; color: var(--mut2); font-size: 12px; margin-top: 4px; }
+
+      .cart-actions{ margin-top: 24px; display:flex; gap: 12px; }
+
+      @media (max-width: 800px){
+        .viewer-body, .cart-grid { grid-template-columns: 1fr; }
+        .heroimg { min-height: 250px; }
+        .lights-container { gap: 150px; }
+        .headlight-unit { width: 160px; height: 40px; }
+      }
+      @media (prefers-reduced-motion: reduce){ *{ scroll-behavior:auto !important; transition:none !important; } }
+    </style>
+  </head>
+
+  <body class="loading">
+    <div id="loader">
+        <div class="car-silhouette">
+            <div class="headlight-unit left">
+                <div class="matrix-beam">
+                    <div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div>
+                    <div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div>
+                </div>
+            </div>
+
+            <div class="headlight-unit right">
+                <div class="matrix-beam">
+                    <div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div>
+                    <div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div><div class="led"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/" class="index-btn">Index</a>
+
+    <a class="skip" href="#catalog">Skip to inventory</a>
+
+    <main class="wrap">
+      <header class="topline">
+        <div class="brand">
+          <span class="mark"></span>
+          <span class="name">{BRAND}</span>
+          <span class="tag">Private Showroom</span>
+        </div>
+
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.2-3.2"></path></svg>
+          <input id="q" type="search" placeholder="Search model, drivetrain, or availability..." autocomplete="off" />
+        </div>
+
+        <div class="tools">
+          <button id="openCart" class="btn prism">
+            Shortlist <span id="cartCount" class="count">0</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="intro">
+        <h1>{TAGLINE}</h1>
+        <div class="micro">
+          <span><b>Enclosed</b> Delivery</span> • 
+          <span><b>Verified</b> Inspection</span> • 
+          <span><b>Trade-in</b> Offers</span>
+        </div>
+      </section>
+
+      <section class="console">
+        <div class="console-top">
+          <h2>Inventory Console</h2>
+          <div class="applied" id="applied">View: All</div>
+        </div>
+
+        <div class="knobs">
+          <div class="knob">
+            <div class="k">
+              <div class="l">Body</div>
+              <div class="v" id="v-body">All</div>
+            </div>
+            <button class="js-cycle" data-key="body" data-values="All|Coupe|SUV|Sedan">Next</button>
+          </div>
+
+          <div class="knob">
+            <div class="k">
+              <div class="l">Power</div>
+              <div class="v" id="v-power">All</div>
+            </div>
+            <button class="js-cycle" data-key="power" data-values="All|Electric|Hybrid|V8|Classic">Next</button>
+          </div>
+
+          <div class="knob">
+            <div class="k">
+              <div class="l">Status</div>
+              <div class="v" id="v-stock">All</div>
+            </div>
+            <button class="js-cycle" data-key="stock" data-values="All|Showroom|Inbound|Order">Next</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="catalog" class="reel">
+        <div class="reel-head">
+          <div class="title">Curated Inventory</div>
+          <div class="hint">Drag to browse. Select for details.</div>
+        </div>
+
+        <div class="reel-window">
+          <button class="paddle prev" aria-label="Scroll left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+          
+          <ol class="strip">
+            {PRODUCTS.map((p) => (
+              <li class="frame js-frame"
+                data-id={p.id}
+                data-name={p.name}
+                data-price={String(p.price)}
+                data-note={p.note}
+                data-img={p.img}
+                data-alt={p.alt}
+                data-body={p.body}
+                data-power={p.power}
+                data-stock={p.stock}
+                tabindex="0"
+              >
+                <img src={p.img} alt={p.alt} loading="lazy" />
+                <div class="meta">
+                  <div class="line1">
+                    <div class="pname">{p.name}</div>
+                    <div class="price">€{(p.price / 1000).toFixed(0)}k</div>
+                  </div>
+                  <div class="note">{p.note}</div>
+                  <div class="actions">
+                    <span class="pill">{p.body} • {p.power}</span>
+                    <button class="add js-add" data-id={p.id}>Shortlist</button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <button class="paddle next" aria-label="Scroll right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+        </div>
+      </section>
+
+      <section class="viewer">
+        <div class="viewer-top">
+          <div class="t">Selected Vehicle</div>
+        </div>
+
+        <div class="viewer-body">
+          <div class="heroimg">
+            <img id="focusImg" src={PRODUCTS[0].img} alt={PRODUCTS[0].alt} loading="eager" />
+          </div>
+
+          <div class="spec">
+            <h3 id="focusName">{PRODUCTS[0].name}</h3>
+            <p class="sub" id="focusNote">{PRODUCTS[0].note}</p>
+            <div class="row">
+              <span class="pill" id="focusTags" style="border-color:#fff; color:#fff;">{PRODUCTS[0].body} • {PRODUCTS[0].power} • {PRODUCTS[0].stock}</span>
+              <span class="pill" id="focusPrice" style="color:var(--a); border-color:var(--a);">€{(PRODUCTS[0].price / 1000).toFixed(0)}k</span>
+              <button class="add" id="addFocused" style="background:#fff; color:#000;">Add to Shortlist</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="answers">
+        {ANSWERS.map((a) => (
+          <div class="ans js-ans" data-keywords={a.keywords}>
+            <b>{a.title}</b>
+            <p>{a.body}</p>
+          </div>
+        ))}
+      </section>
+
+      <footer>
+        © {YEAR} {BRAND}. Private automotive showroom — curated inventory, clean execution.<br />
+        Images via Pexels (License: Free to use).
+      </footer>
+    </main>
+
+    <dialog id="cartDialog">
+      <div class="cart-top">
+        <h2>Your Shortlist</h2>
+        <button id="closeCart" class="btn">Close</button>
+      </div>
+      <div class="cart-body">
+        <div class="cart-grid">
+          <div class="items">
+            <ul id="cartItems"></ul>
+          </div>
+          <div class="summary">
+            <div class="k">Estimated Total</div>
+            <div class="v" id="cartTotal">€0</div>
+
+            <div class="deliv">
+              <div class="k">Handover Method</div>
+              <div class="rad">
+                <label><input type="radio" name="delivery" value="Showroom" checked /> <span>Showroom Handover<small>Private appointment. Documentation ready.</small></span></label>
+                <label><input type="radio" name="delivery" value="Home" /> <span>Enclosed Transport<small>Delivered to your address, insured.</small></span></label>
+              </div>
+            </div>
+
+            <div class="cart-actions">
+              <button id="copyCart" class="btn prism">Copy Inquiry</button>
+              <button id="clearCart" class="btn">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <script is:inline>
+      (function () {
+        function $(sel, root) { return (root || document).querySelector(sel); }
+        function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+        // --- Loader Logic ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.body.classList.remove('loading');
+                }, 1500); 
+            }, 2200); 
+        });
+
+        // --- Interactive Background Logic ---
+        document.body.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.body.style.setProperty('--mx', `${x}%`);
+            document.body.style.setProperty('--my', `${y}%`);
+        });
+
+        var frames = $$(".js-frame");
+        var q = $("#q");
+        var applied = $("#applied");
+        
+        var vBody = $("#v-body");
+        var vPower = $("#v-power");
+        var vStock = $("#v-stock");
+
+        var focusImg = $("#focusImg");
+        var focusName = $("#focusName");
+        var focusNote = $("#focusNote");
+        var focusTags = $("#focusTags");
+        var focusPrice = $("#focusPrice");
+        var addFocused = $("#addFocused");
+
+        var dialog = $("#cartDialog");
+        var cartCount = $("#cartCount");
+        var cartItems = $("#cartItems");
+        var cartTotal = $("#cartTotal");
+        var openCart = $("#openCart");
+        var closeCart = $("#closeCart");
+        var clearCart = $("#clearCart");
+        var copyCart = $("#copyCart");
+
+        var CART_KEY = "obsidian_garage_v1";
+        
+        var state = { body: "All", power: "All", stock: "All", query: "" };
+        var focusedId = frames[0] ? frames[0].dataset.id : "";
+
+        var slider = $(".strip");
+        var isDown = false; var startX; var scrollLeft; var isDragging = false;
+
+        if (slider) {
+          slider.addEventListener('mousedown', (e) => { isDown = true; isDragging = false; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+          slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); });
+          slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); setTimeout(() => { isDragging = false; }, 50); });
+          slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; if (Math.abs(walk) > 5) isDragging = true; slider.scrollLeft = scrollLeft - walk; });
+          
+          $(".paddle.prev").addEventListener("click", () => slider.scrollBy({ left: -420, behavior: 'smooth' }));
+          $(".paddle.next").addEventListener("click", () => slider.scrollBy({ left: 420, behavior: 'smooth' }));
+        }
+
+        function money(n) { return "€" + Number(n).toLocaleString(); }
+        function shortMoney(n) { return "€" + (Number(n)/1000).toFixed(0) + "k"; }
+
+        function readCart() { try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); } catch { return []; } }
+        function writeCart(items) { localStorage.setItem(CART_KEY, JSON.stringify(items)); }
+        function sumCart(items) { var t = 0; items.forEach(i => t += (i.price * i.qty)); return t; }
+
+        function updateCounts() {
+          var items = readCart();
+          var count = 0; items.forEach(i => count += i.qty);
+          cartCount.textContent = String(count);
+          cartTotal.textContent = money(sumCart(items));
+        }
+
+        function renderCart() {
+          var items = readCart();
+          cartItems.innerHTML = "";
+          if (!items.length) {
+            cartItems.innerHTML = "<li class='li' style='display:block; text-align:center; padding:40px; color:#666;'>Shortlist is empty.</li>";
+            updateCounts(); return;
+          }
+          items.forEach(it => {
+            var li = document.createElement("li"); li.className = "li";
+            li.innerHTML = `
+              <div><div class='n'>${it.name}</div><div class='m'>${shortMoney(it.price)} • ${it.body}</div></div>
+              <div class='qty'>
+                <button class='dec'>-</button><span class='q'>${it.qty}</span><button class='inc'>+</button>
+              </div>`;
+            li.querySelector(".dec").onclick = () => changeQty(it.id, -1);
+            li.querySelector(".inc").onclick = () => changeQty(it.id, 1);
+            cartItems.appendChild(li);
+          });
+          updateCounts();
+        }
+
+        function changeQty(id, delta) {
+          var items = readCart();
+          var idx = items.findIndex(i => i.id === id);
+          if (idx === -1) return;
+          items[idx].qty += delta;
+          if (items[idx].qty <= 0) items.splice(idx, 1);
+          writeCart(items);
+          renderCart();
+        }
+
+        function addToCart(id) {
+          var f = document.querySelector(`.js-frame[data-id="${id}"]`);
+          if (!f) return;
+          var items = readCart();
+          var existing = items.find(i => i.id === id);
+          if (existing) existing.qty++;
+          else items.push({
+            id: id,
+            name: f.dataset.name,
+            price: Number(f.dataset.price),
+            body: f.dataset.body,
+            qty: 1
+          });
+          writeCart(items);
+          updateCounts();
+        }
+
+        function setFocus(f) {
+          focusedId = f.dataset.id;
+          focusImg.src = f.dataset.img;
+          focusName.textContent = f.dataset.name;
+          focusNote.textContent = f.dataset.note;
+          focusTags.textContent = `${f.dataset.body} • ${f.dataset.power} • ${f.dataset.stock}`;
+          focusPrice.textContent = shortMoney(f.dataset.price);
+        }
+
+        function cycle(btn) {
+          var key = btn.dataset.key; // body, power, stock
+          var vals = btn.dataset.values.split("|");
+          var curr = state[key] || "All";
+          var next = vals[(vals.indexOf(curr) + 1) % vals.length];
+          state[key] = next;
+          $("#v-" + key).textContent = next;
+          applyFilters();
+        }
+
+        function applyFilters() {
+          var visible = [];
+          frames.forEach(f => {
+            var match = true;
+            if (state.body !== "All" && f.dataset.body !== state.body) match = false;
+            if (state.power !== "All" && f.dataset.power !== state.power) match = false;
+            if (state.stock !== "All" && f.dataset.stock !== state.stock) match = false;
+            if (state.query && !f.innerText.toLowerCase().includes(state.query.toLowerCase())) match = false;
+            
+            f.hidden = !match;
+            if (match) visible.push(f);
+          });
+          applied.textContent = `Showing: ${visible.length} Vehicles`;
+          if (visible.length > 0 && (!focusedId || document.querySelector(`.js-frame[data-id="${focusedId}"]`).hidden)) {
+            setFocus(visible[0]);
+          }
+        }
+
+        // Event Bindings
+        $$(".js-cycle").forEach(b => b.onclick = () => cycle(b));
+        q.oninput = () => { state.query = q.value; applyFilters(); };
+        
+        frames.forEach(f => {
+          f.onclick = () => { if (!isDragging) setFocus(f); };
+          f.querySelector(".js-add").onclick = (e) => { e.stopPropagation(); addToCart(f.dataset.id); };
+        });
+
+        addFocused.onclick = () => addToCart(focusedId);
+        openCart.onclick = () => { renderCart(); dialog.showModal(); };
+        closeCart.onclick = () => dialog.close();
+        clearCart.onclick = () => { writeCart([]); renderCart(); };
+
+        copyCart.onclick = () => {
+          var text = "INQUIRY — SHORTLIST:\n\n" + readCart().map(i => `${i.qty}x ${i.name}`).join("\n");
+          navigator.clipboard.writeText(text).then(() => {
+            copyCart.textContent = "Copied!";
+            setTimeout(() => copyCart.textContent = "Copy Inquiry", 1000);
+          });
+        };
+
+        // Init
+        updateCounts();
+        applyFilters();
+        if (frames[0]) setFocus(frames[0]);
+
+      })();
+    </script>
+  </body>
+</html>

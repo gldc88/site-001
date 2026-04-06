@@ -1,0 +1,587 @@
+---
+const BRAND = "THE OBSIDIAN";
+
+const NAV_ITEMS = [
+  { label: "Our Ethos", href: "#philosophy" },
+  { label: "Suites", href: "#suites" },
+  { label: "Spa", href: "#wellness" },
+  { label: "Restaurant", href: "#dining" },
+  { label: "Reserve", href: "#reserve" },
+];
+
+const IMAGES = {
+  hero: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2000&auto=format&fit=crop",
+  spa: "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=1500&auto=format&fit=crop", // Dark Pool
+  suite1: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1200&auto=format&fit=crop",
+  suite2: "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1200&auto=format&fit=crop",
+  suite3: "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=1200&auto=format&fit=crop", // Lounge
+  dining: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1500&auto=format&fit=crop",
+  texture: "https://grainy-gradients.vercel.app/noise.svg"
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} | Zurich's Quietest Luxury</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+      /* --- CORE RESET & VARIABLES --- */
+      :root {
+        --c-bg: #050505;
+        --c-surface: #0a0a0a;
+        --c-panel: #111111;
+        --c-gold: #D4AF37;
+        --c-gold-dim: rgba(212, 175, 55, 0.2);
+        --c-text: #Eaeaea;
+        --c-text-muted: #888;
+        
+        --f-head: 'Cormorant Garamond', serif;
+        --f-body: 'Montserrat', sans-serif;
+        
+        --ease-lux: cubic-bezier(0.23, 1, 0.32, 1);
+        
+        color-scheme: dark; 
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        background-color: var(--c-bg);
+        color: var(--c-text);
+        font-family: var(--f-body);
+        line-height: 1.7;
+        overflow-x: hidden;
+      }
+
+      a { text-decoration: none; color: inherit; transition: color 0.3s ease; }
+      img { display: block; width: 100%; height: auto; }
+      button { cursor: pointer; border: none; outline: none; background: none; font-family: inherit; }
+
+      /* --- TYPOGRAPHY --- */
+      h1, h2, h3, h4 { font-family: var(--f-head); font-weight: 300; line-height: 1.1; }
+      
+      .display-text {
+        font-size: clamp(3.5rem, 6vw, 8rem);
+        text-transform: uppercase;
+        letter-spacing: -0.02em;
+        color: white;
+      }
+      .display-text span { color: var(--c-gold); font-style: italic; }
+
+      .section-title {
+        font-size: clamp(2.5rem, 4vw, 5rem);
+        margin-bottom: 20px;
+        color: white;
+      }
+
+      .overline {
+        font-family: var(--f-body);
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--c-gold);
+        margin-bottom: 24px;
+        display: block;
+      }
+
+      .body-text {
+        font-family: var(--f-head);
+        font-size: clamp(1.2rem, 2vw, 1.8rem);
+        color: #ccc;
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+        line-height: 1.5;
+      }
+
+      /* --- NAVIGATION --- */
+      .navbar {
+        position: fixed;
+        top: 0; left: 0; width: 100%;
+        padding: 30px 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+        mix-blend-mode: difference;
+      }
+
+      /* Brand Morph */
+      .brand-link {
+        position: relative; height: 30px; overflow: hidden; min-width: 200px;
+      }
+      .brand-layer {
+        display: block; position: absolute; top: 0; left: 0;
+        transition: transform 0.5s var(--ease-lux), opacity 0.5s ease;
+      }
+      .brand-def { font-family: var(--f-head); font-size: 24px; letter-spacing: 0.1em; font-weight: 600; }
+      .brand-hov { 
+        font-family: var(--f-body); font-size: 11px; letter-spacing: 0.3em; 
+        text-transform: uppercase; color: var(--c-gold); padding-top: 6px; 
+        transform: translateY(100%); opacity: 0;
+      }
+      .brand-link:hover .brand-def { transform: translateY(-100%); opacity: 0; }
+      .brand-link:hover .brand-hov { transform: translateY(0); opacity: 1; }
+
+      .nav-links { display: flex; gap: 40px; }
+      .nav-item {
+        font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: white; position: relative;
+        padding-bottom: 5px;
+      }
+      .nav-item::after {
+        content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 1px;
+        background: var(--c-gold); transition: width 0.4s var(--ease-lux);
+      }
+      .nav-item:hover::after { width: 100%; }
+
+      /* --- HERO --- */
+      .hero {
+        position: relative; height: 100vh; width: 100%; overflow: hidden;
+        display: flex; align-items: center; justify-content: center; text-align: center;
+      }
+      .hero-bg { position: absolute; inset: 0; z-index: 0; }
+      .hero-bg img {
+        width: 100%; height: 100%; object-fit: cover; opacity: 0.5;
+        animation: slowZoom 30s infinite alternate;
+      }
+      .hero-content {
+        position: relative; z-index: 10; opacity: 0;
+        animation: fadeUp 1.5s var(--ease-lux) 0.5s forwards;
+      }
+
+      /* Fixed: Moved scroll indicator up to avoid booking overlap */
+      .hero-scroll {
+        position: absolute; bottom: 18vh; left: 50%; transform: translateX(-50%);
+        display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0.6;
+        z-index: 5;
+      }
+      .scroll-line {
+        width: 1px; height: 40px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden;
+      }
+      .scroll-line::after {
+        content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+        background: var(--c-gold); animation: drop 2s infinite;
+      }
+
+      /* --- BOOKING BAR --- */
+      .booking-wrapper {
+        position: relative; z-index: 50; margin-top: -60px; /* Overlap Hero */
+        display: flex; justify-content: center;
+        padding: 0 20px;
+      }
+      .booking-bar {
+        background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.08);
+        width: 100%; max-width: 1200px;
+        padding: 30px 50px;
+        display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+        border-radius: 2px;
+      }
+      .booking-group { display: flex; flex-direction: column; gap: 8px; min-width: 180px; position: relative; }
+      .booking-group::after {
+        content: ''; position: absolute; right: -20px; top: 10%; height: 80%; width: 1px; background: rgba(255,255,255,0.05);
+      }
+      .booking-group:last-of-type::after { display: none; }
+      
+      .label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-text-muted); }
+      .booking-input {
+        background: transparent; border: none; color: white;
+        font-family: var(--f-head); font-size: 20px; width: 100%; cursor: pointer;
+        outline: none; padding: 5px 0; border-bottom: 1px solid transparent;
+        transition: border-color 0.3s;
+      }
+      .booking-input:focus { border-bottom-color: var(--c-gold); }
+      .booking-input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.3; cursor: pointer; }
+
+      .btn-gold {
+        background: var(--c-gold); color: #050505; border: none;
+        padding: 18px 50px; font-family: var(--f-body); font-size: 11px;
+        letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600;
+        transition: all 0.3s ease; margin-left: 20px;
+      }
+      .btn-gold:hover { background: white; transform: translateY(-2px); }
+
+      /* --- SECTIONS COMMON --- */
+      .section { padding: 160px 60px; max-width: 1600px; margin: 0 auto; position: relative; }
+      .section-full { width: 100%; padding: 0; }
+      .text-center { text-align: center; }
+      .mb-large { margin-bottom: 100px; }
+
+      /* --- PHILOSOPHY --- */
+      .philosophy-content {
+        padding: 100px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .sig {
+        font-family: var(--f-head); font-size: 30px; color: var(--c-gold); 
+        margin-top: 40px; font-style: italic; opacity: 0.8;
+      }
+
+      /* --- WELLNESS (Dark Pool) --- */
+      .wellness-split {
+        display: grid; grid-template-columns: 1fr 1fr; min-height: 80vh;
+      }
+      .wellness-img { position: relative; height: 100%; overflow: hidden; }
+      .wellness-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%) brightness(0.7); }
+      .wellness-text {
+        display: flex; flex-direction: column; justify-content: center;
+        padding: 80px; background: var(--c-surface);
+      }
+      .wellness-list {
+        margin-top: 40px; display: flex; flex-direction: column; gap: 20px;
+      }
+      .w-item {
+        font-family: var(--f-head); font-size: 24px; color: var(--c-text-muted);
+        border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;
+        display: flex; justify-content: space-between;
+      }
+      .w-item span { font-family: var(--f-body); font-size: 10px; letter-spacing: 0.2em; margin-top: 10px; }
+
+      /* --- SUITES GRID --- */
+      .rooms-grid {
+        display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 100px;
+        align-items: center;
+      }
+      .room-card { display: block; position: relative; cursor: pointer; margin-bottom: 60px; }
+      .room-card:last-child { margin-bottom: 0; }
+      
+      .img-wrap { overflow: hidden; margin-bottom: 30px; position: relative; }
+      .img-wrap img { transition: transform 1.5s var(--ease-lux); filter: brightness(0.9); }
+      .room-card:hover .img-wrap img { transform: scale(1.05); filter: brightness(1); }
+
+      .room-info h3 { font-size: 36px; color: white; margin-bottom: 5px; transition: color 0.3s; }
+      .room-card:hover .room-info h3 { color: var(--c-gold); }
+      .room-meta { font-size: 11px; letter-spacing: 0.2em; color: var(--c-text-muted); text-transform: uppercase; }
+
+      .rooms-intro { margin-bottom: 80px; max-width: 400px; }
+
+      /* --- SERVICES (List) --- */
+      .services-section { background: var(--c-panel); padding: 120px 60px; }
+      .service-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; margin-top: 80px;
+      }
+      .service-col h4 { font-size: 22px; margin-bottom: 30px; color: var(--c-gold); }
+      .service-col ul { list-style: none; }
+      .service-col li {
+        font-family: var(--f-body); font-size: 11px; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--c-text-muted); margin-bottom: 15px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      .service-col li::before { content: '•'; color: var(--c-gold); }
+
+      /* --- DINING --- */
+      .dining-hero {
+        position: relative; height: 80vh; overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        text-align: center;
+        background-image: url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2000&auto=format&fit=crop');
+        background-attachment: fixed; background-size: cover;
+      }
+      .dining-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+      .dining-content { position: relative; z-index: 10; max-width: 800px; padding: 0 20px; }
+      
+      .menu-btn {
+        display: inline-block; margin-top: 40px; padding: 15px 40px;
+        border: 1px solid var(--c-gold); color: var(--c-gold);
+        font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+        transition: all 0.3s;
+      }
+      .menu-btn:hover { background: var(--c-gold); color: black; }
+
+      /* --- FOOTER --- */
+      footer {
+        padding: 120px 60px; border-top: 1px solid rgba(255,255,255,0.05);
+        display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+      }
+      .f-brand h2 { font-size: 40px; margin-bottom: 20px; }
+      .f-desc { font-size: 12px; color: var(--c-text-muted); line-height: 1.8; max-width: 300px; }
+      
+      .f-col h4 { font-size: 14px; color: white; margin-bottom: 30px; letter-spacing: 0.1em; text-transform: uppercase; }
+      .f-col a { 
+        display: block; font-size: 11px; letter-spacing: 0.1em; color: var(--c-text-muted);
+        text-transform: uppercase; margin-bottom: 15px; 
+      }
+      .f-col a:hover { color: var(--c-gold); }
+      .f-copy {
+        grid-column: 1 / -1; margin-top: 80px; padding-top: 40px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        display: flex; justify-content: space-between;
+        font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase;
+      }
+
+      /* --- ANIMATIONS --- */
+      @keyframes slowZoom { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+      @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes drop { 0% { top: -100%; } 50% { top: 100%; } 100% { top: 100%; } }
+
+      /* --- RESPONSIVE --- */
+      @media (max-width: 1024px) {
+        .navbar { padding: 20px 30px; }
+        .nav-links { display: none; }
+        .rooms-grid { grid-template-columns: 1fr; gap: 60px; }
+        .wellness-split { grid-template-columns: 1fr; }
+        .wellness-img { height: 50vh; }
+        .booking-bar { flex-direction: column; gap: 20px; width: 100%; padding: 40px 30px; }
+        .booking-group { width: 100%; }
+        .booking-group::after { display: none; }
+        .btn-gold { width: 100%; margin-left: 0; margin-top: 10px; }
+        .service-grid { grid-template-columns: 1fr; gap: 40px; }
+        footer { grid-template-columns: 1fr; gap: 40px; }
+        .display-text { font-size: 3.5rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <nav class="navbar">
+      <a href="/" class="brand-link" aria-label="Index">
+        <span class="brand-layer brand-def">{BRAND}</span>
+        <span class="brand-layer brand-hov">HOME</span>
+      </a>
+      <div class="nav-links">
+        {NAV_ITEMS.map(item => (
+          <a href={item.href} class="nav-item">{item.label}</a>
+        ))}
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-bg">
+        <img src={IMAGES.hero} alt="The Obsidian lobby at night" />
+        <div class="hero-overlay"></div>
+      </div>
+      
+      <div class="hero-content">
+        <span class="overline">Zurich, Switzerland</span>
+        <h1 class="display-text">Silence Is<br><span>Your Rarest</span> Luxury</h1>
+      </div>
+
+      <div class="hero-scroll">
+        <div class="scroll-line"></div>
+        <span style="font-size:9px; letter-spacing:0.2em; text-transform:uppercase;">Scroll</span>
+      </div>
+    </header>
+
+    <div class="booking-wrapper">
+      <div class="booking-bar">
+        <div class="booking-group">
+          <label for="arrival" class="label">Arrival</label>
+          <input type="date" id="arrival" class="booking-input" />
+        </div>
+        
+        <div class="booking-group">
+          <label for="departure" class="label">Departure</label>
+          <input type="date" id="departure" class="booking-input" />
+        </div>
+        
+        <div class="booking-group">
+          <label for="guests" class="label">Guests</label>
+          <select id="guests" class="booking-input">
+            <option value="1">01 Guest</option>
+            <option value="2" selected>02 Guests</option>
+            <option value="3">03 Guests</option>
+            <option value="4">04+ Guests</option>
+          </select>
+        </div>
+        
+        <button class="btn-gold">Check Rates</button>
+      </div>
+    </div>
+
+    <section class="section text-center" id="philosophy">
+      <div class="philosophy-content">
+        <span class="overline">Our Ethos</span>
+        <p class="body-text">
+          We stripped away the obvious so you can feel the essential. 
+          Outside, Zurich hums and flashes, phones vibrate, footsteps rush. Inside, <span style="color:var(--c-gold); font-style:italic;">The Obsidian</span> 
+          holds the line. Low light. Warm stone. Air that feels clean on your skin. 
+          Time stops acting like a boss, and starts acting like a breath.
+        </p>
+        <div class="sig">The House</div>
+      </div>
+    </section>
+
+    <section class="section" id="suites">
+      <div class="rooms-intro">
+        <span class="overline">Accommodations</span>
+        <h2 class="section-title">Suites & Residences</h2>
+        <p style="color:#888; line-height:1.6;">Private, quiet, controlled. Heavy drapery, soft leather, black stone, and the kind of calm you can taste.</p>
+      </div>
+
+      <div class="rooms-grid">
+        <div>
+          <a href="#" class="room-card">
+            <div class="img-wrap">
+              <img src={IMAGES.suite1} alt="Royal Penthouse suite" />
+            </div>
+            <div class="room-info">
+              <h3>The Royal Penthouse</h3>
+              <span class="room-meta">240 SQM / Skyline and Old Town Views</span>
+            </div>
+          </a>
+
+          <a href="#" class="room-card" style="margin-top:120px;">
+             <div class="img-wrap">
+              <img src={IMAGES.suite3} alt="Private members lounge" />
+            </div>
+            <div class="room-info">
+              <h3>The Obsidian Lounge</h3>
+              <span class="room-meta">Members Only / Cigar and Spirits Library</span>
+            </div>
+          </a>
+        </div>
+
+        <div style="margin-top:200px;">
+          <a href="#" class="room-card">
+            <div class="img-wrap">
+              <img src={IMAGES.suite2} alt="Onyx Suite with private garden" />
+            </div>
+            <div class="room-info">
+              <h3>The Onyx Suite</h3>
+              <span class="room-meta">110 SQM / Private Garden Terrace</span>
+            </div>
+          </a>
+          <div style="margin-top:80px; padding:40px; border:1px solid rgba(255,255,255,0.05);">
+             <h4 style="color:var(--c-gold); font-size:20px; margin-bottom:10px;">Request Something Specific?</h4>
+             <p style="font-size:12px; color:#888; line-height:1.6; margin-bottom:20px;">
+               Pillows, lighting, fragrance, minibar, privacy preferences. Tell us once, we set it before you arrive, and we keep it that way.
+             </p>
+             <a href="#" style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; border-bottom:1px solid #666;">Contact Concierge</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-full wellness-split" id="wellness">
+      <div class="wellness-img">
+        <img src={IMAGES.spa} alt="Basalt thermal pool in low light" />
+      </div>
+      <div class="wellness-text">
+        <span class="overline">Below Street Level</span>
+        <h2 class="section-title">Basalt & Stillness</h2>
+        <p style="color:#aaa; max-width:400px; line-height:1.6;">
+          Step down into warmth and shadow. Black basalt under your feet, steam in the air, and water that holds you up like a promise.
+          No bright distractions, no noise, just your body finally unclenching.
+        </p>
+        
+        <div class="wellness-list">
+          <div class="w-item">Thermal Circuit <span>07:00 - 23:00</span></div>
+          <div class="w-item">Deep Tissue Therapy <span>On Request</span></div>
+          <div class="w-item">Sensory Float Suite <span>Book 24h Ahead</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="services-section" id="access">
+      <div class="max-w-[1400px] mx-auto">
+         <h2 class="section-title text-center">Concierge, Quietly</h2>
+         <div class="service-grid">
+           <div class="service-col">
+             <h4>Logistics</h4>
+             <ul>
+               <li>Private Airport Transfers</li>
+               <li>Chauffeur Fleet, Discreet</li>
+               <li>Helipad Coordination</li>
+               <li>Luggage Forwarding</li>
+             </ul>
+           </div>
+           <div class="service-col">
+             <h4>In-Room</h4>
+             <ul>
+               <li>Chef on Call Dining</li>
+               <li>Sommelier Pairings</li>
+               <li>Private Network Setup</li>
+               <li>Pressing and Tailoring</li>
+             </ul>
+           </div>
+           <div class="service-col">
+             <h4>Experiences</h4>
+             <ul>
+               <li>After Hours Gallery Access</li>
+               <li>Watchmaking Atelier Visits</li>
+               <li>Lake Zurich Private Charter</li>
+               <li>Alpine Day Escapes</li>
+             </ul>
+           </div>
+         </div>
+      </div>
+    </section>
+
+    <section class="dining-hero" id="dining">
+      <div class="dining-overlay"></div>
+      <div class="dining-content">
+        <span class="overline">Restaurant & Bar</span>
+        <h2 class="display-text" style="font-size:4rem;">Alchemy of Taste</h2>
+        <p style="color:#ddd; margin: 20px 0; max-width:600px; margin-left:auto; margin-right:auto;">
+          A kitchen led by Chef Marco Venturi. Clean heat, sharp technique, and ingredients pulled from the season, not a calendar.
+          Expect smoke, salt, citrus, butter, and silence between courses.
+        </p>
+        <a href="#" class="menu-btn">View Tasting Menu</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="f-brand">
+        <h2>{BRAND}</h2>
+        <p class="f-desc">
+          A private luxury sanctuary in central Zurich, steps from Bahnhofstrasse and a short walk to the lake.
+          Quiet service, sharp details, zero spectacle.
+        </p>
+      </div>
+
+      <div class="f-col">
+        <h4>Explore</h4>
+        <a href="#suites">Suites</a>
+        <a href="#wellness">Spa</a>
+        <a href="#dining">Restaurant</a>
+        <a href="#access">Concierge</a>
+      </div>
+
+      <div class="f-col">
+        <h4>Contact</h4>
+        <a href="#">+41 44 000 00 00</a>
+        <a href="#">concierge@obsidian.ch</a>
+        <a href="#">Bahnhofstrasse 10, 8001 Zurich</a>
+      </div>
+      
+      <div class="f-col">
+        <h4>Social</h4>
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">Press</a>
+      </div>
+
+      <div class="f-copy">
+        <span>© {new Date().getFullYear()} {BRAND}. All Rights Reserved.</span>
+        <div style="display:flex; gap:20px;">
+           <a href="#">Privacy Policy</a>
+           <a href="#">Terms of Service</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Date Logic with Type Guard
+      const arrival = document.getElementById('arrival');
+      const departure = document.getElementById('departure');
+      
+      if(arrival instanceof HTMLInputElement && departure instanceof HTMLInputElement) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        arrival.valueAsDate = today;
+        departure.valueAsDate = tomorrow;
+      }
+    </script>
+
+  </body>
+</html>

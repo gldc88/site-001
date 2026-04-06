@@ -1,0 +1,785 @@
+---
+const BRAND = "ATLAS INTERFACE";
+const TAGLINE = "A living map for systems. Pan. Zoom. Select.";
+
+const WORLD = { w: 2400, h: 1400 };
+
+const NODES = [
+  { id: "N01", name: "Observatory", x: 360,  y: 420,  note: "Ingests signals, watches patterns, and flags anomalies without the noise.", tags: ["signal", "analysis"] },
+  { id: "N02", name: "Archive",     x: 740,  y: 260,  note: "Versioned memory: snapshots you can trust, trace, and return to later.", tags: ["history", "integrity"] },
+  { id: "N03", name: "Engine",      x: 1180, y: 520,  note: "Turns intent into deterministic runs—routing tasks to clean outputs.", tags: ["compute", "runtime"] },
+  { id: "N04", name: "Sanctum",     x: 1600, y: 360,  note: "A restricted space for high-trust work: fewer sessions, higher signal.", tags: ["private", "access"] },
+  { id: "N05", name: "Relay",       x: 1900, y: 760,  note: "Dispatch and delivery: multi-channel output with throttled bursts.", tags: ["delivery", "routing"] },
+  { id: "N06", name: "Forge",       x: 1360, y: 980,  note: "Prototype lab: iterate quickly, contain risk, promote only what holds up.", tags: ["build", "iterate"] },
+  { id: "N07", name: "Lighthouse",  x: 520,  y: 1060, note: "Orientation layer: heuristics, wayfinding, and clarity when it gets messy.", tags: ["guidance", "clarity"] },
+];
+
+const EDGES = [
+  ["N01","N02"], ["N02","N03"], ["N03","N04"], ["N04","N05"], ["N03","N06"], ["N06","N07"], ["N07","N01"],
+];
+
+const NAV = [
+  { label: "Surface", action: "recenter" },
+  { label: "System", action: "modal:system" },
+  { label: "Contact", action: "modal:contact" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} — Experimental</title>
+    <meta name="description" content="An experimental atlas interface: drag to pan, wheel to zoom, select nodes to reveal field notes and connected flows." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style define:vars={{ worldW: `${WORLD.w}px`, worldH: `${WORLD.h}px` }}>
+      :root{
+        --bg0:#07080d;
+        --bg1:#0b0f1a;
+        --ink: rgba(235, 240, 255, .86);
+        --ink-dim: rgba(235, 240, 255, .62);
+
+        /* iridescent accents */
+        --a1:#6ef3ff;   /* cyan */
+        --a2:#b57bff;   /* violet */
+        --a3:#ff5bd6;   /* magenta */
+        --line: rgba(255,255,255,.10);
+        --glass: rgba(255,255,255,.03);
+        --shadow: rgba(0,0,0,.6);
+
+        --serif: "Fraunces", serif;
+        --sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+        --max: 1280px;
+        --pad: clamp(18px, 4vw, 44px);
+        --r: 16px;
+
+        --worldW: var(--worldW);
+        --worldH: var(--worldH);
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; }
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family:var(--sans);
+        background:
+          radial-gradient(1200px 700px at 18% 18%, rgba(110,243,255,.10), transparent 60%),
+          radial-gradient(900px 620px at 82% 22%, rgba(181,123,255,.10), transparent 62%),
+          radial-gradient(900px 740px at 56% 90%, rgba(255,91,214,.08), transparent 64%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        overflow-x:hidden;
+      }
+
+      /* Starfield Canvas (Behind content) */
+      #starfield {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.6;
+      }
+
+      /* film grain */
+      body::before{
+        content:"";
+        position:fixed; inset:0;
+        pointer-events:none;
+        background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 260 260' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+        mix-blend-mode:overlay;
+        opacity:.55;
+        z-index:1; /* Above stars */
+      }
+
+      a{ color:inherit; text-decoration:none; }
+      .wrap{ position:relative; z-index:2; max-width:var(--max); margin:0 auto; padding: 28px var(--pad) 120px; }
+
+      /* topbar */
+      header{
+        display:flex; align-items:flex-end; justify-content:space-between; gap:18px;
+        padding: 10px 0 18px;
+        border-bottom: 1px solid rgba(255,255,255,.08);
+      }
+      .brand-group { display: flex; align-items: center; gap: 16px; }
+
+      /* Back Link (Added) */
+      .back-btn {
+        width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%;
+        display: grid; place-items: center; color: var(--ink-dim); transition: all 0.2s;
+      }
+      .back-btn:hover { border-color: var(--a1); color: var(--a1); }
+
+      .brand{ display:flex; flex-direction:column; gap:6px; }
+      .brand h1{
+        margin:0; font-family:var(--serif); font-weight:500;
+        letter-spacing:.02em; font-size: 22px; line-height:1;
+      }
+      .brand .sub{
+        font-family:var(--mono); font-size: 11px; letter-spacing:.18em;
+        text-transform:uppercase; color: rgba(235,240,255,.46);
+      }
+      nav{
+        display:flex; gap:18px; align-items:center;
+        font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+        text-transform:uppercase; color: rgba(235,240,255,.55);
+      }
+      .nav-item{
+        position:relative; padding: 10px 10px; border-radius: 999px;
+        background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+        transition: transform .18s ease, border-color .18s ease, background .18s ease;
+        cursor: pointer;
+      }
+      .nav-item:hover{
+        transform: translateY(-1px);
+        border-color: rgba(110,243,255,.35);
+        background: rgba(110,243,255,.06);
+      }
+
+      /* hero */
+      .hero{
+        display:grid; grid-template-columns: 1.15fr .85fr; gap: 22px;
+        padding: 28px 0 18px; align-items: start;
+      }
+      .hero .headline{
+        border-radius: var(--r);
+        background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+        border: 1px solid rgba(255,255,255,.08);
+        overflow:hidden;
+        box-shadow: 0 30px 80px -40px rgba(0,0,0,.75);
+      }
+      .headline-inner{ padding: 26px 24px 22px; position:relative; }
+      .headline-inner::before{
+        content:""; position:absolute; inset:-2px;
+        background:
+          radial-gradient(700px 360px at 16% 18%, rgba(110,243,255,.18), transparent 55%),
+          radial-gradient(700px 360px at 86% 12%, rgba(181,123,255,.16), transparent 58%),
+          radial-gradient(700px 460px at 56% 94%, rgba(255,91,214,.12), transparent 60%);
+        filter: blur(18px); opacity:.65; z-index:0;
+      }
+      .headline-content{ position:relative; z-index:1; }
+      .headline-content h2{
+        margin:0; font-family:var(--serif); font-size: clamp(34px, 4vw, 56px);
+        font-weight:500; line-height:1.02; letter-spacing:.01em;
+      }
+      .headline-content p{
+        margin: 14px 0 0; color: var(--ink-dim); line-height:1.7; max-width: 62ch;
+      }
+      .chips{ margin-top: 18px; display:flex; flex-wrap:wrap; gap:10px; }
+      .chip{
+        font-family:var(--mono); font-size: 11px; letter-spacing:.14em;
+        text-transform:uppercase; padding: 10px 12px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02);
+      }
+      .chip.c1{ border-color: rgba(110,243,255,.26); }
+      .chip.c2{ border-color: rgba(181,123,255,.26); }
+      .chip.c3{ border-color: rgba(255,91,214,.22); }
+
+      .hero .meta{
+        border-radius: var(--r); border: 1px solid rgba(255,255,255,.08);
+        background: rgba(255,255,255,.02); padding: 18px 18px 16px;
+      }
+      .meta .k{
+        font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+        text-transform:uppercase; color: rgba(235,240,255,.55);
+      }
+      .meta .v{
+        margin-top: 10px; font-family:var(--serif); font-weight:500;
+        font-size: 24px; line-height:1.2;
+      }
+      .meta .small{
+        margin-top: 10px; color: rgba(235,240,255,.55);
+        line-height:1.65; font-size: 13px;
+      }
+
+      /* surface grid */
+      .grid{
+        margin-top: 22px; display:grid; grid-template-columns: 1.35fr .65fr;
+        gap: 18px; align-items: stretch;
+      }
+
+      /* viewport */
+      .viewport{
+        border-radius: var(--r); border: 1px solid rgba(255,255,255,.09);
+        background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.18));
+        box-shadow: 0 34px 110px -55px rgba(0,0,0,.9);
+        position:relative; overflow:hidden; min-height: 520px;
+      }
+      .viewport-top{
+        position:absolute; left:0; right:0; top:0;
+        display:flex; align-items:center; justify-content:space-between; gap:12px;
+        padding: 14px 14px; border-bottom: 1px solid rgba(255,255,255,.07);
+        background: rgba(0,0,0,.10); backdrop-filter: blur(10px); z-index:3;
+      }
+      .viewport-top .left{
+        display:flex; align-items:center; gap:10px;
+        font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+        text-transform:uppercase; color: rgba(235,240,255,.62);
+      }
+      .pill{
+        padding: 8px 10px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02);
+      }
+      .pill.cyan{ border-color: rgba(110,243,255,.24); }
+      .pill.violet{ border-color: rgba(181,123,255,.22); }
+      .pill.magenta{ border-color: rgba(255,91,214,.20); }
+
+      .viewport-top .right{ display:flex; align-items:center; gap:10px; }
+      .ctrl{
+        display:flex; align-items:center; gap:10px;
+        font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+        color: rgba(235,240,255,.55);
+      }
+      input[type="range"]{ width: 140px; accent-color: var(--a1); }
+
+      .surface{
+        position:absolute; inset: 54px 0 0 0;
+        overflow:hidden; touch-action: none; cursor: grab;
+      }
+      .surface:active{ cursor: grabbing; }
+
+      .world{
+        width: var(--worldW); height: var(--worldH);
+        position:absolute; left: 50%; top: 50%;
+        transform: translate(-50%, -50%); transform-origin: 0 0;
+        will-change: transform;
+      }
+
+      /* soft fog layers */
+      .fog{
+        position:absolute; inset:-40px; pointer-events:none;
+        background:
+          radial-gradient(700px 440px at 16% 18%, rgba(110,243,255,.12), transparent 62%),
+          radial-gradient(720px 520px at 86% 16%, rgba(181,123,255,.10), transparent 64%),
+          radial-gradient(840px 620px at 54% 88%, rgba(255,91,214,.08), transparent 66%);
+        filter: blur(22px); opacity:.55; z-index:1;
+      }
+
+      svg{ display:block; }
+
+      .edge{
+        stroke: rgba(235,240,255,.14); stroke-width: 2; stroke-linecap: round;
+        transition: stroke 0.3s;
+      }
+      .edge-flow {
+        stroke: var(--a1); stroke-width: 2; stroke-linecap: round;
+        stroke-dasharray: 8 12; stroke-dashoffset: 0;
+        opacity: 0; transition: opacity 0.3s;
+      }
+      .edge-group[data-active="true"] .edge { stroke: rgba(110, 243, 255, 0.2); }
+      .edge-group[data-active="true"] .edge-flow {
+        opacity: 1; animation: dashFlow 1s linear infinite;
+      }
+      @keyframes dashFlow { to { stroke-dashoffset: -20; } }
+
+      .node-core{
+        fill: rgba(255,255,255,.02); stroke: rgba(110,243,255,.55); stroke-width: 2;
+        transition: all 0.3s;
+      }
+      .node-ring{
+        fill: none; stroke: rgba(181,123,255,.35); stroke-width: 2;
+        stroke-dasharray: 6 10; opacity:.9; transition: all 0.3s;
+      }
+      .node-hit{ fill: transparent; cursor: pointer; }
+      .node-label{
+        font-family: var(--mono); font-size: 14px; letter-spacing: .14em;
+        text-transform: uppercase; fill: rgba(235,240,255,.58);
+      }
+
+      .node-active .node-core{
+        stroke: rgba(255,91,214,.75); fill: rgba(255,91,214,0.1);
+        filter: drop-shadow(0 0 10px rgba(255,91,214,.35));
+      }
+      .node-active .node-ring{
+        stroke: var(--a1); stroke-dasharray: 2 4; animation: spin 10s linear infinite;
+      }
+      .node-active .node-label{ fill: rgba(255,255,255,.86); }
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+      /* right column: field panel */
+      .panel{
+        border-radius: var(--r); border: 1px solid rgba(255,255,255,.09);
+        background: rgba(255,255,255,.02); overflow:hidden;
+        display:flex; flex-direction:column; min-height: 520px;
+      }
+      .panel-top{
+        padding: 16px 16px 14px; border-bottom: 1px solid rgba(255,255,255,.07);
+        display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
+      }
+      .panel-top .h{
+        font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+        text-transform:uppercase; color: rgba(235,240,255,.55);
+      }
+      .panel-top .badge{
+        font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+        text-transform:uppercase; padding: 8px 10px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,.08); color: rgba(235,240,255,.62);
+      }
+
+      .panel-body{
+        padding: 18px 16px 14px; display:flex; flex-direction:column; gap:12px;
+      }
+      .panel-title{
+        margin:0; font-family:var(--serif); font-weight:500;
+        font-size: 26px; line-height:1.12;
+      }
+      .panel-note{
+        margin:0; color: var(--ink-dim); line-height:1.7; font-size: 13.5px;
+      }
+      .tagrow{
+        margin-top: 6px; display:flex; flex-wrap:wrap; gap:8px;
+      }
+      .tag{
+        font-family:var(--mono); font-size: 11px; letter-spacing:.14em;
+        text-transform:uppercase; padding: 8px 10px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02);
+      }
+
+      .panel-foot{
+        margin-top:auto; padding: 14px 16px 16px; border-top: 1px solid rgba(255,255,255,.07);
+        display:flex; gap:10px; flex-wrap:wrap;
+      }
+      .btn{
+        flex: 1 1 auto; text-align:center; font-family:var(--mono);
+        font-size: 11px; letter-spacing:.18em; text-transform:uppercase;
+        padding: 12px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.10);
+        background: rgba(255,255,255,.02); transition: all .2s ease;
+        user-select:none; cursor: pointer;
+      }
+      .btn:hover{
+        transform: translateY(-1px); border-color: rgba(181,123,255,.32);
+        background: rgba(181,123,255,.06); color: #fff;
+      }
+
+      /* Modals */
+      dialog {
+        background: rgba(11, 15, 26, 0.9);
+        backdrop-filter: blur(12px);
+        color: var(--ink);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: var(--r);
+        padding: 40px;
+        max-width: 500px; width: 100%;
+        box-shadow: 0 50px 100px -20px rgba(0,0,0,0.8);
+      }
+      dialog::backdrop { background: rgba(0,0,0,0.6); }
+      dialog h3 { font-family: var(--serif); margin: 0 0 16px; font-size: 24px; color: var(--a1); }
+      dialog p { font-size: 14px; line-height: 1.6; color: var(--ink-dim); }
+      dialog button.close {
+        margin-top: 24px; background: var(--ink); color: #000; border: none;
+        padding: 10px 20px; font-family: var(--mono); text-transform: uppercase;
+        font-size: 12px; letter-spacing: 0.1em; cursor: pointer; border-radius: 4px;
+      }
+      dialog input, dialog textarea {
+        width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+        padding: 12px; margin-top: 10px; color: white; font-family: var(--sans);
+      }
+
+      /* footer */
+      footer{
+        margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.08);
+        display:flex; align-items:center; justify-content:space-between; gap:12px;
+        color: rgba(235,240,255,.45); font-family:var(--mono); font-size: 11px;
+        letter-spacing:.14em; text-transform:uppercase;
+      }
+
+      @media (max-width: 980px){
+        .hero{ grid-template-columns: 1fr; }
+        .grid{ grid-template-columns: 1fr; }
+        nav{ display:none; }
+      }
+      @media (prefers-reduced-motion: reduce){
+        *{ scroll-behavior:auto !important; transition:none !important; animation:none !important; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="starfield"></canvas>
+
+    <div class="wrap" id="surface">
+      <header>
+        <div class="brand-group" style="display:flex; align-items:center; gap:16px;">
+          <a href="/" class="back-btn" aria-label="Back to index">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.6;"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          </a>
+          <div class="brand">
+            <h1>{BRAND}</h1>
+            <div class="sub">{TAGLINE}</div>
+          </div>
+        </div>
+        <nav aria-label="Primary">
+          {NAV.map(n => <div class="nav-item" data-action={n.action}>{n.label}</div>)}
+        </nav>
+      </header>
+
+      <section class="hero" aria-label="Intro">
+        <div class="headline">
+          <div class="headline-inner">
+            <div class="headline-content">
+              <h2>Navigate a system<br/>like it’s a place.</h2>
+              <p>
+                This isn’t a scroll page—it's a surface.
+                Drag to pan, wheel to zoom, click nodes to lock focus.
+                Connections light up to show what feeds what.
+              </p>
+              <div class="chips" aria-label="Controls">
+                <div class="chip c1">Drag to Pan</div>
+                <div class="chip c2">Wheel to Zoom</div>
+                <div class="chip c3">Click to Focus</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="meta" id="system" aria-label="System panel">
+          <div class="k">System State</div>
+          <div class="v">Active / Calibrated</div>
+          <div class="small">
+            Everything here is native: SVG atlas + canvas starfield.
+            The “Glow” control adjusts atmospheric haze—turn it down for sharper reading.
+          </div>
+        </aside>
+      </section>
+
+      <section class="grid" aria-label="Main surface">
+        <div class="viewport" aria-label="Atlas viewport">
+          <div class="viewport-top">
+            <div class="left">
+              <span class="pill cyan">ATLAS</span>
+              <span class="pill violet">SURFACE</span>
+              <span class="pill magenta" id="readout">x:0 y:0 z:1.00</span>
+            </div>
+            <div class="right">
+              <div class="ctrl" aria-label="Glow control">
+                <span>Glow</span>
+                <input id="glow" type="range" min="0" max="100" value="55" />
+              </div>
+            </div>
+          </div>
+
+          <div class="fog" aria-hidden="true"></div>
+
+          <div class="surface" id="surfaceEl" aria-label="Drag surface">
+            <div class="world" id="worldEl" aria-label="World layer">
+              <svg id="atlasSvg" width={WORLD.w} height={WORLD.h} viewBox={`0 0 ${WORLD.w} ${WORLD.h}`} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Atlas map">
+                <defs>
+                  <linearGradient id="bgSweep" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="rgba(110,243,255,0.08)"/>
+                    <stop offset="45%" stop-color="rgba(181,123,255,0.06)"/>
+                    <stop offset="100%" stop-color="rgba(255,91,214,0.05)"/>
+                  </linearGradient>
+                  <radialGradient id="pulse" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.10)"/>
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                  </radialGradient>
+                </defs>
+
+                <rect x="0" y="0" width={WORLD.w} height={WORLD.h} fill="url(#bgSweep)" />
+
+                {Array.from({ length: 18 }).map((_, i) => (
+                  <line x1={(WORLD.w/18)*i} y1="0" x2={(WORLD.w/18)*i} y2={WORLD.h} stroke="rgba(255,255,255,0.035)" stroke-width="1" />
+                ))}
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <line x1="0" y1={(WORLD.h/12)*i} x2={WORLD.w} y2={(WORLD.h/12)*i} stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                ))}
+
+                {EDGES.map(([a,b]) => {
+                  const A = NODES.find(n => n.id === a);
+                  const B = NODES.find(n => n.id === b);
+                  return A && B ? (
+                    <g class="edge-group" data-edge={`${a}-${b}`}>
+                      <line class="edge" x1={A.x} y1={A.y} x2={B.x} y2={B.y} />
+                      <line class="edge-flow" x1={A.x} y1={A.y} x2={B.x} y2={B.y} />
+                    </g>
+                  ) : null;
+                })}
+
+                {NODES.map((n) => (
+                  <g class="node" data-id={n.id} transform={`translate(${n.x}, ${n.y})`}>
+                    <circle cx="0" cy="0" r="36" fill="url(#pulse)" opacity="0.9" />
+                    <circle class="node-ring" cx="0" cy="0" r="26" />
+                    <circle class="node-core" cx="0" cy="0" r="14" />
+                    <text class="node-label" x="44" y="6">{n.name}</text>
+                    <circle class="node-hit" cx="0" cy="0" r="44" />
+                  </g>
+                ))}
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel" aria-label="Field notes panel">
+          <div class="panel-top">
+            <div class="h">Field Notes</div>
+            <div class="badge" id="nodeId">NO NODE</div>
+          </div>
+
+          <div class="panel-body">
+            <h3 class="panel-title" id="nodeName">Select a node.</h3>
+            <p class="panel-note" id="nodeNote">
+              Pick any node to lock focus and pull up its notes.
+              Edges animate to show nearby dependencies. Use “Recenter” to reset the view.
+            </p>
+            <div class="tagrow" id="nodeTags" aria-label="Tags"></div>
+          </div>
+
+          <div class="panel-foot" aria-label="Actions">
+            <button class="btn" id="btn-recenter">Recenter</button>
+            <button class="btn" id="btn-request">Open Channel</button>
+          </div>
+        </aside>
+      </section>
+
+      <footer aria-label="Footer">
+        <div>Atlas Surface • Experimental UI</div>
+        <div>Drag • Zoom • Focus</div>
+      </footer>
+    </div>
+
+    <dialog id="sys-modal">
+      <h3>System Diagnostics</h3>
+      <p>
+        Telemetry: Active<br>
+        Controls: Pointer drag + wheel zoom<br>
+        Render: SVG atlas + canvas starfield<br>
+        Motion: Eased transforms (reduced-motion supported)
+      </p>
+      <button class="close" onclick="this.closest('dialog').close()">Close</button>
+    </dialog>
+
+    <dialog id="contact-modal">
+      <h3>Secure Transmission</h3>
+      <p>Send a short packet. We reply with next steps.</p>
+      <input type="text" placeholder="Name / Handle">
+      <textarea rows="3" placeholder="Message packet (context + intent)"></textarea>
+      <button class="close" onclick="this.closest('dialog').close()">Transmit</button>
+    </dialog>
+
+    <script is:inline define:vars={{ nodes: NODES, edges: EDGES, worldW: WORLD.w, worldH: WORLD.h }}>
+      // @ts-nocheck
+      (function () {
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        var surface = document.getElementById("surfaceEl");
+        var world = document.getElementById("worldEl");
+        var readout = document.getElementById("readout");
+        var glow = document.getElementById("glow");
+
+        var nodeId = document.getElementById("nodeId");
+        var nodeName = document.getElementById("nodeName");
+        var nodeNote = document.getElementById("nodeNote");
+        var nodeTags = document.getElementById("nodeTags");
+
+        if (!surface || !world) return;
+
+        // state
+        var state = {
+          x: 0,
+          y: 0,
+          z: 1,
+          tx: 0,
+          ty: 0,
+          tz: 1,
+          dragging: false,
+          px: 0,
+          py: 0,
+          active: null,
+          hasMoved: false
+        };
+
+        // Starfield
+        var canvas = document.getElementById('starfield');
+        var ctx = canvas.getContext('2d');
+        var stars = [];
+        function initStars(){
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          stars = [];
+          for(var i=0; i<150; i++){
+            stars.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height,
+              s: Math.random() * 2,
+              a: Math.random()
+            });
+          }
+        }
+        window.addEventListener('resize', initStars);
+        initStars();
+
+        function drawStars(ox, oy) {
+          ctx.clearRect(0,0,canvas.width, canvas.height);
+          ctx.fillStyle = "white";
+          for(var i=0; i<stars.length; i++){
+            var s = stars[i];
+            ctx.globalAlpha = s.a * 0.5;
+            var x = (s.x + ox * 0.05 * s.s) % canvas.width;
+            var y = (s.y + oy * 0.05 * s.s) % canvas.height;
+            if(x<0) x+=canvas.width;
+            if(y<0) y+=canvas.height;
+            ctx.beginPath();
+            ctx.arc(x,y, s.s, 0, Math.PI*2);
+            ctx.fill();
+          }
+        }
+
+        // helpers
+        var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+        var lerp = function (a, b, t) { return a + (b - a) * t; };
+
+        var updateReadout = function () {
+          if (!readout) return;
+          readout.textContent = "x:" + Math.round(state.x) + " y:" + Math.round(state.y) + " z:" + state.z.toFixed(2);
+        };
+
+        var setActive = function (id) {
+          state.active = id;
+
+          document.querySelectorAll(".node").forEach(function (g) {
+            if (g && g.classList) g.classList.remove("node-active");
+          });
+          document.querySelectorAll(".edge-group").forEach(function(g){
+            g.setAttribute("data-active", "false");
+          });
+
+          var el = document.querySelector('.node[data-id="' + id + '"]');
+          if (el && el.classList) el.classList.add("node-active");
+
+          edges.forEach(function(pair){
+            if(pair[0] === id || pair[1] === id){
+              var edgeGroup = document.querySelector(`.edge-group[data-edge="${pair[0]}-${pair[1]}"]`);
+              if(edgeGroup) edgeGroup.setAttribute("data-active", "true");
+            }
+          });
+
+          var n = nodes.find(function(node) { return node.id === id; });
+          if (!n) return;
+
+          state.tx = -1 * (n.x - worldW/2);
+          state.ty = -1 * (n.y - worldH/2);
+          state.tz = 1.2;
+
+          if (nodeId) nodeId.textContent = n.id;
+          if (nodeName) nodeName.textContent = n.name;
+          if (nodeNote) nodeNote.textContent = n.note;
+
+          if (nodeTags) {
+            nodeTags.innerHTML = "";
+            (n.tags || []).forEach(function (t) {
+              var d = document.createElement("div");
+              d.className = "tag";
+              d.textContent = String(t).toUpperCase();
+              nodeTags.appendChild(d);
+            });
+          }
+        };
+
+        surface.addEventListener("click", function (e) {
+          if (state.hasMoved) return;
+          var hit = e.target;
+          if (!hit) return;
+          var g = hit.closest ? hit.closest(".node") : null;
+          if (!g) return;
+          var id = g.getAttribute("data-id");
+          if (!id) return;
+          setActive(id);
+        });
+
+        surface.addEventListener("pointerdown", function (e) {
+          state.dragging = true;
+          state.hasMoved = false;
+          state.px = e.clientX;
+          state.py = e.clientY;
+          surface.setPointerCapture && surface.setPointerCapture(e.pointerId);
+        });
+
+        surface.addEventListener("pointermove", function (e) {
+          if (!state.dragging) return;
+
+          var dx = e.clientX - state.px;
+          var dy = e.clientY - state.py;
+
+          if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+             state.hasMoved = true;
+          }
+
+          state.px = e.clientX;
+          state.py = e.clientY;
+          state.tx += dx;
+          state.ty += dy;
+        });
+
+        surface.addEventListener("pointerup", function () { state.dragging = false; });
+        surface.addEventListener("pointercancel", function () { state.dragging = false; });
+
+        surface.addEventListener("wheel", function (e) {
+          e.preventDefault();
+          var delta = -e.deltaY;
+          var zoom = delta > 0 ? 1.07 : 0.93;
+          var next = clamp(state.tz * zoom, 0.55, 2.2);
+
+          var rect = surface.getBoundingClientRect();
+          var mx = e.clientX - rect.left - rect.width/2;
+          var my = e.clientY - rect.top - rect.height/2;
+
+          var k = next / state.tz;
+          state.tx = mx - (mx - state.tx) * k;
+          state.ty = my - (my - state.ty) * k;
+          state.tz = next;
+        }, { passive: false });
+
+        document.querySelectorAll('.nav-item').forEach(function(btn){
+           btn.addEventListener('click', function(){
+             var act = btn.getAttribute('data-action');
+             if(act === 'recenter') {
+                state.tx = 0; state.ty = 0; state.tz = 1;
+             }
+             if(act === 'modal:system') {
+                document.getElementById('sys-modal').showModal();
+             }
+             if(act === 'modal:contact') {
+                document.getElementById('contact-modal').showModal();
+             }
+           });
+        });
+
+        var btnRecenter = document.getElementById('btn-recenter');
+        if(btnRecenter) btnRecenter.addEventListener('click', function(){
+           state.tx = 0; state.ty = 0; state.tz = 1;
+        });
+        var btnReq = document.getElementById('btn-request');
+        if(btnReq) btnReq.addEventListener('click', function(){
+           document.getElementById('contact-modal').showModal();
+        });
+
+        if (glow) {
+          glow.addEventListener("input", function () {
+            var v = Number(glow.value || 55);
+            var fog = document.querySelector(".fog");
+            if (fog) fog.style.opacity = String(clamp(v / 100, 0.15, 0.85));
+          });
+        }
+
+        var tick = function () {
+          state.x = lerp(state.x, state.tx, reduce ? 1 : 0.14);
+          state.y = lerp(state.y, state.ty, reduce ? 1 : 0.14);
+          state.z = lerp(state.z, state.tz, reduce ? 1 : 0.12);
+
+          world.style.transform = "translate(-50%, -50%) translate(" + state.x + "px, " + state.y + "px) scale(" + state.z + ")";
+          drawStars(state.x, state.y);
+          updateReadout();
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+
+        if (nodes.length) setActive(nodes[0].id);
+      })();
+    </script>
+  </body>
+</html>

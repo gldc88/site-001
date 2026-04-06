@@ -1,0 +1,469 @@
+---
+import "../styles/global.css";
+
+const BRAND = "RIDGELINE ROOFING";
+const TAGLINE = "Diagnose. Repair. Replace. Seal. Verify.";
+const EMAIL = "estimates@ridgeline-roofing.com";
+const PHONE = "+31 6 3184 7720";
+const TEL = PHONE.replace(/\s/g, "");
+const SERVICE_AREA = "Amsterdam • Haarlem • Utrecht • Surrounding areas";
+
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1726589004565-bedfba94d3a2?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=60&w=2400";
+
+const NAV = [
+  { label: "Services", href: "#services" },
+  { label: "Roof Types", href: "#roof-types" },
+  { label: "Process", href: "#process" },
+  { label: "Integrity", href: "#integrity" }, // Replaced FAQ link
+  { label: "Contact", href: "#contact" },
+];
+
+const SERVICES = [
+  {
+    title: "Roof Repair (Leak Response)",
+    bullets: [
+      "Leak tracing and entry point isolation",
+      "Tile, slate, shingle replacement and refit",
+      "Underlayment repair where required",
+      "Temporary seal plus a documented follow-up scope",
+    ],
+  },
+  {
+    title: "Roof Replacement (Full System)",
+    bullets: [
+      "Tear-off and deck inspection",
+      "New underlayment, ventilation, and fixings",
+      "Flashing rebuilt at penetrations and edges",
+      "Clean finish lines and written scope on handover",
+    ],
+  },
+  {
+    title: "Flashing and Detail Work",
+    bullets: [
+      "Chimneys, skylights, valleys, walls, dormers",
+      "Step flashing and counterflashing sets",
+      "Leadwork, pipe boots, vent stacks",
+      "Detail-first work that stops recurring leaks",
+    ],
+  },
+  {
+    title: "Flat Roofs (EPDM / TPO / Bitumen)",
+    bullets: [
+      "Seam reinforcement and edge termination",
+      "Drain and scupper inspection, clearing, and flow fixes",
+      "Puncture repair and ponding mitigation",
+      "Upstands and penetrations treated as the priority",
+    ],
+  },
+  {
+    title: "Gutters and Drainage",
+    bullets: [
+      "Re-align and secure gutters and brackets",
+      "Downspout routing and clog prevention",
+      "Joint leaks addressed at the source",
+      "Water control to protect fascias and walls",
+    ],
+  },
+  {
+    title: "Storm and Wind Damage",
+    bullets: [
+      "Uplift checks and missing sections located fast",
+      "Temporary protection when needed",
+      "Photo-documented damage scope",
+      "Compromised areas rebuilt correctly, not patched",
+    ],
+  },
+];
+
+const ROOF_TYPES = [
+  { name: "Tile and Slate", note: "Matching, handling, and correct flashing makes or breaks repairs." },
+  { name: "Asphalt Shingles", note: "Layering, nailing, and ventilation decide performance and lifespan." },
+  { name: "Metal Roofing", note: "Fasteners, laps, and penetrations need precision or it will fail early." },
+  { name: "Flat Membrane", note: "Seams, drains, edges, and upstands decide whether it stays watertight." },
+];
+
+const PROCESS = [
+  { step: "01 \u2014 Inspect", line: "Roof type, pitch, penetrations, valleys, edges, and drainage paths." },
+  { step: "02 \u2014 Diagnose", line: "Leak route and failure point identified, photos included, no guessing." },
+  { step: "03 \u2014 Scope", line: "Clear scope in writing: what we repair, what we replace, and why." },
+  { step: "04 \u2014 Execute", line: "Details first, flashing, seams, edges, then surface work." },
+  { step: "05 \u2014 Verify", line: "Walk-through, closeout notes, and care guidance for a stable handoff." },
+];
+
+const PROOF = [
+  {
+    title: "Diagnosis before demolition",
+    line: "We locate the entry point first, then recommend repair or replacement based on evidence.",
+  },
+  {
+    title: "Details decide outcomes",
+    line: "Skylights, chimneys, valleys, and edges, this is where roofs win or lose.",
+  },
+  {
+    title: "Flat roofs treated as a system",
+    line: "Seams, drains, scuppers, ponding zones, handled together so problems do not migrate.",
+  },
+  {
+    title: "Clear communication",
+    line: "Photo documentation, defined scope, and clean scheduling, no vague promises.",
+  },
+];
+
+// REPLACED FAQ with METRICS
+const METRICS = [
+    { label: "Wind Load Readiness", val: "CLASS 4", desc: "Fastening and edge control designed to hold under gusts." },
+    { label: "Water Tightness", val: "SEALED", desc: "Critical transitions treated first, seams, edges, penetrations." },
+    { label: "Thermal Continuity", val: "IMPROVED", desc: "Reduced cold bridging with consistent insulation detailing." },
+];
+
+const YEAR = new Date().getFullYear();
+
+const Icon = {
+  shield: `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-5 w-5"><path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 12.2l2.2 2.2 4.8-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  bolt: `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-5 w-5"><path d="M13 2L3 14h7l-1 8 12-14h-7l-1-6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  phone: `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-5 w-5"><path d="M6.6 10.8c1.8 3.3 3.3 4.8 6.6 6.6l2.2-2.2c.5-.5 1.2-.6 1.8-.3 1 .4 2.1.6 3.2.6.9 0 1.6.7 1.6 1.6V21c0 .9-.7 1.6-1.6 1.6C10.6 22.6 1.4 13.4 1.4 2.6 1.4 1.7 2.1 1 3 1h3.4C7.3 1 8 1.7 8 2.6c0 1.1.2 2.2.6 3.2.2.6.1 1.3-.3 1.8l-1.7 2.2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>`,
+  mail: `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-5 w-5"><path d="M4 6h16v12H4V6z" stroke="currentColor" stroke-width="2" /><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  back: `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="h-5 w-5"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  graph: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-12 w-12 text-amber-500/50"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>`
+};
+
+const EMAIL_JS = JSON.stringify(EMAIL);
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} — Roofing Repair & Replacement</title>
+    <style>
+        /* Kinetic Utilities */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+    </style>
+  </head>
+
+  <body class="min-h-screen text-slate-900 antialiased selection:bg-amber-500 selection:text-white overflow-x-hidden">
+    
+    <div class="fixed inset-0 z-[-1] bg-stone-50">
+        <div class="absolute inset-0 opacity-[0.03]" 
+             style="background-image: repeating-linear-gradient(-45deg, #000 0, #000 1px, transparent 0, transparent 20px);">
+        </div>
+        <div class="absolute top-[-30%] right-[-10%] w-[90vw] h-[90vw] bg-amber-200/20 rounded-full blur-[150px] animate-pulse duration-[8s]"></div>
+        <div class="absolute bottom-[-30%] left-[-10%] w-[70vw] h-[70vw] bg-stone-300/40 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="border-b border-stone-200 bg-white/80 backdrop-blur-md relative z-50">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-2 text-xs font-medium">
+        <div class="flex items-center gap-2 text-slate-600">
+          <span class="text-amber-600 animate-pulse"><span set:html={Icon.bolt}></span></span>
+          <span class="font-bold text-slate-900 uppercase tracking-wide">Status:</span>
+          <span>Live dispatch in {SERVICE_AREA.split('•')[0]}</span>
+        </div>
+        <a href={`tel:${TEL}`} class="flex items-center gap-2 text-slate-900 hover:text-amber-600 transition-colors">
+          <span class="text-amber-600"><span set:html={Icon.phone}></span></span>
+          <span class="font-bold">{PHONE}</span>
+        </a>
+      </div>
+    </div>
+
+    <header class="sticky top-0 z-40 border-b border-stone-200 bg-white/90 backdrop-blur-xl shadow-sm transition-all duration-300">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 h-20">
+        <div class="flex items-center gap-6">
+            <a href="/" class="group flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors border-r border-stone-200 pr-6 h-8">
+                <span class="group-hover:-translate-x-1 transition-transform duration-300"><Fragment set:html={Icon.back} /></span>
+                Back to Index
+            </a>
+            <div class="leading-tight">
+              <div class="text-lg font-black tracking-tight text-slate-900">{BRAND}</div>
+              <div class="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Roof System Protection</div>
+            </div>
+        </div>
+        <nav class="hidden md:flex items-center gap-2 text-sm font-semibold text-slate-600">
+          {NAV.map((item) => (
+            <a href={item.href} class="px-3 py-1.5 rounded hover:bg-stone-100 hover:text-slate-900 transition-all">
+              {item.label}
+            </a>
+          ))}
+          <a href="#contact" class="ml-4 inline-flex items-center justify-center rounded bg-slate-900 px-6 py-2.5 text-xs font-bold uppercase tracking-wide text-white hover:bg-amber-600 transition-colors shadow-lg shadow-slate-900/20 transform hover:-translate-y-0.5">
+            Book Inspection
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="relative h-[650px] w-full overflow-hidden flex items-center">
+          <div class="absolute inset-0 z-0">
+             <img src={HERO_IMAGE} alt="Roof inspection and repair" class="h-full w-full object-cover scale-105 animate-[slowZoom_20s_infinite_alternate]" />
+             <div class="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-transparent"></div>
+          </div>
+
+          <div class="relative z-10 mx-auto w-full max-w-7xl px-6">
+            <div class="max-w-2xl reveal-on-scroll">
+              <div class="inline-flex items-center gap-2 border-l-4 border-amber-500 pl-4 mb-6">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Leak Diagnostics + System Repair</span>
+              </div>
+
+              <h1 class="text-5xl font-black leading-[1.05] tracking-tight text-white md:text-7xl drop-shadow-2xl mb-8">
+                {TAGLINE}
+              </h1>
+              
+              <div class="flex flex-wrap gap-4">
+                <a href="#services" class="inline-flex items-center justify-center rounded-sm bg-white px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-900 hover:bg-amber-500 hover:text-white transition-all shadow-xl hover:shadow-2xl">
+                  View Services
+                </a>
+                <a href="#contact" class="inline-flex items-center justify-center rounded-sm border border-white/30 bg-white/5 backdrop-blur-md px-8 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-white hover:text-slate-900 transition-all">
+                  Request Estimate
+                </a>
+              </div>
+            </div>
+          </div>
+      </section>
+
+      <section id="services" class="relative z-10 mx-auto max-w-7xl px-6 py-24">
+          <div class="mb-16 border-b border-slate-200 pb-8 reveal-on-scroll">
+            <span class="text-amber-600 font-bold uppercase tracking-widest text-xs mb-2 block">What we handle</span>
+            <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-5xl">Roof Repairs and Replacement</h2>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {SERVICES.map((s, i) => (
+              <div class="hover-lift reveal-on-scroll rounded-xl border border-stone-200 bg-white/70 backdrop-blur-sm p-8" style={`transition-delay: ${i * 50}ms`}>
+                <div class="text-xl font-bold text-slate-900 mb-4">{s.title}</div>
+                <ul class="space-y-3">
+                  {s.bullets.map((b) => (
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                      <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+      </section>
+
+      <section id="integrity" class="bg-slate-900 text-white py-24 relative overflow-hidden">
+         <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 60px 60px;"></div>
+         
+         <div class="mx-auto max-w-7xl px-6 relative z-10 reveal-on-scroll">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+                <div>
+                    <span class="text-amber-500 font-mono text-xs uppercase tracking-widest mb-2 block">/// SYSTEM MONITOR</span>
+                    <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tight">Integrity Monitor.</h2>
+                    <p class="text-slate-400 mt-4 max-w-lg">A roof is an assembly. We restore performance at the details that actually fail, then lock it in.</p>
+                </div>
+                <div class="hidden md:block">
+                    <span class="text-[10px] font-mono text-slate-500 border border-slate-700 px-2 py-1">BUILD STD: EN-1991</span>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                {METRICS.map((m) => (
+                    <div class="bg-white/5 border border-white/10 p-8 hover:bg-white/10 transition-colors group">
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">{m.label}</span>
+                            <div class="text-amber-500 opacity-50 group-hover:opacity-100 transition-opacity"><Fragment set:html={Icon.bolt} /></div>
+                        </div>
+                        <div class="text-4xl font-black text-white mb-2">{m.val}</div>
+                        <div class="h-1 w-full bg-slate-800 rounded-full mb-4 overflow-hidden">
+                            <div class="h-full bg-amber-500 w-3/4 group-hover:w-full transition-all duration-1000"></div>
+                        </div>
+                        <p class="text-xs text-slate-400 font-mono leading-relaxed">{m.desc}</p>
+                    </div>
+                ))}
+            </div>
+         </div>
+      </section>
+
+      <section id="roof-types" class="py-24 bg-white border-y border-stone-200">
+        <div class="mx-auto max-w-7xl px-6 reveal-on-scroll">
+          <div class="grid gap-16 md:grid-cols-12 md:items-start">
+            <div class="md:col-span-5 sticky top-24">
+              <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-5xl mb-6">Roof Types</h2>
+              <p class="text-lg leading-relaxed text-slate-600 mb-8 font-medium">
+                Tile, slate, shingles, metal, flat membranes. Different materials, same truth, details decide.
+              </p>
+              <div class="p-6 bg-stone-50 border border-stone-200 rounded-lg">
+                 <div class="text-xs font-bold uppercase text-slate-400 mb-4">Critical Zones</div>
+                 <div class="space-y-2 text-sm font-bold text-slate-700">
+                    <div class="flex items-center gap-2"><span class="w-1 h-1 bg-amber-500 rounded-full"></span> Valleys and Ridges</div>
+                    <div class="flex items-center gap-2"><span class="w-1 h-1 bg-amber-500 rounded-full"></span> Chimneys and Skylights</div>
+                    <div class="flex items-center gap-2"><span class="w-1 h-1 bg-amber-500 rounded-full"></span> Seams and Edge Terminations</div>
+                 </div>
+              </div>
+            </div>
+
+            <div class="md:col-span-7 grid gap-6 sm:grid-cols-2">
+              {ROOF_TYPES.map((t) => (
+                <div class="hover-lift p-8 border border-stone-200 bg-white rounded-lg">
+                  <div class="text-lg font-bold text-slate-900">{t.name}</div>
+                  <div class="mt-3 text-sm leading-relaxed text-slate-600 font-medium">{t.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="process" class="py-24 mx-auto max-w-7xl px-6 reveal-on-scroll">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">The Protocol</h2>
+            <p class="mt-4 text-slate-600">Inspect, diagnose, scope, execute, verify. No drama, just control.</p>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-5">
+            {PROCESS.map((p, idx) => (
+              <div class="relative group">
+                <div class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-4 group-hover:translate-x-2 transition-transform">Phase 0{idx + 1}</div>
+                <div class="h-px w-full bg-slate-200 mb-6 group-hover:bg-amber-500 transition-colors"></div>
+                <div class="text-sm font-bold text-slate-900 mb-2">{p.step.split("\u2014")[1]}</div>
+                <div class="text-xs text-slate-500 font-medium leading-relaxed">{p.line}</div>
+              </div>
+            ))}
+          </div>
+      </section>
+
+      <section id="proof" class="py-24 bg-stone-100 border-t border-stone-200">
+        <div class="mx-auto max-w-7xl px-6 reveal-on-scroll">
+          <div class="mb-12">
+            <h2 class="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">Why it lasts.</h2>
+          </div>
+          <div class="grid gap-8 md:grid-cols-2">
+            {PROOF.map((p) => (
+              <div class="flex gap-6 items-start p-8 rounded-xl bg-white shadow-sm hover:shadow-lg transition-shadow">
+                <div class="shrink-0 h-12 w-12 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+                    <span class="scale-75" set:html={Icon.shield}></span>
+                </div>
+                <div>
+                    <div class="text-lg font-bold text-slate-900 mb-2">{p.title}</div>
+                    <div class="text-sm leading-relaxed text-slate-600 font-medium">{p.line}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="bg-slate-900 text-white py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5"></div>
+        <div class="mx-auto max-w-7xl px-6 relative z-10 reveal-on-scroll">
+          <div class="grid gap-16 md:grid-cols-12 md:items-start">
+            <div class="md:col-span-5">
+              <span class="text-amber-500 font-bold uppercase tracking-widest text-xs mb-4 block">Rapid Response</span>
+              <h2 class="text-4xl font-black tracking-tight md:text-5xl mb-6">Get it watertight.</h2>
+              <p class="text-lg text-slate-400 mb-10 font-medium">
+                Tell us the roof type, the issue, and what you are seeing inside. We will respond with next steps fast.
+              </p>
+
+              <div class="space-y-4">
+                <a href={`tel:${TEL}`} class="flex items-center gap-4 rounded-lg bg-white/5 border border-white/10 p-6 hover:bg-white/10 hover:border-amber-500 transition-all group">
+                  <div class="h-10 w-10 rounded-full bg-amber-500 text-white flex items-center justify-center group-hover:scale-110 transition-transform"><span set:html={Icon.phone}></span></div>
+                  <div>
+                      <div class="text-xs uppercase tracking-widest text-slate-400">Call, speak to a roofer</div>
+                      <div class="font-bold text-lg">{PHONE}</div>
+                  </div>
+                </a>
+                <a href={`mailto:${EMAIL}`} class="flex items-center gap-4 rounded-lg bg-white/5 border border-white/10 p-6 hover:bg-white/10 hover:border-amber-500 transition-all group">
+                  <div class="h-10 w-10 rounded-full bg-slate-700 text-white flex items-center justify-center group-hover:scale-110 transition-transform"><span set:html={Icon.mail}></span></div>
+                  <div>
+                      <div class="text-xs uppercase tracking-widest text-slate-400">Email for scheduling</div>
+                      <div class="font-bold text-lg">{EMAIL}</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <div class="md:col-span-7">
+              <form id="roofForm" class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-8 md:p-10 shadow-2xl">
+                <div class="grid gap-6 text-sm text-slate-300 mb-8 font-medium">
+                  <label class="block">
+                    <span class="text-xs font-bold uppercase text-slate-500 mb-2 block">Name</span>
+                    <input id="rName" class="w-full bg-black/40 border border-white/10 p-4 rounded text-white focus:border-amber-500 focus:outline-none transition-colors" />
+                  </label>
+                  <div class="grid grid-cols-2 gap-4">
+                      <label class="block">
+                        <span class="text-xs font-bold uppercase text-slate-500 mb-2 block">Phone or email</span>
+                        <input id="rContact" class="w-full bg-black/40 border border-white/10 p-4 rounded text-white focus:border-amber-500 focus:outline-none transition-colors" />
+                      </label>
+                      <label class="block">
+                        <span class="text-xs font-bold uppercase text-slate-500 mb-2 block">Address</span>
+                        <input id="rAddress" class="w-full bg-black/40 border border-white/10 p-4 rounded text-white focus:border-amber-500 focus:outline-none transition-colors" />
+                      </label>
+                  </div>
+                  <label class="block">
+                    <span class="text-xs font-bold uppercase text-slate-500 mb-2 block">What is happening</span>
+                    <textarea id="rNotes" rows="3" class="w-full bg-black/40 border border-white/10 p-4 rounded text-white focus:border-amber-500 focus:outline-none transition-colors resize-none"></textarea>
+                  </label>
+                </div>
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold uppercase tracking-widest py-4 rounded transition-colors text-xs">
+                     Send Inspection Request
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-xs font-medium text-slate-500">
+        <div>© {YEAR} {BRAND}. Roofing repair • replacement • flat roofs.</div>
+        <div class="flex items-center gap-6">
+          <a class="hover:text-slate-900 transition-colors" href="#services">Services</a>
+          <a class="hover:text-slate-900 transition-colors" href="#contact">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline define:vars={{ EMAIL_JS }}>
+      // 1. Scroll Animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal-visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+
+      // 2. Form Logic
+      (function () {
+        const form = document.getElementById("roofForm");
+        if (!form) return;
+        const EMAIL = JSON.parse(EMAIL_JS);
+        const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const subject = "Roof inspection request";
+          const body = [
+            "Name:", getVal("rName"), "",
+            "Contact:", getVal("rContact"), "",
+            "Address:", getVal("rAddress"), "",
+            "Notes:", getVal("rNotes"), "",
+            "Photos: (attach photos to this email if possible)"
+          ].join("\n");
+          window.location.href = "mailto:" + encodeURIComponent(EMAIL) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+        });
+      })();
+    </script>
+  </body>
+</html>

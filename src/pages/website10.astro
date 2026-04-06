@@ -1,0 +1,1053 @@
+---
+const BRAND = "UNFORM / 010";
+
+const WINDOWS = [
+  { id: "intro", title: "Anti-Template", x: 90, y: 90, w: 520, h: 360, icon: "👋" },
+  { id: "projects", title: "Artifacts", x: 640, y: 120, w: 520, h: 440, icon: "folder" },
+  { id: "viewer", title: "Project Viewer", x: 230, y: 500, w: 520, h: 340, icon: "eye" },
+  { id: "settings", title: "Settings", x: 1180, y: 140, w: 420, h: 320, icon: "gear" },
+  { id: "contact", title: "Contact", x: 840, y: 590, w: 460, h: 380, icon: "mail" },
+];
+
+const PROJECTS = [
+  {
+    name: "Aeon Tower",
+    type: "Architecture",
+    date: "2024",
+    blurb: "A vertical study in light discipline and circulation.",
+    bullets: ["Concept massing + detailing", "Material palette + renders", "Site constraints mapped"],
+    status: "Delivered",
+  },
+  {
+    name: "Monobrand",
+    type: "Identity",
+    date: "2023",
+    blurb: "A brand system that survives being stripped down to type.",
+    bullets: ["Identity kit + usage rules", "Tone + copy system", "Print + digital templates (minimal)"],
+    status: "Shipped",
+  },
+  {
+    name: "Flux Interface",
+    type: "UI/UX",
+    date: "2024",
+    blurb: "A calm UI for high-pressure operator decisions.",
+    bullets: ["Information architecture", "Component library", "Motion reduced mode"],
+    status: "In progress",
+  },
+  {
+    name: "Vellum",
+    type: "Print",
+    date: "2022",
+    blurb: "Printed matter with a digital spine: indexing and restraint.",
+    bullets: ["Grid + editorial system", "Paper + finish spec", "Production-ready files"],
+    status: "Archived",
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} — Anti-Template</title>
+
+    <style>
+      :root{
+        --bg: #050508;
+        --glass: rgba(20, 22, 28, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text: #f0f2f5;
+        --text-muted: rgba(240,242,245,0.62);
+
+        --accent: #3b82f6;
+        --accent2: #a855f7;
+
+        --radius: 16px;
+        --shadow: 0 20px 50px -10px rgba(0,0,0,0.6);
+        --font-ui: system-ui, -apple-system, sans-serif;
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; overflow:hidden; }
+
+      body{
+        margin:0; font-family: var(--font-ui); color: var(--text);
+        background-color: var(--bg);
+        transition: background-color 0.3s;
+      }
+
+      /* THE INK CANVAS */
+      #ink{
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+      }
+
+      /* Toast */
+      .toast{
+        position: fixed; left: 50%; top: 18px; transform: translateX(-50%);
+        z-index: 2500;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(10,12,16,0.65);
+        backdrop-filter: blur(10px);
+        color: rgba(240,242,245,0.85);
+        font-size: 13px;
+        letter-spacing: 0.01em;
+        opacity: 0; pointer-events:none;
+        transition: opacity .22s ease, transform .22s ease;
+      }
+      .toast.on{ opacity: 1; transform: translateX(-50%) translateY(0); }
+
+      /* Back to Index Button */
+      .back-nav {
+        position: fixed; top: 20px; left: 20px; z-index: 2000;
+        display: flex; align-items: center; gap: 12px;
+        padding: 8px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 99px;
+        backdrop-filter: blur(10px);
+        color: rgba(240,242,245,0.55);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .back-nav:hover { background: rgba(255,255,255,0.10); color: var(--text); }
+      .back-nav svg { width: 16px; height: 16px; fill: currentColor; }
+
+      /* Desktop Container */
+      .desktop {
+        position: absolute; inset: 0; z-index: 1; overflow: hidden;
+      }
+
+      /* Window Style */
+      .window {
+        position: absolute;
+        display: flex; flex-direction: column;
+        background: var(--glass);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        user-select: none;
+        min-width: 300px; min-height: 200px;
+        transform: translate3d(var(--x), var(--y), 0);
+        transition: opacity 0.2s, scale 0.2s, background 0.3s, border-color 0.2s;
+        opacity: 1; scale: 1;
+      }
+
+      body.no-blur .window,
+      body.no-blur .dock,
+      body.no-blur .back-nav,
+      body.no-blur .toast{
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(15, 17, 23, 0.95);
+        border-color: rgba(255,255,255,0.15);
+      }
+
+      .window.minimized {
+        opacity: 0; scale: 0.9; pointer-events: none;
+        transition: transform 0.3s ease-in, opacity 0.2s, scale 0.2s;
+      }
+
+      .window[data-active="true"] {
+        border-color: rgba(255,255,255,0.18);
+        box-shadow: 0 40px 80px -12px rgba(0,0,0,0.8);
+      }
+
+      /* Title Bar */
+      .title-bar {
+        height: 44px;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--glass-border);
+        cursor: default;
+      }
+
+      .window-controls { display: flex; gap: 8px; }
+      .win-btn {
+        width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer;
+        transition: transform 0.1s;
+      }
+      .win-btn:hover { transform: scale(1.1); }
+      .win-btn.close { background: #ef4444; }
+      .win-btn.min { background: #eab308; }
+      .win-btn.max { background: #22c55e; }
+
+      .window-title {
+        font-size: 13px; font-weight: 600; color: rgba(240,242,245,0.55); pointer-events: none;
+        letter-spacing: 0.01em;
+      }
+
+      /* Content Area */
+      .content {
+        flex: 1; padding: 22px; overflow-y: auto; color: var(--text);
+        font-size: 15px; line-height: 1.65;
+      }
+      .content h2 { margin: 0 0 10px 0; font-size: 24px; font-weight: 520; letter-spacing: -0.01em; }
+      .content p { margin: 0 0 14px 0; color: var(--text-muted); }
+
+      .kbd{
+        display:inline-flex; align-items:center; justify-content:center;
+        padding: 2px 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(0,0,0,0.18);
+        font-size: 12px;
+        color: rgba(240,242,245,0.78);
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+      }
+
+      /* Anti-template chips */
+      .chips{ display:flex; flex-wrap:wrap; gap:10px; margin-top: 14px; }
+      .chip{
+        display:inline-flex; align-items:center; gap:10px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.03);
+        color: rgba(240,242,245,0.82);
+        font-size: 12px;
+        letter-spacing: 0.01em;
+        cursor:pointer;
+        transition: transform .15s ease, background .2s ease, border-color .2s ease;
+      }
+      .chip:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.16); }
+      .chip b{ font-weight: 650; }
+
+      /* Projects list */
+      .grid-list { display: grid; gap: 10px; margin-top: 4px; }
+      .list-item {
+        display: flex; justify-content: space-between; align-items:center; gap: 12px;
+        padding: 12px 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px;
+        transition: background 0.2s, border-color 0.2s, transform .15s;
+        cursor: pointer;
+      }
+      .list-item:hover { background: rgba(255,255,255,0.06); transform: translateY(-1px); border-color: rgba(59,130,246,0.22); }
+      .li-left{ display:flex; flex-direction:column; gap: 2px; }
+      .li-name{ font-weight: 650; letter-spacing: -0.01em; }
+      .li-meta{ font-size: 12px; color: rgba(240,242,245,0.58); }
+      .tag {
+        font-size: 12px; color: rgba(240,242,245,0.65);
+        background: rgba(0,0,0,0.22);
+        border: 1px solid rgba(255,255,255,0.08);
+        padding: 4px 10px; border-radius: 999px;
+      }
+      .list-item[data-selected="true"]{
+        border-color: rgba(59,130,246,0.38);
+        box-shadow: 0 0 0 1px rgba(59,130,246,0.18) inset;
+      }
+
+      /* Viewer */
+      .viewerTop{
+        display:flex; align-items:flex-start; justify-content:space-between; gap: 16px;
+        padding: 12px 12px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.18);
+        margin-bottom: 14px;
+      }
+      .viewerTitle{
+        font-size: 18px; font-weight: 650; letter-spacing:-0.01em;
+      }
+      .viewerMeta{
+        margin-top: 4px;
+        font-size: 12px; color: rgba(240,242,245,0.62);
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .statusPill{
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: linear-gradient(180deg, rgba(59,130,246,0.16), rgba(168,85,247,0.08));
+        font-size: 12px;
+        color: rgba(240,242,245,0.82);
+        white-space:nowrap;
+      }
+      .bullets{ margin: 10px 0 0; padding-left: 18px; color: rgba(240,242,245,0.70); }
+      .bullets li{ margin: 6px 0; }
+
+      /* Settings */
+      .settings-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 0; border-bottom: 1px solid var(--glass-border);
+      }
+      .switch {
+        width: 44px; height: 26px; background: rgba(255,255,255,0.10);
+        border-radius: 99px; position: relative; cursor: pointer;
+        transition: background 0.3s;
+        border: 1px solid rgba(255,255,255,0.10);
+      }
+      .switch::after {
+        content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px;
+        background: #fff; border-radius: 50%; transition: left 0.2s;
+      }
+      .switch.active { background: var(--accent); }
+      .switch.active::after { left: 20px; }
+
+      /* Contact Form */
+      .form-group { margin-bottom: 14px; }
+      .form-group label { display: block; font-size: 12px; color: rgba(240,242,245,0.60); margin-bottom: 6px; }
+      .form-input {
+        width: 100%;
+        background: rgba(0,0,0,0.22);
+        border: 1px solid rgba(255,255,255,0.10);
+        padding: 10px 10px;
+        border-radius: 10px;
+        color: #fff;
+        font-family: inherit;
+        outline: none;
+      }
+      .form-input:focus { border-color: rgba(59,130,246,0.55); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+      .btn-primary {
+        width: 100%; padding: 12px; border-radius: 10px; border: none;
+        background: var(--accent); color: white; font-weight: 650; cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .btn-primary:hover { opacity: 0.92; }
+      .contactRow{
+        display:flex; align-items:center; justify-content:space-between; gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+        margin: 10px 0 14px;
+      }
+      .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; color: rgba(240,242,245,0.80); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+      .copyBtn{
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.22);
+        color: rgba(240,242,245,0.85);
+        cursor:pointer;
+        font-size: 12px;
+      }
+      .copyBtn:hover{ border-color: rgba(59,130,246,0.35); }
+
+      /* Dock */
+      .dock-wrap {
+        position: absolute; bottom: 24px; width: 100%;
+        display: flex; justify-content: center; pointer-events: none; z-index: 2000;
+      }
+      .dock {
+        display: flex; gap: 12px; padding: 12px;
+        background: rgba(20, 20, 25, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        pointer-events: auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      }
+      .dock-item {
+        width: 48px; height: 48px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.05);
+        display: grid; place-items: center;
+        cursor: pointer; position: relative;
+        transition: transform 0.2s, background 0.2s;
+      }
+      .dock-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.10); }
+      .dock-item.active::after {
+        content: ""; position: absolute; bottom: -6px; width: 4px; height: 4px;
+        background: var(--accent); border-radius: 50%;
+      }
+      .icon { width: 20px; height: 20px; fill: currentColor; color: #ccc; }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="ink"></canvas>
+    <div class="toast" id="toast" aria-hidden="true"></div>
+
+    <a href="/" class="back-nav">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      Back to Index
+    </a>
+
+    <div class="desktop" id="desktop">
+      {WINDOWS.map((win, index) => (
+        <div
+          class="window"
+          id={`win-${win.id}`}
+          style={`--x:${win.x}px; --y:${win.y}px; width:${win.w}px; height:${win.h}px; z-index:${10 + index};`}
+          data-id={win.id}
+          data-x={win.x}
+          data-y={win.y}
+          data-w={win.w}
+          data-h={win.h}
+        >
+          <div class="title-bar">
+            <div class="window-controls">
+              <button class="win-btn close" title="Close"></button>
+              <button class="win-btn min" title="Minimize"></button>
+              <button class="win-btn max" title="Maximize"></button>
+            </div>
+            <div class="window-title">{win.title}</div>
+            <div style="width: 40px"></div>
+          </div>
+
+          <div class="content">
+            {win.id === 'intro' && (
+              <>
+                <h2>This is not a template.</h2>
+                <p>
+                  UNFORM is a workspace masquerading as a website. No hero. No funnel.
+                  Just fragments you can move until they make sense.
+                </p>
+                <p>
+                  Drag a window. Stack it. Lose it. Bring it back from the dock.
+                  <span class="kbd" style="margin-left:10px;">Tip</span>
+                  Click an artifact to load it in the viewer.
+                </p>
+
+                <div class="chips" aria-label="Anti-template commands">
+                  <div class="chip" data-action="shuffle"><b>Shuffle</b> layout</div>
+                  <div class="chip" data-action="reset"><b>Reset</b> layout</div>
+                  <div class="chip" data-action="focus-projects"><b>Jump</b> to artifacts</div>
+                </div>
+
+                <div style="margin-top: 16px; padding: 14px; background: rgba(255,255,255,0.03); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); font-size: 13px; color: rgba(240,242,245,0.72);">
+                  <b style="color: rgba(240,242,245,0.88);">Rule 01:</b> If it looks like a landing page, it’s wrong.<br/>
+                  <b style="color: rgba(240,242,245,0.88);">Rule 02:</b> If you need a section, make a window.
+                </div>
+              </>
+            )}
+
+            {win.id === 'projects' && (
+              <>
+                <h2>Artifacts</h2>
+                <p>Click one. The viewer window becomes the “page”.</p>
+                <div class="grid-list" id="project-list">
+                  {PROJECTS.map((p, i) => (
+                    <div class="list-item" data-project={String(i)} aria-label={p.name}>
+                      <div class="li-left">
+                        <div class="li-name">{p.name}</div>
+                        <div class="li-meta">{p.date} • {p.status}</div>
+                      </div>
+                      <span class="tag">{p.type}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {win.id === 'viewer' && (
+              <>
+                <h2>Project Viewer</h2>
+                <p>Select an artifact to populate this window.</p>
+
+                <div class="viewerTop" aria-label="Selected project">
+                  <div>
+                    <div class="viewerTitle" id="pv-name">No selection</div>
+                    <div class="viewerMeta" id="pv-meta">—</div>
+                  </div>
+                  <div class="statusPill" id="pv-status">Waiting</div>
+                </div>
+
+                <p id="pv-blurb" style="color: rgba(240,242,245,0.72); margin-bottom: 10px;">
+                  This is the anti-template: content lives where you place it.
+                </p>
+
+                <ul class="bullets" id="pv-bullets">
+                  <li>Pick a project from Artifacts.</li>
+                  <li>Minimize everything else.</li>
+                  <li>That’s your “layout”.</li>
+                </ul>
+              </>
+            )}
+
+            {win.id === 'settings' && (
+              <>
+                <h2>Settings</h2>
+                <p>Make it quieter. Or ruin it on purpose.</p>
+
+                <div class="settings-row">
+                  <span>Fluid Background</span>
+                  <div class="switch active" data-setting="fluid"></div>
+                </div>
+                <div class="settings-row">
+                  <span>Glass Blur</span>
+                  <div class="switch active" data-setting="blur"></div>
+                </div>
+                <div class="settings-row">
+                  <span>Snap to Grid</span>
+                  <div class="switch" data-setting="snap"></div>
+                </div>
+                <div class="settings-row" style="border-bottom:none;">
+                  <span>Chaos Drift</span>
+                  <div class="switch" data-setting="chaos"></div>
+                </div>
+
+                <p style="margin-top: 16px; font-size: 12px;">
+                  System Version: 13.10 (Unform) <span style="opacity:.6;">// no roadmap</span>
+                </p>
+              </>
+            )}
+
+            {win.id === 'contact' && (
+              <>
+                <h2>Contact</h2>
+                <p>Send a message. Or send nothing. Both are valid.</p>
+
+                <div class="contactRow">
+                  <div>
+                    <div style="font-size:12px; color: rgba(240,242,245,0.55); margin-bottom: 4px;">Email</div>
+                    <div class="mono" id="emailText">hello@unform.studio</div>
+                  </div>
+                  <button type="button" class="copyBtn" data-copy="#emailText">Copy</button>
+                </div>
+
+                <form onsubmit="event.preventDefault();">
+                  <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-input" placeholder="you@domain.com" />
+                  </div>
+                  <div class="form-group">
+                    <label>Message</label>
+                    <textarea class="form-input" rows="4" placeholder="What are we building? What’s the constraint?"></textarea>
+                  </div>
+                  <button class="btn-primary" type="button">Send Message</button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="dock-wrap">
+      <div class="dock" aria-label="Dock">
+        {WINDOWS.map((win, i) => (
+          <div class={`dock-item active`} data-target={win.id} title={win.title}>
+            {win.icon === '👋' && <div style="font-size: 20px;">👋</div>}
+            {win.icon === 'folder' && <svg class="icon" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>}
+            {win.icon === 'eye' && <svg class="icon" viewBox="0 0 24 24"><path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>}
+            {win.icon === 'gear' && <svg class="icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.68 8.87a.48.48 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.48.48 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.58 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>}
+            {win.icon === 'mail' && <svg class="icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <script is:inline>
+      // @ts-nocheck
+      (function() {
+        const desktop = document.getElementById('desktop');
+        const windows = Array.from(document.querySelectorAll('.window'));
+        const dockItems = Array.from(document.querySelectorAll('.dock-item'));
+        const toastEl = document.getElementById('toast');
+
+        let highestZ = 100;
+        let isDragging = false;
+        let activeWin = null;
+        let offset = { x: 0, y: 0 };
+
+        // Settings state
+        let snapToGrid = false;
+        let chaosDrift = false;
+        let chaosTimer = null;
+
+        // Project data (mirrors Astro constant; kept inline for interaction)
+        const PROJECTS = [
+          {
+            name: "Aeon Tower",
+            type: "Architecture",
+            date: "2024",
+            blurb: "A vertical study in light discipline and circulation.",
+            bullets: ["Concept massing + detailing", "Material palette + renders", "Site constraints mapped"],
+            status: "Delivered",
+          },
+          {
+            name: "Monobrand",
+            type: "Identity",
+            date: "2023",
+            blurb: "A brand system that survives being stripped down to type.",
+            bullets: ["Identity kit + usage rules", "Tone + copy system", "Print + digital templates (minimal)"],
+            status: "Shipped",
+          },
+          {
+            name: "Flux Interface",
+            type: "UI/UX",
+            date: "2024",
+            blurb: "A calm UI for high-pressure operator decisions.",
+            bullets: ["Information architecture", "Component library", "Motion reduced mode"],
+            status: "In progress",
+          },
+          {
+            name: "Vellum",
+            type: "Print",
+            date: "2022",
+            blurb: "Printed matter with a digital spine: indexing and restraint.",
+            bullets: ["Grid + editorial system", "Paper + finish spec", "Production-ready files"],
+            status: "Archived",
+          },
+        ];
+
+        function toast(msg){
+          if (!toastEl) return;
+          toastEl.textContent = msg;
+          toastEl.classList.add('on');
+          clearTimeout(toastEl._t);
+          toastEl._t = setTimeout(() => toastEl.classList.remove('on'), 1300);
+        }
+
+        function getTranslate(el){
+          const style = window.getComputedStyle(el);
+          const matrix = new WebKitCSSMatrix(style.transform);
+          return { x: matrix.m41 || 0, y: matrix.m42 || 0 };
+        }
+
+        function clampPosition(win, x, y){
+          const w = win.offsetWidth;
+          const h = win.offsetHeight;
+          const maxX = Math.max(0, window.innerWidth - w);
+          const maxY = Math.max(0, window.innerHeight - h);
+          const cx = Math.min(maxX, Math.max(0, x));
+          const cy = Math.min(maxY, Math.max(0, y));
+          return { x: cx, y: cy };
+        }
+
+        function setTranslate(win, x, y){
+          const pos = clampPosition(win, x, y);
+          win.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
+        }
+
+        function focusWindow(win) {
+          highestZ++;
+          win.style.zIndex = highestZ;
+          win.setAttribute('data-active', 'true');
+          windows.forEach(w => { if (w !== win) w.setAttribute('data-active', 'false'); });
+        }
+
+        // Clamp all windows on load (small screens)
+        function clampAll(){
+          windows.forEach(win => {
+            const p = getTranslate(win);
+            setTranslate(win, p.x, p.y);
+          });
+        }
+        window.addEventListener('resize', clampAll, { passive:true });
+        clampAll();
+
+        // Default focus (intro)
+        const intro = document.getElementById('win-intro');
+        if (intro) focusWindow(intro);
+
+        /* --- Drag & Focus --- */
+        windows.forEach(win => {
+          const titleBar = win.querySelector('.title-bar');
+
+          win.addEventListener('mousedown', () => focusWindow(win));
+
+          titleBar.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('win-btn')) return;
+            if (win.classList.contains('minimized')) return;
+
+            isDragging = true;
+            activeWin = win;
+
+            const p = getTranslate(win);
+            offset.x = e.clientX - p.x;
+            offset.y = e.clientY - p.y;
+
+            titleBar.style.cursor = 'grabbing';
+            document.body.style.userSelect = 'none';
+          });
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging || !activeWin) return;
+
+          let newX = e.clientX - offset.x;
+          let newY = e.clientY - offset.y;
+
+          if (snapToGrid){
+            const g = 20;
+            newX = Math.round(newX / g) * g;
+            newY = Math.round(newY / g) * g;
+          }
+
+          setTranslate(activeWin, newX, newY);
+        }, { passive:true });
+
+        window.addEventListener('mouseup', () => {
+          if (activeWin) {
+            const titleBar = activeWin.querySelector('.title-bar');
+            titleBar.style.cursor = 'default';
+          }
+          isDragging = false;
+          activeWin = null;
+          document.body.style.userSelect = '';
+        });
+
+        /* --- Dock + Minimize + Close --- */
+        function setDockActive(id, on){
+          const item = document.querySelector(`.dock-item[data-target="${id}"]`);
+          if (!item) return;
+          if (on) item.classList.add('active'); else item.classList.remove('active');
+        }
+
+        function minimizeToDock(win){
+          const id = win.getAttribute('data-id');
+          win.classList.add('minimized');
+          setDockActive(id, false);
+        }
+
+        function restoreFromDock(win){
+          const id = win.getAttribute('data-id');
+          win.classList.remove('minimized');
+          setDockActive(id, true);
+          focusWindow(win);
+          // Ensure visible after restore
+          const p = getTranslate(win);
+          setTranslate(win, p.x, p.y);
+        }
+
+        windows.forEach(win => {
+          const minBtn = win.querySelector('.win-btn.min');
+          const closeBtn = win.querySelector('.win-btn.close');
+
+          minBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            minimizeToDock(win);
+            toast("Minimized to dock.");
+          });
+
+          closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            minimizeToDock(win);
+            toast("Closed (to dock).");
+          });
+        });
+
+        dockItems.forEach(item => {
+          item.addEventListener('click', () => {
+            const id = item.getAttribute('data-target');
+            const win = document.getElementById(`win-${id}`);
+            if (!win) return;
+
+            if (win.classList.contains('minimized')) restoreFromDock(win);
+            else focusWindow(win);
+          });
+        });
+
+        /* --- Maximize --- */
+        windows.forEach(win => {
+          const maxBtn = win.querySelector('.win-btn.max');
+          let isMax = false;
+          let prevTransform = '';
+          let prevWidth = '';
+          let prevHeight = '';
+
+          maxBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isMax = !isMax;
+
+            if (isMax) {
+              prevTransform = win.style.transform || '';
+              prevWidth = win.style.width || '';
+              prevHeight = win.style.height || '';
+
+              win.style.width = '100%';
+              win.style.height = '100%';
+              win.style.transform = 'translate3d(0,0,0)';
+              toast("Maximized.");
+            } else {
+              win.style.width = prevWidth;
+              win.style.height = prevHeight;
+              win.style.transform = prevTransform || win.style.transform;
+              // Clamp after restore
+              const p = getTranslate(win);
+              setTranslate(win, p.x, p.y);
+              toast("Restored.");
+            }
+            focusWindow(win);
+          });
+        });
+
+        /* --- Intro actions: Shuffle / Reset / Jump --- */
+        const initial = new Map();
+        windows.forEach(win => {
+          // store initial translate from computed transform (variables)
+          const p = getTranslate(win);
+          initial.set(win.id, { x: p.x, y: p.y, w: win.style.width, h: win.style.height, t: win.style.transform });
+        });
+
+        function shuffleLayout(){
+          windows.forEach(win => {
+            if (win.classList.contains('minimized')) return;
+            const w = win.offsetWidth, h = win.offsetHeight;
+            const maxX = Math.max(0, window.innerWidth - w);
+            const maxY = Math.max(0, window.innerHeight - h);
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            setTranslate(win, x, y);
+          });
+          toast("Layout shuffled. Meaning optional.");
+        }
+
+        function resetLayout(){
+          windows.forEach(win => {
+            const saved = initial.get(win.id);
+            if (!saved) return;
+            win.style.width = saved.w || win.style.width;
+            win.style.height = saved.h || win.style.height;
+            win.classList.remove('minimized');
+            setDockActive(win.getAttribute('data-id'), true);
+            setTranslate(win, saved.x, saved.y);
+          });
+          toast("Layout reset.");
+        }
+
+        document.querySelectorAll('[data-action]').forEach(el => {
+          el.addEventListener('click', () => {
+            const action = el.getAttribute('data-action');
+            if (action === 'shuffle') shuffleLayout();
+            if (action === 'reset') resetLayout();
+            if (action === 'focus-projects') {
+              const w = document.getElementById('win-projects');
+              if (w){
+                if (w.classList.contains('minimized')) restoreFromDock(w);
+                focusWindow(w);
+                toast("Artifacts window focused.");
+              }
+            }
+          });
+        });
+
+        /* --- Project selection → Viewer --- */
+        const list = document.getElementById('project-list');
+        const viewerWin = document.getElementById('win-viewer');
+
+        function setSelected(idx){
+          const p = PROJECTS[idx];
+          if (!p) return;
+
+          // UI selection
+          document.querySelectorAll('.list-item[data-project]').forEach(li => {
+            li.setAttribute('data-selected', li.getAttribute('data-project') == String(idx) ? 'true' : 'false');
+          });
+
+          // Fill viewer
+          const nameEl = document.getElementById('pv-name');
+          const metaEl = document.getElementById('pv-meta');
+          const statusEl = document.getElementById('pv-status');
+          const blurbEl = document.getElementById('pv-blurb');
+          const bulletsEl = document.getElementById('pv-bullets');
+
+          if (nameEl) nameEl.textContent = p.name;
+          if (metaEl) metaEl.textContent = `${p.type} // ${p.date}`;
+          if (statusEl) statusEl.textContent = p.status;
+          if (blurbEl) blurbEl.textContent = p.blurb;
+
+          if (bulletsEl){
+            bulletsEl.innerHTML = '';
+            p.bullets.forEach(b => {
+              const li = document.createElement('li');
+              li.textContent = b;
+              bulletsEl.appendChild(li);
+            });
+          }
+
+          // Bring viewer forward
+          if (viewerWin){
+            if (viewerWin.classList.contains('minimized')) restoreFromDock(viewerWin);
+            focusWindow(viewerWin);
+            toast("Viewer updated.");
+          }
+        }
+
+        if (list){
+          list.addEventListener('click', (e) => {
+            const item = e.target.closest('.list-item[data-project]');
+            if (!item) return;
+            const idx = Number(item.getAttribute('data-project'));
+            setSelected(idx);
+          });
+        }
+
+        // Select first project by default (anti-template but not empty)
+        setSelected(0);
+
+        /* --- Contact form feedback --- */
+        const formBtn = document.querySelector('#win-contact .btn-primary');
+        if(formBtn){
+          formBtn.addEventListener('click', (e) => {
+            const btn = e.target;
+            const original = btn.innerText;
+            btn.innerText = "Queued.";
+            btn.style.background = "#22c55e";
+            toast("Message queued (demo).");
+            setTimeout(() => { btn.innerText = original; btn.style.background = ""; }, 1600);
+          });
+        }
+
+        /* --- Copy to clipboard --- */
+        document.querySelectorAll('[data-copy]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const sel = btn.getAttribute('data-copy');
+            const node = document.querySelector(sel);
+            const text = node ? node.textContent.trim() : '';
+            try{
+              await navigator.clipboard.writeText(text);
+              toast("Copied.");
+            }catch(_){
+              toast("Copy failed.");
+            }
+          });
+        });
+
+        /* --- Switches --- */
+        document.querySelectorAll('.switch').forEach(sw => {
+          sw.addEventListener('click', () => {
+            sw.classList.toggle('active');
+            const setting = sw.getAttribute('data-setting');
+            const isOn = sw.classList.contains('active');
+
+            if (setting === 'fluid') {
+              const ink = document.getElementById('ink');
+              if(ink) ink.style.opacity = isOn ? '1' : '0';
+              toast(isOn ? "Ink on." : "Ink off.");
+            }
+
+            if (setting === 'blur') {
+              if (isOn) document.body.classList.remove('no-blur');
+              else document.body.classList.add('no-blur');
+              toast(isOn ? "Blur on." : "Blur off.");
+            }
+
+            if (setting === 'snap') {
+              snapToGrid = isOn;
+              toast(isOn ? "Snap enabled." : "Snap disabled.");
+            }
+
+            if (setting === 'chaos') {
+              chaosDrift = isOn;
+              if (chaosTimer) { clearInterval(chaosTimer); chaosTimer = null; }
+
+              if (chaosDrift){
+                chaosTimer = setInterval(() => {
+                  windows.forEach(win => {
+                    if (win.classList.contains('minimized')) return;
+                    // gentle drift; clamp ensures it stays on screen
+                    const p = getTranslate(win);
+                    const dx = (Math.random() - 0.5) * 8;
+                    const dy = (Math.random() - 0.5) * 8;
+                    setTranslate(win, p.x + dx, p.y + dy);
+                  });
+                }, 900);
+                toast("Chaos drift enabled.");
+              } else {
+                toast("Chaos drift disabled.");
+              }
+            }
+          });
+        });
+
+        /* --- INK FIELD GENERATOR --- */
+        (function inkField(){
+          const canvas = document.getElementById("ink");
+          if (!canvas) return;
+          const ctx = canvas.getContext("2d", { alpha: true });
+          if (!ctx) return;
+
+          let w=0,h=0,dpr=Math.min(2, window.devicePixelRatio||1);
+          function resize(){
+            w = Math.floor(window.innerWidth);
+            h = Math.floor(window.innerHeight);
+            canvas.width = Math.floor(w*dpr);
+            canvas.height = Math.floor(h*dpr);
+            canvas.style.width = w+"px";
+            canvas.style.height = h+"px";
+            ctx.setTransform(dpr,0,0,dpr,0,0);
+          }
+          window.addEventListener("resize", resize, { passive:true });
+          resize();
+
+          function n2(x,y){
+            const s = Math.sin(x*12.9898 + y*78.233) * 43758.5453;
+            return s - Math.floor(s);
+          }
+          function flow(x,y,t){
+            const nx = x / w, ny = y / h;
+            const a = (n2(nx*3.1 + t*0.00008, ny*3.7 - t*0.00006) * Math.PI * 2);
+            return { ax: Math.cos(a), ay: Math.sin(a) };
+          }
+
+          const strokes = [];
+          const colors = [
+            "hsla(210, 90%, 65%, 0.6)",
+            "hsla(260, 90%, 65%, 0.6)",
+            "hsla(180, 90%, 60%, 0.6)"
+          ];
+
+          for (let i=0;i<60;i++){
+            strokes.push({
+              x: Math.random()*w,
+              y: Math.random()*h,
+              vx: 0,
+              vy: 0,
+              life: 120 + Math.random()*220,
+              c: colors[i % colors.length],
+              r: 0.8 + Math.random()*2.0
+            });
+          }
+
+          let last = performance.now();
+          function step(t){
+            const dt = Math.min(34, t-last); last=t;
+
+            ctx.fillStyle = "rgba(5, 5, 8, 0.08)";
+            ctx.fillRect(0,0,w,h);
+
+            for (const s of strokes){
+              const f = flow(s.x, s.y, t);
+              s.vx = (s.vx*0.92) + f.ax * 0.18;
+              s.vy = (s.vy*0.92) + f.ay * 0.18;
+
+              const nx = s.x + s.vx * dt * 0.18;
+              const ny = s.y + s.vy * dt * 0.18;
+
+              ctx.beginPath();
+              ctx.strokeStyle = s.c;
+              ctx.lineWidth = s.r;
+              ctx.lineCap = "round";
+              ctx.moveTo(s.x, s.y);
+              ctx.lineTo(nx, ny);
+              ctx.stroke();
+
+              s.x = nx; s.y = ny;
+              if (s.x < -20) s.x = w+20;
+              if (s.x > w+20) s.x = -20;
+              if (s.y < -20) s.y = h+20;
+              if (s.y > h+20) s.y = -20;
+
+              s.life -= dt*0.06;
+              if (s.life <= 0){
+                s.x = Math.random()*w; s.y = Math.random()*h;
+                s.vx = 0; s.vy = 0;
+                s.life = 120 + Math.random()*220;
+              }
+            }
+            requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+        })();
+
+      })();
+    </script>
+  </body>
+</html>

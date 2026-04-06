@@ -1,0 +1,579 @@
+---
+const SITE_NAME = "Aurum Thermal House";
+const EMAIL = "reservations@aurumthermalhouse.com";
+const PHONE = "+31 20 555 0148";
+const ADDRESS_LINES = ["Herengracht 541", "1017 CE Amsterdam"];
+const OPENING = "Daily 07:00–22:30";
+
+const NAV = [
+  { label: "Atlas", href: "#atlas" },
+  { label: "Rituals", href: "#rituals" },
+  { label: "Membership", href: "#membership" },
+  { label: "Reserve", href: "#reserve" },
+];
+
+const HERO_IMG =
+  "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=2000&q=80";
+const SECONDARY_IMG =
+  "https://images.unsplash.com/photo-1551887373-6bca1d7b8a5b?auto=format&fit=crop&w=2000&q=80";
+
+const ROOMS = [
+  {
+    id: "mineral-hall",
+    name: "Mineral Bath Hall",
+    temp: "38°C",
+    blurb: "Mineral water held at a constant temperature. Low light, quiet acoustics, slow circulation.",
+    bullets: ["Alcove seating bays", "Mineral rinse + showers", "Towel exchange on request"],
+  },
+  {
+    id: "steam-gallery",
+    name: "Steam Gallery",
+    temp: "Hammam",
+    blurb: "Warm stone and soft steam, run in timed cycles. A guided rinse sequence is available on request.",
+    bullets: ["Marble slab wash zone", "Eucalyptus / pine cycles", "Cold rinse lane"],
+  },
+  {
+    id: "sauna-line",
+    name: "Sauna Line",
+    temp: "80–95°C",
+    blurb: "A sequence of dry-heat rooms tuned for recovery and calm focus. Quiet rule enforced throughout.",
+    bullets: ["Herbal infusion schedule", "Salt wall dry room", "Silent rule enforced"],
+  },
+  {
+    id: "ice-atelier",
+    name: "Ice Atelier",
+    temp: "6°C",
+    blurb: "Contrast therapy zone for controlled recovery and nervous system downshift. Timing guidance available.",
+    bullets: ["Contrast timing guidance", "Heated reset benches", "Warm robe handoff"],
+  },
+  {
+    id: "float-room",
+    name: "Float Room",
+    temp: "Body-neutral",
+    blurb: "Weightless calm in a body-temperature pool with near-silent circulation and controlled lighting.",
+    bullets: ["Private session windows", "Sound-dampened ceiling", "Light discipline"],
+  },
+  {
+    id: "tea-lounge",
+    name: "Tea Lounge",
+    temp: "Warm",
+    blurb: "A finishing room — slow tea service, hydration, and soft seating. Phones stay quiet here.",
+    bullets: ["Seasonal infusions", "Hydration station", "Small-batch pastries"],
+  },
+];
+
+const RITUALS = [
+  { id: "thermal-circuit", name: "Thermal Circuit", dur: "2h 15m", note: "Full atlas access + tea lounge. Attendant-guided flow optional." },
+  { id: "deep-steam", name: "Deep Steam Ritual", dur: "75m", note: "Hammam cycle + rinse sequence. Add a scrub on request." },
+  { id: "contrast-reset", name: "Contrast Reset", dur: "60m", note: "Sauna line + ice atelier timing. Built for recovery." },
+  { id: "float-silence", name: "Float Silence", dur: "45m", note: "Private float session. Low light, minimal sound." },
+  { id: "massage-suite", name: "Massage Suite", dur: "60m", note: "Bodywork in a private room. Recommended after circuit." },
+];
+
+const MEMBERSHIP = [
+  {
+    tier: "Day Pass",
+    line: "A complete visit, timed entry.",
+    bullets: ["Thermal atlas access", "Robe + towel service", "Tea lounge included"],
+  },
+  {
+    tier: "Resident",
+    line: "Priority booking and quieter windows.",
+    bullets: ["Early access windows", "Guest credits", "Private storage"],
+  },
+  {
+    tier: "House Key",
+    line: "After-hours access + suite privileges.",
+    bullets: ["After-hours entry", "Suite allocation priority", "Concierge handling"],
+  },
+];
+
+const toId = (s: string) => s.replace(/\s+/g, "-").toLowerCase();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{SITE_NAME} — Thermal Atlas</title>
+    <meta
+      name="description"
+      content="A canal-house thermal circuit in Amsterdam: mineral baths, steam, sauna, contrast recovery, and a quiet finishing lounge. Limited capacity, timed entry."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root{
+        --bg0:#070504;
+        --bg1:#0b0706;
+        --ink:rgba(245,236,224,.88);
+        --ink-dim:rgba(245,236,224,.64);
+        --line:rgba(245,236,224,.10);
+
+        --copper:#d9a06f;
+        --ember:#c96e53;
+        --jade:#2a6b5a;
+        --smoke:rgba(0,0,0,.55);
+
+        --heat:.72;
+        --r:18px;
+        --max:1240px;
+        --pad:clamp(18px,4vw,54px);
+
+        --serif:"Fraunces", serif;
+        --sans:"Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; scroll-behavior:smooth; }
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family:var(--sans);
+        background:
+          radial-gradient(1200px 780px at 18% 8%, rgba(217,160,111,calc(.10 + (var(--heat) * .12))), transparent 60%),
+          radial-gradient(1000px 720px at 78% 18%, rgba(42,107,90,calc(.08 + (var(--heat) * .10))), transparent 62%),
+          radial-gradient(900px 740px at 52% 92%, rgba(201,110,83,calc(.07 + (var(--heat) * .10))), transparent 66%),
+          linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 100%);
+        overflow-x:hidden;
+      }
+
+      /* Film grain */
+      body::before{
+        content:""; position:fixed; inset:-10%;
+        background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity:.8; pointer-events:none; z-index:0; mix-blend-mode:overlay; transform:rotate(2deg);
+      }
+
+      /* WELLNESS GLOW */
+      .glow-text { transition: text-shadow 0.3s ease, color 0.3s ease; }
+      .glow-text:hover {
+        color: #fff;
+        text-shadow: 
+          0 0 10px rgba(47, 252, 255, 0.5),
+          0 0 20px rgba(47, 252, 255, 0.3),
+          0 0 30px rgba(183, 255, 60, 0.2);
+      }
+
+      /* Steam */
+      .steam{
+        position:fixed; inset:0; pointer-events:none; z-index:1;
+        filter: blur(26px) saturate(1.05);
+        opacity: calc(.26 + (var(--heat) * .18));
+      }
+      .steam::before{
+        content:""; position:absolute; inset:-20%;
+        background: radial-gradient(520px 320px at 15% 20%, rgba(245,236,224,.10), transparent 60%);
+        animation: drift 18s linear infinite;
+      }
+      @keyframes drift{ 0%{ transform: translate3d(-2%,-1%,0); } 50%{ transform: translate3d(2%,1.5%,0); } 100%{ transform: translate3d(-2%,-1%,0); } }
+
+      a{ color:inherit; text-decoration:none; }
+      .wrap{ position:relative; z-index:2; max-width:var(--max); margin:0 auto; padding: 18px var(--pad) 110px; }
+
+      /* SYSTEM EXIT BUTTON */
+      .sys-exit{
+        position: fixed; top: 20px; left: 20px; z-index: 100;
+        display:flex; align-items:center; gap: 8px;
+        padding: 8px 14px; border-radius: 999px;
+        border: 1px solid rgba(245,236,224,.12);
+        background: rgba(0,0,0,.6); backdrop-filter: blur(8px);
+        font-family: var(--sans); font-size: 10px; letter-spacing: .12em;
+        text-transform: uppercase; color: rgba(245,236,224,.6);
+        transition: all .2s ease;
+      }
+      .sys-exit:hover{
+        border-color: var(--copper); color: var(--copper);
+        box-shadow: 0 0 20px rgba(217,160,111,.25);
+        transform: translateX(2px);
+      }
+      .sys-exit i{ font-style:normal; color: var(--copper); }
+
+      /* Top bar */
+      header{
+        position:sticky; top:0; z-index:50; padding: 14px 0 10px;
+        backdrop-filter: blur(14px); background: linear-gradient(180deg, rgba(7,5,4,.72), rgba(7,5,4,.35));
+        border-bottom: 1px solid rgba(245,236,224,.07);
+      }
+      .top{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
+      .mark .name{ font-family:var(--serif); font-weight:500; font-size: 16px; letter-spacing:.06em; }
+      .mark .sub{ font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:rgba(245,236,224,.45); }
+      nav{ display:flex; gap:18px; }
+      nav a{ font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:rgba(245,236,224,.55); }
+      
+      .btn{
+        border:1px solid rgba(245,236,224,.12); background: linear-gradient(180deg, rgba(245,236,224,.06), rgba(0,0,0,.30));
+        color:rgba(245,236,224,.92); padding: 10px 14px; border-radius: 999px; font-size:11px; letter-spacing:.22em;
+        text-transform:uppercase; transition: all .2s ease; cursor:pointer;
+      }
+      .btn:hover{ border-color: rgba(217,160,111,.35); box-shadow: 0 14px 40px rgba(0,0,0,.35); transform:translateY(-1px); }
+
+      /* Dial */
+      .dial{
+        position:fixed; right: clamp(14px, 2vw, 22px); bottom: clamp(14px, 2vw, 22px); z-index:70;
+        width: 210px; border-radius: 20px; border: 1px solid rgba(245,236,224,.10);
+        background: linear-gradient(180deg, rgba(245,236,224,.05), rgba(0,0,0,.38)); backdrop-filter: blur(12px);
+        padding: 12px 14px; box-shadow: 0 22px 70px rgba(0,0,0,.45);
+      }
+      .dial .label{ display:flex; justify-content:space-between; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:rgba(245,236,224,.55); margin-bottom:10px; }
+      .dial input[type="range"]{ width:100%; accent-color: var(--ember); }
+      .dial .hint{ margin-top:10px; font-size:11px; line-height:1.45; color:rgba(245,236,224,.48); }
+
+      /* Panels */
+      .entrance{ padding: 34px 0 10px; }
+      .spread{ display:grid; gap: 22px; grid-template-columns: 1.05fr .95fr; }
+      .panel{
+        border-radius: var(--r); border: 1px solid rgba(245,236,224,.09);
+        background: linear-gradient(180deg, rgba(245,236,224,.04), rgba(0,0,0,.42)); backdrop-filter: blur(12px);
+        overflow:hidden; position:relative;
+      }
+      .panel-inner{ position:relative; z-index:2; padding: 26px; }
+      .kicker{ font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:rgba(245,236,224,.52); }
+      h1{ margin: 14px 0 0; font-family: var(--serif); font-size: clamp(34px, 4.6vw, 58px); line-height: 1.02; }
+      .lead{ margin: 16px 0 0; max-width: 58ch; color: var(--ink-dim); font-size: 14px; line-height: 1.75; }
+      
+      .media{ display:grid; grid-template-rows: 1.25fr .75fr; gap: 14px; padding: 14px; }
+      .frame{ border-radius: calc(var(--r) - 6px); overflow:hidden; border: 1px solid rgba(245,236,224,.10); background: rgba(0,0,0,.22); position:relative; }
+      .frame img{ width:100%; height:100%; object-fit: cover; filter: saturate(.95) contrast(1.08) brightness(.92); }
+      .caption{
+        position:absolute; left: 14px; bottom: 14px; padding: 10px 12px; border-radius: 14px;
+        border: 1px solid rgba(245,236,224,.10); background: rgba(0,0,0,.55); backdrop-filter: blur(10px);
+      }
+
+      /* Atlas */
+      .atlas-grid{ display:grid; grid-template-columns: .9fr 1.1fr; gap: 14px; align-items:start; }
+      .atlas-map{ position: sticky; top: 92px; }
+      .plan{
+        width:100%; aspect-ratio: 1 / 1; border-radius: 18px; border: 1px solid rgba(245,236,224,.10);
+        background: linear-gradient(180deg, rgba(245,236,224,.03), rgba(0,0,0,.45)); overflow:hidden; position:relative;
+      }
+      
+      /* Map SVG Styles */
+      .blueprint-line { stroke: rgba(245,236,224,0.15); stroke-width: 1px; fill: none; }
+      .blueprint-wall { stroke: rgba(245,236,224,0.3); stroke-width: 2px; fill: none; }
+      .blueprint-room { fill: rgba(217,160,111,0.05); transition: fill 0.3s; cursor: pointer; }
+      .blueprint-room:hover { fill: rgba(217,160,111,0.15); }
+      .blueprint-room.active { fill: rgba(217,160,111,0.25); stroke: rgba(217,160,111,0.5); }
+      .blueprint-water { fill: rgba(42,107,90,0.2); }
+      .blueprint-label { font-family: "Inter", sans-serif; font-size: 10px; fill: rgba(245,236,224,0.5); letter-spacing: 1px; pointer-events: none; text-anchor: middle; }
+      
+      .rooms{ display:grid; gap: 10px; }
+      .room{
+        border-radius: 18px; border: 1px solid rgba(245,236,224,.10);
+        background: linear-gradient(180deg, rgba(245,236,224,.04), rgba(0,0,0,.50)); padding: 16px;
+        transition: all .2s ease;
+      }
+      .room[data-active="true"]{ border-color: rgba(201,110,83,.40); box-shadow: 0 26px 70px rgba(0,0,0,.52); transform: scale(1.01); }
+      .room h3{ margin:0; font-family: var(--serif); font-size: 18px; }
+
+      /* General */
+      .section{ margin-top: 34px; }
+      .head{ display:flex; justify-content:space-between; border-bottom: 1px solid rgba(245,236,224,.08); padding-bottom: 12px; margin-bottom: 14px; }
+      .head h2{ margin:0; font-family: var(--serif); font-size: 26px; }
+      
+      .ritual-grid{ display:grid; gap: 10px; grid-template-columns: repeat(3, 1fr); }
+      .ritual{ border-radius: 18px; border: 1px solid rgba(245,236,224,.10); padding: 16px; background: rgba(0,0,0,.3); }
+      
+      .tiers{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .tier{ border-radius: 18px; border: 1px solid rgba(245,236,224,.10); padding: 18px; background: rgba(0,0,0,.3); }
+
+      .reserve{ display:grid; gap: 10px; grid-template-columns: 1.1fr .9fr; }
+      
+      footer{ margin-top: 40px; border-top: 1px solid rgba(245,236,224,.08); padding-top: 18px; display:flex; justify-content:space-between; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,236,224,.45); }
+
+      @media (max-width: 980px){
+        .spread, .atlas-grid, .ritual-grid, .tiers, .reserve { grid-template-columns: 1fr; }
+        .atlas-map { position: relative; top: 0; }
+        .sys-exit{ top: 20px; left: 20px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="/" class="sys-exit"><i>[</i> EXIT <i>]</i></a>
+
+    <div class="steam" aria-hidden="true"></div>
+
+    <div class="dial" aria-hidden="false">
+      <div class="label glow-text">
+        <span>Thermal Dial</span>
+        <span class="value" id="dialValue">Warm</span>
+      </div>
+      <input id="dialRange" type="range" min="0" max="100" value="72" />
+      <div class="hint glow-text">Set the heat profile. Steam and light shift gently with it.</div>
+    </div>
+
+    <div class="wrap">
+      <header>
+        <div class="top">
+          <a class="mark" href="#top">
+            <div class="name glow-text">{SITE_NAME}</div>
+            <div class="sub glow-text">Canal-house thermal circuit • baths • steam • sauna</div>
+          </a>
+
+          <nav aria-label="Primary navigation">
+            {NAV.map((n) => <a href={n.href} class="glow-text">{n.label}</a>)}
+          </nav>
+
+          <button class="btn glow-text" id="openBookingTop" type="button">Reserve</button>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="entrance" aria-label="Entrance">
+          <div class="spread">
+            <article class="panel">
+              <div class="panel-inner">
+                <div class="kicker glow-text">Quiet house • timed entry • limited capacity</div>
+                <h1 class="glow-text">Heat, held in silence.</h1>
+                <p class="lead glow-text">
+                  A private thermal house built around a complete circuit: mineral baths, steam, sauna, contrast recovery, and a finishing lounge.
+                  Capacity is capped so the rooms stay calm, the water stays steady, and the pace stays yours.
+                </p>
+
+                <div class="micro" aria-label="Highlights">
+                  <div class="chip glow-text"><strong>{OPENING}</strong></div>
+                  <div class="chip glow-text"><strong>Timed entry</strong></div>
+                  <div class="chip glow-text"><strong>Robe + towel</strong> included</div>
+                  <div class="chip glow-text"><strong>Quiet rule</strong> enforced</div>
+                </div>
+
+                <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+                  <a class="btn glow-text" href="#atlas">Enter the Atlas</a>
+                  <button class="btn primary glow-text" id="openBooking" type="button">Reserve a Window</button>
+                </div>
+              </div>
+            </article>
+
+            <aside class="panel" aria-label="Visuals">
+              <div class="media">
+                <div class="frame">
+                  <img src={HERO_IMG} alt="Warm spa interior with stone and soft light" loading="eager" />
+                  <div class="caption">
+                    <div class="t glow-text">Arrival</div>
+                    <div class="s glow-text">Warm stone, controlled light.</div>
+                  </div>
+                </div>
+                <div class="frame">
+                  <img src={SECONDARY_IMG} alt="Thermal pool with low light and steam" loading="lazy" />
+                  <div class="caption">
+                    <div class="t glow-text">Mineral Baths</div>
+                    <div class="s glow-text">Steady temperature, slow pace.</div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section" id="atlas" aria-label="Thermal Atlas">
+          <div class="head">
+            <h2 class="glow-text">Thermal Atlas</h2>
+            <div class="tag glow-text">Tap a room to preview</div>
+          </div>
+
+          <div class="atlas-grid">
+            <div class="atlas-map">
+              <div class="panel map-panel">
+                <div class="map-title">
+                  <div class="small glow-text">Level Plan</div>
+                  <div class="small glow-text" id="activeRoomLabel">Mineral Bath Hall</div>
+                </div>
+
+                <div class="plan" aria-label="Map">
+                  <svg viewBox="0 0 500 500" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                      <pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                        <rect width="2" height="4" transform="translate(0,0)" fill="rgba(245,236,224,0.05)"></rect>
+                      </pattern>
+                    </defs>
+                    
+                    <rect x="10" y="10" width="480" height="480" rx="10" class="blueprint-line" />
+                    
+                    <path d="M 230 10 L 230 490" class="blueprint-line" stroke-dasharray="4" />
+                    <path d="M 10 250 L 490 250" class="blueprint-line" stroke-dasharray="4" />
+
+                    <g class="node blueprint-room" data-room="mineral-hall">
+                      <rect x="30" y="30" width="180" height="200" class="blueprint-wall" />
+                      <rect x="50" y="50" width="140" height="160" class="blueprint-water" rx="4" />
+                      <text x="120" y="140" class="blueprint-label glow-text">MINERAL</text>
+                    </g>
+
+                    <g class="node blueprint-room" data-room="steam-gallery">
+                      <rect x="250" y="30" width="100" height="100" class="blueprint-wall" />
+                      <circle cx="300" cy="80" r="30" fill="url(#hatch)" opacity="0.5" />
+                      <text x="300" y="85" class="blueprint-label glow-text">STEAM</text>
+                    </g>
+
+                    <g class="node blueprint-room" data-room="ice-atelier">
+                      <rect x="370" y="30" width="100" height="100" class="blueprint-wall" />
+                      <rect x="390" y="50" width="60" height="60" fill="rgba(42,107,90,0.3)" />
+                      <text x="420" y="85" class="blueprint-label glow-text">ICE</text>
+                    </g>
+
+                    <g class="node blueprint-room" data-room="sauna-line">
+                      <rect x="250" y="150" width="220" height="80" class="blueprint-wall" />
+                      <line x1="260" y1="160" x2="460" y2="160" stroke="rgba(217,160,111,0.3)" stroke-width="4" />
+                      <line x1="260" y1="170" x2="460" y2="170" stroke="rgba(217,160,111,0.3)" stroke-width="4" />
+                      <text x="360" y="200" class="blueprint-label glow-text">SAUNA</text>
+                    </g>
+
+                    <g class="node blueprint-room" data-room="float-room">
+                      <rect x="30" y="270" width="180" height="200" class="blueprint-wall" />
+                      <circle cx="120" cy="370" r="70" class="blueprint-water" />
+                      <text x="120" y="375" class="blueprint-label glow-text">FLOAT</text>
+                    </g>
+
+                    <g class="node blueprint-room" data-room="tea-lounge">
+                      <rect x="250" y="270" width="220" height="200" class="blueprint-wall" />
+                      <circle cx="300" y="320" r="10" fill="rgba(245,236,224,0.1)" />
+                      <circle cx="360" cy="370" r="10" fill="rgba(245,236,224,0.1)" />
+                      <circle cx="420" cy="320" r="10" fill="rgba(245,236,224,0.1)" />
+                      <text x="360" y="375" class="blueprint-label glow-text">LOUNGE</text>
+                    </g>
+
+                    <line x1="120" y1="20" x2="120" y2="25" stroke="rgba(245,236,224,0.5)" />
+                    <line x1="20" y1="130" x2="25" y2="130" stroke="rgba(245,236,224,0.5)" />
+                    <text x="470" y="470" class="blueprint-label" style="font-size:8px;">LVL 01</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="rooms" aria-label="Rooms list">
+              {ROOMS.map((r, idx) => (
+                <article class="room" id={r.id} data-room={r.id} data-active={idx === 0 ? "true" : "false"}>
+                  <div class="room-top">
+                    <h3 class="glow-text">{r.name}</h3>
+                    <div class="temp glow-text">{r.temp}</div>
+                  </div>
+                  <p class="glow-text">{r.blurb}</p>
+                  <ul class="bullets">
+                    {r.bullets.map((b) => <li class="glow-text">{b}</li>)}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="rituals" aria-label="Rituals">
+          <div class="head">
+            <h2 class="glow-text">Rituals</h2>
+            <div class="tag glow-text">Choose • reserve • arrive</div>
+          </div>
+          <div class="ritual-grid">
+            {RITUALS.map((r) => (
+              <article class="ritual">
+                <h3 class="name glow-text">{r.name}</h3>
+                <div class="meta glow-text">{r.dur}</div>
+                <p class="note glow-text">{r.note}</p>
+                <button class="btn glow-text">Reserve this</button>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="section" id="membership" aria-label="Membership">
+          <div class="head">
+            <h2 class="glow-text">Membership</h2>
+            <div class="tag glow-text">Priority access</div>
+          </div>
+          <div class="tiers">
+            {MEMBERSHIP.map((m) => (
+              <article class="tier">
+                <h3 class="glow-text">{m.tier}</h3>
+                <p class="glow-text">{m.line}</p>
+                <ul>
+                  {m.bullets.map((b) => <li class="glow-text">{b}</li>)}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="section" id="reserve" aria-label="Reserve">
+          <div class="head">
+            <h2 class="glow-text">Reserve</h2>
+            <div class="tag glow-text">Confirmation by email</div>
+          </div>
+          <div class="reserve">
+            <article class="panel">
+              <div class="panel-inner">
+                <div class="kicker glow-text">Timed entry windows</div>
+                <h2 class="glow-text" style="margin:12px 0 0; font-family:var(--serif);">Book a calm window.</h2>
+                <p class="lead glow-text" style="margin-top:12px;">Select a ritual and preferred time. We confirm availability via email or phone.</p>
+                <div style="margin-top:16px;">
+                  <button class="btn primary glow-text" type="button">Open Reservation</button>
+                </div>
+              </div>
+            </article>
+            <aside class="panel">
+              <div class="panel-inner">
+                <div class="row glow-text"><span>Hours</span><span>{OPENING}</span></div>
+                <div class="row glow-text"><span>Phone</span><span>{PHONE}</span></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <footer>
+          <span class="glow-text">{SITE_NAME}</span>
+          <span class="glow-text">{ADDRESS_LINES.join(" • ")}</span>
+          <span class="glow-text">{PHONE}</span>
+        </footer>
+      </main>
+    </div>
+
+    <script type="module">
+      // @ts-nocheck
+      (function(){
+        const root = document.documentElement;
+        
+        // Thermal Dial Logic
+        const dial = document.getElementById("dialRange");
+        const dialValue = document.getElementById("dialValue");
+        const labelFor = (v) => (v < 35 ? "Cool" : v < 70 ? "Warm" : "Hot");
+        if (dial && dialValue){
+          const apply = (v) => {
+            const n = Math.max(0, Math.min(100, Number(v)));
+            root.style.setProperty("--heat", String(n / 100));
+            dialValue.textContent = labelFor(n);
+          };
+          apply(dial.value);
+          dial.addEventListener("input", (e) => apply(e.target.value), { passive: true });
+        }
+
+        // Map Interaction
+        const activeLabel = document.getElementById("activeRoomLabel");
+        const roomEls = Array.from(document.querySelectorAll(".room[data-room]"));
+        const nodeEls = Array.from(document.querySelectorAll(".node[data-room]"));
+
+        const setActiveRoom = (id) => {
+          roomEls.forEach((el) => el.setAttribute("data-active", el.getAttribute("data-room") === id ? "true" : "false"));
+          nodeEls.forEach((el) => el.classList.toggle("active", el.getAttribute("data-room") === id));
+          const r = roomEls.find((el) => el.getAttribute("data-room") === id);
+          if (activeLabel && r) activeLabel.textContent = r.querySelector("h3").textContent;
+        };
+
+        nodeEls.forEach((n) => {
+          n.addEventListener("click", () => {
+            const id = n.getAttribute("data-room");
+            if (id) {
+              setActiveRoom(id);
+              const el = document.getElementById(id);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

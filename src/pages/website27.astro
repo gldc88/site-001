@@ -1,0 +1,1032 @@
+---
+import "../styles/global.css";
+
+const BRAND = "VELLUM WEDDING BUREAU";
+const TAGLINE = "Design-led planning. Discreet execution.";
+const AREA = "Netherlands • Europe destinations (on request)";
+const EMAIL = "studio@vellumweddings.co";
+const PHONE = "+31 6 4481 9032";
+const TEL = PHONE.replace(/\s/g, "");
+const YEAR = new Date().getFullYear();
+
+// Stock images (Unsplash)
+const HERO_IMG =
+  "https://images.unsplash.com/photo-1758825178518-ca48833a6c57?auto=format&fit=crop&fm=jpg&q=80&w=2400";
+const DETAIL_IMG =
+  "https://images.unsplash.com/photo-1741893043659-ca8b82a8b637?auto=format&fit=crop&fm=jpg&q=80&w=2400";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} — Wedding Planning</title>
+    <meta
+      name="description"
+      content="A full-service wedding planning bureau for design, logistics, vendors, guest experience, and on-site production — end-to-end, calm, and precise."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+    <style>
+      :root{
+        --paper:#f6f2eb;
+        --paper2:#fbf8f3;
+        --ink:#141316;
+        --mut:rgba(20,19,22,.64);
+        --line:rgba(20,19,22,.14);
+        --line2:rgba(20,19,22,.08);
+        /* Gold / Champagne Palette */
+        --champ:#c7a166;
+        --champ-light:#e6d2aa;
+        --gold-grad: linear-gradient(135deg, #c7a166 0%, #ffeec7 50%, #c7a166 100%);
+        
+        --shadow: 0 28px 70px rgba(20,19,22,.12);
+        --max: 1080px;
+        --pad: 20px;
+        --r: 14px;
+        
+        --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+        --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; }
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family: var(--font-sans);
+        background:
+          radial-gradient(1200px 700px at 12% 18%, rgba(199,161,102,.15), transparent 60%),
+          radial-gradient(1000px 640px at 86% 62%, rgba(230,210,170,.12), transparent 62%),
+          linear-gradient(180deg, var(--paper2), var(--paper));
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Diamond Dust Effect */
+      .diamond-dust {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image: 
+            radial-gradient(white, rgba(255,255,255,.3) 2px, transparent 2.5px),
+            radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 1.5px);
+        background-size: 550px 550px, 350px 350px;
+        background-position: 0 0, 40px 60px;
+        opacity: 0.4;
+        animation: sparkle 20s linear infinite;
+        mix-blend-mode: overlay;
+      }
+
+      @keyframes sparkle {
+        0% { transform: translateY(0); opacity: 0.3; }
+        50% { opacity: 0.6; }
+        100% { transform: translateY(-50px); opacity: 0.3; }
+      }
+
+      a{ color: inherit; text-decoration: none; }
+      
+      /* Index Button */
+      .index-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--mut);
+        padding: 8px 16px;
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(4px);
+        transition: all 0.3s ease;
+      }
+      .index-btn:hover {
+        border-color: var(--champ);
+        color: var(--champ);
+        box-shadow: 0 0 15px rgba(199,161,102, 0.2);
+      }
+
+      .shell{
+        width:min(var(--max), calc(100% - 2*var(--pad)));
+        margin: 60px auto 56px; /* Added top margin for layout breathing */
+        position: relative;
+        z-index: 10;
+      }
+
+      /* “Sheet” */
+      .sheet{
+        position: relative;
+        border: 1px solid var(--line2);
+        border-radius: var(--r);
+        background:
+          linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.70));
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        backdrop-filter: blur(2px);
+      }
+
+      .sheet:before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background:
+          linear-gradient(90deg, transparent, rgba(20,19,22,.035), transparent),
+          repeating-linear-gradient(
+            180deg,
+            rgba(20,19,22,.02) 0px,
+            rgba(20,19,22,.02) 1px,
+            transparent 1px,
+            transparent 44px
+          );
+        opacity: .55;
+        pointer-events: none;
+      }
+
+      .inner{
+        position: relative;
+        padding: 40px 40px 45px;
+      }
+
+      /* Letterhead */
+      .letterhead{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:baseline;
+        justify-content:space-between;
+        gap: 14px 18px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--line2);
+      }
+
+      .brand{ line-height:1.05; }
+
+      .brand .name{
+        font-family: var(--font-sans);
+        font-weight: 800;
+        letter-spacing: .18em;
+        font-size: 11px;
+        text-transform: uppercase;
+        
+        /* Gold Foil Effect */
+        background: var(--gold-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 2px 10px rgba(199,161,102,0.1);
+      }
+
+      .brand .tag{
+        margin-top: 10px;
+        font-family: var(--font-serif);
+        letter-spacing: -0.01em;
+        font-weight: 600;
+        font-style: italic;
+        font-size: clamp(36px, 5vw, 64px);
+        line-height: 0.95;
+      }
+
+      .brand .sub{
+        margin-top: 14px;
+        color: var(--mut);
+        font-size: 15px;
+        line-height: 1.65;
+        max-width: 72ch;
+        font-weight: 400;
+      }
+
+      .meta{
+        display:flex;
+        flex-direction:column;
+        gap: 6px;
+        align-items:flex-end;
+        text-align:right;
+        color: var(--mut);
+        font-size: 13px;
+        line-height: 1.45;
+        font-family: var(--font-sans);
+      }
+
+      .seal{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        border: 1px solid rgba(199,161,102,.6);
+        background: radial-gradient(circle at 30% 30%, #fff 10%, #e6d2aa 90%);
+        box-shadow: 0 4px 15px rgba(199,161,102,.3);
+        margin-left: 10px;
+        transform: rotate(-8deg);
+        transition: transform .35s ease, box-shadow .35s ease;
+      }
+      .seal:hover{
+        transform: rotate(0deg);
+        box-shadow: 0 0 25px rgba(199,161,102,.6);
+      }
+      .seal svg{ width:18px; height:18px; opacity:.9; stroke: #8a6b3e; }
+
+      /* Insert visual */
+      .insert{
+        margin-top: 32px;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 24px;
+        align-items:flex-start;
+      }
+
+      figure{ margin:0; }
+
+      .photo{
+        width: min(520px, 100%);
+        border-radius: 12px;
+        overflow:hidden;
+        border: 1px solid rgba(20,19,22,.10);
+        background: rgba(255,255,255,.55);
+      }
+
+      .photo img{
+        display:block;
+        width:100%;
+        height:auto;
+        /* Subtle sepia for vintage warmth */
+        filter: sepia(10%) contrast(1.05); 
+      }
+
+      .note{
+        flex: 1 1 320px;
+        border: 1px solid rgba(199,161,102,.25);
+        border-radius: 12px;
+        padding: 24px;
+        background:
+          linear-gradient(180deg, rgba(230,210,170,.2), rgba(255,255,255,.6));
+        box-shadow: inset 0 0 20px rgba(230,210,170,.1);
+      }
+
+      .note h2{
+        margin:0;
+        font-family: var(--font-serif);
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0;
+        font-style: italic;
+        color: var(--ink);
+      }
+
+      .note p{
+        margin: 10px 0 0;
+        color: var(--mut);
+        font-size: 14px;
+        line-height: 1.7;
+        max-width: 62ch;
+      }
+
+      /* Ledger section */
+      .section{
+        margin-top: 42px;
+        padding-top: 32px;
+        border-top: 1px solid var(--line2);
+      }
+
+      .section h3{
+        margin:0;
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: rgba(20,19,22,.4);
+      }
+
+      .section .hint{
+        margin-top: 12px;
+        font-family: var(--font-serif);
+        font-size: 24px;
+        line-height: 1.2;
+        max-width: 30ch;
+        color: var(--ink);
+      }
+
+      dl.ledger{
+        margin: 24px 0 0;
+        display:flex;
+        flex-direction:column;
+        gap: 12px;
+        padding: 0;
+      }
+
+      .row{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 10px 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line2);
+      }
+      .row:last-child{ border-bottom:none; }
+
+      dt{
+        flex: 0 0 260px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        font-size: 15px;
+        color: var(--ink);
+      }
+
+      dd{
+        margin:0;
+        flex: 1 1 320px;
+        color: var(--mut);
+        font-size: 14px;
+        line-height: 1.7;
+        max-width: 78ch;
+      }
+
+      /* --- THE DOSSIER (V-CARDS) --- */
+      .dossier {
+        margin-top: 32px;
+      }
+
+      .vcard {
+        margin-bottom: 8px;
+        border-radius: 8px;
+        /* Default state is clean */
+      }
+
+      .vcard-trigger {
+        width: 100%;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        padding: 24px 20px;
+        background: transparent;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      
+      /* Light Up + Gold Glow on Hover */
+      .vcard-trigger:hover {
+        background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+        box-shadow: 0 4px 25px rgba(199,161,102, 0.2);
+        transform: translateY(-1px);
+      }
+
+      /* Active State: Persistent Gold Glow */
+      .vcard.active .vcard-trigger {
+        background: linear-gradient(135deg, rgba(255,255,255,0.95), #fffdf8);
+        box-shadow: 0 4px 30px rgba(199,161,102, 0.35);
+        border: 1px solid rgba(199,161,102, 0.15);
+      }
+
+      .vcard-meta {
+        font-family: var(--font-serif);
+        font-size: 20px;
+        font-style: italic;
+        /* Gold gradient text */
+        background: var(--gold-grad);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-right: 24px;
+        min-width: 30px;
+      }
+
+      .vcard-title {
+        flex: 1;
+        font-family: var(--font-serif);
+        font-size: 28px;
+        font-weight: 400;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+      }
+
+      .vcard-icon {
+        font-family: var(--font-sans);
+        font-size: 24px;
+        font-weight: 300;
+        color: var(--mut);
+        transition: transform 0.3s ease;
+      }
+
+      .vcard.active .vcard-icon {
+        transform: rotate(45deg);
+        color: var(--champ);
+      }
+
+      .vcard-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .vcard-inner {
+        padding: 0 20px 24px 74px;
+      }
+
+      .vcard-inner p {
+        margin: 0;
+        font-family: var(--font-sans);
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--mut);
+        max-width: 65ch;
+      }
+
+      @media (max-width: 600px) {
+        .vcard-title { font-size: 22px; }
+        .vcard-inner { padding-left: 20px; }
+      }
+
+      /* Inquiry */
+      .inquiry{
+        margin-top: 48px;
+        display:flex;
+        flex-wrap:wrap;
+        gap: 24px;
+        align-items:flex-start;
+      }
+
+      form{
+        flex: 1 1 360px;
+        border: 1px solid rgba(199,161,102,.22);
+        border-radius: 12px;
+        padding: 24px;
+        background:
+          linear-gradient(180deg, rgba(230,210,170,.16), rgba(255,255,255,.56));
+        box-shadow: inset 0 0 30px rgba(255,255,255,0.5);
+      }
+
+      /* --- SERVICE SELECTOR CARDS --- */
+      .service-select {
+        margin-bottom: 24px;
+      }
+      .service-select .label {
+        display: block;
+        font-size: 12px;
+        color: rgba(20,19,22,.6);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 12px;
+      }
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+      }
+      .service-card-btn {
+        background: rgba(255,255,255,0.5);
+        border: 1px solid var(--line2);
+        border-radius: 6px;
+        padding: 12px 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: var(--font-serif);
+        font-size: 15px;
+        color: var(--mut);
+        font-style: italic;
+        line-height: 1.2;
+      }
+      .service-card-btn:hover {
+        background: rgba(255,255,255,0.9);
+        border-color: rgba(199,161,102,.4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(199,161,102,.1);
+      }
+      .service-card-btn.selected {
+        background: linear-gradient(135deg, #fff 0%, #fffbf2 100%);
+        border-color: var(--champ);
+        color: var(--ink);
+        box-shadow: 0 0 15px rgba(199,161,102,.25);
+        font-weight: 600;
+        transform: translateY(-1px);
+      }
+
+      .gridless{
+        display:flex;
+        flex-direction:column;
+        gap: 16px;
+      }
+
+      label{
+        display:flex;
+        flex-direction:column;
+        gap: 8px;
+        font-size: 12px;
+        color: rgba(20,19,22,.6);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+      }
+
+      input, textarea{
+        appearance:none;
+        border: 1px solid rgba(20,19,22,.16);
+        background: rgba(255,255,255,.72);
+        border-radius: 6px;
+        padding: 14px 12px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        color: var(--ink);
+        outline: none;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+
+      textarea{ min-height: 120px; resize: vertical; }
+
+      input:focus-visible, textarea:focus-visible{
+        box-shadow: 0 0 0 3px rgba(199,161,102,.25);
+        border-color: rgba(199,161,102,.6);
+      }
+
+      .actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 14px;
+        align-items:center;
+        margin-top: 20px;
+      }
+
+      button.submit-btn{
+        cursor:pointer;
+        border: 1px solid rgba(199,161,102,.4);
+        /* Gold Gradient Button */
+        background: linear-gradient(135deg, #2a2a2c 0%, #141316 100%);
+        color: rgba(255,255,255,.95);
+        padding: 14px 24px;
+        border-radius: 6px;
+        font-family: var(--font-sans);
+        font-weight: 700;
+        letter-spacing: .05em;
+        font-size: 13px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(20,19,22,0.15);
+      }
+      button.submit-btn:hover{ 
+        transform: translateY(-2px); 
+        box-shadow: 0 6px 20px rgba(199,161,102,0.3);
+        border-color: var(--champ);
+      }
+      button.submit-btn:active{ transform: translateY(0px); }
+
+      .quietlink{
+        color: rgba(20,19,22,.78);
+        font-weight: 600;
+        font-size: 13px;
+      }
+
+      .preview{
+        flex: 1 1 360px;
+      }
+
+      .preview h4{
+        margin: 0;
+        font-family: var(--font-serif);
+        font-size: 18px;
+        font-weight: 600;
+        font-style: italic;
+      }
+
+      .preview p{
+        margin: 8px 0 0;
+        color: var(--mut);
+        font-size: 14px;
+        line-height: 1.7;
+        max-width: 72ch;
+      }
+
+      .mailbox{
+        margin-top: 12px;
+        border: 1px solid var(--line2);
+        border-radius: 8px;
+        background: rgba(255,255,255,.60);
+        overflow:hidden;
+        backdrop-filter: blur(4px);
+      }
+
+      .mailbox .top{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        justify-content:space-between;
+        gap: 8px 12px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line2);
+        background: rgba(255,255,255,.68);
+        color: rgba(20,19,22,.6);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .mailbox pre{
+        margin:0;
+        padding: 20px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: var(--font-serif);
+        font-size: 17px;
+        line-height: 1.6;
+        color: rgba(20,19,22,.9);
+        font-style: italic;
+      }
+
+      footer{
+        margin-top: 60px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line2);
+        color: rgba(20,19,22,.5);
+        font-size: 11px;
+        line-height: 1.6;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .fine{
+        display:flex;
+        flex-wrap:wrap;
+        gap: 10px 14px;
+        align-items:center;
+        justify-content:space-between;
+      }
+
+      @media (max-width: 780px){
+        .inner{ padding: 24px 20px 30px; }
+        .meta{ align-items:flex-start; text-align:left; }
+        dt{ flex-basis: 100%; }
+      }
+
+      @media (prefers-reduced-motion: reduce){
+        .seal, button, .diamond-dust { transition:none !important; animation: none !important; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="diamond-dust" aria-hidden="true"></div>
+
+    <a href="/" class="index-btn">Index</a>
+
+    <main class="shell">
+      <section class="sheet" aria-label="Vellum Wedding Bureau homepage">
+        <div class="inner">
+          <header class="letterhead">
+            <div class="brand">
+              <div class="name">
+                {BRAND}
+                <span class="seal" aria-hidden="true" title="Bureau seal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2l2.2 6.8H21l-5.6 4.1 2.1 6.9L12 16.3 6.5 19.8l2.1-6.9L3 8.8h6.8L12 2z"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="tag">{TAGLINE}</div>
+              <p class="sub">
+                Design direction, logistics, vendors, guest experience — handled end-to-end.
+                Your day feels unhurried because every decision is made earlier, documented properly, and executed quietly.
+              </p>
+            </div>
+
+            <div class="meta" aria-label="Studio details">
+              <div><strong>Area</strong> — {AREA}</div>
+              <div><strong>Email</strong> — <a href={`mailto:${EMAIL}`}>{EMAIL}</a></div>
+              <div><strong>Phone</strong> — <a href={`tel:${TEL}`}>{PHONE}</a></div>
+            </div>
+          </header>
+
+          <section class="insert" aria-label="Visual insert and positioning note">
+            <figure class="photo">
+              <img src={HERO_IMG} alt="Elegant wedding stationery arranged in soft natural light." loading="eager" />
+            </figure>
+
+            <aside class="note" aria-label="Positioning note">
+              <h2>Effortless is engineered</h2>
+              <p>
+                We don’t add “support” — we take ownership of the full production.
+                The experience stays calm because every moving part has a brief, a timing, and a contingency.
+              </p>
+              <p>
+                If you want beauty and structure in equal measure, you’re in the right place.
+              </p>
+            </aside>
+
+            <figure class="photo" aria-label="Secondary detail crop" style="width:min(420px,100%);">
+              <img src={DETAIL_IMG} alt="Close-up detail of ribbon, paper texture, and refined typography." loading="lazy" />
+            </figure>
+          </section>
+
+          <section class="section" aria-label="Coverage ledger">
+            <h3>What we handle</h3>
+            <p class="hint">
+              When it’s done properly, it feels simple. Here’s what we carry — without the noise.
+            </p>
+
+            <dl class="ledger">
+              <div class="row">
+                <dt>Venue & contracting</dt>
+                <dd>Shortlists, site logic, contract review, deposit timing, and decision notes that keep everything clean and confident.</dd>
+              </div>
+              <div class="row">
+                <dt>Vendor curation + direction</dt>
+                <dd>Sourcing, briefing, alignment calls, and a shared run-of-show so every supplier works as one coordinated system.</dd>
+              </div>
+              <div class="row">
+                <dt>Guest experience & flow</dt>
+                <dd>Arrivals, comfort, signage, transport, and the small choices that prevent bottlenecks and awkward pauses.</dd>
+              </div>
+              <div class="row">
+                <dt>Design → buildable plan</dt>
+                <dd>We translate taste into instructions: what gets ordered, built, placed, lit, and removed — in sequence.</dd>
+              </div>
+              <div class="row">
+                <dt>Budget control</dt>
+                <dd>Spend categories, payment schedule, change control, and clarity on what improves the experience — and what doesn’t.</dd>
+              </div>
+              <div class="row">
+                <dt>Run-of-show + on-site execution</dt>
+                <dd>Timing cues, vendor handoffs, and quiet contingency planning. If something shifts, the day stays stable.</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="section" aria-label="Service Dossier">
+            <h3>The Commission</h3>
+            <p class="hint">
+              Planning is the visible part. Production is what makes it feel effortless.
+            </p>
+
+            <div class="dossier">
+              <div class="vcard">
+                <button class="vcard-trigger" aria-expanded="false">
+                  <span class="vcard-meta">01</span>
+                  <span class="vcard-title">Full-Service Production</span>
+                  <span class="vcard-icon">+</span>
+                </button>
+                <div class="vcard-body">
+                  <div class="vcard-inner">
+                    <p>
+                      End-to-end management with a single master plan. We create a complete run-of-show with timings, cue sheets, and responsibilities — so execution is seamless and you never have to “manage the day.”
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vcard">
+                <button class="vcard-trigger" aria-expanded="false">
+                  <span class="vcard-meta">02</span>
+                  <span class="vcard-title">Vendor Atelier</span>
+                  <span class="vcard-icon">+</span>
+                </button>
+                <div class="vcard-body">
+                  <div class="vcard-inner">
+                    <p>
+                      We curate the right specialists for your aesthetic and budget, then brief them properly. Clear scope, access notes, timing, and handoff rules — so every supplier can deliver their best work without friction.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vcard">
+                <button class="vcard-trigger" aria-expanded="false">
+                  <span class="vcard-meta">03</span>
+                  <span class="vcard-title">Design & Spatial Flow</span>
+                  <span class="vcard-icon">+</span>
+                </button>
+                <div class="vcard-body">
+                  <div class="vcard-inner">
+                    <p>
+                      We design how it feels and how it moves. Layout, guest flow, placement notes, lighting intent, and strike order — so transitions happen naturally from ceremony to dinner to dancing.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vcard">
+                <button class="vcard-trigger" aria-expanded="false">
+                  <span class="vcard-meta">04</span>
+                  <span class="vcard-title">Contingency & Calm</span>
+                  <span class="vcard-icon">+</span>
+                </button>
+                <div class="vcard-body">
+                  <div class="vcard-inner">
+                    <p>
+                      Weather shifts, delays, and surprises are normal. We build realistic Plan B options in advance, then handle changes quietly on the day — protecting the experience without announcements or stress.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" aria-label="Inquiry brief">
+            <h3>Inquiry brief</h3>
+            <p class="hint">
+              Fill the brief. We’ll draft your inquiry email automatically. Send when ready.
+            </p>
+
+            <div class="inquiry">
+              <form id="brief" aria-label="Inquiry form">
+                
+                <div class="service-select">
+                  <span class="label">Service scope</span>
+                  <div class="cards-grid">
+                    <button type="button" class="service-card-btn" data-val="Full Service">Full Service</button>
+                    <button type="button" class="service-card-btn" data-val="Partial Support">Partial Support</button>
+                    <button type="button" class="service-card-btn" data-val="Wedding Day">Wedding Day</button>
+                    <button type="button" class="service-card-btn" data-val="Design Studio">Design Studio</button>
+                    <button type="button" class="service-card-btn" data-val="Consultation">Consultation</button>
+                  </div>
+                </div>
+
+                <div class="gridless">
+                  <label>
+                    Event date
+                    <input id="date" name="date" type="date" required />
+                  </label>
+
+                  <label>
+                    City / region
+                    <input id="city" name="city" type="text" required />
+                  </label>
+
+                  <label>
+                    Estimated guest count
+                    <input id="guests" name="guests" type="number" min="1" step="1" required />
+                  </label>
+
+                  <label>
+                    Notes (venue, style, priorities)
+                    <textarea id="notes" name="notes" required></textarea>
+                  </label>
+                </div>
+
+                <div class="actions">
+                  <button type="submit" class="submit-btn">Generate inquiry email</button>
+                  <a class="quietlink" href={`mailto:${EMAIL}`}>or email us directly</a>
+                </div>
+              </form>
+
+              <aside class="preview" aria-label="Draft preview">
+                <h4>Draft preview</h4>
+                <p>
+                  If your mail client doesn’t open automatically, you can copy the draft below and send it to
+                  <strong>{EMAIL}</strong>.
+                </p>
+
+                <div class="mailbox" aria-label="Mail draft box">
+                  <div class="top">
+                    <span>To: <strong>{EMAIL}</strong></span>
+                    <span id="subj">Subject: Wedding inquiry — (date) — (city)</span>
+                  </div>
+                  <pre id="body">Hello Vellum Studio,
+
+I’d like to inquire about wedding planning support.
+
+Event date:
+City / region:
+Estimated guest count:
+Notes:
+
+Warm regards,
+</pre>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <footer aria-label="Footer">
+            <div class="fine">
+              <span>© {YEAR} {BRAND}. Full-service wedding planning — design, logistics, vendor direction, on-site production.</span>
+              <span>Images: Unsplash (used under Unsplash License).</span>
+            </div>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <script define:vars={{ EMAIL }}>
+      (function () {
+        const TARGET_EMAIL = EMAIL;
+
+        const form = document.getElementById("brief");
+        const date = document.getElementById("date");
+        const city = document.getElementById("city");
+        const guests = document.getElementById("guests");
+        const notes = document.getElementById("notes");
+
+        const subj = document.getElementById("subj");
+        const body = document.getElementById("body");
+
+        if (!form || !date || !city || !guests || !notes || !subj || !body) return;
+
+        // V-Card Logic
+        const vcards = document.querySelectorAll('.vcard-trigger');
+        vcards.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const parent = btn.parentElement;
+            const body = btn.nextElementSibling;
+            const isActive = parent.classList.contains('active');
+            
+            vcards.forEach(otherBtn => {
+              if (otherBtn !== btn) {
+                otherBtn.parentElement.classList.remove('active');
+                otherBtn.nextElementSibling.style.maxHeight = null;
+                otherBtn.setAttribute('aria-expanded', 'false');
+              }
+            });
+
+            if (!isActive) {
+              parent.classList.add('active');
+              body.style.maxHeight = body.scrollHeight + "px";
+              btn.setAttribute('aria-expanded', 'true');
+            } else {
+              parent.classList.remove('active');
+              body.style.maxHeight = null;
+              btn.setAttribute('aria-expanded', 'false');
+            }
+          });
+        });
+
+        // Service Selector Logic
+        const serviceBtns = document.querySelectorAll('.service-card-btn');
+        serviceBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            btn.classList.toggle('selected');
+            build();
+          });
+        });
+
+        function safe(v) { return String(v || "").trim(); }
+
+        function build() {
+          const d = safe(date.value) || "(date)";
+          const c = safe(city.value) || "(city)";
+          const g = safe(guests.value) || "(guest count)";
+          const n = safe(notes.value) || "(notes)";
+
+          const activeServices = Array.from(document.querySelectorAll('.service-card-btn.selected'))
+            .map(btn => btn.getAttribute('data-val'));
+          
+          const serviceString = activeServices.length > 0 
+            ? activeServices.join(', ') 
+            : "(scope not selected)";
+
+          const subject = `Wedding inquiry — ${d} — ${c}`;
+
+          const text =
+`Hello Vellum Studio,
+
+I’d like to inquire about the following service scope:
+${serviceString}
+
+Event date: ${d}
+City / region: ${c}
+Estimated guest count: ${g}
+
+Notes:
+${n}
+
+Warm regards,
+`;
+
+          subj.textContent = `Subject: ${subject}`;
+          body.textContent = text;
+
+          return { subject, text };
+        }
+
+        ["input","change"].forEach(evt => {
+          form.addEventListener(evt, build, { passive: true });
+        });
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const out = build();
+
+          const mailto =
+            `mailto:${encodeURIComponent(TARGET_EMAIL)}` +
+            `?subject=${encodeURIComponent(out.subject)}` +
+            `&body=${encodeURIComponent(out.text)}`;
+
+          window.location.href = mailto;
+        });
+
+        build();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,970 @@
+---
+const BRAND = "Vellum & Oak";
+const TAGLINE = "An independent bookstore. Curated shelves. Quiet reading room.";
+
+const NAV = [
+  { label: "Staff Picks", href: "#collection" },
+  { label: "Catalog", href: "#catalog" },
+  { label: "Events", href: "#events" },
+  { label: "Services", href: "#services" },
+  { label: "Visit", href: "#visit" },
+  { label: "Contact", href: "#contact" },
+];
+
+/* IMAGERY */
+const IMG = {
+  hero: "https://images.pexels.com/photos/2908984/pexels-photo-2908984.jpeg?auto=compress&cs=tinysrgb&w=1600",
+  detail: "https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+};
+
+const STORE = {
+  addressLine1: "14 High Street",
+  addressLine2: "Oxford, UK",
+  phoneDisplay: "+44 1865 555 120",
+  phoneHref: "tel:+441865555120",
+  emailDisplay: "hello@vellumoak.example",
+  emailHref: "mailto:hello@vellumoak.example",
+  hours: [
+    { day: "Mon", hours: "10:00–18:00" },
+    { day: "Tue", hours: "10:00–18:00" },
+    { day: "Wed", hours: "10:00–18:00" },
+    { day: "Thu", hours: "10:00–19:30" },
+    { day: "Fri", hours: "10:00–19:30" },
+    { day: "Sat", hours: "10:00–18:00" },
+    { day: "Sun", hours: "11:00–16:00" },
+  ],
+  note: "example build, please dont send your details.",
+};
+
+const GENRES = [
+  "Modern Classics",
+  "Literary Fiction",
+  "Poetry",
+  "Philosophy",
+  "History",
+  "Art & Design",
+  "Children’s",
+  "Rare & Signed",
+];
+
+const STAFF_PICKS = [
+  { title: "Moby-Dick", author: "Herman Melville", price: "£45.00", genre: "Modern Classics", format: "Hardback", stock: "In stock", color: "#2c3e50" },
+  { title: "Frankenstein", author: "Mary Shelley", price: "£38.00", genre: "Modern Classics", format: "Hardback", stock: "Low stock", color: "#34495e" },
+  { title: "The Odyssey", author: "Homer", price: "£52.00", genre: "Modern Classics", format: "Hardback", stock: "In stock", color: "#5d4037" },
+  { title: "Pride & Prejudice", author: "Jane Austen", price: "£32.00", genre: "Modern Classics", format: "Paperback", stock: "In stock", color: "#4a3b32" },
+];
+
+const CATALOG = [
+  { title: "Mrs Dalloway", author: "Virginia Woolf", price: "£14.00", genre: "Literary Fiction", format: "Paperback", stock: "In stock" },
+  { title: "The Waste Land", author: "T. S. Eliot", price: "£12.00", genre: "Poetry", format: "Paperback", stock: "In stock" },
+  { title: "Meditations", author: "Marcus Aurelius", price: "£16.00", genre: "Philosophy", format: "Hardback", stock: "In stock" },
+  { title: "The Book of Tea", author: "Kakuzō Okakura", price: "£11.00", genre: "Philosophy", format: "Paperback", stock: "In stock" },
+  { title: "SPQR", author: "Mary Beard", price: "£18.00", genre: "History", format: "Paperback", stock: "In stock" },
+  { title: "Ways of Seeing", author: "John Berger", price: "£15.00", genre: "Art & Design", format: "Paperback", stock: "In stock" },
+  { title: "The Tale of Peter Rabbit", author: "Beatrix Potter", price: "£9.00", genre: "Children’s", format: "Hardback", stock: "In stock" },
+  { title: "Signed First Edition: Selected Poems", author: "W. B. Yeats", price: "£220.00", genre: "Rare & Signed", format: "Hardback", stock: "By request" },
+  { title: "The Picture of Dorian Gray", author: "Oscar Wilde", price: "£13.00", genre: "Modern Classics", format: "Paperback", stock: "In stock" },
+  { title: "The Iliad", author: "Homer", price: "£20.00", genre: "Modern Classics", format: "Hardback", stock: "Low stock" },
+];
+
+const SERVICES = [
+  { k: "Special Orders", v: "Request specific editions. We source and notify." },
+  { k: "Holds & Pickup", v: "Reserve titles for 7 days. Pickup in store." },
+  { k: "Gift Wrap", v: "Archival paper + wax seal. Gift note included." },
+  { k: "Reading Room", v: "Quiet seats. Tea service. Appointment slots." },
+  { k: "Book Clubs", v: "Monthly fiction + classics. Sign up in-store." },
+  { k: "Gift Cards", v: "Physical card or email delivery." },
+];
+
+const EVENTS = [
+  { date: "Thu 19:00", title: "After Hours Reading: Modern Classics", meta: "Reading Room • 12 seats" },
+  { date: "Sat 16:30", title: "Poetry & Tea", meta: "Open mic • 5-minute slots" },
+  { date: "Sun 12:00", title: "Children’s Story Hour", meta: "Ground floor • families welcome" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} — Independent Bookstore</title>
+    <meta name="description" content="Independent bookstore with curated shelves, staff picks, events, holds, and special orders." />
+    <meta name="color-scheme" content="dark" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Proza+Libre:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+      :root{
+        /* PALETTE: Warm Library */
+        --bg-paper: #1c1917;     /* Very dark warm grey/brown */
+        --bg-shelf: #292524;     /* Slightly lighter shelf background */
+        --bg-panel: #201d1b;
+
+        --ink: #e7e5e4;          /* Warm off-white text */
+        --ink-dim: #a8a29e;      /* Dimmed text */
+
+        --gold: #d4af37;         /* Gold Foil */
+        --gold-dim: #8a7035;
+
+        --accent: #78350f;       /* Leather accent */
+        --line: rgba(255,255,255,0.08);
+        --line-gold: rgba(212, 175, 55, 0.22);
+
+        --serif: "Cormorant Garamond", serif;
+        --sans: "Proza Libre", sans-serif;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+        --max: 1200px;
+        --pad: 24px;
+        --radius: 6px;
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; scroll-behavior:smooth; }
+
+      body{
+        margin:0;
+        font-family: var(--sans);
+        color: var(--ink);
+        background-color: var(--bg-paper);
+        overflow-x:hidden;
+      }
+
+      /* Paper Texture Overlay */
+      body::before {
+        content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+      }
+
+      a{ color:inherit; text-decoration:none; }
+      .wrap{ max-width:var(--max); margin:0 auto; padding: 0 var(--pad); position:relative; z-index:2; }
+
+      /* HEADER */
+      header{
+        padding: 38px 0 26px;
+        display: flex; justify-content: space-between; align-items: flex-end; gap: 18px;
+        border-bottom: 1px solid var(--line-gold);
+        margin-bottom: 46px;
+      }
+
+      .brand-group{ display: flex; align-items: center; gap: 16px; }
+
+      .back-link{
+        width: 36px; height: 36px; display: grid; place-items: center;
+        border: 1px solid rgba(255,255,255,0.12); border-radius: 50%;
+        color: var(--ink-dim); transition: all 0.25s ease;
+      }
+      .back-link:hover{ border-color: var(--gold); color: var(--gold); }
+      .back-link svg{ width: 16px; height: 16px; fill: currentColor; }
+
+      .brand{
+        font-family: var(--serif);
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .brand-sub{
+        margin-top: 8px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(231,229,228,0.45);
+      }
+
+      nav{ display: flex; gap: 22px; flex-wrap: wrap; justify-content: flex-end; }
+      nav a{
+        font-family: var(--sans);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--ink-dim);
+        transition: color 0.2s;
+        position: relative;
+        padding: 8px 0;
+      }
+      nav a:hover{ color: var(--ink); }
+      nav a::after{
+        content:""; position:absolute; left:0; right:100%; bottom:2px; height:1px;
+        background: var(--gold);
+        transition: right 0.25s ease;
+        opacity: 0.7;
+      }
+      nav a:hover::after{ right:0; }
+
+      /* HERO */
+      .hero{
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 60px;
+        align-items: center;
+        min-height: 62vh;
+        margin-bottom: 110px;
+      }
+      .hero-content h1{
+        font-family: var(--serif);
+        font-size: clamp(46px, 5vw, 78px);
+        line-height: 1;
+        margin: 0 0 18px;
+        font-weight: 300;
+      }
+      .hero-content h1 em{ font-style: italic; color: var(--gold); }
+
+      .lead{
+        font-size: 17px;
+        line-height: 1.75;
+        color: var(--ink-dim);
+        max-width: 52ch;
+        border-left: 2px solid var(--gold);
+        padding-left: 22px;
+        margin: 0 0 26px;
+      }
+
+      .hero-actions{ display:flex; gap: 14px; flex-wrap:wrap; margin-top: 26px; }
+
+      .btn{
+        display:inline-flex; align-items:center; justify-content:center;
+        padding: 14px 22px;
+        border: 1px solid rgba(212,175,55,0.7);
+        color: var(--gold);
+        font-family: var(--sans);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 12px;
+        transition: all 0.25s ease;
+        border-radius: var(--radius);
+        background: transparent;
+      }
+      .btn:hover{ background: var(--gold); color: var(--bg-paper); }
+      .btn.ghost{
+        border-color: rgba(255,255,255,0.18);
+        color: rgba(231,229,228,0.85);
+      }
+      .btn.ghost:hover{
+        border-color: var(--gold);
+        color: var(--gold);
+        background: rgba(212,175,55,0.08);
+      }
+
+      .hero-meta{
+        margin-top: 22px;
+        display:flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        color: rgba(231,229,228,0.70);
+        font-size: 12px;
+      }
+      .pill{
+        border: 1px solid rgba(255,255,255,0.10);
+        padding: 10px 12px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.02);
+      }
+      .pill b{ color: rgba(212,175,55,0.92); font-weight: 700; }
+
+      .hero-image{
+        position: relative;
+        height: 600px;
+        border-radius: 8px 8px 0 0;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+      }
+      .hero-image img{
+        width: 100%; height: 100%;
+        object-fit: cover;
+        filter: sepia(18%) contrast(1.08) brightness(0.95);
+        transform: scale(1.02);
+      }
+      .hero-overlay{
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(800px 420px at 20% 18%, rgba(212,175,55,0.10), transparent 60%),
+          linear-gradient(to top, var(--bg-paper), transparent 42%);
+      }
+
+      /* SECTIONS */
+      section{ margin-top: 120px; }
+      .section-head{
+        text-align: center;
+        margin-bottom: 42px;
+        position: relative;
+      }
+      .section-head::after{
+        content: "❧";
+        display: block;
+        font-size: 22px;
+        color: var(--gold-dim);
+        margin-top: 10px;
+        opacity: 0.75;
+      }
+      .section-head h2{
+        font-family: var(--serif);
+        font-size: 42px;
+        font-weight: 400;
+        margin: 0;
+        color: var(--ink);
+      }
+      .section-head span{
+        font-family: var(--mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        color: var(--ink-dim);
+      }
+
+      /* STAFF PICKS: Shelf grid */
+      .shelf{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 34px;
+        padding: 56px 0;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .book-card{ display: flex; flex-direction: column; align-items: center; }
+
+      .book-cover{
+        width: 100%;
+        aspect-ratio: 2/3;
+        position: relative;
+        box-shadow: -5px 0 10px rgba(0,0,0,0.50), 6px 10px 24px rgba(0,0,0,0.35);
+        transform-style: preserve-3d;
+        transform: perspective(1000px) rotateY(-6deg);
+        transition: transform 0.35s ease;
+        margin-bottom: 18px;
+        border-radius: 2px 8px 8px 2px;
+        background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3h1v1H1V3zm2-2h1v1H3V1z' fill='%23ffffff' fill-opacity='0.05'/%3E%3C/svg%3E");
+        border: 1px solid rgba(255,255,255,0.10);
+      }
+      .book-card:hover .book-cover{
+        transform: perspective(1000px) rotateY(0deg) translateY(-4px);
+      }
+      .book-cover::before{
+        content:"";
+        position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.20), transparent);
+        border-right: 1px solid rgba(0,0,0,0.35);
+      }
+      .cover-art{
+        position: absolute; inset: 14px;
+        border: 1px solid rgba(212, 175, 55, 0.42);
+        display:flex; flex-direction:column; justify-content:center; align-items:center;
+        text-align:center;
+        padding: 10px;
+      }
+      .cover-title{
+        font-family: var(--serif);
+        color: var(--gold);
+        font-size: 20px;
+        line-height: 1.2;
+      }
+
+      .book-info{ text-align:center; }
+      .book-title{ font-family: var(--serif); font-size: 18px; margin: 0 0 4px; color: var(--ink); }
+      .book-author{
+        font-family: var(--mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: rgba(231,229,228,0.60);
+      }
+      .book-meta{
+        margin-top: 10px;
+        display:flex;
+        justify-content:center;
+        gap: 10px;
+        flex-wrap:wrap;
+        font-size: 12px;
+        color: rgba(231,229,228,0.72);
+      }
+      .price{ font-family: var(--serif); font-style: italic; color: var(--gold); }
+      .stock{
+        border: 1px solid rgba(255,255,255,0.10);
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.02);
+      }
+
+      /* CATALOG controls + grid */
+      .controls{
+        display:flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 10px 0 26px;
+      }
+      .control{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.02);
+        border-radius: 999px;
+        padding: 10px 12px;
+      }
+      .control label{
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(231,229,228,0.55);
+      }
+      .control input, .control select{
+        border: none;
+        outline: none;
+        background: transparent;
+        color: rgba(231,229,228,0.88);
+        font-family: var(--sans);
+        font-size: 13px;
+        min-width: 220px;
+      }
+      .control select{ min-width: 200px; }
+      .control input::placeholder{ color: rgba(231,229,228,0.45); }
+
+      .catalog-grid{
+        display:grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .item{
+        border: 1px solid rgba(255,255,255,0.08);
+        background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18));
+        border-radius: var(--radius);
+        padding: 18px;
+        transition: transform .2s ease, border-color .2s ease;
+      }
+      .item:hover{ transform: translateY(-2px); border-color: rgba(212,175,55,0.35); }
+      .item .t{
+        font-family: var(--serif);
+        font-size: 22px;
+        color: #fff;
+        margin: 0;
+      }
+      .item .a{
+        margin-top: 6px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(231,229,228,0.62);
+      }
+      .item .row{
+        margin-top: 14px;
+        display:flex; justify-content:space-between; gap: 10px; flex-wrap:wrap;
+        color: rgba(231,229,228,0.72);
+        font-size: 12px;
+      }
+      .tag{
+        border: 1px solid rgba(255,255,255,0.10);
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.02);
+      }
+
+      /* EVENTS */
+      .events{
+        border-top: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding: 26px 0;
+        display:grid;
+        gap: 10px;
+      }
+      .event{
+        display:flex;
+        justify-content:space-between;
+        gap: 18px;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .event:last-child{ border-bottom: none; }
+      .event .date{
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(212,175,55,0.85);
+        min-width: 110px;
+      }
+      .event .title{
+        font-family: var(--serif);
+        font-size: 22px;
+        color: #fff;
+        margin: 0;
+      }
+      .event .meta{
+        margin-top: 6px;
+        color: rgba(231,229,228,0.65);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      /* SERVICES SPLIT */
+      .split-section{
+        margin-top: 120px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: var(--bg-shelf);
+        border-top: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .split-img{ height: 100%; min-height: 520px; }
+      .split-img img{ width: 100%; height: 100%; object-fit: cover; filter: sepia(30%) contrast(0.9); }
+
+      .split-content{
+        padding: 70px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .split-content .section-head{ text-align:left; margin-bottom: 26px; }
+      .split-content .section-head::after{ text-align:left; }
+
+      .service-list{ display: grid; gap: 16px; margin-top: 18px; }
+      .service-item{
+        display:flex;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        padding-bottom: 12px;
+      }
+      .srv-name{ font-family: var(--serif); font-size: 20px; color: var(--ink); }
+      .srv-desc{ font-family: var(--sans); font-size: 13px; color: var(--ink-dim); line-height: 1.6; max-width: 36ch; text-align: right; }
+
+      /* VISIT + CONTACT */
+      .visit-grid{
+        margin-top: 20px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .panel{
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.02);
+        border-radius: var(--radius);
+        padding: 20px;
+      }
+      .panel h3{
+        margin: 0 0 12px;
+        font-family: var(--serif);
+        font-size: 26px;
+        font-weight: 500;
+        color: #fff;
+      }
+      .panel p{ margin: 8px 0 0; color: var(--ink-dim); line-height: 1.7; }
+      .kv{ margin-top: 12px; display:grid; gap: 10px; }
+      .kv a{
+        display:inline-flex;
+        width: fit-content;
+        border-bottom: 1px solid rgba(255,255,255,0.14);
+        padding-bottom: 2px;
+        color: rgba(231,229,228,0.85);
+      }
+      .kv a:hover{ color: var(--gold); border-bottom-color: rgba(212,175,55,0.45); }
+
+      table{ width:100%; border-collapse: collapse; margin-top: 14px; }
+      td{
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        color: rgba(231,229,228,0.75);
+        font-size: 13px;
+      }
+      td:first-child{
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(231,229,228,0.55);
+        width: 90px;
+      }
+
+      form{ margin-top: 14px; display:grid; gap: 10px; }
+      .field label{
+        display:block;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(231,229,228,0.55);
+        margin-bottom: 6px;
+      }
+      .field input, .field textarea{
+        width:100%;
+        border-radius: var(--radius);
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.18);
+        color: rgba(231,229,228,0.92);
+        padding: 12px;
+        outline: none;
+        font-family: var(--sans);
+        font-size: 14px;
+      }
+      .field textarea{ min-height: 120px; resize: vertical; }
+      .field input:focus, .field textarea:focus{
+        border-color: rgba(212,175,55,0.45);
+        box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+      }
+      .form-row{ display:flex; gap: 12px; flex-wrap:wrap; margin-top: 6px; }
+
+      .note{
+        margin-top: 14px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(231,229,228,0.45);
+      }
+
+      /* FOOTER */
+      footer{
+        padding: 70px 0 80px;
+        text-align: center;
+        margin-top: 110px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+      }
+      .foot-brand{ font-family: var(--serif); font-size: 24px; color: var(--gold); margin-bottom: 14px; display: block; }
+      .foot-info{ font-family: var(--sans); font-size: 13px; color: var(--ink-dim); line-height: 1.8; }
+      .foot-info b{ color: rgba(231,229,228,0.92); }
+
+      @media(max-width: 980px){
+        header{ align-items:flex-start; flex-direction: column; }
+        nav{ justify-content:flex-start; }
+        .hero{ grid-template-columns: 1fr; gap: 34px; }
+        .hero-image{ height: 360px; }
+        .shelf{ grid-template-columns: 1fr 1fr; gap: 22px; }
+        .catalog-grid{ grid-template-columns: 1fr; }
+        .split-section{ grid-template-columns: 1fr; }
+        .split-content{ padding: 40px 24px; }
+        .visit-grid{ grid-template-columns: 1fr; }
+      }
+      @media(max-width: 520px){
+        .shelf{ grid-template-columns: 1fr; }
+        .control input{ min-width: 180px; }
+        .event{ flex-direction: column; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="brand-group">
+          <a href="/" class="back-link" aria-label="Return to index">
+            <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zM3 14h7v7H3v-7z"/></svg>
+          </a>
+
+          <div>
+            <div class="brand">{BRAND}</div>
+            <div class="brand-sub">Independent bookstore • Oxford</div>
+          </div>
+        </div>
+
+        <nav aria-label="Primary navigation">
+          {NAV.map(l => <a href={l.href}>{l.label}</a>)}
+        </nav>
+      </header>
+
+      <section class="hero" aria-label="Hero">
+        <div class="hero-content">
+          <h1>Books, <em>properly</em> kept.</h1>
+          <p class="lead">
+            {TAGLINE}<br />
+            Browse our catalog, reserve a hold, or request a specific edition — we’ll source it.
+          </p>
+
+          <div class="hero-actions" aria-label="Hero actions">
+            <a href="#catalog" class="btn" aria-label="Browse catalog">Browse Catalog</a>
+            <a href="#contact" class="btn ghost" aria-label="Request a hold or special order">Request a Hold</a>
+          </div>
+
+          <div class="hero-meta" aria-label="Store meta">
+            <div class="pill"><b>Holds</b> 7 days</div>
+            <div class="pill"><b>Special orders</b> sourced</div>
+            <div class="pill"><b>Events</b> weekly</div>
+          </div>
+
+          <div class="note">{STORE.note}</div>
+        </div>
+
+        <div class="hero-image" aria-label="Bookstore interior">
+          <img src={IMG.hero} alt="Warm bookstore interior with tall shelves" loading="eager" />
+          <div class="hero-overlay"></div>
+        </div>
+      </section>
+
+      <section id="collection" aria-label="Staff picks">
+        <div class="section-head">
+          <span>Staff Picks</span>
+          <h2>The Front Table</h2>
+        </div>
+
+        <div class="shelf" aria-label="Staff picks shelf">
+          {STAFF_PICKS.map(book => (
+            <article class="book-card" aria-label={`${book.title} by ${book.author}`}>
+              <div class="book-cover" style={`background-color: ${book.color}`}>
+                <div class="cover-art">
+                  <div class="cover-title">{book.title}</div>
+                </div>
+              </div>
+              <div class="book-info">
+                <div class="book-title">{book.title}</div>
+                <div class="book-author">{book.author}</div>
+                <div class="book-meta">
+                  <span class="price">{book.price}</span>
+                  <span class="stock">{book.stock}</span>
+                  <span class="stock">{book.format}</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="catalog" aria-label="Catalog">
+        <div class="section-head">
+          <span>Search & Filter</span>
+          <h2>Catalog</h2>
+        </div>
+
+        <div class="controls" aria-label="Catalog controls">
+          <div class="control" role="group" aria-label="Search by title or author">
+            <label for="q">Search</label>
+            <input id="q" type="text" placeholder="Title or author…" autocomplete="off" />
+          </div>
+
+          <div class="control" role="group" aria-label="Filter by genre">
+            <label for="genre">Genre</label>
+            <select id="genre">
+              <option value="all">All</option>
+              {GENRES.map(g => <option value={g}>{g}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div id="resultsNote" class="note" aria-live="polite"></div>
+
+        <div class="catalog-grid" id="catalogGrid" aria-label="Catalog grid">
+          {CATALOG.map((b) => (
+            <article
+              class="item"
+              data-title={b.title}
+              data-author={b.author}
+              data-genre={b.genre}
+              aria-label={`${b.title} by ${b.author}`}
+            >
+              <h3 class="t">{b.title}</h3>
+              <div class="a">{b.author}</div>
+              <div class="row">
+                <span class="tag">{b.genre}</span>
+                <span class="tag">{b.format}</span>
+                <span class="tag">{b.stock}</span>
+                <span class="tag" style="border-color: rgba(212,175,55,0.35); color: rgba(212,175,55,0.9);">{b.price}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="events" aria-label="Events">
+        <div class="section-head">
+          <span>In-store</span>
+          <h2>Events</h2>
+        </div>
+
+        <div class="events" aria-label="Event list">
+          {EVENTS.map((e) => (
+            <div class="event" aria-label={e.title}>
+              <div class="date">{e.date}</div>
+              <div style="flex:1;">
+                <p class="title">{e.title}</p>
+                <div class="meta">{e.meta}</div>
+              </div>
+              <div>
+                <a class="btn ghost" href="#contact" aria-label={`Reserve seat for ${e.title}`}>Reserve</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <section id="services" class="split-section" aria-label="Services">
+      <div class="split-img" aria-hidden="true">
+        <img src={IMG.detail} alt="" loading="lazy" />
+      </div>
+
+      <div class="split-content">
+        <div class="section-head">
+          <span>Services</span>
+          <h2>Reading Room & Desk</h2>
+        </div>
+
+        <div class="service-list" aria-label="Service list">
+          {SERVICES.map(s => (
+            <div class="service-item" aria-label={s.k}>
+              <span class="srv-name">{s.k}</span>
+              <span class="srv-desc">{s.v}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="note">For rare editions, bring ISBNs or photos of the title page if possible.</div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <section id="visit" aria-label="Visit">
+        <div class="section-head">
+          <span>Visit</span>
+          <h2>Find Us</h2>
+        </div>
+
+        <div class="visit-grid">
+          <div class="panel" aria-label="Location">
+            <h3>Address</h3>
+            <p><b>{STORE.addressLine1}</b><br />{STORE.addressLine2}</p>
+
+            <div class="kv" aria-label="Contact links">
+              <a href={STORE.phoneHref} aria-label="Call the store">{STORE.phoneDisplay}</a>
+              <a href={STORE.emailHref} aria-label="Email the store">{STORE.emailDisplay}</a>
+            </div>
+
+            <p style="margin-top:14px;">
+              Quiet seating available. Please keep calls outside the reading room.
+            </p>
+          </div>
+
+          <div class="panel" aria-label="Hours">
+            <h3>Hours</h3>
+            <table aria-label="Opening hours">
+              <tbody>
+                {STORE.hours.map(h => (
+                  <tr>
+                    <td>{h.day}</td>
+                    <td>{h.hours}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" aria-label="Contact">
+        <div class="section-head">
+          <span>Contact</span>
+          <h2>Holds & Special Orders</h2>
+        </div>
+
+        <div class="visit-grid">
+          <div class="panel" aria-label="Inquiry form">
+            <h3>Send a request</h3>
+            <p>
+              Tell us the title/author (or ISBN) and what you need: hold, special order, or edition sourcing.
+            </p>
+
+            <form action="#" method="post">
+              <div class="field">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" placeholder="Your name" />
+              </div>
+
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="you@example.com" />
+              </div>
+
+              <div class="field">
+                <label for="msg">Request</label>
+                <textarea id="msg" name="msg" placeholder="e.g. Hold: The Iliad (Hardback). Pickup Saturday."></textarea>
+              </div>
+
+              <div class="form-row">
+                <button class="btn" type="submit">Send</button>
+                <a class="btn ghost" href={STORE.phoneHref}>Call Instead</a>
+              </div>
+
+              <div class="note">This form is a front-end placeholder. Wire it to your handler when ready.</div>
+            </form>
+          </div>
+
+          <div class="panel" aria-label="Newsletter">
+            <h3>Newsletter</h3>
+            <p>
+              Monthly staff picks, upcoming events, and new arrivals. No spam. Unsubscribe any time.
+            </p>
+
+            <form action="#" method="post">
+              <div class="field">
+                <label for="nl">Email</label>
+                <input id="nl" name="nl" type="email" placeholder="you@example.com" />
+              </div>
+              <div class="form-row">
+                <button class="btn" type="submit">Subscribe</button>
+                <a class="btn ghost" href="#events">See Events</a>
+              </div>
+              <div class="note">{STORE.note}</div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <footer aria-label="Footer">
+        <span class="foot-brand">{BRAND}</span>
+        <div class="foot-info">
+          <div><b>{STORE.addressLine1}</b> • {STORE.addressLine2}</div>
+          <div>Holds • Special Orders • Events • Reading Room</div>
+          <div style="margin-top:10px;">&copy; 2024 {BRAND}. Independent bookstore.</div>
+        </div>
+      </footer>
+    </div>
+
+    <script is:inline>
+      // @ts-nocheck
+      (function () {
+        var q = document.getElementById("q");
+        var genre = document.getElementById("genre");
+        var grid = document.getElementById("catalogGrid");
+        var note = document.getElementById("resultsNote");
+        if (!q || !genre || !grid) return;
+
+        function norm(s){ return String(s || "").toLowerCase().trim(); }
+
+        function apply() {
+          var query = norm(q.value);
+          var g = genre.value || "all";
+          var items = Array.prototype.slice.call(grid.querySelectorAll(".item"));
+          var shown = 0;
+
+          items.forEach(function (el) {
+            var title = norm(el.getAttribute("data-title"));
+            var author = norm(el.getAttribute("data-author"));
+            var itemGenre = el.getAttribute("data-genre") || "";
+
+            var matchQ = !query || title.indexOf(query) !== -1 || author.indexOf(query) !== -1;
+            var matchG = (g === "all") || (itemGenre === g);
+
+            var ok = matchQ && matchG;
+            el.style.display = ok ? "" : "none";
+            if (ok) shown++;
+          });
+
+          if (note) {
+            note.textContent = "Showing " + shown + " of " + items.length + " titles";
+          }
+        }
+
+        q.addEventListener("input", apply);
+        genre.addEventListener("change", apply);
+        apply();
+      })();
+    </script>
+  </body>
+</html>

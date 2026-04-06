@@ -1,0 +1,732 @@
+---
+/**
+ * [MOD-17] CODEX WEB BUILD MODULE (MOD-17.171)
+ * File: src/pages/index.astro
+ *
+ * Intent:
+ * - GL-styled index hub (UPGRADED: FULL WIDTH GRID).
+ * - Changes: Removed visual panel, Expanded text content, Full-width layout.
+ * - Mode: Pipeline 2 (Rapid Iteration).
+ */
+
+const BRAND = import.meta.env.PUBLIC_BRAND || "GOLD LINE"; // Placeholder: Change in .env
+const SYSTEM_VERSION = "OS-V13.12";
+
+const NAV = [{ label: "BACK TO MAIN SITE", href: "https://YOUR-MAIN-WEBSITE.COM", code: "MAIN" }];
+
+const SITES = [
+  { 
+    label: "SYSTEM PORTAL", 
+    file: "website1.astro", 
+    id: "01",
+    status: "RESTRICTED",
+    latency: "12ms",
+    desc: "Internal Access / System Root"
+  },
+  { 
+    label: "NOCTURNE HOTEL", 
+    file: "website2.astro", 
+    id: "02",
+    status: "ONLINE",
+    latency: "08ms",
+    desc: "Luxury hotel homepage"
+  },
+  { 
+    label: "YOYOGI", 
+    file: "website3.astro", 
+    id: "03",
+    status: "ONLINE",
+    latency: "14ms",
+    desc: "Thermal wellness / sauna-style recovery"
+  },
+  { 
+    label: "AURELIA SKYPORT", 
+    file: "website4.astro", 
+    id: "04",
+    status: "ONLINE",
+    latency: "05ms",
+    desc: "Private runway + private terminal"
+  },
+  { 
+    label: "OVERSEAS LINE", 
+    file: "website5.astro", 
+    id: "05",
+    status: "ONLINE",
+    latency: "09ms",
+    desc: "Luxury overseas crossings / all-suite ship"
+  },
+  { 
+    label: "ORBITAL CRYPTO", 
+    file: "website6.astro", 
+    id: "06",
+    status: "ONLINE",
+    latency: "03ms",
+    desc: "Institutional crypto platform"
+  },
+  { 
+    label: "GREENLINE TREE SURGERY", 
+    file: "website7.astro", 
+    id: "07",
+    status: "ONLINE",
+    latency: "11ms",
+    desc: "Local tree surgeon homepage"
+  },
+  { 
+    label: "VELLUM & OAK", 
+    file: "website8.astro", 
+    id: "08",
+    status: "ONLINE",
+    latency: "16ms",
+    desc: "Bookstore homepage"
+  },
+  { 
+    label: "ORBITAL ARCHIVE", 
+    file: "website9.astro", 
+    id: "09",
+    status: "ONLINE",
+    latency: "04ms",
+    desc: "Private observatory / research briefings"
+  },
+  { 
+    label: "UNFORM / 010", 
+    file: "website10.astro", 
+    id: "10",
+    status: "ONLINE",
+    latency: "07ms",
+    desc: "Anti-template workspace concept"
+  },
+  { 
+    label: "ATLAS INTERFACE", 
+    file: "website11.astro", 
+    id: "11",
+    status: "ONLINE",
+    latency: "09ms",
+    desc: "Experimental atlas interface (nodes/flows)"
+  },
+  { 
+    label: "AETHER CRYSTALWORKS", 
+    file: "website12.astro", 
+    id: "12",
+    status: "ONLINE",
+    latency: "12ms",
+    desc: "Lab-grown optical crystal objects"
+  },
+  { 
+    label: "LIGNUM ATELIER", 
+    file: "website13.astro", 
+    id: "13",
+    status: "ONLINE",
+    latency: "15ms",
+    desc: "Heirloom woodwork / atelier"
+  },
+  { 
+    label: "NEON DISTRICT", 
+    file: "website14.astro", 
+    id: "14",
+    status: "ONLINE",
+    latency: "06ms",
+    desc: "Neon operator control surface"
+  },
+  { 
+    label: "VULCANIC ATELIER", 
+    file: "website15.astro", 
+    id: "15",
+    status: "ONLINE",
+    latency: "18ms",
+    desc: "Reservation-only volcanic retreat"
+  },
+  { 
+    label: "FIELD STUDIO", 
+    file: "website16.astro", 
+    id: "16",
+    status: "ONLINE",
+    latency: "08ms",
+    desc: "Systems / nature interfaces studio"
+  },
+  { 
+    label: "ATELIER PRIVATE CATERING", 
+    file: "website17.astro", 
+    id: "17",
+    status: "ONLINE",
+    latency: "10ms",
+    desc: "Private catering / discreet chef-led dining"
+  },
+  { 
+    label: "AURUM THERMAL HOUSE", 
+    file: "website18.astro", 
+    id: "18",
+    status: "ONLINE",
+    latency: "14ms",
+    desc: "Amsterdam canal-house thermal circuit"
+  },
+  { 
+    label: "MONARCH CHAUFFEUR", 
+    file: "website19.astro", 
+    id: "19",
+    status: "ONLINE",
+    latency: "05ms",
+    desc: "Private chauffeur / ultra-lux taxi"
+  },
+  { 
+    label: "NORTHRIDGE", 
+    file: "website20.astro", 
+    id: "20",
+    status: "ONLINE",
+    latency: "11ms",
+    desc: "Architectural renovations homepage"
+  },
+  { 
+    label: "HEARTH & GROVE", 
+    file: "website21.astro", 
+    id: "21",
+    status: "ONLINE",
+    latency: "09ms",
+    desc: "Landscape architecture homepage"
+  },
+  { 
+    label: "CLEARSTREAM", 
+    file: "website22.astro", 
+    id: "22",
+    status: "ONLINE",
+    latency: "07ms",
+    desc: "Exterior cleaning / pressure washing"
+  },
+  { 
+    label: "RIDGELINE ROOFING", 
+    file: "website23.astro", 
+    id: "23",
+    status: "ONLINE",
+    latency: "13ms",
+    desc: "Roofing repair & replacement"
+  },
+  { 
+    label: "NIGHTWATCH", 
+    file: "website24.astro", 
+    id: "24",
+    status: "ONLINE",
+    latency: "04ms",
+    desc: "Locksmith dispatch / emergency locksmith"
+  },
+  { 
+    label: "GROUNDSPEC", 
+    file: "website25.astro", 
+    id: "25",
+    status: "ONLINE",
+    latency: "12ms",
+    desc: "Paving & fencing + interactive estimator"
+  },
+  { 
+    label: "EMBERLINE GAS", 
+    file: "website26.astro", 
+    id: "26",
+    status: "ONLINE",
+    latency: "08ms",
+    desc: "Gas / heating services homepage"
+  },
+  { 
+    label: "VELLUM WEDDING", 
+    file: "website27.astro", 
+    id: "27",
+    status: "ONLINE",
+    latency: "15ms",
+    desc: "Wedding planning bureau (full-service)"
+  },
+  { 
+    label: "CIVIL HOUSE MAKELAARS", 
+    file: "website28.astro", 
+    id: "28",
+    status: "ONLINE",
+    latency: "06ms",
+    desc: "Real estate / makelaars office"
+  },
+  { 
+    label: "CALIBER STUDIO", 
+    file: "website29.astro", 
+    id: "29",
+    status: "ONLINE",
+    latency: "03ms",
+    desc: "Custom watch manufacturer"
+  },
+  { 
+    label: "OBSIDIAN MOTORS", 
+    file: "website30.astro", 
+    id: "30",
+    status: "ONLINE",
+    latency: "02ms",
+    desc: "Automotive showroom homepage"
+  },
+];
+
+const toRoute = (file: string): string => `/${file.replace(/\.astro$/i, "")}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} — Index</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root{
+        --bg-0: #050506;
+        --bg-1: #070709;
+        --ink: rgba(226, 212, 182, .82);
+        --ink-dim: rgba(226, 212, 182, .64);
+        --gold: rgba(201, 161, 95, 1);
+        --gold-dim: rgba(201, 161, 95, .70);
+        --gold-glow: rgba(201, 161, 95, .15);
+        --line: rgba(201, 161, 95, .18);
+        --line-2: rgba(201, 161, 95, .10);
+        --shadow: rgba(0,0,0,.55);
+        --glass: rgba(255, 255, 255, 0.02);
+        --mono: "JetBrains Mono", monospace;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--bg-0);
+        color: var(--ink);
+        font-family: Inter, sans-serif;
+        letter-spacing: .01em;
+        overflow-x: hidden;
+      }
+
+      /* Noise Overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 60;
+        mix-blend-mode: overlay;
+      }
+
+      .ambient-light {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(900px 520px at 18% 8%, rgba(201,161,95,.09), transparent 60%),
+          radial-gradient(760px 520px at 76% 14%, rgba(201,161,95,.06), transparent 62%),
+          radial-gradient(820px 740px at 52% 86%, rgba(201,161,95,.05), transparent 65%),
+          linear-gradient(180deg, rgba(255,255,255,.02), transparent 24%, transparent 76%, rgba(255,255,255,.015));
+        z-index: 0;
+      }
+
+      .vignette {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(1200px 900px at 50% 40%, transparent 55%, rgba(0,0,0,.65) 100%);
+        mix-blend-mode: multiply;
+        z-index: 1;
+      }
+
+      #void-canvas{
+        position: fixed; inset: 0; z-index: 2; opacity: .35; pointer-events: none;
+      }
+
+      a { color: inherit; text-decoration: none; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+      
+      .wrap {
+        position: relative;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 26px 24px 40px;
+        z-index: 10;
+        opacity: 0;
+        animation: fadeInPage 0.8s ease-out forwards;
+      }
+
+      /* LOADER */
+      #loader{
+        position: fixed; inset: 0; background: var(--bg-0); z-index: 80;
+        display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+        opacity: 1; transition: opacity .8s cubic-bezier(.16,1,.3,1); pointer-events: none;
+      }
+      .loader-bar{
+        width: 240px; height: 1px; background: rgba(255,255,255,.08); position: relative; overflow: hidden;
+      }
+      .loader-progress{
+        position: absolute; inset: 0; width: 0%; background: var(--gold);
+        animation: load 1.25s cubic-bezier(.22,1,.36,1) forwards;
+      }
+      .loader-text{
+        font-family: var(--mono); font-size: 11px; letter-spacing: .24em; text-transform: uppercase;
+        color: rgba(201,161,95,.92); opacity: .9;
+      }
+
+      /* CURSOR */
+      @media (pointer:fine){
+        * { cursor: none; }
+        #cursor{
+          position: fixed; top: 0; left: 0; width: 20px; height: 20px;
+          border: 1px solid rgba(201,161,95,.92); border-radius: 50%;
+          pointer-events: none; z-index: 90; transform: translate(-50%, -50%);
+          transition: width .25s, height .25s, background .25s; mix-blend-mode: difference; opacity: 0;
+        }
+        #cursor.hovered{
+          width: 54px; height: 54px; background: rgba(201,161,95,.12); border-color: transparent;
+          box-shadow: 0 0 22px rgba(201,161,95,.22);
+        }
+        #cursor-dot{
+          position: fixed; top: 0; left: 0; width: 4px; height: 4px; background: rgba(201,161,95,1);
+          border-radius: 50%; pointer-events: none; z-index: 91; transform: translate(-50%, -50%); opacity: 0;
+        }
+        body.cursor-ready #cursor, body.cursor-ready #cursor-dot{ opacity: 1; }
+      }
+
+      /* UI ELEMENTS */
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 0 24px; border-bottom: 1px solid var(--line-2);
+        animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .brand .name {
+        font-family: Cinzel, serif; font-weight: 600; font-size: 16px; letter-spacing: .22em;
+        color: var(--gold); text-transform: uppercase;
+      }
+      .brand .sub {
+        font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+        color: rgba(226, 212, 182, .38); font-family: var(--mono);
+      }
+
+      /* NAVIGATION FIX */
+      .topbar nav {
+        display: flex; gap: 32px; align-items: center; justify-content: flex-end;
+      }
+      .topbar nav a {
+        font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--ink-dim); position: relative;
+        margin-left: 20px; /* Forced spacing fallback */
+      }
+      .topbar nav a:first-child { margin-left: 0; }
+      .topbar nav a:hover { color: var(--gold); }
+      .topbar nav a::after {
+        content: ""; position: absolute; bottom: -4px; left: 0; width: 0%; height: 1px;
+        background: var(--gold); transition: width 0.3s ease;
+      }
+      .topbar nav a:hover::after { width: 100%; }
+
+      /* RAIL */
+      .rail {
+        position: absolute; left: -46px; top: 128px; width: 34px; display: none;
+        opacity: 0; animation: fadeIn 1s ease-out 0.5s forwards;
+      }
+      .rail-line { width: 1px; height: 60px; background: linear-gradient(180deg, rgba(201,161,95,.1), rgba(201,161,95,.3), rgba(201,161,95,.1)); }
+      .rail-node {
+        width: 8px; height: 8px; border-radius: 999px; background: #000; border: 1px solid rgba(201,161,95,.3);
+        margin: 8px 0; transition: all 0.5s; position: relative; z-index: 2;
+      }
+      .rail-node[data-active="true"] {
+        background: var(--gold); border-color: var(--gold); box-shadow: 0 0 12px var(--gold); transform: scale(1.3);
+      }
+
+      /* HERO */
+      .hero { padding: 32px 0 24px; position: relative; }
+      .hero-title {
+        margin: 0; font-family: Cinzel, serif; font-weight: 600; font-size: clamp(34px, 4vw, 56px);
+        letter-spacing: .04em; color: rgba(201,161,95,.95); opacity: 0; animation: fadeSlideUp 0.8s forwards 0.2s;
+      }
+      .hero-kicker {
+        font-family: var(--mono); font-size: 11px; letter-spacing: .25em; text-transform: uppercase;
+        color: rgba(226, 212, 182, .44); text-align: right; opacity: 0; animation: fadeSlideUp 0.8s forwards 0.3s;
+      }
+      .rule {
+        margin-top: 16px; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,161,95,.3), transparent);
+        opacity: 0; animation: scaleWidth 1s ease-out 0.4s forwards; transform-origin: left;
+      }
+      .hero-copy {
+        margin: 24px 0 0; max-width: 68ch; color: var(--ink-dim); line-height: 1.75; font-size: 14px;
+        opacity: 0; animation: fadeSlideUp 0.8s forwards 0.5s;
+      }
+      .hero-copy p { margin-bottom: 12px; }
+
+      /* MAIN */
+      .main {
+        display: grid; gap: 24px; padding: 40px 0 0; opacity: 0;
+        animation: fadeSlideUp 0.8s forwards 0.6s; perspective: 1000px;
+      }
+      .panel {
+        border: 1px solid rgba(255,255,255,0.06); border-radius: 16px;
+        background: linear-gradient(180deg, rgba(20,20,23,0.4), rgba(0,0,0,0.6));
+        backdrop-filter: blur(12px); overflow: hidden; transition: border-color 0.4s ease;
+      }
+      .panel:hover { border-color: rgba(201,161,95,0.15); }
+      .panel-inner { padding: 24px; }
+      
+      /* Updated to Full Width Grid */
+      .items { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+
+      .item {
+        display: flex; flex-direction: column; gap: 12px; padding: 24px;
+        border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; background: rgba(255,255,255,0.01);
+        transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s, background 0.25s;
+        position: relative; overflow: hidden; transform-style: preserve-3d; will-change: transform;
+        min-height: 140px; justify-content: space-between;
+      }
+      .item:hover {
+        border-color: rgba(201,161,95,.3); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8); background: rgba(5,5,6,0.8);
+        transform: translateY(-2px);
+      }
+      .item::after {
+        content: ""; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(201,161,95,0.08), transparent 70%);
+        opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+      }
+      .item:hover::after { opacity: 1; }
+
+      .marker {
+        position: absolute; top: 16px; right: 16px;
+        font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.2);
+        z-index: 1;
+      }
+      .item:hover .marker { color: var(--gold); }
+
+      .item-title {
+        margin: 0; font-family: Cinzel, serif; font-weight: 600; font-size: 17px; 
+        color: #ddd; transition: color 0.25s; letter-spacing: 0.05em;
+      }
+      .item:hover .item-title { color: var(--gold); }
+      
+      .item-desc { 
+        font-family: Inter, sans-serif; font-size: 15px; color: rgba(226, 212, 182, 0.85); 
+        line-height: 1.5; margin-top: 8px; font-weight: 400;
+      }
+      .item:hover .item-desc { color: rgba(255,255,255,0.95); }
+
+      .footer {
+        margin-top: 60px; padding: 24px 0 0; border-top: 1px solid rgba(255,255,255,0.06);
+        color: rgba(226, 212, 182, .3); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+        font-family: var(--mono); opacity: 0; animation: fadeSlideUp 0.8s forwards 0.8s;
+        display: flex; justify-content: space-between;
+      }
+
+      @media (min-width: 1100px){
+        .rail{ display: block; }
+      }
+
+      @keyframes fadeInPage { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes fadeSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      @keyframes scaleWidth { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+      @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+    </style>
+  </head>
+
+  <body>
+    <div id="loader" aria-hidden="true">
+      <div class="loader-bar"><div class="loader-progress"></div></div>
+      <div class="loader-text">INITIALIZING SYSTEMS</div>
+    </div>
+
+    <div id="cursor" aria-hidden="true"></div>
+    <div id="cursor-dot" aria-hidden="true"></div>
+    <canvas id="void-canvas" aria-hidden="true"></canvas>
+    <div class="ambient-light" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <div class="wrap">
+      <aside class="rail" aria-hidden="true">
+        <div class="rail-inner">
+          <div class="rail-node" data-target="top"></div>
+          <div class="rail-line"></div>
+          <div class="rail-node" data-target="main"></div>
+          <div class="rail-line"></div>
+          <div class="rail-node" data-target="footer"></div>
+        </div>
+      </aside>
+
+      <header class="topbar">
+        <div class="brand hover-target">
+          <div class="name">{BRAND}</div>
+          <div class="sub">digital company</div>
+        </div>
+        <nav aria-label="Primary">`n          <a href="https://YOUR-MAIN-WEBSITE.COM" class="hover-target">MAIN SITE</a>
+          {NAV.map((l) => <a href={l.href} class="hover-target">{l.label}</a>)}
+        </nav>
+      </header>
+
+      <section class="hero" id="top-section">
+        <div class="hero-top">
+          <h1 class="hero-title">Index</h1>
+          <div class="hero-kicker">OS-V13.12 // ACTIVE</div>
+        </div>
+        <div class="rule" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <p>Welcome to the Index — the entrance hall of the playground.</p>
+          <p>This environment is not a gallery of finished showcase builds. The thirty pages are experimental surfaces: live tests, fresh ideas, unusual interactions, and new approaches to structure, motion, and tone. Features may appear, evolve, pause, or remain half-formed. Nothing is removed on purpose — traces stay, so the full arc of exploration remains visible.</p>
+          <p>The purpose is simple: to offer an honest look at what becomes possible beyond standard templates. A place to browse different kinds of websites, discover unexpected patterns, and leave with a sharper sense of what modern web craft can feel like.</p>
+          <p>All addresses, names, emails, phone numbers, prices, and details are fictional. No real data is used or stored. Every page is an example — created for inspiration, testing, and reference only.</p>
+        </div>
+      </section>
+
+      <section class="main" aria-label="Index content" id="main-section">
+        <div class="panel" aria-label="Example website routes">
+          <div class="panel-inner">
+            <div class="items">
+              {SITES.map((s, i) => {
+                const route = toRoute(s.file);
+                const marker = String(i + 1).padStart(2, "0");
+                return (
+                  <a class="item hover-target tilt-card" href={route} aria-label={s.label}>
+                    <div class="marker" aria-hidden="true">{marker}</div>
+                    <div class="item-body">
+                      <h2 class="item-title">{s.label}</h2>
+                      <div class="item-desc">{s.desc}</div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer" id="footer-section">
+        <span>Structured navigation. Low noise.</span>
+        <span>{SYSTEM_VERSION}</span>
+      </footer>
+    </div>
+
+    <script is:inline>
+      // @ts-nocheck
+      // Loader
+      (function () {
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var loader = document.getElementById("loader");
+        if (!loader) return;
+        var hide = function () {
+          loader.classList.add("hidden");
+          setTimeout(function () { loader.style.display = "none"; }, 900);
+        };
+        if (reduce) { hide(); return; }
+        window.addEventListener("load", function () { setTimeout(hide, 900); });
+      })();
+
+      // Cursor
+      (function () {
+        var fine = window.matchMedia && window.matchMedia("(pointer: fine)").matches;
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!fine || reduce) return;
+        var cursor = document.getElementById("cursor");
+        var dot = document.getElementById("cursor-dot");
+        if (!cursor || !dot) return;
+        document.body.classList.add("cursor-ready");
+        var mx = 0, my = 0, cx = 0, cy = 0;
+        var lerp = function (a, b, t) { return a + (b - a) * t; };
+        document.addEventListener("mousemove", function (e) {
+          mx = e.clientX; my = e.clientY;
+          dot.style.transform = "translate(" + mx + "px, " + my + "px)";
+        }, { passive: true });
+        var tick = function () {
+          cx = lerp(cx, mx, 0.18); cy = lerp(cy, my, 0.18);
+          cursor.style.left = cx + "px"; cursor.style.top = cy + "px";
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        document.querySelectorAll(".hover-target").forEach(function (el) {
+          el.addEventListener("mouseenter", function () { cursor.classList.add("hovered"); }, { passive: true });
+          el.addEventListener("mouseleave", function () { cursor.classList.remove("hovered"); }, { passive: true });
+        });
+      })();
+
+      // Tilt
+      (function () {
+        var fine = window.matchMedia && window.matchMedia("(pointer: fine)").matches;
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!fine || reduce) return;
+        var cards = Array.prototype.slice.call(document.querySelectorAll(".tilt-card"));
+        if (!cards.length) return;
+        var clamp = function (v, min, max) { return Math.min(max, Math.max(min, v)); };
+        cards.forEach(function (card) {
+          var rect = null;
+          card.addEventListener("mouseenter", function () { rect = card.getBoundingClientRect(); }, { passive: true });
+          card.addEventListener("mousemove", function (e) {
+            if (!rect) rect = card.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            var cx = rect.width / 2; var cy = rect.height / 2;
+            var dx = (x - cx) / cx; var dy = (y - cy) / cy;
+            card.style.transform = "perspective(1000px) rotateX(" + clamp(dy * -4, -4, 4) + "deg) rotateY(" + clamp(dx * 4, -4, 4) + "deg) translateZ(0) scale(1.02)";
+          }, { passive: true });
+          card.addEventListener("mouseleave", function () {
+            rect = null; card.style.transform = "";
+          }, { passive: true });
+        });
+      })();
+
+      // Particles
+      (function () {
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) return;
+        var canvas = document.getElementById("void-canvas");
+        if (!canvas) return;
+        var ctx = canvas.getContext("2d", { alpha: true });
+        if (!ctx) return;
+        var w = 0, h = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
+        var resize = function () {
+          w = Math.floor(window.innerWidth); h = Math.floor(window.innerHeight);
+          canvas.width = Math.floor(w * DPR); canvas.height = Math.floor(h * DPR);
+          canvas.style.width = w + "px"; canvas.style.height = h + "px";
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        };
+        window.addEventListener("resize", resize, { passive: true });
+        resize();
+        var particles = [];
+        for (var i = 0; i < 80; i++) {
+          particles.push({
+            x: Math.random() * w, y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+            r: Math.random() * 1.8 + 0.2, a: Math.random() * 0.35 + 0.06
+          });
+        }
+        var last = performance.now();
+        var step = function (t) {
+          var dt = Math.min(40, t - last); last = t;
+          ctx.clearRect(0, 0, w, h);
+          for (var j = 0; j < particles.length; j++) {
+            var p = particles[j];
+            p.x += p.vx * dt * 0.06; p.y += p.vy * dt * 0.06;
+            if (p.x < -20) p.x = w + 20; if (p.x > w + 20) p.x = -20;
+            if (p.y < -20) p.y = h + 10; if (p.y > h + 10) p.y = -20;
+            ctx.beginPath(); ctx.fillStyle = "rgba(201,161,95," + p.a + ")";
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+          }
+          requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      })();
+
+      // Rail
+      document.addEventListener("DOMContentLoaded", function () {
+        var nodes = document.querySelectorAll(".rail-node");
+        var sections = [document.querySelector("header"), document.querySelector(".main"), document.querySelector("footer")];
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            var idx = sections.indexOf(entry.target);
+            if (idx !== -1) {
+              nodes.forEach(function (n) { n.setAttribute("data-active", "false"); });
+              if (nodes[idx]) nodes[idx].setAttribute("data-active", "true");
+            }
+          });
+        }, { threshold: 0.3 });
+        sections.forEach(function (s) { if(s) observer.observe(s); });
+        if (nodes[0]) nodes[0].setAttribute("data-active", "true");
+      });
+    </script>
+  </body>
+</html>

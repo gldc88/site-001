@@ -1,0 +1,387 @@
+---
+import "../styles/global.css";
+
+const BRAND = "HEARTH & GROVE.";
+const EMAIL = "hello@hearthgrovelandscapes.com";
+const PHONE = "+31 6 2148 9031";
+const SERVICE_AREA = "Amsterdam • Haarlem • Utrecht";
+
+const NAV = [
+  { label: "Services", href: "#services" },
+  { label: "Specimen Library", href: "#specimens" },
+  { label: "Process", href: "#process" },
+  { label: "Contact", href: "#contact" },
+];
+
+const SERVICES = [
+  { title: "Garden Design", line: "Planting plans, levels, layout, and material selection." },
+  { title: "Planting & Soil Prep", line: "Soil correction, structure planting, and perennial composition." },
+  { title: "Hardscaping", line: "Patios, paths, edging, and clean transitions." },
+  { title: "Drainage & Irrigation", line: "Water movement solved quietly. Systems that don’t fail." },
+  { title: "Lighting", line: "Subtle, functional illumination—paths, terraces, focal points." },
+  { title: "Maintenance Plans", line: "Pruning, seasonal resets, and consistent site discipline." },
+];
+
+const PROCESS = [
+  { step: "Site Walk", line: "We measure, observe light and water, and map constraints." },
+  { step: "Definition", line: "You receive a defined scope: layout, materials, planting, and sequence." },
+  { step: "Construction", line: "Groundworks, surfaces, planting—executed in a controlled order." },
+  { step: "Cultivation", line: "Seasonal plan + optional maintenance to keep the result stable." },
+];
+
+const SPECIMENS = [
+  { latin: "Pinus sylvestris 'Watereri'", common: "Scots Pine", age: "35yr", height: "4.5m", char: "Structural Evergreen" },
+  { latin: "Amelanchier lamarckii", common: "Snowy Mespilus", age: "18yr", height: "3.5m", char: "Multi-stem / Blossom" },
+  { latin: "Taxus baccata", common: "English Yew", age: "60yr", height: "2.0m", char: "Cloud Pruned / Ancient" },
+  { latin: "Parrotia persica", common: "Persian Ironwood", age: "25yr", height: "5.0m", char: "Autumn Color / Architecture" },
+];
+
+const TESTIMONIALS = [
+  { quote: "Everything felt planned. No surprises, no mess.", name: "Townhouse Courtyard" },
+  { quote: "They solved water issues without turning it into a project drama.", name: "Back Garden Upgrade" },
+  { quote: "The maintenance cadence is the difference. It stays beautiful.", name: "Long-term Client" },
+];
+
+const FAQ = [
+  { q: "Do you take on small gardens?", a: "Yes. Small gardens often benefit most from good levels, planting structure, and clean materials." },
+  { q: "How do you price projects?", a: "Defined scope with line items. We avoid vague allowances and unclear material ranges." },
+  { q: "Can you solve drainage issues?", a: "Yes. We diagnose water flow first, then design the correction into the build sequence." },
+  { q: "Do you offer maintenance?", a: "Optional. We can deliver a seasonal plan, or run the maintenance cadence for you." },
+  { q: "Where do you work?", a: SERVICE_AREA },
+];
+
+const YEAR = new Date().getFullYear();
+
+function mailtoLink(subject: string, body: string) {
+  const s = encodeURIComponent(subject);
+  const b = encodeURIComponent(body);
+  return `mailto:${EMAIL}?subject=${s}&body=${b}`;
+}
+
+const CONTACT_MAILTO = mailtoLink("Inquiry", "Details...");
+
+const Icon = {
+  leaf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="w-5 h-5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>`,
+  back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
+  tree: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" class="w-full h-full opacity-10"><path d="M12 22v-8m0-4v4m0 0c-2 0-3-1-3-2s1-3 3-3 3 2 3 3-1 2-3 2zm-5 4c0-2.5 2-4 5-4s5 1.5 5 4"/></svg>`
+};
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} — Landscape Architecture</title>
+  </head>
+
+  <body class="antialiased font-sans transition-colors duration-100 ease-linear" style="background-color: var(--bg-color, #0a0a0a); color: var(--text-color, #d6d3d1);">
+    
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-overlay"></div>
+      
+      <div class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full blur-[120px] transition-colors duration-100" 
+           style="background-color: var(--glow-primary, rgba(40, 40, 40, 0.1))"></div>
+      
+      <div class="absolute bottom-[-20%] left-[-10%] w-[800px] h-[800px] rounded-full blur-[120px] transition-colors duration-100" 
+           style="background-color: var(--glow-secondary, rgba(16, 185, 129, 0.05))"></div>
+    </div>
+
+    <header class="fixed top-0 inset-x-0 z-50 border-b backdrop-blur-md transition-colors duration-300"
+            style="border-color: var(--border-color, rgba(255,255,255,0.05)); background-color: var(--glass-bg, rgba(10,10,10,0.8))">
+      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        
+        <div class="flex items-center gap-8">
+            <a href="/" class="group flex items-center gap-2 text-[10px] uppercase tracking-widest hover:text-white transition-colors"
+               style="color: var(--text-muted, #78716c)">
+                <span class="group-hover:-translate-x-1 transition-transform duration-300"><Fragment set:html={Icon.back} /></span>
+                Index
+            </a>
+            <div class="flex items-center gap-3 pl-8 border-l" style="border-color: var(--border-color, rgba(255,255,255,0.05))">
+                <div style="color: var(--accent-color, #10b981)"><Fragment set:html={Icon.leaf} /></div>
+                <span class="font-serif italic text-lg tracking-wide text-white">{BRAND}</span>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-8 text-[11px] font-medium uppercase tracking-[0.15em]" style="color: var(--text-muted, #78716c)">
+          {NAV.map(item => (
+            <a href={item.href} class="hover:text-white transition-colors duration-300 hover:tracking-[0.2em]">{item.label}</a>
+          ))}
+        </nav>
+
+        <a href="#contact" class="hidden md:inline-flex items-center gap-2 px-5 py-2 border rounded-full text-xs font-medium hover:bg-white hover:text-black transition-all duration-300"
+           style="border-color: var(--border-color, rgba(255,255,255,0.1)); color: var(--text-color, #d6d3d1)">
+          Request Visit
+        </a>
+      </div>
+    </header>
+
+    <main class="relative z-10 pt-32 pb-20">
+
+      <section class="max-w-7xl mx-auto px-6 mb-32">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <div class="inline-flex items-center gap-3 px-3 py-1 mb-8 rounded-full border bg-white/[0.02] text-[10px] uppercase tracking-widest"
+                 style="border-color: var(--border-color, rgba(255,255,255,0.1)); color: var(--text-muted, #78716c)">
+              <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: var(--accent-color, #10b981)"></span>
+              Seasonal Capacity: Open
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-serif font-light text-white leading-[1.1] mb-8">
+              Landscapes <br/>
+              <span class="italic transition-colors duration-500" style="color: var(--text-muted, #78716c)">built with restraint.</span>
+            </h1>
+            
+            <p class="text-lg leading-relaxed max-w-md mb-10 font-light border-l pl-6 transition-colors duration-500"
+               style="color: var(--text-muted, #78716c); border-color: var(--border-color, rgba(255,255,255,0.1))">
+              Garden design, build, and care. Planned in advance, executed without noise.
+            </p>
+
+            <div class="flex flex-wrap gap-4">
+              <a href="#contact" class="px-8 py-4 text-black text-xs font-bold uppercase tracking-widest rounded transition-colors"
+                 style="background-color: var(--text-color, #e5e5e5)">
+                Initiate Project
+              </a>
+              <a href="#services" class="px-8 py-4 border text-xs font-bold uppercase tracking-widest rounded transition-all hover:bg-white/5"
+                 style="border-color: var(--border-color, rgba(255,255,255,0.1)); color: var(--text-color, #d6d3d1)">
+                Explore Services
+              </a>
+            </div>
+          </div>
+
+          <div class="relative hidden lg:block opacity-60">
+             <div class="absolute inset-0 rounded-full blur-3xl -z-10 transition-colors duration-500"
+                  style="background: radial-gradient(circle, var(--glow-secondary) 0%, transparent 70%)"></div>
+             <div class="border rounded-3xl p-8 bg-white/[0.01] backdrop-blur-sm transition-colors duration-500"
+                  style="border-color: var(--border-color, rgba(255,255,255,0.05))">
+                <div class="aspect-square relative overflow-hidden rounded-2xl border" style="border-color: var(--border-color, rgba(255,255,255,0.05))">
+                    <svg viewBox="0 0 400 400" class="w-full h-full fill-none transition-all duration-500" 
+                         style="stroke: var(--border-color, rgba(255,255,255,0.1)); stroke-width: 0.5">
+                        <path d="M0,200 Q100,100 200,200 T400,200" />
+                        <path d="M0,220 Q100,120 200,220 T400,220" />
+                        <path d="M0,240 Q100,140 200,240 T400,240" />
+                        <path d="M0,180 Q100,80 200,180 T400,180" />
+                        <path d="M0,160 Q100,60 200,160 T400,160" />
+                        <circle cx="300" cy="100" r="40" style="stroke: var(--accent-color, #10b981); opacity: 0.3" />
+                        <circle cx="100" cy="300" r="60" style="stroke: var(--text-muted, #78716c); opacity: 0.3" />
+                    </svg>
+                    <div class="absolute bottom-6 left-6 text-[10px] font-mono uppercase transition-colors duration-500"
+                         style="color: var(--accent-color, #10b981); opacity: 0.7">
+                        FIG 01. Site Topography Analysis
+                    </div>
+                </div>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" class="max-w-7xl mx-auto px-6 py-32">
+        <div class="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <h2 class="text-4xl font-serif text-white transition-colors duration-500" style="text-shadow: 0 0 20px var(--glow-secondary)">The Atelier.</h2>
+          <p class="max-w-sm text-sm" style="color: var(--text-muted)">We build gardens that hold their shape.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px border" style="border-color: var(--border-color); background-color: var(--border-color)">
+          {SERVICES.map(s => (
+            <div class="p-10 transition-colors duration-500 group" 
+                 style="background-color: var(--card-bg, #0a0a0a)">
+              <div class="w-8 h-8 flex items-center justify-center rounded border mb-8 transition-colors"
+                   style="border-color: var(--border-color); color: var(--text-muted)">
+                 <span class="text-xs font-serif italic">0{SERVICES.indexOf(s) + 1}</span>
+              </div>
+              <h3 class="text-lg font-medium mb-3 group-hover:text-white transition-colors" style="color: var(--text-color)">{s.title}</h3>
+              <p class="text-sm leading-relaxed transition-colors" style="color: var(--text-muted)">{s.line}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="specimens" class="max-w-7xl mx-auto px-6 mb-32">
+         <div class="flex flex-col items-center mb-16 text-center">
+            <span class="text-[10px] font-bold uppercase tracking-widest mb-4" style="color: var(--accent-color)">Botanical Curation</span>
+            <h2 class="text-3xl font-serif text-white mb-6">The Specimen Library.</h2>
+         </div>
+         <div class="border-t" style="border-color: var(--border-color)">
+            {SPECIMENS.map((s, i) => (
+               <div class="group border-b py-8 flex flex-col md:flex-row md:items-center justify-between hover:bg-white/[0.02] transition-colors cursor-pointer relative overflow-hidden"
+                    style="border-color: var(--border-color)">
+                  <div class="absolute right-0 top-1/2 -translate-y-1/2 w-64 h-64 opacity-0 group-hover:opacity-20 transition-all duration-700 pointer-events-none transform group-hover:translate-x-12"
+                       style="color: var(--accent-color)">
+                     <Fragment set:html={Icon.tree} />
+                  </div>
+                  <div class="flex items-start md:items-center gap-6 md:w-1/3 z-10">
+                     <span class="text-xs font-mono transition-colors" style="color: var(--text-muted)">0{i + 1}</span>
+                     <div>
+                        <h3 class="text-xl font-serif italic group-hover:text-white transition-colors" style="color: var(--text-color)">{s.latin}</h3>
+                        <span class="text-xs uppercase tracking-wider" style="color: var(--text-muted)">{s.common}</span>
+                     </div>
+                  </div>
+                  <div class="hidden md:flex gap-12 text-sm font-mono z-10" style="color: var(--text-muted)">
+                     <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest opacity-60">Age</span>
+                        <span class="group-hover:text-white transition-colors">{s.age}</span>
+                     </div>
+                     <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-widest opacity-60">Height</span>
+                        <span class="group-hover:text-white transition-colors">{s.height}</span>
+                     </div>
+                  </div>
+                  <div class="mt-4 md:mt-0 z-10">
+                     <span class="inline-block px-3 py-1 rounded-full border bg-white/[0.01] text-[10px] uppercase tracking-widest transition-all"
+                           style="border-color: var(--border-color); color: var(--text-muted)">
+                        {s.char}
+                     </span>
+                  </div>
+               </div>
+            ))}
+         </div>
+      </section>
+
+      <section id="process" class="max-w-7xl mx-auto px-6 mb-32">
+        <div class="rounded-[2rem] p-10 md:p-16 border relative overflow-hidden transition-colors duration-500"
+             style="background-color: var(--card-bg); border-color: var(--border-color)">
+          
+          <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none opacity-20"
+               style="background-color: var(--accent-color)"></div>
+
+          <div class="flex flex-col md:flex-row gap-12 md:gap-24 relative z-10">
+             <div class="md:w-1/3">
+                <h2 class="text-3xl font-serif text-white mb-6">The Cycle.</h2>
+                <p class="text-sm leading-relaxed mb-8" style="color: var(--text-muted)">
+                   A garden is mostly sequencing: water, levels, surfaces, then planting.
+                </p>
+                <a href="#contact" class="text-xs font-bold uppercase tracking-widest border-b pb-1 hover:opacity-100 transition-colors"
+                   style="color: var(--text-color); border-color: var(--text-color); opacity: 0.8">
+                   Start a project
+                </a>
+             </div>
+             <div class="md:w-2/3 grid grid-cols-1 gap-12">
+                {PROCESS.map((p, idx) => (
+                   <div class="flex gap-6 group cursor-default">
+                      <span class="text-4xl font-serif transition-colors duration-500" style="color: var(--text-muted)">0{idx + 1}</span>
+                      <div>
+                         <h3 class="text-lg text-white mb-2">{p.step}</h3>
+                         <p class="text-sm" style="color: var(--text-muted)">{p.line}</p>
+                      </div>
+                   </div>
+                ))}
+             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="max-w-5xl mx-auto px-6 mb-24">
+         <div class="border rounded-[2rem] p-12 md:p-20 relative overflow-hidden shadow-2xl transition-colors duration-500"
+              style="background-color: var(--card-bg-dark, #050505); border-color: var(--border-color)">
+            
+            <div class="absolute top-[-50%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none opacity-30"
+                 style="background-color: var(--accent-color)"></div>
+            
+            <div class="relative z-10 grid lg:grid-cols-2 gap-16">
+               <div>
+                  <h2 class="text-4xl font-serif text-white mb-6">Commission a Landscape.</h2>
+                  <p class="mb-8 max-w-sm" style="color: var(--text-muted)">Tell us what you want to build. We’ll respond with next steps.</p>
+                  
+                  <div class="space-y-2 mb-8">
+                     <a href={`tel:${PHONE}`} class="block text-xl font-medium tracking-tight text-white hover:opacity-80 transition-colors">{PHONE}</a>
+                     <a href={`mailto:${EMAIL}`} class="block text-sm hover:text-white transition-colors" style="color: var(--text-muted)">{EMAIL}</a>
+                  </div>
+                  
+                  <div class="text-xs uppercase tracking-widest" style="color: var(--text-muted)">
+                     Serving: {SERVICE_AREA}
+                  </div>
+               </div>
+
+               <form action={CONTACT_MAILTO} class="space-y-4">
+                  <div class="grid grid-cols-2 gap-4">
+                     <input name="name" placeholder="Name" required class="w-full bg-white/[0.03] border p-4 rounded-lg text-sm text-white focus:outline-none transition-colors"
+                            style="border-color: var(--border-color); color: var(--text-color)" />
+                     <input name="city" placeholder="City" class="w-full bg-white/[0.03] border p-4 rounded-lg text-sm text-white focus:outline-none transition-colors"
+                            style="border-color: var(--border-color); color: var(--text-color)" />
+                  </div>
+                  <input name="scope" placeholder="Scope (Design, Build, Care)" required class="w-full bg-white/[0.03] border p-4 rounded-lg text-sm text-white focus:outline-none transition-colors"
+                         style="border-color: var(--border-color); color: var(--text-color)" />
+                  <textarea name="constraints" rows="3" placeholder="Constraints & Notes" class="w-full bg-white/[0.03] border p-4 rounded-lg text-sm text-white focus:outline-none transition-colors resize-none"
+                            style="border-color: var(--border-color); color: var(--text-color)"></textarea>
+                  
+                  <button type="submit" class="w-full py-4 text-xs font-bold uppercase tracking-widest rounded-lg transition-all"
+                          style="background-color: var(--accent-color); color: #000; opacity: 0.9; hover:opacity: 1">
+                     Send Inquiry
+                  </button>
+               </form>
+            </div>
+         </div>
+      </section>
+
+    </main>
+
+    <footer class="border-t py-16" style="border-color: var(--border-color); background-color: var(--bg-color)">
+      <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 text-xs" style="color: var(--text-muted)">
+        <span>© {YEAR} {BRAND}</span>
+        <div class="flex gap-8 uppercase tracking-widest">
+          <a href="#" class="hover:text-white transition-colors">Privacy</a>
+          <a href="#" class="hover:text-white transition-colors">Terms</a>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      // This script interpolates colors based on scroll position
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement;
+        const scrollPos = window.scrollY;
+        const height = doc.scrollHeight - doc.clientHeight;
+        const scrollPercent = Math.min(scrollPos / height, 1); // 0.0 to 1.0
+
+        // COLOR INTERPOLATION HELPER
+        // We start at Black/Grey/White and end at Deep Green/Gold/Emerald
+        
+        // Define Start (0%) and End (100%) Colors
+        const startBg = [10, 10, 10]; // #0a0a0a
+        const endBg = [5, 20, 15];    // Deep Forest Green
+
+        const startText = [214, 211, 209]; // Stone 300
+        const endText = [236, 253, 245];   // Emerald 50
+
+        const startMuted = [120, 113, 108]; // Stone 500
+        const endMuted = [110, 231, 183];   // Emerald 300 (dimmed)
+
+        const startAccent = [16, 185, 129]; // Emerald 500
+        const endAccent = [52, 211, 153];   // Emerald 400
+
+        const startBorder = [255, 255, 255, 0.05]; // White 5%
+        const endBorder = [16, 185, 129, 0.2];     // Emerald 20%
+
+        // Interpolate Function
+        const mix = (start, end, p) => {
+          return start.map((c, i) => Math.round(c + (end[i] - c) * p));
+        };
+
+        const mixAlpha = (start, end, p) => {
+           return start.map((c, i) => i === 3 ? c + (end[i] - c) * p : Math.round(c + (end[i] - c) * p));
+        }
+
+        const bg = mix(startBg, endBg, scrollPercent);
+        const text = mix(startText, endText, scrollPercent);
+        const muted = mix(startMuted, endMuted, scrollPercent);
+        const accent = mix(startAccent, endAccent, scrollPercent);
+        const border = mixAlpha(startBorder, endBorder, scrollPercent);
+
+        // Apply to CSS Variables on Body
+        const body = document.body;
+        body.style.setProperty('--bg-color', `rgb(${bg.join(',')})`);
+        body.style.setProperty('--card-bg', `rgba(${bg.join(',')}, 0.6)`);
+        body.style.setProperty('--card-bg-dark', `rgba(${Math.max(0, bg[0]-5)}, ${Math.max(0, bg[1]-5)}, ${Math.max(0, bg[2]-5)}, 1)`);
+        body.style.setProperty('--text-color', `rgb(${text.join(',')})`);
+        body.style.setProperty('--text-muted', `rgb(${muted.join(',')})`);
+        body.style.setProperty('--accent-color', `rgb(${accent.join(',')})`);
+        body.style.setProperty('--border-color', `rgba(${border[0]}, ${border[1]}, ${border[2]}, ${border[3]})`);
+        
+        // Glows
+        body.style.setProperty('--glow-primary', `rgba(${255}, ${255}, ${255}, ${0.05 - (scrollPercent * 0.05)})`); // Fades out
+        body.style.setProperty('--glow-secondary', `rgba(${accent.join(',')}, ${0.1 + (scrollPercent * 0.1)})`); // Fades in
+      });
+    </script>
+
+  </body>
+</html>

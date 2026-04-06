@@ -1,0 +1,318 @@
+---
+import "../styles/global.css";
+
+const BRAND = "CLEARSTREAM";
+const EMAIL = "hello@clearstreampw.com";
+const PHONE = "+31 6 2749 1182";
+const SERVICE_AREA = "Amsterdam / Haarlem / Utrecht";
+
+const SERVICES = [
+  { id: "01", title: "Driveway Deep Clean", price: "HIGH PSI", desc: "Hot water pre-treat, oil lift, algae removal, crisp edges restored." },
+  { id: "02", title: "Soft Wash Facades", price: "LOW PSI", desc: "Biodegradable wash to break down organics, no paint strip, no damage." },
+  { id: "03", title: "Roof Moss Treatment", price: "BIO-CHEM", desc: "Moss and lichen neutralized, gentle rinse, longer roof life, cleaner look." },
+  { id: "04", title: "Commercial Sites + Fleets", price: "CONTRACT", desc: "Loading bays, forecourts, machinery, vehicles, scheduled cleans that stay consistent." },
+  { id: "05", title: "Graffiti Removal", price: "URGENT", desc: "Targeted chemical lift, controlled rinse, minimal ghosting on masonry and paint." },
+];
+
+const SPECS = [
+  { label: "MAX PRESSURE", val: "4000 PSI" },
+  { label: "HOT WATER", val: "90°C" },
+  { label: "ONBOARD", val: "1000L" },
+];
+
+const FAQ = [
+  { q: "WILL IT DAMAGE MY SURFACE?", a: "We match pressure and chemistry to the material. Concrete, brick, wood, paint, we regulate PSI and use soft wash where needed." },
+  { q: "DO YOU NEED A WATER TAP?", a: "A spigot is ideal, but we can run from onboard tanks. Commercial hydrant connection available where permitted." },
+  { q: "HOW FAST CAN YOU COME OUT?", a: "Commercial urgent callouts within 4 hours when available. Residential bookings typically within 48 hours." },
+];
+
+const YEAR = new Date().getFullYear();
+const TEL = PHONE.replace(/\s/g, "");
+
+// TECHNICAL ICONS
+const Icon = {
+  crosshair: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>`,
+  arrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
+  bolt: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>`,
+  return: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>`
+};
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} // KINETIC</title>
+  </head>
+
+  <body class="bg-[#F0F2F5] text-[#111] font-sans antialiased selection:bg-black selection:text-white overflow-x-hidden">
+    
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute inset-0 opacity-[0.03]" 
+             style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 50px 50px;">
+        </div>
+        <div id="spotlight" class="absolute w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ease-out"></div>
+    </div>
+
+    <header class="fixed top-0 inset-x-0 z-50 mix-blend-difference text-white">
+      <div class="flex justify-between items-center p-6 lg:p-8">
+        
+        <div class="flex items-center gap-8">
+            <a href="/" class="group flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest hover:text-blue-400 transition-colors">
+                <span class="group-hover:-translate-x-1 transition-transform duration-200"><Fragment set:html={Icon.return} /></span>
+                Back to Index
+            </a>
+
+            <div class="h-4 w-px bg-white/30"></div>
+
+            <div class="flex items-center gap-4">
+                <div class="w-2 h-2 bg-white animate-pulse"></div>
+                <span class="font-bold tracking-tighter text-xl">{BRAND}</span>
+            </div>
+        </div>
+
+        <div class="hidden md:flex gap-8 text-[10px] font-mono uppercase tracking-widest">
+            <span>STATUS: READY</span>
+            <span>AREA: {SERVICE_AREA}</span>
+        </div>
+
+        <a href="#quote" class="text-xs font-bold uppercase tracking-widest hover:underline decoration-2 underline-offset-4 flex items-center gap-2 group">
+            Request Dispatch <span class="group-hover:translate-x-1 transition-transform">-></span>
+        </a>
+      </div>
+    </header>
+
+    <main class="relative z-10">
+
+      <section class="min-h-screen flex flex-col justify-end pb-24 px-6 lg:px-12 border-b border-black/5 relative">
+        <div class="absolute top-24 right-0 text-[20vw] font-black leading-none text-black/[0.02] select-none pointer-events-none">
+            01
+        </div>
+
+        <div class="max-w-7xl w-full mx-auto">
+            <div class="flex items-end justify-between mb-12 flex-wrap gap-8">
+                <h1 class="text-6xl lg:text-9xl font-black tracking-tighter leading-[0.85] uppercase">
+                    Exterior <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-black">Cleaning</span> <br/>
+                    Protocol.
+                </h1>
+                <div class="max-w-xs text-sm font-medium leading-relaxed mb-2">
+                    <p>Hot water pressure washing and soft wash. We remove grime, algae, grease, and staining, without wrecking the surface.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 border-t border-black">
+                {SPECS.map(s => (
+                    <div class="py-6 border-r border-black last:border-r-0 pr-6">
+                        <div class="text-[10px] font-mono text-gray-500 mb-1">{s.label}</div>
+                        <div class="text-2xl font-bold">{s.val}</div>
+                    </div>
+                ))}
+                <a href="#quote" class="bg-black text-white flex items-center justify-center font-bold uppercase tracking-widest text-xs hover:bg-blue-600 transition-colors group">
+                    Get Quote <span class="group-hover:translate-x-1 transition-transform ml-2">-></span>
+                </a>
+            </div>
+        </div>
+      </section>
+
+      <div class="bg-blue-600 text-white overflow-hidden py-4 border-y border-black">
+        <div class="whitespace-nowrap flex gap-8 animate-marquee text-xs font-black uppercase tracking-widest">
+            {Array(10).fill("/// HOT WATER WASHING /// SOFT WASH SAFE CLEANING /// COMMERCIAL CALL-OUTS /// DRIVEWAYS, FACADES, ROOFS").map(t => (
+                <span>{t}</span>
+            ))}
+        </div>
+      </div>
+
+      <section id="services" class="bg-[#111] text-[#f0f0f0] pt-24 pb-48 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-24 border-b border-white/20 pb-8">
+                <h2 class="text-4xl font-black uppercase">Services</h2>
+                <div class="text-right">
+                    <div class="text-xs font-mono text-gray-500">SCROLL TO VIEW</div>
+                    <div class="text-2xl font-mono">↓</div>
+                </div>
+            </div>
+
+            <div class="relative">
+                {SERVICES.map((s, i) => (
+                    <div class="sticky top-24 mb-4 group">
+                        <div class="bg-white text-black p-8 lg:p-12 border-l-8 border-blue-600 shadow-2xl transform transition-transform duration-300 group-hover:-translate-y-2 origin-top">
+                            <div class="flex flex-col md:flex-row justify-between md:items-center gap-6">
+                                <div>
+                                    <div class="flex items-center gap-4 mb-2">
+                                        <span class="text-xs font-black bg-black text-white px-2 py-1">{s.id}</span>
+                                        <span class="text-xs font-bold text-blue-600 border border-blue-600 px-2 py-1 uppercase">{s.price}</span>
+                                    </div>
+                                    <h3 class="text-3xl lg:text-5xl font-black uppercase tracking-tight">{s.title}</h3>
+                                </div>
+                                <div class="max-w-sm text-sm font-medium text-gray-600">
+                                    {s.desc}
+                                </div>
+                                <div class="w-12 h-12 rounded-full border-2 border-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Fragment set:html={Icon.arrow} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      <section class="border-b border-black">
+          <div class="grid md:grid-cols-2">
+              <div class="bg-blue-600 text-white p-12 lg:p-24 flex flex-col justify-between">
+                  <h2 class="text-5xl font-black uppercase leading-none">The <br/>Method.</h2>
+                  <div class="mt-12 text-sm font-mono opacity-80 max-w-xs">
+                      WE DO NOT JUST BLAST SURFACES. WE PRE-TREAT, LET IT DWELL, RINSE CONTROLLED, THEN NEUTRALIZE AND VERIFY.
+                  </div>
+              </div>
+              <div class="grid grid-rows-3 bg-white">
+                  <div class="border-b border-black p-8 flex items-center gap-6 group hover:bg-gray-50 transition-colors">
+                      <span class="text-4xl font-black text-gray-200 group-hover:text-blue-600 transition-colors">01</span>
+                      <div>
+                          <h3 class="font-bold uppercase">Assess</h3>
+                          <p class="text-xs text-gray-500">Material check, stain ID, and risk points.</p>
+                      </div>
+                  </div>
+                  <div class="border-b border-black p-8 flex items-center gap-6 group hover:bg-gray-50 transition-colors">
+                      <span class="text-4xl font-black text-gray-200 group-hover:text-blue-600 transition-colors">02</span>
+                      <div>
+                          <h3 class="font-bold uppercase">Clean</h3>
+                          <p class="text-xs text-gray-500">Pre-treat, dwell time, then controlled rinse.</p>
+                      </div>
+                  </div>
+                  <div class="p-8 flex items-center gap-6 group hover:bg-gray-50 transition-colors">
+                      <span class="text-4xl font-black text-gray-200 group-hover:text-blue-600 transition-colors">03</span>
+                      <div>
+                          <h3 class="font-bold uppercase">Confirm</h3>
+                          <p class="text-xs text-gray-500">Before/after review and care guidance.</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+      <section class="py-24 px-6 max-w-5xl mx-auto">
+         <h2 class="text-center font-mono text-xs uppercase tracking-widest text-gray-400 mb-12">/// FAQ</h2>
+         <div class="space-y-4">
+            {FAQ.map(f => (
+                <details class="group bg-white border border-black shadow-[4px_4px_0px_0px_#000] open:shadow-none open:translate-x-[4px] open:translate-y-[4px] transition-all">
+                    <summary class="flex justify-between items-center p-6 cursor-pointer font-bold uppercase select-none">
+                        {f.q}
+                        <span class="text-xl group-open:rotate-45 transition-transform">+</span>
+                    </summary>
+                    <div class="px-6 pb-6 text-sm text-gray-600 font-mono leading-relaxed">
+                        {f.a}
+                    </div>
+                </details>
+            ))}
+         </div>
+      </section>
+
+      <section id="quote" class="bg-black text-white py-24 px-6">
+         <div class="max-w-4xl mx-auto border border-white/20 p-8 lg:p-16 relative bg-[#111]">
+            
+            <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-500"></div>
+            <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-500"></div>
+            <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-blue-500"></div>
+            <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-500"></div>
+
+            <div class="text-center mb-12">
+                <div class="inline-block border border-blue-600 text-blue-500 px-2 py-1 text-[10px] font-mono mb-4">QUOTE REQUEST</div>
+                <h2 class="text-4xl lg:text-5xl font-black uppercase">Open a Job Ticket.</h2>
+            </div>
+
+            <form id="quoteForm" class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="group">
+                        <label class="block text-[10px] font-mono text-gray-500 mb-2 group-focus-within:text-blue-500">CONTACT</label>
+                        <input id="qName" type="text" placeholder="NAME / COMPANY" class="w-full bg-transparent border-b border-white/20 py-2 text-xl font-bold uppercase focus:outline-none focus:border-blue-500 transition-colors" />
+                    </div>
+                    <div class="group">
+                        <label class="block text-[10px] font-mono text-gray-500 mb-2 group-focus-within:text-blue-500">LOCATION</label>
+                        <input id="qCity" type="text" placeholder="CITY / POSTCODE" class="w-full bg-transparent border-b border-white/20 py-2 text-xl font-bold uppercase focus:outline-none focus:border-blue-500 transition-colors" />
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-[10px] font-mono text-gray-500 mb-2 group-focus-within:text-blue-500">SCOPE</label>
+                    <input id="qScope" type="text" placeholder="DRIVEWAY / FACADE / ROOF / COMMERCIAL" class="w-full bg-transparent border-b border-white/20 py-2 text-xl font-bold uppercase focus:outline-none focus:border-blue-500 transition-colors" />
+                </div>
+
+                <div class="group">
+                    <label class="block text-[10px] font-mono text-gray-500 mb-2 group-focus-within:text-blue-500">NOTES</label>
+                    <textarea id="qNotes" rows="2" placeholder="ACCESS, WATER TAP, STAINS, URGENCY, ANYTHING IMPORTANT" class="w-full bg-transparent border-b border-white/20 py-2 text-sm font-mono focus:outline-none focus:border-blue-500 transition-colors resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-white hover:text-blue-600 text-white py-6 font-black uppercase tracking-[0.2em] transition-all clip-button">
+                    Send Request
+                </button>
+            </form>
+         </div>
+      </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-black py-8 px-6 text-[10px] font-mono uppercase tracking-widest flex justify-between items-center">
+        <div>© {YEAR} {BRAND} CLEANING.</div>
+        <div class="flex gap-4">
+            <a href="#" class="hover:text-blue-600">Privacy</a>
+            <a href="#" class="hover:text-blue-600">Terms</a>
+        </div>
+    </footer>
+
+    <style>
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .animate-marquee {
+        animation: marquee 20s linear infinite;
+      }
+      .clip-button {
+          clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+      }
+    </style>
+
+    <script>
+      // 1. Mouse Spotlight Logic
+      const spotlight = document.getElementById('spotlight');
+      document.addEventListener('mousemove', (e) => {
+          if(spotlight) {
+              spotlight.style.left = e.pageX + 'px';
+              spotlight.style.top = e.pageY + 'px';
+          }
+      });
+
+      // 2. Form Logic (Type Safe)
+      (function() {
+        const form = document.getElementById("quoteForm");
+        if (!form) return;
+
+        form.addEventListener("submit", function(e) {
+          e.preventDefault();
+          
+          const nameEl = document.getElementById("qName") as HTMLInputElement;
+          const cityEl = document.getElementById("qCity") as HTMLInputElement;
+          const scopeEl = document.getElementById("qScope") as HTMLInputElement;
+          const notesEl = document.getElementById("qNotes") as HTMLTextAreaElement;
+
+          const name = nameEl ? nameEl.value : "UNKNOWN";
+          const city = cityEl ? cityEl.value : "UNKNOWN";
+          const scope = scopeEl ? scopeEl.value : "GENERAL";
+          const notes = notesEl ? notesEl.value : "NONE";
+
+          const subject = "TICKET: " + scope;
+          const body = `CLIENT: ${name}\nLOC: ${city}\nJOB: ${scope}\nNOTES: ${notes}`;
+
+          const mailto = `mailto:hello@clearstreampw.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          
+          window.location.href = mailto;
+        });
+      })();
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,586 @@
+---
+const BRAND = "ORBITAL ARCHIVE";
+
+const NAV = [
+  { label: "Collections", href: "#collections" },
+  { label: "Field Map", href: "#field" },
+  { label: "Access", href: "#access" },
+];
+
+const COLLECTIONS = [
+  {
+    tag: "BRIEFINGS",
+    title: "Deep Field Briefings",
+    line:
+      "Long-range research notes distilled from primary sources. Calm synthesis, minimal opinion—built for decisions that age well.",
+  },
+  {
+    tag: "MAPS",
+    title: "Solar Cartography",
+    line:
+      "System maps: actors, incentives, constraints. A navigable surface for strategy—updated as new data locks in.",
+  },
+  {
+    tag: "ALERTS",
+    title: "Anomaly Index",
+    line:
+      "Early signals that matter. Each alert includes a chain of evidence, confidence level, and what to watch next.",
+  },
+];
+
+const ACCESS = [
+  { k: "Entry", v: "Application reviewed weekly" },
+  { k: "Sessions", v: "45 min, timeboxed" },
+  { k: "Output", v: "Briefing + map packet" },
+  { k: "Channel", v: "Private correspondence" },
+];
+
+const FIELD = [
+  { k: "Sources", v: "Primary first. Secondary labeled." },
+  { k: "Filters", v: "Noise removed before writing." },
+  { k: "Structure", v: "Map → notes → actions." },
+];
+
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{BRAND} — Cosmic Interface</title>
+    <meta
+      name="description"
+      content="Orbital Archive is a private observatory for research: deep-field briefings, system maps, and anomaly alerts—delivered with restraint."
+    />
+
+    <style>
+      :root{
+        --bg0:#050515;
+        --bg1:#070A1F;
+        --ink: rgba(235, 240, 255, .92);
+        --ink-dim: rgba(235, 240, 255, .72);
+        --c1:#62F5FF;
+        --c2:#B46BFF;
+        --c3:#FF5EA8;
+        --glow: rgba(98,245,255,.14);
+        --line: rgba(235,240,255,.10);
+        --line2: rgba(235,240,255,.06);
+        --glass: rgba(255,255,255,.03);
+        --shadow: rgba(0,0,0,.60);
+        --radius: 14px;
+        --max: 1220px;
+        --pad: clamp(18px, 4.2vw, 54px);
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+        --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; scroll-behavior:smooth; }
+
+      body{
+        margin:0;
+        color:var(--ink);
+        font-family:var(--sans);
+        background:
+          radial-gradient(900px 520px at 16% 12%, rgba(180,107,255,.18), transparent 60%),
+          radial-gradient(860px 560px at 78% 10%, rgba(98,245,255,.12), transparent 62%),
+          radial-gradient(920px 760px at 52% 84%, rgba(255,94,168,.10), transparent 66%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        overflow-x:hidden;
+      }
+
+      body::before{
+        content:""; position:fixed; inset:0;
+        background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+        pointer-events:none; mix-blend-mode:overlay; z-index:0;
+      }
+      body::after{
+        content:""; position:fixed; inset:0; pointer-events:none;
+        background: radial-gradient(1200px 900px at 50% 35%, transparent 58%, rgba(0,0,0,.70) 100%);
+        z-index:0;
+      }
+
+      a{ color:inherit; text-decoration:none; }
+      .wrap{ position:relative; z-index:1; max-width:var(--max); margin:0 auto; padding: 0 var(--pad) 110px; }
+
+      #stars{ position:fixed; inset:0; width:100%; height:100%; z-index:0; opacity:.55; pointer-events:none; }
+
+      /* Topbar */
+      .topbar{
+        position:sticky; top:0; display:flex; align-items:center; justify-content:space-between;
+        padding: 18px 0; z-index:5; backdrop-filter: blur(10px);
+        background: linear-gradient(180deg, rgba(5,5,21,.55), rgba(5,5,21,.12));
+        border-bottom: 1px solid var(--line2);
+      }
+
+      .brand-group{ display: flex; align-items: center; gap: 16px; }
+
+      /* Back Link Button */
+      .back-link{
+        width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+        border: 1px solid var(--line); border-radius: 50%;
+        color: var(--ink-dim); transition: all 0.3s ease;
+      }
+      .back-link:hover{ border-color: var(--c1); color: var(--c1); box-shadow: 0 0 12px var(--glow); }
+      .back-link svg{ width: 14px; height: 14px; fill: currentColor; }
+
+      .brand{ display:flex; flex-direction:column; gap:2px; letter-spacing:.18em; text-transform:uppercase; }
+      .brand .name{ font-family: var(--serif); font-size: 13px; color: rgba(235,240,255,.92); }
+      .brand .sub{ font-family: var(--mono); font-size: 10px; color: rgba(235,240,255,.45); letter-spacing:.22em; }
+
+      .nav{ display:flex; gap:26px; align-items:center; }
+      .nav a{
+        font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+        color: rgba(235,240,255,.55); position:relative; padding: 10px 2px; outline: none;
+      }
+      .nav a::after{
+        content:""; position:absolute; left:0; right:100%; bottom:6px; height:1px;
+        background: linear-gradient(90deg, var(--c1), var(--c2)); transition:right .35s cubic-bezier(.16,1,.3,1);
+      }
+      .nav a:hover{ color: rgba(235,240,255,.88); }
+      .nav a:hover::after{ right:0; }
+
+      /* Hero */
+      .hero{ padding: 56px 0 34px; }
+      .heroGrid{ display:grid; grid-template-columns: 1.05fr .95fr; gap: clamp(26px, 4vw, 54px); align-items:center; }
+
+      .h1{
+        margin:0; font-family: var(--serif); font-weight: 500; font-size: clamp(40px, 5.6vw, 74px);
+        line-height: 1.02; letter-spacing: .02em; color: rgba(235,240,255,.96);
+      }
+      .h1 em{
+        font-style: normal; background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3));
+        -webkit-background-clip:text; background-clip:text; color: transparent;
+      }
+
+      .lead{
+        margin: 20px 0 0; max-width: 56ch; color: var(--ink-dim); line-height: 1.75; font-size: 14px;
+        letter-spacing: .01em; border-left: 1px solid rgba(98,245,255,.22); padding-left: 16px;
+      }
+
+      .actions{ margin-top: 28px; display:flex; gap: 14px; flex-wrap:wrap; }
+
+      .btn{
+        display:inline-flex; align-items:center; justify-content:center; padding: 12px 16px;
+        border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.02);
+        color: rgba(235,240,255,.86); font-family: var(--mono); font-size: 10px; letter-spacing: .22em;
+        text-transform: uppercase; transition: transform .2s, border-color .25s, background .25s, box-shadow .25s; will-change: transform;
+      }
+      .btn:hover{ transform: translateY(-1px); border-color: rgba(98,245,255,.30); box-shadow: 0 10px 34px -18px rgba(98,245,255,.35); }
+      .btn.primary{ border-color: rgba(98,245,255,.34); background: linear-gradient(180deg, rgba(98,245,255,.10), rgba(180,107,255,.06)); }
+
+      /* Visual 1 */
+      .sigilWrap{
+        position:relative; border-radius: var(--radius); border: 1px solid rgba(235,240,255,.08);
+        background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.16));
+        overflow:hidden; box-shadow: 0 28px 80px rgba(0,0,0,.55); min-height: 420px;
+        display:flex; align-items:center; justify-content:center;
+      }
+      .sigilWrap::before{
+        content:""; position:absolute; inset:-40%;
+        background:
+          radial-gradient(circle at 30% 30%, rgba(98,245,255,.14), transparent 45%),
+          radial-gradient(circle at 70% 60%, rgba(180,107,255,.14), transparent 48%),
+          radial-gradient(circle at 60% 30%, rgba(255,94,168,.10), transparent 50%);
+        filter: blur(22px); opacity: .9; transform: translateZ(0);
+      }
+
+      .sigilHud{
+        position:absolute; top: 14px; left: 14px; display:flex; flex-direction:column; gap:6px;
+        padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(235,240,255,.08);
+        background: rgba(5,5,21,.35); backdrop-filter: blur(10px);
+      }
+      .sigilHud .k{ font-family: var(--mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: rgba(235,240,255,.55); }
+      .sigilHud .v{ font-family: var(--serif); font-size: 16px; color: rgba(235,240,255,.92); }
+
+      .sigil{ width: min(420px, 86%); height: auto; position:relative; z-index:1; filter: drop-shadow(0 10px 24px rgba(0,0,0,.45)); }
+
+      .rule{ margin: 28px 0 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(235,240,255,.16), transparent); }
+
+      section{ margin-top: 92px; }
+
+      .sectionHead{
+        display:flex; align-items:flex-end; justify-content:space-between; gap: 18px;
+        padding-bottom: 14px; border-bottom: 1px solid var(--line2); margin-bottom: 22px;
+      }
+      .sectionHead h2{ margin:0; font-family: var(--serif); font-size: 26px; font-weight: 500; color: rgba(235,240,255,.94); letter-spacing:.01em; }
+      .tag{ font-family: var(--mono); font-size: 10px; letter-spacing:.22em; text-transform: uppercase; color: rgba(235,240,255,.50); }
+
+      .cards{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .card{
+        border-radius: var(--radius); border: 1px solid rgba(235,240,255,.08); background: rgba(255,255,255,.02);
+        padding: 18px 18px 16px; position:relative; overflow:hidden;
+        transition: transform .25s, border-color .25s, background .25s;
+      }
+      .card::before{
+        content:""; position:absolute; inset:-60px;
+        background: radial-gradient(circle at 30% 20%, rgba(98,245,255,.08), transparent 55%);
+        opacity:0; transition: opacity .3s;
+      }
+      .card:hover{ transform: translateY(-2px); border-color: rgba(98,245,255,.22); background: rgba(255,255,255,.03); }
+      .card:hover::before{ opacity: 1; }
+
+      .card .t{ font-family: var(--mono); font-size: 10px; letter-spacing:.22em; text-transform: uppercase; color: rgba(235,240,255,.60); }
+      .card .h{ margin-top: 10px; font-family: var(--serif); font-size: 18px; font-weight: 500; color: rgba(235,240,255,.92); }
+      .card .p{ margin-top: 8px; color: rgba(235,240,255,.66); font-size: 13px; line-height: 1.65; }
+
+      .fieldGrid{ display:grid; grid-template-columns: 1fr 1.05fr; gap: 16px; align-items:stretch; }
+      .fieldCopy{ border-radius: var(--radius); border: 1px solid rgba(235,240,255,.08); background: rgba(255,255,255,.02); padding: 18px; }
+      .fieldCopy .headline{ font-family: var(--serif); font-size: 20px; color: rgba(235,240,255,.92); margin: 0; }
+      .fieldCopy .micro{ margin-top: 10px; color: rgba(235,240,255,.68); font-size: 13px; line-height: 1.7; }
+      .fieldCopy .list{ margin-top: 14px; display:grid; gap: 10px; }
+      .pill{ display:flex; align-items:center; justify-content:space-between; gap: 14px; border-radius: 999px; border: 1px solid rgba(235,240,255,.08); background: rgba(5,5,21,.22); padding: 10px 12px; }
+      .pill .k{ font-family: var(--mono); font-size: 10px; letter-spacing:.22em; text-transform: uppercase; color: rgba(235,240,255,.55); }
+      .pill .v{ font-family: var(--mono); font-size: 10px; letter-spacing:.14em; color: rgba(235,240,255,.78); }
+
+      .fieldVisual{
+        border-radius: var(--radius); border: 1px solid rgba(235,240,255,.08); background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.14));
+        position:relative; overflow:hidden; box-shadow: 0 26px 70px rgba(0,0,0,.55); min-height: 280px;
+        display:flex; align-items:center; justify-content:center;
+      }
+      .fieldVisual::before{
+        content:""; position:absolute; inset:-40%;
+        background:
+          radial-gradient(circle at 18% 28%, rgba(98,245,255,.12), transparent 50%),
+          radial-gradient(circle at 82% 28%, rgba(180,107,255,.12), transparent 52%),
+          radial-gradient(circle at 50% 82%, rgba(255,94,168,.08), transparent 54%);
+        filter: blur(24px); opacity: .85;
+      }
+      .fieldSvg{ width: min(560px, 92%); height: auto; position:relative; z-index:1; opacity: .96; }
+
+      .accessGrid{ margin-top: 18px; display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+      .accessItem{ border-radius: var(--radius); border: 1px solid rgba(235,240,255,.08); background: rgba(255,255,255,.02); padding: 14px 14px 12px; }
+      .accessItem .k{ font-family: var(--mono); font-size: 10px; letter-spacing:.22em; text-transform: uppercase; color: rgba(235,240,255,.52); }
+      .accessItem .v{ margin-top: 10px; font-family: var(--serif); font-size: 16px; color: rgba(235,240,255,.90); }
+
+      footer{ margin-top: 92px; padding-top: 18px; border-top: 1px solid var(--line2); color: rgba(235,240,255,.42); font-family: var(--mono); font-size: 10px; letter-spacing:.18em; text-transform: uppercase; }
+
+      .reveal{ opacity:0; transform: translateY(16px); transition: opacity 1.0s cubic-bezier(.16,1,.3,1), transform 1.0s cubic-bezier(.16,1,.3,1); }
+      .reveal.on{ opacity:1; transform: translateY(0); }
+
+      @media (max-width: 980px){
+        .heroGrid{ grid-template-columns: 1fr; }
+        .sigilWrap{ min-height: 360px; }
+        .cards{ grid-template-columns: 1fr; }
+        .fieldGrid{ grid-template-columns: 1fr; }
+        .accessGrid{ grid-template-columns: 1fr 1fr; }
+      }
+      @media (prefers-reduced-motion: reduce){
+        .reveal{ opacity:1; transform:none; transition:none; }
+        #stars{ display:none; }
+        .card, .btn{ transition:none; }
+        .btn:hover, .card:hover{ transform:none; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="stars" aria-hidden="true"></canvas>
+
+    <div class="wrap">
+      <header class="topbar">
+        <div class="brand-group">
+          <a href="/" class="back-link" aria-label="Return to Index">
+            <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zM3 14h7v7H3v-7z"/></svg>
+          </a>
+          <div class="brand">
+            <div class="name">{BRAND}</div>
+            <div class="sub">private observatory interface</div>
+          </div>
+        </div>
+        <nav class="nav" aria-label="Primary">
+          {NAV.map(n => <a href={n.href}>{n.label}</a>)}
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="heroGrid">
+            <div class="reveal">
+              <h1 class="h1">
+                A private <em>observatory</em><br />
+                for research you can use.
+              </h1>
+              <p class="lead">
+                Orbital Archive converts scattered information into a clean map:
+                briefings, system cartography, and anomaly alerts—delivered with restraint and evidence.
+              </p>
+              <div class="actions">
+                <a class="btn primary" href="#collections">Enter collections</a>
+                <a class="btn" href="#access">Request access</a>
+              </div>
+              <div class="rule" aria-hidden="true"></div>
+            </div>
+
+            <div class="sigilWrap reveal" aria-label="Orbital sigil visual">
+              <div class="sigilHud" aria-hidden="true">
+                <div class="k">Active Lens</div>
+                <div class="v">Deep Field</div>
+              </div>
+
+              <svg class="sigil" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Orbital sigil with rings and coordinate marks">
+                <defs>
+                  <linearGradient id="irid" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#62F5FF" stop-opacity="0.95"/>
+                    <stop offset="55%" stop-color="#B46BFF" stop-opacity="0.90"/>
+                    <stop offset="100%" stop-color="#FF5EA8" stop-opacity="0.88"/>
+                  </linearGradient>
+                  <radialGradient id="core" cx="50%" cy="50%" r="60%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.10"/>
+                    <stop offset="60%" stop-color="#62F5FF" stop-opacity="0.05"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+
+                <circle cx="260" cy="260" r="170" fill="url(#core)"/>
+                <circle cx="260" cy="260" r="214" fill="none" stroke="url(#irid)" stroke-opacity="0.55" stroke-width="2"/>
+                <circle cx="260" cy="260" r="192" fill="none" stroke="url(#irid)" stroke-opacity="0.30" stroke-width="1.2" stroke-dasharray="2 9"/>
+
+                <g stroke="url(#irid)" stroke-opacity="0.65" stroke-width="2" stroke-linecap="round">
+                  <path d="M260 32v26"/>
+                  <path d="M260 462v26"/>
+                  <path d="M32 260h26"/>
+                  <path d="M462 260h26"/>
+                </g>
+
+                <g fill="none" stroke="url(#irid)" stroke-opacity="0.55">
+                  <ellipse cx="260" cy="260" rx="210" ry="120" stroke-width="1.6"/>
+                  <ellipse cx="260" cy="260" rx="150" ry="260" stroke-width="1.1" stroke-opacity="0.32"/>
+                </g>
+
+                <g stroke="url(#irid)" stroke-width="2" stroke-opacity="0.75" fill="none" transform="translate(0, 15)">
+                  <path d="M260 140c-22 36-44 62-78 86 40 20 62 44 78 84 16-40 38-64 78-84-34-24-56-50-78-86z"/>
+                  <path d="M260 140v170"/>
+                </g>
+
+                <g fill="#EBF0FF" fill-opacity="0.55">
+                  <circle cx="118" cy="198" r="1.5"/>
+                  <circle cx="410" cy="210" r="1.2"/>
+                  <circle cx="360" cy="370" r="1.4"/>
+                  <circle cx="154" cy="356" r="1.3"/>
+                  <circle cx="260" cy="84" r="1.2"/>
+                  <circle cx="260" cy="438" r="1.2"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <section id="collections" class="reveal">
+          <div class="sectionHead">
+            <h2>Collections</h2>
+            <div class="tag">Curated. Evidenced. Archived.</div>
+          </div>
+
+          <div class="cards">
+            {COLLECTIONS.map((c) => (
+              <article class="card" aria-label={c.title}>
+                <div class="t">{c.tag}</div>
+                <div class="h">{c.title}</div>
+                <div class="p">{c.line}</div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="field" class="reveal">
+          <div class="sectionHead">
+            <h2>Field Map</h2>
+            <div class="tag">Orientation before conclusions</div>
+          </div>
+
+          <div class="fieldGrid">
+            <div class="fieldCopy">
+              <p class="headline">A map is a promise: fewer surprises.</p>
+              <p class="micro">
+                We start with structure—who moves, what constrains them, and where the evidence lives.
+                Only then do we write conclusions.
+              </p>
+
+              <div class="list" aria-label="Field map attributes">
+                {FIELD.map((i) => (
+                  <div class="pill" aria-label={i.k}>
+                    <span class="k">{i.k}</span>
+                    <span class="v">{i.v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <figure class="fieldVisual" aria-label="Secondary field map visual">
+              <svg class="fieldSvg" viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Star map panel with coordinates and constellation lines">
+                <defs>
+                  <linearGradient id="mapI" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#62F5FF" stop-opacity="0.75"/>
+                    <stop offset="55%" stop-color="#B46BFF" stop-opacity="0.70"/>
+                    <stop offset="100%" stop-color="#FF5EA8" stop-opacity="0.62"/>
+                  </linearGradient>
+                </defs>
+
+                <rect x="20" y="18" width="720" height="324" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(235,240,255,0.10)"/>
+
+                <g stroke="rgba(235,240,255,0.08)" stroke-width="1">
+                  <path d="M60 60H700"/><path d="M60 110H700"/><path d="M60 160H700"/><path d="M60 210H700"/><path d="M60 260H700"/><path d="M60 310H700"/>
+                  <path d="M110 50V320"/><path d="M180 50V320"/><path d="M250 50V320"/><path d="M320 50V320"/><path d="M390 50V320"/><path d="M460 50V320"/><path d="M530 50V320"/><path d="M600 50V320"/><path d="M670 50V320"/>
+                </g>
+
+                <g fill="none" stroke="url(#mapI)" stroke-width="2" stroke-opacity="0.72" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M140 240 L220 200 L300 230 L360 170 L450 190 L540 140 L610 170"/>
+                  <path d="M300 230 L280 290 L340 300"/>
+                  <path d="M450 190 L430 260 L500 270"/>
+                </g>
+
+                <g fill="#EBF0FF" fill-opacity="0.70">
+                  <circle cx="140" cy="240" r="3.2"/>
+                  <circle cx="220" cy="200" r="2.8"/>
+                  <circle cx="300" cy="230" r="3.0"/>
+                  <circle cx="360" cy="170" r="3.4"/>
+                  <circle cx="450" cy="190" r="3.0"/>
+                  <circle cx="540" cy="140" r="3.1"/>
+                  <circle cx="610" cy="170" r="2.9"/>
+                  <circle cx="280" cy="290" r="2.4"/>
+                  <circle cx="340" cy="300" r="2.6"/>
+                  <circle cx="430" cy="260" r="2.4"/>
+                  <circle cx="500" cy="270" r="2.6"/>
+                </g>
+
+                <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="rgba(235,240,255,0.55)" letter-spacing="2">
+                  <text x="56" y="44">FIELD // LENS-07</text>
+                  <text x="540" y="44">CALIBRATED</text>
+                  <text x="56" y="340">GRID LOCK: ON</text>
+                </g>
+
+                <g stroke="rgba(235,240,255,0.16)" stroke-width="2">
+                  <path d="M60 50v10"/><path d="M700 50v10"/>
+                  <path d="M60 320v-10"/><path d="M700 320v-10"/>
+                </g>
+              </svg>
+            </figure>
+          </div>
+        </section>
+
+        <section id="access" class="reveal">
+          <div class="sectionHead">
+            <h2>Access</h2>
+            <div class="tag">Low volume. High precision.</div>
+          </div>
+
+          <p class="lead" style="max-width: 70ch;">
+            Access is intentionally limited. If accepted, you receive a timeboxed session plus a written packet:
+            map, notes, and recommended next questions—no dashboards, no feed, no distraction.
+          </p>
+
+          <div class="actions" style="margin-top:16px;">
+            <a class="btn primary" href="#collections" aria-label="View collections">View collections</a>
+            <a class="btn" href="/contact" aria-label="Request access via contact">Request access</a>
+          </div>
+
+          <div class="accessGrid" aria-label="Access details">
+            {ACCESS.map(a => (
+              <div class="accessItem" aria-label={a.k}>
+                <div class="k">{a.k}</div>
+                <div class="v">{a.v}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <footer>
+          {BRAND} // {YEAR}
+        </footer>
+      </main>
+    </div>
+
+    <script is:inline>
+      // @ts-nocheck
+      // Starfield
+      (function(){
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) return;
+
+        var canvas = document.getElementById("stars");
+        if (!canvas) return;
+        var ctx = canvas.getContext("2d", { alpha: true });
+        if (!ctx) return;
+
+        var DPR = Math.min(2, window.devicePixelRatio || 1);
+        var w=0,h=0;
+        var mx=0,my=0, tx=0,ty=0;
+
+        function resize(){
+          w = Math.floor(window.innerWidth);
+          h = Math.floor(window.innerHeight);
+          canvas.width = Math.floor(w * DPR);
+          canvas.height = Math.floor(h * DPR);
+          canvas.style.width = w + "px";
+          canvas.style.height = h + "px";
+          ctx.setTransform(DPR,0,0,DPR,0,0);
+        }
+        window.addEventListener("resize", resize, { passive:true });
+        resize();
+
+        document.addEventListener("mousemove", function(e){
+          mx = (e.clientX / w - 0.5) * 24;
+          my = (e.clientY / h - 0.5) * 18;
+        }, { passive:true });
+
+        var stars = [];
+        var count = 140;
+        for (var i=0;i<count;i++){
+          stars.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            z: Math.random()*1 + 0.2,
+            r: Math.random()*1.6 + 0.2,
+            a: Math.random()*0.45 + 0.08
+          });
+        }
+
+        var last = performance.now();
+        function frame(t){
+          var dt = Math.min(42, t - last); last = t;
+
+          tx += (mx - tx) * 0.06;
+          ty += (my - ty) * 0.06;
+
+          ctx.clearRect(0,0,w,h);
+
+          for (var i=0;i<stars.length;i++){
+            var s = stars[i];
+            s.y += dt * 0.008 * (0.6 + s.z);
+            if (s.y > h + 20){ s.y = -20; s.x = Math.random()*w; }
+
+            var px = s.x + tx * (0.2 + s.z);
+            var py = s.y + ty * (0.2 + s.z);
+
+            ctx.beginPath();
+            var hue = 190 + (i % 40) * 2.2;
+            ctx.fillStyle = "hsla(" + hue + ", 95%, 70%, " + s.a + ")";
+            ctx.arc(px, py, s.r, 0, Math.PI*2);
+            ctx.fill();
+          }
+
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      })();
+
+      // Reveal on scroll
+      (function(){
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) return;
+
+        var obs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if (e.isIntersecting) e.target.classList.add("on");
+          });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll(".reveal").forEach(function(el){ obs.observe(el); });
+      })();
+    </script>
+  </body>
+</html>

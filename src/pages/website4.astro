@@ -1,0 +1,485 @@
+---
+// import "../styles/global.css"; // Optional
+
+const BRAND = "AURELIA SKYPORT";
+
+const NAV = [
+  { label: "Arrival", href: "#arrival" },
+  { label: "Terminal", href: "#lounge" },
+  { label: "Program", href: "#membership" },
+  { label: "Dispatch", href: "#contact" },
+];
+
+const IMG = {
+  heroJetHangar:
+    "https://images.pexels.com/photos/20640947/pexels-photo-20640947.jpeg?auto=compress&cs=tinysrgb&w=2200&dpr=2",
+  loungeAirport:
+    "https://images.pexels.com/photos/12688957/pexels-photo-12688957.jpeg?auto=compress&cs=tinysrgb&w=2200&dpr=2",
+  jetInterior:
+    "https://images.pexels.com/photos/30462809/pexels-photo-30462809.jpeg?auto=compress&cs=tinysrgb&w=2200&dpr=2",
+  diningPlate:
+    "https://images.pexels.com/photos/35420084/pexels-photo-35420084.jpeg?auto=compress&cs=tinysrgb&w=2200&dpr=2",
+  bellDetail:
+    "https://images.pexels.com/photos/5378701/pexels-photo-5378701.jpeg?auto=compress&cs=tinysrgb&w=1600&dpr=2",
+};
+
+const FEATURES = [
+  {
+    kicker: "ARRIVAL PROTOCOL",
+    title: "Gate to cabin in minutes, no public terminals.",
+    copy:
+      "Pull through a private gate and park under cover. Identity check is quiet, luggage is handled, and your car never meets a crowd. You move from curb to lounge to aircraft like a clean runway line.",
+    img: IMG.loungeAirport,
+    tagLeft: "FIG_01 // SKYPORT LOUNGE",
+    tagRight: "CLEARED",
+    id: "arrival",
+  },
+  {
+    kicker: "CABIN STANDARD",
+    title: "Your aircraft is staged like a suite, every time.",
+    copy:
+      "Temperature set, lighting dialed, linens turned down, snacks stocked, and the crew briefed before you arrive. No speeches, no forced smiles. Just readiness, privacy, and a door that closes out the world.",
+    img: IMG.jetInterior,
+    tagLeft: "FIG_02 // CABIN",
+    tagRight: "READY",
+    id: "lounge",
+  },
+  {
+    kicker: "ONBOARD DINING",
+    title: "Food built for altitude, timing, and taste.",
+    copy:
+      "Chef prepared meals that land hot and clean, even when the departure time does not behave. Proper storage, fast service, and plating that still looks sharp at 41,000 feet.",
+    img: IMG.diningPlate,
+    tagLeft: "FIG_03 // GALLEY",
+    tagRight: "TEMP LOCK",
+    id: "membership",
+  },
+];
+
+// Simple helper with explicit type to fix TS error
+const toId = (h: any) => String(h || "").replace("#", "");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} | Private Runway, Private Terminal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root{
+        --bg-0:#040406;
+        --bg-1:#07070a;
+        --glass: rgba(255,255,255,.03);
+        --line: rgba(255,255,255,.08);
+        --line-2: rgba(255,255,255,.05);
+
+        --champagne:#e3d3b0;
+        --champagne-dim: rgba(227,211,176,.62);
+        --gold:#c8a86b;
+        --gold-dim: rgba(200,168,107,.35);
+        --gold-glow: rgba(200,168,107,.18);
+
+        --ink: rgba(241,233,218,.92);
+        --mute: rgba(241,233,218,.62);
+
+        --shadow: rgba(0,0,0,.55);
+        --ease: cubic-bezier(.16,1,.3,1);
+      }
+
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; }
+      body{
+        margin:0;
+        background: radial-gradient(1200px 900px at 20% -10%, rgba(200,168,107,.10), transparent 60%),
+                    radial-gradient(1200px 900px at 90% 20%, rgba(200,168,107,.06), transparent 55%),
+                    linear-gradient(180deg, var(--bg-0), var(--bg-1));
+        color: var(--ink);
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        letter-spacing:.01em;
+        overflow-x:hidden;
+      }
+
+      #void-canvas{
+        position:fixed; inset:0; width:100%; height:100%; z-index:0; opacity:.26; pointer-events:none;
+      }
+
+      body::before{
+        content:""; position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.07; mix-blend-mode: overlay;
+        background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      #loader{
+        position:fixed; inset:0; background: linear-gradient(180deg, #040406, #07070a); z-index:9999;
+        display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px;
+        transition: opacity .9s var(--ease), transform .9s var(--ease);
+      }
+      #loader.hidden{ opacity:0; transform: translateY(-10px); pointer-events:none; }
+      .loader-mark{
+        font-family: "JetBrains Mono", monospace; font-size:11px; letter-spacing:.28em; color: rgba(200,168,107,.85); text-transform:uppercase;
+      }
+      .loader-bar{
+        width:260px; height:1px; background: rgba(255,255,255,.10); overflow:hidden; position:relative;
+      }
+      .loader-bar > span{
+        position:absolute; inset:0; width:0%; background: linear-gradient(9deg, transparent, rgba(200,168,107,.95), transparent);
+        animation: load 1.9s var(--ease) forwards;
+      }
+      @keyframes load{ to{ width:100%; } }
+
+      body.cursor-on *{ cursor:none; }
+      #cursor-ring, #cursor-dot{
+        position:fixed; left:0; top:0; transform: translate(-50%, -50%); pointer-events:none; z-index:10000; opacity:0; transition: opacity .35s var(--ease);
+      }
+      body.cursor-on #cursor-ring, body.cursor-on #cursor-dot{ opacity:1; }
+
+      #cursor-ring{
+        width:26px; height:26px; border-radius:999px; border:1px solid rgba(200,168,107,.85);
+        box-shadow: 0 0 18px rgba(200,168,107,.10); mix-blend-mode: difference;
+        transition: width .28s var(--ease), height .28s var(--ease), background .28s var(--ease), border-color .28s var(--ease);
+      }
+      #cursor-dot{
+        width:5px; height:5px; border-radius:999px; background: rgba(200,168,107,.95); box-shadow: 0 0 14px rgba(200,168,107,.25);
+      }
+      #cursor-ring.hover{
+        width:54px; height:54px; background: rgba(200,168,107,.10); border-color: rgba(200,168,107,.0); box-shadow: 0 0 28px rgba(200,168,107,.16);
+      }
+
+      .wrap{
+        position:relative; z-index:5; max-width: 1280px; margin:0 auto; padding: 28px 18px 70px;
+        opacity:0; transform: translateY(14px); transition: opacity 1.1s var(--ease), transform 1.1s var(--ease);
+      }
+      body.loaded .wrap{ opacity:1; transform:none; }
+
+      .topbar{ display:flex; align-items:center; justify-content:space-between; gap:18px; padding: 12px 6px 18px; border-bottom: 1px solid var(--line-2); }
+      .brand{ display:flex; flex-direction:column; gap:4px; min-width: 220px; }
+      .brand .name{ font-family: "Cormorant Garamond", serif; font-weight:600; letter-spacing:.18em; font-size:16px; text-transform:uppercase; color: rgba(227,211,176,.95); }
+      .brand .sub{ font-family: "JetBrains Mono", monospace; letter-spacing:.24em; font-size:10px; text-transform:uppercase; color: rgba(241,233,218,.42); }
+
+      nav{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; justify-content:flex-end; }
+      nav a{
+        position:relative; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color: rgba(241,233,218,.60);
+        padding: 10px 10px; border-radius: 999px; border: 1px solid transparent;
+        transition: color .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+      }
+      nav a::after{
+        content:""; position:absolute; left:14px; right:14px; bottom:7px; height:1px; transform: scaleX(0); transform-origin:left;
+        background: rgba(200,168,107,.85); transition: transform .35s var(--ease); opacity:.9;
+      }
+      nav a:hover{ color: rgba(241,233,218,.92); background: rgba(255,255,255,.02); border-color: rgba(255,255,255,.06); }
+      nav a:hover::after{ transform: scaleX(1); }
+
+      .hero{ margin-top: 22px; border-radius: 18px; overflow:hidden; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02); box-shadow: 0 34px 90px rgba(0,0,0,.48); position:relative; }
+      .hero-media{ position:relative; min-height: 520px; }
+      .hero-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter: contrast(1.05) saturate(.92) brightness(.92); transform: scale(1.02); transition: transform 1.2s var(--ease), filter .8s var(--ease); }
+      .hero:hover .hero-media img{ transform: scale(1.06); filter: contrast(1.10) saturate(1.00) brightness(1.00); }
+      .hero-media::after{ content:""; position:absolute; inset:0; background: radial-gradient(900px 520px at 20% 10%, rgba(200,168,107,.16), transparent 60%), linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.75)); pointer-events:none; }
+
+      .hero-inner{ position:relative; padding: 42px 26px 28px; display:flex; flex-direction:column; gap: 18px; }
+      .hero-kicker{ font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .30em; text-transform: uppercase; color: rgba(200,168,107,.90); }
+      .hero-title{ margin:0; font-family: "Cormorant Garamond", serif; font-weight:600; font-size: clamp(44px, 6vw, 86px); line-height: .88; letter-spacing: .03em; color: rgba(241,233,218,.95); text-shadow: 0 24px 70px rgba(0,0,0,.55); }
+      .hero-title span{ color: rgba(200,168,107,.92); letter-spacing:.12em; font-weight:500; font-size: .28em; vertical-align: middle; margin-left: 10px; }
+      .hero-copy{ max-width: 66ch; font-size: 14px; line-height: 1.85; color: rgba(241,233,218,.68); border-left: 1px solid rgba(200,168,107,.55); padding-left: 16px; }
+      .hero-meta{ display:flex; align-items:center; gap: 12px; flex-wrap:wrap; margin-top: 4px; }
+      .pill{ display:inline-flex; align-items:center; gap:10px; padding: 10px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02); color: rgba(241,233,218,.72); font-size: 12px; letter-spacing:.06em; }
+      .pill b{ color: rgba(227,211,176,.92); font-weight:600; }
+
+      .grid{ display:grid; grid-template-columns: 1fr; gap: 22px; margin-top: 22px; }
+      .card{ border-radius: 18px; border: 1px solid rgba(255,255,255,.08); background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.28)); box-shadow: 0 26px 80px rgba(0,0,0,.46); overflow:hidden; transform-style: preserve-3d; }
+      .card-inner{ display:grid; grid-template-columns: 1fr; }
+      .card-copy{ padding: 26px; position:relative; z-index:2; }
+      .kicker{ font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: rgba(200,168,107,.88); margin-bottom: 10px; }
+      .h2{ margin:0 0 10px; font-family: "Cormorant Garamond", serif; font-weight:600; font-size: clamp(26px, 3.2vw, 38px); line-height:1.05; letter-spacing:.02em; color: rgba(241,233,218,.95); }
+      .p{ margin:0; font-size: 14px; line-height: 1.85; color: rgba(241,233,218,.68); max-width: 70ch; }
+      .card-media{ position:relative; min-height: 320px; border-top: 1px solid rgba(255,255,255,.06); overflow:hidden; }
+      .card-media img{ width:100%; height:100%; object-fit:cover; display:block; filter: grayscale(.15) contrast(1.10) brightness(.92); transform: scale(1.02); transition: transform 1.1s var(--ease), filter .7s var(--ease); }
+      .card:hover .card-media img{ transform: scale(1.07); filter: grayscale(0) contrast(1.08) brightness(1.00); }
+      .hud{ position:absolute; inset: 16px; border: 1px solid rgba(255,255,255,.10); border-radius: 14px; pointer-events:none; display:flex; align-items:flex-end; justify-content:space-between; padding: 14px 14px 12px; background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.18)); }
+      .hud span{ font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: rgba(227,211,176,.80); }
+
+      .strip{ margin-top: 22px; display:grid; grid-template-columns: 1fr; gap: 18px; border-radius: 18px; overflow:hidden; border: 1px solid rgba(255,255,255,.08); background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.24)); box-shadow: 0 26px 80px rgba(0,0,0,.40); }
+      .strip-inner{ display:grid; grid-template-columns: 1fr; }
+      .strip-copy{ padding: 26px; }
+      .strip-row{ display:flex; flex-wrap:wrap; gap: 10px; margin-top: 14px; }
+      .chip{ padding: 10px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.02); font-size: 12px; letter-spacing:.05em; color: rgba(241,233,218,.66); }
+      .strip-media{ position:relative; min-height: 260px; border-top: 1px solid rgba(255,255,255,.06); }
+      .strip-media img{ width:100%; height:100%; object-fit:cover; display:block; filter: contrast(1.06) brightness(.92) saturate(.92); }
+      .strip-media::after{ content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.62)); pointer-events:none; }
+
+      footer{ margin-top: 34px; padding: 22px 6px 0; border-top: 1px solid rgba(255,255,255,.06); display:flex; align-items:flex-end; justify-content:space-between; gap: 16px; flex-wrap:wrap; }
+      .foot-left{ font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(241,233,218,.40); }
+      .foot-right{ display:flex; align-items:center; gap: 10px; color: rgba(241,233,218,.42); font-size: 12px; }
+      .foot-right a{ color: rgba(227,211,176,.75); text-decoration:none; border-bottom: 1px solid rgba(227,211,176,.22); }
+      .foot-right a:hover{ color: rgba(227,211,176,.92); border-bottom-color: rgba(227,211,176,.45); }
+
+      @media (min-width: 980px){
+        .hero-inner{ padding: 54px 42px 34px; }
+        .grid{ grid-template-columns: 1fr; }
+        .card-inner{ grid-template-columns: 1.05fr .95fr; min-height: 420px; }
+        .card-media{ border-top: 0; border-left: 1px solid rgba(255,255,255,.06); min-height: 420px; }
+        .strip-inner{ grid-template-columns: 1.1fr .9fr; min-height: 320px; }
+        .strip-media{ border-top:0; border-left: 1px solid rgba(255,255,255,.06); min-height: 320px; }
+      }
+      @media (max-width: 520px){
+        nav{ gap:10px; }
+        nav a{ padding: 8px 8px; }
+        .hero-meta{ gap: 10px; }
+        .pill{ width: 100%; justify-content:space-between; }
+      }
+      @media (prefers-reduced-motion: reduce){
+        *{ scroll-behavior:auto !important; }
+        .wrap{ transition:none; }
+        .hero-media img{ transition:none; }
+        .card-media img{ transition:none; }
+        #loader{ transition:none; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="loader" aria-hidden="true">
+      <div class="loader-bar"><span></span></div>
+      <div class="loader-mark">ARMING SKYPORT SYSTEMS</div>
+    </div>
+
+    <div id="cursor-ring" aria-hidden="true"></div>
+    <div id="cursor-dot" aria-hidden="true"></div>
+    <canvas id="void-canvas" aria-hidden="true"></canvas>
+
+    <div class="wrap">
+      
+      <header class="topbar">
+        <div class="brand hover-target">
+          <div class="name">{BRAND}</div>
+          <div class="sub">private runway, private terminal</div>
+        </div>
+        <nav aria-label="Primary">
+          {NAV.map((l) => (
+            <a class="hover-target" href={l.href}>{l.label}</a>
+          ))}
+        </nav>
+      </header>
+
+      <section class="hero tilt-surface" aria-label="Hero">
+        <div class="hero-media">
+          <img src={IMG.heroJetHangar} alt="Private hangar and aircraft staging bay" loading="eager" />
+        </div>
+        <div class="hero-inner">
+          <div class="hero-kicker">MEMBERS ONLY SKYPORT / RUNWAY READY</div>
+          <h1 class="hero-title">
+            Aurelia Skyport <span>PRIVATE RUNWAY</span>
+          </h1>
+          <div class="hero-copy">
+            This is not a line, a lobby, or a scene.
+            It is a private airport layer built for people who hate waiting.
+            Show up, step inside, shut the door, wheels up when you say so.
+          </div>
+          <div class="hero-meta">
+            <div class="pill"><b>24/7</b> flight desk</div>
+            <div class="pill"><b>12 min</b> gate to cabin target</div>
+            <div class="pill"><b>0</b> public terminals</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="Experience grid">
+        {FEATURES.map((f, idx) => (
+          <article id={f.id} class="card tilt-card hover-target" aria-label={`Feature ${idx + 1}`}>
+            <div class="card-inner">
+              <div class="card-copy">
+                <div class="kicker">{f.kicker}</div>
+                <h2 class="h2">{f.title}</h2>
+                <p class="p">{f.copy}</p>
+              </div>
+              <div class="card-media" aria-hidden="true">
+                <img src={f.img} alt="" loading="lazy" />
+                <div class="hud">
+                  <span>{f.tagLeft}</span>
+                  <span>{f.tagRight}</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section id="contact" class="strip tilt-card hover-target" aria-label="Membership strip">
+        <div class="strip-inner">
+          <div class="strip-copy">
+            <div class="kicker">PROGRAM ACCESS</div>
+            <h2 class="h2">A keycard for the sky.</h2>
+            <p class="p">
+              Membership is a real system, not a perk list.
+              Verified access, pre cleared routing, and preferences locked in so your arrival feels effortless every single time.
+              Your profile is operational, private, and always ready.
+            </p>
+            <div class="strip-row" aria-label="Membership highlights">
+              <span class="chip">Identity verified entry</span>
+              <span class="chip">Private drive in</span>
+              <span class="chip">Hangar staging</span>
+              <span class="chip">Preferred aircraft profiles</span>
+              <span class="chip">Secure baggage vault</span>
+            </div>
+          </div>
+          <div class="strip-media" aria-hidden="true">
+            <img src={IMG.bellDetail} alt="" loading="lazy" />
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div class="foot-left">PRIVATE RUNWAY / CLEAN FLOW / ZERO NOISE</div>
+        <div class="foot-right">
+          <span style="opacity:.7">Example build.</span>
+          <a class="hover-target" href="/">Return to index</a>
+        </div>
+      </footer>
+    </div>
+
+    <script is:inline>
+      // @ts-nocheck
+      (function () {
+        var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var finePointer = window.matchMedia("(pointer: fine)").matches;
+
+        // LOADER
+        window.addEventListener("load", function () {
+          var loader = document.getElementById("loader");
+          if (loader) {
+            setTimeout(function() { loader.classList.add("hidden"); }, 900);
+            setTimeout(function() { loader.remove(); }, 1700);
+          }
+          document.body.classList.add("loaded");
+        });
+
+        // CURSOR
+        if (finePointer && !prefersReduced) {
+          document.body.classList.add("cursor-on");
+          var ring = document.getElementById("cursor-ring");
+          var dot = document.getElementById("cursor-dot");
+          if (ring && dot) {
+            var pos = { x: 0, y: 0, rx: 0, ry: 0 };
+            document.addEventListener("mousemove", function(e) {
+              pos.x = e.clientX;
+              pos.y = e.clientY;
+            }, { passive: true });
+
+            function tick() {
+              pos.rx += (pos.x - pos.rx) * 0.18;
+              pos.ry += (pos.y - pos.ry) * 0.18;
+              
+              if (dot) {
+                dot.style.left = pos.x + "px";
+                dot.style.top = pos.y + "px";
+              }
+              if (ring) {
+                ring.style.left = pos.rx + "px";
+                ring.style.top = pos.ry + "px";
+              }
+              requestAnimationFrame(tick);
+            }
+            tick();
+
+            document.querySelectorAll(".hover-target").forEach(function(el) {
+              el.addEventListener("mouseenter", function() { ring.classList.add("hover"); });
+              el.addEventListener("mouseleave", function() { ring.classList.remove("hover"); });
+            });
+          }
+        }
+
+        // TILT
+        if (!prefersReduced) {
+          function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }
+          document.querySelectorAll(".tilt-card").forEach(function(card) {
+            card.addEventListener("mousemove", function(e) {
+              var rect = card.getBoundingClientRect();
+              var x = e.clientX - rect.left;
+              var y = e.clientY - rect.top;
+              var px = (x / rect.width) * 2 - 1;
+              var py = (y / rect.height) * 2 - 1;
+              var rotY = clamp(px * 6.5, -6.5, 6.5);
+              var rotX = clamp(py * -5.5, -5.5, 5.5);
+              card.style.transform = "perspective(1100px) rotateX(" + rotX + "deg) rotateY(" + rotY + "deg) translateZ(0)";
+              card.style.transition = "transform 60ms linear";
+            }, { passive: true });
+            card.addEventListener("mouseleave", function() {
+              card.style.transform = "perspective(1100px) rotateX(0deg) rotateY(0deg)";
+              card.style.transition = "transform 700ms cubic-bezier(.16,1,.3,1)";
+            });
+          });
+        }
+
+        // PARTICLES
+        (function initCanvas() {
+          if (prefersReduced) return;
+          var el = document.getElementById("void-canvas");
+          if (!el) return;
+          var ctx = el.getContext("2d");
+          if (!ctx) return;
+          var w = 0, h = 0;
+          var mouse = { x: -9999, y: -9999 };
+          window.addEventListener("mousemove", function(e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+          function resize() {
+            w = el.width = window.innerWidth;
+            h = el.height = window.innerHeight;
+          }
+          window.addEventListener("resize", resize, { passive: true });
+          resize();
+
+          var particles = [];
+          var count = Math.min(120, Math.floor((window.innerWidth * window.innerHeight) / 18000));
+          for (var i = 0; i < count; i++) {
+            particles.push({
+              x: Math.random() * w, y: Math.random() * h,
+              vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,
+              r: Math.random() * 1.8 + 0.35, a: Math.random() * 0.22 + 0.06
+            });
+          }
+
+          function paint() {
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = "rgba(200,168,107,0.22)";
+            for (var i = 0; i < particles.length; i++) {
+              var p = particles[i];
+              p.x += p.vx; p.y += p.vy;
+              var dx = p.x - mouse.x;
+              var dy = p.y - mouse.y;
+              var d2 = dx * dx + dy * dy;
+              if (d2 < 160 * 160) {
+                var m = 1 - d2 / (160 * 160);
+                p.x += (dx / (Math.sqrt(d2) + 0.001)) * m * 0.9;
+                p.y += (dy / (Math.sqrt(d2) + 0.001)) * m * 0.9;
+              }
+              if (p.x < -10) p.x = w + 10; if (p.x > w + 10) p.x = -10;
+              if (p.y < -10) p.y = h + 10; if (p.y > h + 10) p.y = -10;
+              ctx.globalAlpha = p.a;
+              ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.globalAlpha = 0.06;
+            ctx.strokeStyle = "rgba(227,211,176,0.35)";
+            for (var i = 0; i < particles.length; i++) {
+              for (var j = i + 1; j < i + 6 && j < particles.length; j++) {
+                var a = particles[i], b = particles[j];
+                var dx = a.x - b.x, dy = a.y - b.y;
+                if (dx * dx + dy * dy < 120 * 120) {
+                  ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+                }
+              }
+            }
+            ctx.globalAlpha = 1;
+            window.requestAnimationFrame(paint);
+          }
+          paint();
+        })();
+      })();
+    </script>
+  </body>
+</html>

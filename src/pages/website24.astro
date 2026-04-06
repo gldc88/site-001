@@ -1,0 +1,380 @@
+---
+import "../styles/global.css";
+
+const BRAND = "NIGHTWATCH";
+const PHONE = "+31 6 4029 1187";
+const TEL = PHONE.replace(/\s/g, "");
+const EMAIL = "dispatch@nightwatch-locksmith.nl";
+const SERVICE_AREA = "Amsterdam / Haarlem / Utrecht";
+
+// Stable Night City Image
+const HERO_IMG = "https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=2400&auto=format&fit=crop";
+
+const NAV = [
+  { label: "Services", href: "#services" },
+  { label: "Scenarios", href: "#scenarios" },
+  { label: "Equipment", href: "#loadout" },
+];
+
+const SERVICES = [
+  { title: "Emergency Lockout Entry", code: "01", line: "Fast entry with minimal damage, drilling is last resort.", icon: "bolt" },
+  { title: "Lock Cylinder Replacement", code: "02", line: "Regain key control instantly, new cylinder, fresh keys.", icon: "refresh" },
+  { title: "Break-In Damage Repair", code: "03", line: "Secure the door, reinforce the frame, upgrade weak points.", icon: "shield" },
+  { title: "Smart Lock Installation", code: "04", line: "Install and configure digital access, codes, app setup.", icon: "wifi" },
+  { title: "Key Cutting and Duplication", code: "05", line: "On-site key cutting for common door and cylinder types.", icon: "key" },
+];
+
+const INCIDENTS = [
+  {
+    key: "LOCKED_OUT",
+    label: "Locked Out",
+    title: "Lockout Entry",
+    line: "We start with picking and bypass methods. If drilling is required, you will know before it happens.",
+    prep: ["Bring photo ID", "Proof of address or tenancy", "Do not force the handle"],
+    includes: ["ETA: 20-40 min", "Non-destructive first", "Price confirmed before work"],
+  },
+  {
+    key: "KEY_SNAPPED",
+    label: "Broken Key",
+    title: "Key Extraction",
+    line: "We remove the broken piece cleanly and test the cylinder. If it is salvageable, you keep costs down.",
+    prep: ["Stop forcing the key", "Keep the broken piece", "Avoid glue or tools in the keyway"],
+    includes: ["Extraction kit", "Cylinder function test", "Replacement key if possible"],
+  },
+  {
+    key: "LOST_KEYS",
+    label: "Lost Keys",
+    title: "Security Reset",
+    line: "Old keys become useless immediately. We replace the cylinder or rekey where possible, then cut new keys.",
+    prep: ["Proof of ownership", "Count doors needing keys", "Tell us if there are shared entrances"],
+    includes: ["Cylinder removal", "New SKG cylinder install", "3x new keys included"],
+  },
+  {
+    key: "BURGLARY",
+    label: "Break-In",
+    title: "Secure and Reinforce",
+    line: "We secure the entry fast, repair alignment, and upgrade hardware so the same weak point cannot be used again.",
+    prep: ["Do not touch evidence", "Take photos for insurance", "Check if the frame is split"],
+    includes: ["Temporary securing", "Frame alignment", "Anti-snap hardware upgrade"],
+  },
+];
+
+const LOADOUT = [
+  { item: "Non-Destructive Entry Tools", spec: "Pick and bypass before drilling", status: "Standard" },
+  { item: "SKG Anti-Snap Cylinders", spec: "Anti-pull, anti-drill protection", status: "In Stock" },
+  { item: "Mobile Key Cutting Kit", spec: "Cut and duplicate keys on-site", status: "Deployed" },
+  { item: "Door Frame Repair Kit", spec: "Reinforce and realign frames", status: "Heavy Duty" },
+];
+
+const YEAR = new Date().getFullYear();
+
+const Icon = {
+  arrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
+  back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>`,
+  phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+  bolt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`,
+  key: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`,
+  shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  wifi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>`,
+  refresh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`
+};
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} // Locksmith Dispatch</title>
+    <style>
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        .scanline {
+            animation: scan 8s linear infinite;
+        }
+    </style>
+  </head>
+
+  <body class="bg-[#050505] text-zinc-300 font-sans antialiased selection:bg-yellow-500/30 selection:text-white">
+    
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute inset-0 opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+        <div class="scanline absolute top-0 left-0 w-full h-px bg-white/5"></div>
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-yellow-600/5 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-zinc-800/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <header class="fixed top-0 inset-x-0 z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
+      <div class="flex items-center h-20 px-8 justify-between max-w-[1800px] mx-auto">
+        
+        <div class="flex items-center gap-12">
+            <a href="/" class="flex items-center gap-3 text-sm font-bold tracking-wide text-zinc-500 hover:text-white transition-colors group">
+                <span class="w-4 h-4 group-hover:-translate-x-1 transition-transform"><Fragment set:html={Icon.back} /></span>
+                Back to Index
+            </a>
+            <div class="font-black text-xl tracking-tighter uppercase text-white flex items-center gap-2">
+                <span class="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.5)]"></span>
+                {BRAND}
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-2">
+            {NAV.map(item => (
+                <a href={item.href} class="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-yellow-500 hover:bg-white/5 rounded-full transition-all">
+                    {item.label}
+                </a>
+            ))}
+        </nav>
+
+        <a href={`tel:${TEL}`} class="text-yellow-500 hover:text-white transition-colors text-sm font-bold Dispatch Ready tracking-wide flex items-center gap-3 border border-yellow-500/20 bg-yellow-500/5 px-4 py-2 rounded-full hover:bg-yellow-500/10 hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+            <span class="w-2 h-2 animate-pulse bg-yellow-500 rounded-full"></span>
+            Call 24/7
+        </a>
+      </div>
+    </header>
+
+    <main class="relative z-10 pt-20">
+
+      <section class="min-h-[85vh] grid lg:grid-cols-2 border-b border-white/5">
+        
+        <div class="relative h-[50vh] lg:h-full lg:min-h-[800px] overflow-hidden border-b lg:border-b-0 lg:border-r border-white/5 group">
+            <div class="absolute inset-0 bg-yellow-500/10 mix-blend-overlay z-10 pointer-events-none"></div>
+            <img 
+                src={HERO_IMG} 
+                alt="Night dispatch" 
+                class="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-105" 
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#050505]/80 z-20"></div>
+            
+            <div class="absolute bottom-10 left-10 z-30">
+                <div class="text-sm text-yellow-500 font-bold mb-2 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-yellow-500 animate-ping rounded-full"></span>
+                    LIVE DISPATCH // {SERVICE_AREA}
+                </div>
+                <div class="text-zinc-300 text-xs tracking-wide font-mono bg-black/50 backdrop-blur-md px-3 py-1 rounded border border-white/10 inline-block">
+                    Response Status: Ready
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col justify-center px-10 lg:px-32 py-16 relative">
+            <div class="absolute top-1/2 right-0 w-96 h-96 bg-zinc-800/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+            <h1 class="text-6xl lg:text-8xl font-black leading-none tracking-tighter mb-8 text-white relative z-10">
+                Access <br/>
+                <span class="text-yellow-500">Restored.</span>
+            </h1>
+
+            <p class="text-xl text-zinc-400 max-w-md leading-relaxed mb-12 border-l-4 border-yellow-500/50 pl-8">
+                Locked out at a bad hour? Key snapped? Door damaged after a break-in? <br/>
+                We arrive fast and work clean. <span class="text-white font-medium">Non-destructive entry</span> is the default.
+            </p>
+
+            <div class="flex flex-col items-start gap-8 relative z-10">
+                <a href={`tel:${TEL}`} class="group flex items-center gap-6 text-white text-xl font-bold tracking-wide hover:text-yellow-400 transition-colors">
+                    <span class="border border-zinc-700 group-hover:border-yellow-500 group-hover:shadow-[0_0_20px_rgba(234,179,8,0.2)] px-8 py-4 transition-all bg-[#111] rounded-sm relative overflow-hidden">
+                        <span class="relative z-10">Call now: {PHONE}</span>
+                        <div class="absolute inset-0 bg-yellow-500/10 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                    </span>
+                    <span class="group-hover:translate-x-2 transition-transform duration-300 text-yellow-500"><Fragment set:html={Icon.arrow} /></span>
+                </a>
+                <span class="text-sm text-zinc-500 font-mono bg-white/5 px-3 py-1 rounded border border-white/5">TYPICAL ETA: 20-40 MIN</span>
+            </div>
+        </div>
+      </section>
+
+      <section id="services" class="border-b border-white/5 relative">
+        <div class="max-w-[1800px] mx-auto grid lg:grid-cols-2">
+            <div class="p-10 lg:p-32 border-b lg:border-b-0 lg:border-r border-white/5 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-transparent opacity-20"></div>
+                
+                <div>
+                    <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-4">/ Services</h2>
+                    <h3 class="text-3xl font-bold text-white mb-8">Locksmith Work, Done Properly</h3>
+                    <p class="text-zinc-400 text-lg max-w-md leading-relaxed">
+                        Residential and small commercial. Emergency callouts and planned upgrades. Clean work, clear decisions, no surprises.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-[#080808]">
+                {SERVICES.map((s) => (
+                    <div class="group border-b border-white/5 p-10 flex items-center justify-between hover:bg-white/[0.02] transition-colors cursor-default last:border-b-0 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 w-1 h-full bg-yellow-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                        
+                        <div class="flex items-center gap-6 relative z-10">
+                            <div class="text-zinc-600 group-hover:text-yellow-500 transition-colors">
+                                <Fragment set:html={Icon[s.icon as keyof typeof Icon] || Icon.bolt} />
+                            </div>
+                            <div>
+                                <span class="text-yellow-600/50 text-[10px] font-mono mb-1 block group-hover:text-yellow-500 transition-colors">{s.code}</span>
+                                <h3 class="text-xl font-bold tracking-tight text-zinc-300 group-hover:text-white transition-colors">{s.title}</h3>
+                            </div>
+                        </div>
+                        <span class="hidden md:block text-sm text-zinc-500 font-mono group-hover:text-zinc-300 transition-colors">{s.line}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      <section id="scenarios" class="border-b border-white/5 bg-[#0e0e0e]">
+        <div class="grid lg:grid-cols-12 min-h-[700px]">
+            
+            <div class="lg:col-span-4 border-r border-white/5 bg-[#0a0a0a]">
+                <div class="p-8 border-b border-white/5">
+                    <h2 class="text-sm font-bold text-zinc-500 uppercase tracking-widest">Choose your situation</h2>
+                </div>
+                {INCIDENTS.map((i, idx) => (
+                    <button 
+                        class={`scenario-btn w-full text-left px-8 py-8 font-bold text-sm tracking-wide border-b border-white/5 hover:bg-white/5 transition-all focus:outline-none flex justify-between items-center group ${idx === 0 ? 'text-white bg-white/5 border-l-2 border-l-yellow-500 active' : 'text-zinc-500 border-l-2 border-l-transparent hover:text-zinc-300'}`}
+                        data-key={i.key}
+                    >
+                        <span>{i.label}</span>
+                        <span class="text-xs opacity-30 font-mono group-hover:opacity-60 transition-opacity">0{idx + 1}</span>
+                    </button>
+                ))}
+            </div>
+
+            <div id="displayContainer" class="lg:col-span-8 p-10 md:p-32 flex flex-col justify-center relative bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)]">
+                
+                <div class="absolute top-10 left-10 w-4 h-4 border-t border-l border-white/20"></div>
+                <div class="absolute top-10 right-10 w-4 h-4 border-t border-r border-white/20"></div>
+                <div class="absolute bottom-10 left-10 w-4 h-4 border-b border-l border-white/20"></div>
+                <div class="absolute bottom-10 right-10 w-4 h-4 border-b border-r border-white/20"></div>
+
+                <div class="mb-16">
+                    <div class="inline-block px-3 py-1 mb-6 border border-yellow-500/30 text-yellow-500 text-[10px] font-bold uppercase tracking-widest rounded bg-yellow-500/5">
+                        Live Response Plan
+                    </div>
+                    <h3 id="pkgTitle" class="text-5xl md:text-7xl font-black text-white mb-8 leading-none tracking-tight drop-shadow-2xl">
+                        {INCIDENTS[0].title}
+                    </h3>
+                    <p id="pkgLine" class="text-xl text-zinc-400 font-normal max-w-2xl border-l-2 border-yellow-500 pl-8 py-2 bg-gradient-to-r from-white/5 to-transparent">
+                        {INCIDENTS[0].line}
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-16 border-t border-white/10 pt-16">
+                    <div>
+                        <span class="block text-xs font-bold text-zinc-500 mb-6 uppercase tracking-widest">Before we arrive</span>
+                        <ul id="pkgPrep" class="space-y-4 text-sm text-zinc-300">
+                            {INCIDENTS[0].prep.map(p => <li class="flex items-center gap-4"><span class="w-1.5 h-1.5 bg-yellow-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.8)]"></span> {p}</li>)}
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-zinc-500 mb-6 uppercase tracking-widest">What we do</span>
+                        <ul id="pkgInc" class="space-y-4 text-sm text-yellow-500/90 font-mono">
+                            {INCIDENTS[0].includes.map(p => <li>// {p}</li>)}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-20 flex items-center justify-end gap-8">
+                    <span class="text-xs font-medium text-zinc-600 tracking-wide hidden md:block">NEED HELP RIGHT NOW?</span>
+                    <a href={`tel:${TEL}`} class="bg-yellow-500 hover:bg-white text-black px-10 py-5 font-bold text-sm uppercase tracking-widest transition-all hover:shadow-[0_0_30px_rgba(234,179,8,0.4)] flex items-center gap-4 rounded-sm">
+                        Call Dispatch <Fragment set:html={Icon.arrow} />
+                    </a>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <section id="loadout" class="px-8 py-32 border-b border-white/5 bg-[#050505]">
+        <div class="max-w-[1800px] mx-auto">
+            <div class="flex justify-between items-end mb-20">
+                <div>
+                    <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-2">/ Equipment</h2>
+                    <h3 class="text-3xl font-bold text-white">On-Van Tools</h3>
+                </div>
+                <div class="text-xs font-medium text-zinc-600 hidden md:block border border-white/10 px-3 py-1 rounded">STATUS: READY</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {LOADOUT.map((l) => (
+                    <div class="bg-[#0a0a0a] border border-white/5 p-10 hover:border-yellow-500/30 hover:bg-[#0f0f0f] transition-all group h-full flex flex-col justify-between min-h-[240px] rounded relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-8 h-8 border-t border-r border-white/10 group-hover:border-yellow-500/50 transition-colors"></div>
+                        
+                        <div class="mb-8 relative z-10">
+                            <span class="text-xs font-medium text-zinc-600 block mb-3">{l.status}</span>
+                            <div class="text-xl text-white font-bold tracking-tight group-hover:text-yellow-500 transition-colors">{l.item}</div>
+                        </div>
+                        <div class="text-sm text-zinc-500 border-t border-white/5 pt-6 relative z-10">
+                            {l.spec}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      <section id="contact" class="bg-yellow-500 px-8 py-32 text-black relative overflow-hidden">
+         <div class="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+         
+         <div class="max-w-[1800px] mx-auto flex flex-col md:flex-row justify-between items-start gap-16 relative z-10">
+            <div>
+                <h2 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-10">
+                    Get Back <br/> Inside.
+                </h2>
+                <div class="flex gap-6">
+                    <a href={`tel:${TEL}`} class="bg-black text-white hover:bg-white hover:text-black px-10 py-5 font-bold text-sm uppercase tracking-widest transition-all shadow-xl hover:shadow-2xl">
+                        Call Locksmith
+                    </a>
+                    <a href={`mailto:${EMAIL}`} class="border-2 border-black text-black hover:bg-black hover:text-white px-10 py-5 font-bold text-sm uppercase tracking-widest transition-colors">
+                        Email Request
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-right text-sm font-bold tracking-wide opacity-70 leading-relaxed">
+                <p>{SERVICE_AREA}</p>
+                <p class="mt-2">Licensed and insured</p>
+                <p class="mt-2">© {YEAR} {BRAND}</p>
+            </div>
+         </div>
+      </section>
+
+    </main>
+
+    <script is:inline define:vars={{ INCIDENTS }}>
+        const buttons = document.querySelectorAll('.scenario-btn');
+        const titleEl = document.getElementById('pkgTitle');
+        const lineEl = document.getElementById('pkgLine');
+        const prepEl = document.getElementById('pkgPrep');
+        const incEl = document.getElementById('pkgInc');
+        const container = document.getElementById('displayContainer');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Visual Toggle
+                buttons.forEach(b => {
+                    b.classList.remove('text-white', 'bg-white/5', 'border-l-yellow-500', 'active');
+                    b.classList.add('text-zinc-500', 'border-l-transparent', 'hover:text-zinc-300');
+                });
+                btn.classList.remove('text-zinc-500', 'border-l-transparent', 'hover:text-zinc-300');
+                btn.classList.add('text-white', 'bg-white/5', 'border-l-yellow-500', 'active');
+
+                // Data Update
+                const key = btn.dataset.key;
+                const data = INCIDENTS.find(i => i.key === key);
+                
+                if (data) {
+                    // Smooth fade effect
+                    container.style.opacity = '0.5';
+                    setTimeout(() => {
+                        titleEl.textContent = data.title;
+                        lineEl.textContent = data.line;
+                        prepEl.innerHTML = data.prep.map(p => `<li class="flex items-center gap-4"><span class="w-1.5 h-1.5 bg-yellow-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.8)]"></span> ${p}</li>`).join('');
+                        incEl.innerHTML = data.includes.map(p => <li>// ${p}</li>).join('');
+                        container.style.opacity = '1';
+                    }, 150);
+                }
+            });
+        });
+    </script>
+
+  </body>
+</html>

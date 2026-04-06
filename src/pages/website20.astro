@@ -1,0 +1,341 @@
+---
+// 1. GLOBAL
+import "../styles/global.css";
+
+// 2. COMPONENTS
+import RenovationCalculator from '../components/RenovationCalculator.vue';
+import ConsultationScheduler from '../components/ConsultationScheduler.tsx';
+
+// 3. CONFIG
+const BRAND = "NORTHRIDGE.";
+const PHONE = "+31 6 1234 5678";
+
+const NAV = [
+  { label: "Materials", href: "#materials" },
+  { label: "Process", href: "#process" },
+  { label: "Projects", href: "#works" },
+];
+
+const SERVICES = [
+  { title: "Architectural Kitchens", line: "Stone worktops. Hidden services. Built-in lighting." },
+  { title: "Bathrooms and Spa Builds", line: "Waterproofing done right. Quiet ventilation. Seamless tile." },
+  { title: "Full Home Renovations", line: "New layouts. Clean lines. Finish you can feel." },
+];
+
+// MATERIAL DATA (UPDATED FOR CONTRAST)
+const MATERIALS = [
+  { 
+    name: "Grigio Carnico", 
+    type: "Stone", 
+    id: "MAT-001",
+    specs: "Origin: Italy / Deep Grey",
+    // FIX: Dark Grey Stone instead of White + White Veining effect
+    bg: "bg-[#1c1c1c]",
+    overlay: "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-50",
+    texture: "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20",
+    cols: "md:col-span-2" 
+  },
+  { 
+    name: "Fumed Oak", 
+    type: "Wood", 
+    id: "MAT-002",
+    specs: "Cut: Rift Sawn",
+    // FIX: Added Amber spotlight to make it visible against black
+    bg: "bg-[#0F0F0F]",
+    overlay: "bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-900/20 via-black to-black",
+    // Wood grain simulation via CSS
+    texture: "bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.03)_0px,rgba(255,255,255,0.03)_1px,transparent_1px,transparent_4px)]",
+    cols: "" 
+  },
+  { 
+    name: "Patinated Bronze", 
+    type: "Metal", 
+    id: "MAT-003",
+    specs: "Finish: Hand-Rubbed",
+    // Metallic sheen
+    bg: "bg-gradient-to-br from-[#2a2320] to-[#0f0d0c]",
+    overlay: "bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent",
+    texture: "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay",
+    cols: "" 
+  },
+  { 
+    name: "Venetian Plaster", 
+    type: "Finish", 
+    id: "MAT-004",
+    specs: "Grain: Ultra-Fine",
+    // Textured Grey
+    bg: "bg-[#262626]",
+    overlay: "bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent",
+    texture: "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-50 contrast-150",
+    cols: "md:col-span-2" 
+  }
+];
+
+const PROJECTS = [
+  { name: "Canal House Revival", loc: "Herengracht", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=800&auto=format&fit=crop" },
+  { name: "Zuidas Apartment Refit", loc: "Amsterdam-Zuid", img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop" },
+  { name: "Villa Modernisation", loc: "Aerdenhout", img: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?q=80&w=800&auto=format&fit=crop" },
+];
+
+const PROCESS = [
+  { step: "Survey and measurements.", line: "Laser measures. Moisture checks. Clear plan from day one." },
+  { step: "Scope and quote.", line: "Line-by-line scope. Transparent pricing. No vague surprises." },
+  { step: "Build and finish.", line: "Dust control. Tight scheduling. Daily updates with photos." },
+  { step: "Handover and aftercare.", line: "Final punch list. Care guide. We stay reachable after delivery." },
+];
+
+const YEAR = new Date().getFullYear();
+
+// 4. ASSETS (Icons)
+const Icon = {
+  spark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5"><path d="M12 2l2 7 7 2-7 2-2 7-2-7-7-2 7-2z"></path></svg>`,
+  arrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
+  back:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4"><line x1="19" y1="12" x2="5" y1="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
+  scan: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="w-6 h-6"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></svg>`
+};
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth bg-[#030303]">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{BRAND} , Architectural Renovations</title>
+  </head>
+
+  <body class="bg-[#030303] text-neutral-300 antialiased selection:bg-white selection:text-black font-sans overflow-x-hidden">
+    
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-[120vh] object-cover opacity-30 mix-blend-luminosity saturate-0 filter blur-md">
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-white-marble-surface-close-up-view-33504-large.mp4" type="video/mp4" />
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#030303] via-[#030303]/80 to-[#030303]"></div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.06] mix-blend-overlay"></div>
+    </div>
+
+    <header class="fixed top-8 inset-x-0 z-50 px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="relative bg-[#0A0A0A]/60 backdrop-blur-2xl border-[0.5px] border-white/[0.08] rounded-full px-8 h-16 flex items-center justify-between shadow-[0_20px_40px_-20px_rgba(0,0,0,0.8)] transition-all duration-500 hover:border-white/20">
+            <div class="flex items-center gap-8">
+                <a href="/" class="group flex items-center gap-3 text-xs font-medium text-neutral-500 hover:text-white transition-colors">
+                    <div class="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.1] flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-300">
+                       <span class="group-hover:-translate-x-0.5 transition-transform"><Fragment set:html={Icon.back} /></span>
+                    </div>
+                    <span class="tracking-widest uppercase">Back</span>
+                </a>
+                <div class="w-px h-4 bg-white/[0.08]"></div>
+                <span class="text-white font-bold tracking-tighter text-lg">{BRAND}</span>
+            </div>
+            <nav class="hidden lg:flex items-center gap-10 text-[11px] font-semibold text-neutral-400 uppercase tracking-[0.15em]">
+                {NAV.map(item => (
+                    <a href={item.href} class="relative overflow-hidden group">
+                      <span class="group-hover:-translate-y-full block transition-transform duration-300">{item.label}</span>
+                      <span class="absolute top-0 left-0 translate-y-full group-hover:translate-y-0 block transition-transform duration-300 text-white">{item.label}</span>
+                    </a>
+                ))}
+            </nav>
+            <a href="#contact" class="hidden md:flex items-center gap-3 pl-6 pr-2 py-2 bg-white text-black text-xs font-bold uppercase tracking-wide rounded-full hover:bg-neutral-200 transition-all duration-300 group">
+                <span>Get a Quote</span>
+                <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white group-hover:rotate-45 transition-transform duration-500">
+                  <Fragment set:html={Icon.arrow} />
+                </div>
+            </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative z-10">
+
+      <section class="relative min-h-screen flex items-center pt-32 pb-20 px-8">
+        <div class="max-w-[1400px] mx-auto w-full grid lg:grid-cols-[1.3fr_1fr] gap-24 items-center">
+          <div class="relative">
+            <div class="inline-flex items-center gap-4 px-5 py-2 rounded-full border-[0.5px] border-white/[0.1] bg-white/[0.01] backdrop-blur-md text-[10px] uppercase tracking-[0.2em] font-semibold text-neutral-400 mb-12">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              Booking Window: Open
+            </div>
+            <h1 class="text-8xl lg:text-[10rem] font-bold tracking-tighter leading-[0.9] mb-10 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-neutral-600">
+              Renovate <br/> Without Chaos.
+            </h1>
+            <p class="text-xl text-neutral-400 leading-relaxed max-w-lg mb-16 font-light border-l-2 border-white/20 pl-6">
+              High end renovations for homes and apartments, planned clean, built tight, finished like it matters.
+            </p>
+            <div class="flex items-center gap-8">
+               <a href="#works" class="group relative inline-flex items-center gap-4 text-sm font-bold uppercase tracking-widest text-white overflow-hidden">
+                  <span class="relative z-10">See Recent Projects</span>
+                  <div class="w-12 h-[1px] bg-white group-hover:w-24 transition-all duration-500"></div>
+               </a>
+            </div>
+          </div>
+          <div class="relative group perspective-[1000px]">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-gradient-radial from-white/5 to-transparent blur-3xl -z-10 pointer-events-none group-hover:from-white/10 transition-all duration-1000"></div>
+            <div class="relative bg-[#080808]/80 backdrop-blur-xl border-[0.5px] border-white/[0.1] rounded-[2.5rem] p-3 shadow-[0_40px_100px_-30px_rgba(0,0,0,1)] transform transition-all duration-700 group-hover:rotate-x-2 group-hover:rotate-y-2 group-hover:scale-[1.02]">
+               <div class="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-white/10 via-transparent to-black/50 opacity-50 pointer-events-none"></div>
+               <RenovationCalculator client:visible />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="px-8 py-24 border-y border-white/[0.05]">
+         <div class="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            <div class="aspect-[4/3] relative rounded-3xl overflow-hidden border-[0.5px] border-white/[0.1]">
+               <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop" alt="Renovation detailing close-up" class="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105 hover:scale-100" />
+               <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+               <div class="absolute bottom-8 left-8">
+                  <span class="block text-xs uppercase tracking-widest text-neutral-400 mb-2">Detailing Note 001</span>
+                  <h3 class="text-2xl text-white font-medium">Shadow Gaps, Done Right.</h3>
+               </div>
+            </div>
+            <div class="lg:pl-12">
+               <h2 class="text-4xl font-light text-white mb-6">Details are the difference.</h2>
+               <p class="text-neutral-400 leading-relaxed max-w-md">We sweat the corners, the lines, the transitions. Clean junctions between stone and wood. Perfect reveals. No filler trim hiding lazy work. It reads quiet, because it was built right.</p>
+            </div>
+         </div>
+      </section>
+
+      <section id="materials" class="px-8 py-40 bg-black">
+        <div class="max-w-[1400px] mx-auto">
+          <div class="flex items-end justify-between border-b border-white/[0.08] pb-8 mb-20">
+            <h2 class="text-5xl font-extralight text-white tracking-tight">Materials Library.</h2>
+            <span class="text-neutral-500 text-xs uppercase tracking-[0.2em] hidden md:block">Curated finishes and fixtures</span>
+          </div>
+
+          <div class="grid md:grid-cols-3 md:grid-rows-2 gap-4">
+            {MATERIALS.map((mat, i) => (
+              <div class={`group relative h-[400px] rounded-3xl overflow-hidden border-[0.5px] border-white/[0.08] ${mat.bg} ${mat.cols}`}>
+                
+                <div class={`absolute inset-0 ${mat.overlay}`}></div>
+                <div class={`absolute inset-0 ${mat.texture} mix-blend-overlay`}></div>
+                
+                <div class="absolute inset-0 p-8 flex flex-col justify-between opacity-80 group-hover:opacity-100 transition-opacity">
+                   
+                   <div class="flex justify-between items-start">
+                      <div class="flex gap-2">
+                        <span class="text-[9px] uppercase tracking-widest text-white/50 border border-white/10 px-2 py-1 rounded bg-black/40 backdrop-blur-md">{mat.type}</span>
+                        <span class="text-[9px] uppercase tracking-widest text-white/50 border border-white/10 px-2 py-1 rounded bg-black/40 backdrop-blur-md">{mat.id}</span>
+                      </div>
+                      <div class="text-white/20 group-hover:text-white/80 transition-colors">
+                        <Fragment set:html={Icon.scan} />
+                      </div>
+                   </div>
+
+                   <div>
+                      <div class="flex justify-between items-end mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0">
+                         <span class="text-[10px] text-white/60 font-mono">{mat.specs}</span>
+                         <span class="text-[10px] text-white/60 font-mono">Approved</span>
+                      </div>
+                      
+                      <h3 class="text-3xl font-light text-white mb-2 drop-shadow-lg">{mat.name}</h3>
+                      
+                      <div class="w-full h-[1px] bg-white/10 overflow-hidden">
+                         <div class="h-full bg-white w-0 group-hover:w-full transition-all duration-1000 ease-out"></div>
+                      </div>
+                   </div>
+                </div>
+
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="works" class="py-40 overflow-hidden">
+         <div class="max-w-[1400px] mx-auto px-8 mb-20">
+            <h2 class="text-5xl font-extralight text-white tracking-tight">Recent Work.</h2>
+         </div>
+         <div class="flex gap-8 px-8 overflow-x-auto pb-16 snap-x snap-mandatory no-scrollbar">
+            {PROJECTS.map((proj, i) => (
+               <div class="relative flex-none w-[80vw] md:w-[600px] aspect-[4/3] rounded-[2rem] overflow-hidden border-[0.5px] border-white/[0.1] snap-center group">
+                  <img src={proj.img} alt={proj.name} class="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                  <div class="absolute bottom-0 inset-x-0 p-12">
+                     <span class="block text-xs uppercase tracking-widest text-neutral-400 mb-3">{proj.loc}</span>
+                     <h3 class="text-4xl font-light text-white">{proj.name}</h3>
+                  </div>
+               </div>
+            ))}
+            <div class="flex-none w-[300px] aspect-[4/3] rounded-[2rem] border-[0.5px] border-white/[0.1] bg-white/[0.02] flex items-center justify-center hover:bg-white/[0.05] transition-colors cursor-pointer snap-center">
+               <span class="text-sm font-bold uppercase tracking-widest text-white">Open Full Portfolio -></span>
+            </div>
+         </div>
+      </section>
+
+      <section id="process" class="px-8 py-40 bg-[#050505] border-y border-white/[0.05]">
+         <div class="max-w-[1400px] mx-auto">
+            <div class="flex items-end justify-between border-b border-white/[0.08] pb-8 mb-24">
+               <h2 class="text-5xl font-extralight text-white tracking-tight">How We Work.</h2>
+               <span class="text-neutral-500 text-xs uppercase tracking-[0.2em] hidden md:block">From survey to handover</span>
+             </div>
+             <div class="grid md:grid-cols-4 gap-12">
+               {PROCESS.map((p, idx) => (
+                  <div class="relative group">
+                     <div class="text-[8rem] font-bold text-white/[0.03] absolute -top-20 -left-4 select-none group-hover:text-white/[0.06] transition-colors duration-500">0{idx + 1}</div>
+                     <div class="relative pt-12 border-t-[0.5px] border-white/[0.1] group-hover:border-white/30 transition-colors duration-500">
+                        <span class="absolute top-[-3px] left-0 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_15px_white] group-hover:scale-150 transition-transform"></span>
+                        <h3 class="text-2xl text-white font-medium mb-4">{p.step}</h3>
+                        <p class="text-sm text-neutral-400 leading-relaxed max-w-xs">{p.line}</p>
+                     </div>
+                  </div>
+               ))}
+             </div>
+         </div>
+      </section>
+
+      <section id="contact" class="px-8 py-40">
+         <div class="max-w-[1400px] mx-auto">
+            <div class="relative bg-[#080808] border-[0.5px] border-white/[0.08] rounded-[3rem] p-12 md:p-24 overflow-hidden shadow-2xl">
+               <div class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-bl from-emerald-500/[0.05] to-transparent rounded-full blur-[150px] pointer-events-none animate-pulse duration-[10s]"></div>
+               <div class="grid lg:grid-cols-2 gap-24 relative z-10 items-center">
+                  <div>
+                     <div class="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-mono text-emerald-400 mb-12 uppercase tracking-widest">
+                        Bookings: Open
+                     </div>
+                     <h2 class="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-8 leading-none">
+                        Book <br/> a Site Visit.
+                     </h2>
+                     <p class="text-neutral-400 text-lg max-w-md mb-16 font-light">
+                        Tell us what you are renovating, we will confirm timing, budget range, and next steps within one business day.
+                     </p>
+                     <div class="space-y-4 border-l-2 border-white/10 pl-6">
+                        <p class="text-xs text-neutral-500 uppercase tracking-widest">Direct Line</p>
+                        <p class="text-3xl text-white font-light tracking-tight">{PHONE}</p>
+                     </div>
+                  </div>
+                  <div class="w-full relative group perspective-[1000px]">
+                     <div class="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent blur-2xl -z-10 group-hover:from-emerald-500/10 transition-all duration-700"></div>
+                     <div class="bg-[#050505] border-[0.5px] border-white/[0.1] rounded-[2.5rem] p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,1)] transform transition-all duration-700 group-hover:rotate-y-1 group-hover:scale-[1.01]">
+                        <ConsultationScheduler client:visible />
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+
+    </main>
+
+    <footer class="border-t border-white/[0.05] bg-[#030303] py-20 px-8">
+      <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+        <div class="flex flex-col gap-4">
+            <span class="text-white font-bold tracking-tighter text-2xl">{BRAND}</span>
+            <span class="text-neutral-600 text-xs uppercase tracking-widest">© {YEAR} , Northridge Renovations, licensed and insured.</span>
+        </div>
+        <div class="flex gap-12 text-xs font-bold text-neutral-500 uppercase tracking-widest">
+          <a href="#" class="hover:text-white transition-colors relative group">Privacy</a>
+          <a href="#" class="hover:text-white transition-colors relative group">Terms</a>
+          <a href="#" class="hover:text-white transition-colors relative group">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+  </body>
+</html>
