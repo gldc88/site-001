@@ -12,7 +12,7 @@
 const BRAND = import.meta.env.PUBLIC_BRAND || "GOLD LINE"; // Placeholder: Change in .env
 const SYSTEM_VERSION = "OS-V13.12";
 
-const NAV = [{ label: "BACK TO MAIN SITE", href: "https://YOUR-MAIN-WEBSITE.COM", code: "MAIN" }];
+
 
 const SITES = [
   { 
@@ -554,8 +554,8 @@ const toRoute = (file: string): string => `/${file.replace(/\.astro$/i, "")}`;
           <div class="name">{BRAND}</div>
           <div class="sub">digital company</div>
         </div>
-        <nav aria-label="Primary">`n          <a href="https://YOUR-MAIN-WEBSITE.COM" class="hover-target">MAIN SITE</a>
-          {NAV.map((l) => <a href={l.href} class="hover-target">{l.label}</a>)}
+        <nav aria-label="Primary">`n          <a href="https://www.goldlinedc.com" class="hover-target">MAIN SITE</a>
+          
         </nav>
       </header>
 
