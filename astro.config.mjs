@@ -7,9 +7,11 @@ import react from '@astrojs/react';
 
 import vue from '@astrojs/vue';
 
+const site = process.env.PUBLIC_SITE_URL || process.env.CF_PAGES_URL || 'https://www.goldlinedc.com';
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://PLACEHOLDER-SUBDOMAIN.YOURDOMAIN.COM', // REPLACE WITH REAL SUBDOMAIN
+  site,
   vite: {
     plugins: [tailwindcss()]
   },
