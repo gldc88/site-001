@@ -9,7 +9,7 @@ import vue from '@astrojs/vue';
 
 import cloudflare from '@astrojs/cloudflare';
 
-const site = process.env.PUBLIC_SITE_URL || process.env.CF_PAGES_URL || 'https://www.goldlinedc.com';
+const site = process.env.PUBLIC_SITE_URL || process.env.CF_PAGES_URL || 'https://site-001.t-gldc-office.workers.dev';
 
 // https://astro.build/config
 export default defineConfig({
