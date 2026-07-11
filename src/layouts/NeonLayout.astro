@@ -1,0 +1,210 @@
+---
+/**
+ * NeonLayout , shared shell for NEON DISTRICT (website14, round 2).
+ * Persistent INTERACTIVE WebGL neon-city: any page's [data-channel] tiles re-tint the city's traffic
+ * + recolor the UI (--accent), and #gainSlider drives signal intensity (event-delegated here). The
+ * active channel + gain are saved to localStorage and restored on every page. Props: title, description, active.
+ */
+import '../styles/neon-fonts.css';
+import '../styles/neon.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+import { CHANNELS, DEFAULT_KEY } from '../data/neon';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'channels', label: 'Channels', href: '/website14/channels' },
+  { key: 'district', label: 'District', href: '/website14/district' },
+  { key: 'pulse', label: 'Pulse', href: '/website14/pulse' },
+];
+const LIB = Object.fromEntries(CHANNELS.map((c) => [c.key, { accent: c.accent, hex: parseInt(c.accent.slice(1), 16) }]));
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script type="application/json" id="neon-lib" set:html={JSON.stringify(LIB)}></script>
+    <script is:inline define:vars={{ DEFAULT_KEY }}>
+      // restore accent before paint (no flash)
+      try {
+        const lib = JSON.parse(document.getElementById('neon-lib').textContent);
+        let k = localStorage.getItem('neon-channel') || DEFAULT_KEY;
+        if (!lib[k]) k = DEFAULT_KEY;
+        document.documentElement.style.setProperty('--accent', lib[k].accent);
+      } catch (e) {}
+    </script>
+  </head>
+
+  <body data-default-channel={DEFAULT_KEY}>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="fx" aria-hidden="true"><div class="scanlines"></div><div class="noise"></div></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website14" class="brand"><span class="blip"></span>Neon District</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website14/connect" class="cta">Open Channel</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Neon District</h3>
+          <p>A live operator control surface , neon-stained UI, quiet surgical control, built for teams that ship after dark and watch the pulse. Fictional concept, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Surface</h4><a href="/website14/channels">Channels</a><a href="/website14/district">District</a><a href="/website14/pulse">Pulse</a><a href="/website14/connect">Open Channel</a></div>
+        <div class="f-col"><h4>Signal</h4><a href="mailto:ops@neondistrict.example">ops@neondistrict.example</a><a href="/website14/connect">Request access</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Neon District. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · ship after dark · watch the pulse</span>
+      </div>
+    </footer>
+
+    <div class="citycast" id="citycast" aria-hidden="true"><span class="cc-track" id="ccTrack"></span></div>
+    <div class="bcast" id="bcast">
+      <button type="button" class="bc-chip" id="bcChip" aria-expanded="false" aria-controls="bcPanel">Broadcast</button>
+      <div class="bc-panel" id="bcPanel" role="dialog" aria-label="Compose a city broadcast" hidden>
+        <label class="bc-label" for="bcInput">Your words on the district (max 24)</label>
+        <input type="text" id="bcInput" class="bc-input" maxlength="24" autocomplete="off" spellcheck="false" placeholder="WE ARE THE SIGNAL" />
+        <div class="bc-row">
+          <button type="button" class="bc-send" id="bcSend">Transmit</button>
+          <button type="button" class="bc-stop" id="bcStop">Kill signal</button>
+        </div>
+        <p class="bc-note" id="bcNote" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "Broadcast": jouw woorden schuiven als CRT-ticker door de stad ---- */
+      const KEY = 'neon-broadcast';
+      const ccTrack = document.getElementById('ccTrack');
+      const citycast = document.getElementById('citycast');
+      const bcChip = document.getElementById('bcChip');
+      const bcPanel = document.getElementById('bcPanel');
+      const bcInput = document.getElementById('bcInput') as HTMLInputElement | null;
+      const bcSend = document.getElementById('bcSend');
+      const bcStop = document.getElementById('bcStop');
+      const bcNote = document.getElementById('bcNote');
+
+      // simpele hygiene: alleen letters/cijfers/spatie/enkele leestekens
+      const clean = (v: string) => v.replace(/[^a-zA-Z0-9 .!?'-]/g, '').slice(0, 24).trim();
+
+      const applyCast = () => {
+        let msg = '';
+        try { msg = localStorage.getItem(KEY) || ''; } catch { /* private mode */ }
+        if (msg) {
+          const unit = `${msg} ✦ `;
+          if (ccTrack) ccTrack.textContent = unit.repeat(8);
+          citycast?.classList.add('live');
+          if (reduce) citycast?.classList.add('still');
+        } else {
+          if (ccTrack) ccTrack.textContent = '';
+          citycast?.classList.remove('live');
+        }
+      };
+      applyCast();
+
+      bcChip?.addEventListener('click', () => {
+        const open = bcPanel?.hasAttribute('hidden');
+        if (open) { bcPanel?.removeAttribute('hidden'); bcInput?.focus(); } else bcPanel?.setAttribute('hidden', '');
+        bcChip.setAttribute('aria-expanded', String(!!open));
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && bcPanel && !bcPanel.hasAttribute('hidden')) {
+          bcPanel.setAttribute('hidden', ''); bcChip?.setAttribute('aria-expanded', 'false');
+        }
+      });
+      bcSend?.addEventListener('click', () => {
+        const msg = clean(bcInput?.value || '');
+        if (!msg) { if (bcNote) bcNote.textContent = 'Give the district something to say.'; return; }
+        try { localStorage.setItem(KEY, msg.toUpperCase()); } catch { /* private mode */ }
+        applyCast();
+        if (bcNote) bcNote.textContent = 'Transmitting. Your words are on the skyline , on every screen in the district.';
+      });
+      bcStop?.addEventListener('click', () => {
+        try { localStorage.removeItem(KEY); } catch { /* private mode */ }
+        applyCast();
+        if (bcNote) bcNote.textContent = 'Signal killed. The district is quiet again.';
+      });
+
+      type Lib = Record<string, { accent: string; hex: number }>;
+      const LIB: Lib = JSON.parse(document.getElementById('neon-lib')?.textContent || '{}');
+      const DEFAULT = document.body.dataset.defaultChannel || Object.keys(LIB)[0];
+      let key = localStorage.getItem('neon-channel') || DEFAULT;
+      if (!LIB[key]) key = DEFAULT;
+      let gain = Number(localStorage.getItem('neon-gain') || '60');
+      document.body.dataset.channel = key;
+      document.documentElement.style.setProperty('--accent', LIB[key].accent);
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      let scene: any = null;
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/neon-district-scene')
+          .then(({ initNeonDistrictScene }) => {
+            scene = initNeonDistrictScene(canvas);
+            if (fallback) fallback.style.display = 'none';
+            scene.setAccent(LIB[key].hex);
+            scene.setIntensity(gain / 100);
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene?.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene?.dispose(), { once: true });
+            (window as any).__neon = scene;
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+
+      function applyChannel(k: string) {
+        if (!LIB[k]) return;
+        key = k;
+        document.body.dataset.channel = k;
+        localStorage.setItem('neon-channel', k);
+        document.documentElement.style.setProperty('--accent', LIB[k].accent);
+        scene?.setAccent(LIB[k].hex);
+        document.querySelectorAll<HTMLElement>('[data-channel]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === k)));
+        document.dispatchEvent(new CustomEvent('neon:channel', { detail: k }));
+      }
+      (window as any).__neonApply = applyChannel;
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-channel]');
+        if (btn && btn.dataset.key) applyChannel(btn.dataset.key);
+      });
+      document.querySelectorAll<HTMLElement>('[data-channel]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === key)));
+
+      document.addEventListener('input', (e) => {
+        const el = e.target as HTMLInputElement;
+        if (el && el.id === 'gainSlider') { gain = Number(el.value); localStorage.setItem('neon-gain', String(gain)); scene?.setIntensity(gain / 100); document.dispatchEvent(new CustomEvent('neon:gain', { detail: gain })); }
+      });
+    </script>
+  </body>
+</html>

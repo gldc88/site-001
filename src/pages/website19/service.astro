@@ -1,0 +1,74 @@
+---
+/**
+ * MONARCH PRIVATE CHAUFFEUR , Service (website19, round 2). Signature: the service-class selector.
+ */
+import MonarchLayout from '../../layouts/MonarchLayout.astro';
+import { SERVICES } from '../../data/monarch';
+---
+
+<MonarchLayout title="Service | Monarch Private Chauffeur" description="Three service classes , airport meet & greet, private city transfer, and long-haul executive. Quiet, private, on your clock." active="service">
+  <div class="page-hero">
+    <span class="kicker">Service</span>
+    <h1>Driven, not <em>fetched</em>.</h1>
+    <p class="sub">Three ways to be driven, each built around the same idea , that the journey should cost you nothing in attention. Select a class to read exactly what it includes.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="svc-browser">
+      <div class="svc-list">
+        {SERVICES.map((s, i) => (
+          <button class={`svx ${i === 0 ? 'active' : ''}`} data-key={s.key}>
+            <span class="sx-name">{s.name}</span>
+            <span class="sx-line">{s.line}</span>
+          </button>
+        ))}
+      </div>
+      <div class="svc-stage">
+        {SERVICES.map((s, i) => (
+          <article class={`svc-detail ${i === 0 ? 'active' : ''}`} id={`svc-${s.key}`}>
+            <h2>{s.name}</h2>
+            <p class="sd-line">{s.line}</p>
+            <p class="sd-long">{s.long}</p>
+            <ul class="sd-includes">{s.includes.map((x) => <li>{x}</li>)}</ul>
+            <a href="/website19/dispatch" class="btn-cta" style="margin-top:6px;">Dispatch this class</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .svc-browser { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(18px,3vw,40px); align-items: start; }
+    .svc-list { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 90px; }
+    .svx { text-align: left; padding: 18px 20px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); transition: all 0.3s; display: flex; flex-direction: column; gap: 6px; }
+    .svx:hover { border-color: var(--line-ch); }
+    .svx.active { border-color: var(--champagne); box-shadow: inset 0 0 40px -24px var(--champagne); }
+    .sx-name { font-family: var(--serif); font-size: 1.4rem; color: #fff; }
+    .sx-line { color: var(--muted); font-size: 0.85rem; }
+
+    .svc-stage { min-width: 0; }
+    .svc-detail { display: none; }
+    .svc-detail.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .svc-detail h2 { font-size: clamp(2.2rem,4.6vw,3.6rem); color: #fff; }
+    .sd-line { font-family: var(--serif); font-style: italic; font-size: clamp(1.2rem,2vw,1.6rem); color: var(--champ-bright); margin: 12px 0 18px; }
+    .sd-long { color: var(--ink); font-size: 1.1rem; line-height: 1.8; max-width: 60ch; margin-bottom: 26px; }
+    .sd-includes { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+    .sd-includes li { font-size: 0.95rem; color: var(--ink); padding-left: 20px; position: relative; }
+    .sd-includes li::before { content: '◇'; position: absolute; left: 0; color: var(--champagne); font-size: 0.7em; top: 4px; }
+
+    @media (max-width: 860px) { .svc-browser { grid-template-columns: 1fr; } .svc-list { position: static; flex-direction: row; overflow-x: auto; } .svx { min-width: 220px; } .sd-includes { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.svx'));
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.svc-detail'));
+    items.forEach((it) => it.addEventListener('click', () => {
+      items.forEach((x) => x.classList.toggle('active', x === it));
+      details.forEach((d) => d.classList.toggle('active', d.id === `svc-${it.dataset.key}`));
+      localStorage.setItem('monarch-service', it.dataset.key!);
+    }));
+    const saved = localStorage.getItem('monarch-service');
+    if (saved) { const it = items.find((x) => x.dataset.key === saved); if (it) it.click(); }
+  </script>
+</MonarchLayout>

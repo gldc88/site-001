@@ -1,0 +1,202 @@
+---
+/**
+ * AETHER CRYSTALWORKS , Home (website12, round 2 multi-page).
+ * The interactive 3D crystal slider as the hero , drag / prev-next / dots / collection cards drive it,
+ * and the active piece swaps the info. Graceful image fallback without WebGL. Then craft + specs teasers.
+ */
+import AetherLayout from '../../layouts/AetherLayout.astro';
+
+const PIECES = [
+  { name: 'Glacial Monolith', meta: 'Series 04 · Deep-cut facets', line: 'A weighty optical block with a slow, blue refraction , made to hold light like ice holds winter.', img: 'prism' },
+  { name: 'Prism Alpha', meta: 'Series 09 · Spectral edge', line: 'Knife-clean geometry tuned for dispersion. A small object that throws a full spectrum on command.', img: 'crystal' },
+  { name: 'Ice Stone', meta: 'Series 12 · Hand finish', line: 'Near-invisible internal structure. Built for pure transmission, quiet highlights, and crisp shadows.', img: 'crystals' },
+];
+const CRAFT = [
+  { k: 'Annealing', v: 'Thermally stabilised to remove stress and preserve alignment over time.' },
+  { k: 'Cold-cut facets', v: 'Measured geometry first , the spark is a by-product of precision, not decoration.' },
+  { k: 'Hand polish', v: 'Edges refined until they disappear, leaving only the line of light.' },
+];
+const SPECS = [
+  { k: 'Material', v: 'Optical K9 Glass' }, { k: 'Clarity', v: 'VVS1 Standard' }, { k: 'Cut', v: 'Brilliant Facet' }, { k: 'Origin', v: 'Lab-grown' },
+];
+---
+
+<AetherLayout title="Aether Crystalworks , Lab-Grown Optical Crystal" description="Aether Crystalworks crafts lab-grown optical crystal objects: annealed, cold-cut, and hand-polished for controlled refraction. Explore the collection in 3D.">
+  <canvas slot="bg" id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="overline">Lab-grown optical crystal · est. MMXIV</span>
+      <h1>Made to hold<br /><em>light.</em></h1>
+      <div class="piece" id="piece">
+        <h2 class="piece-name" id="pieceName">{PIECES[0].name}</h2>
+        <span class="piece-meta" id="pieceMeta">{PIECES[0].meta}</span>
+        <p class="piece-line" id="pieceLine">{PIECES[0].line}</p>
+      </div>
+      <div class="hero-actions">
+        <a href="/website12/collection" class="btn-cta">View the collection</a>
+        <a href="/website12/commission" class="btn-ghost">Commission a piece</a>
+      </div>
+    </div>
+
+    <img class="slider-fallback" id="sliderFallback" src="/website12/prism.jpg" alt="An optical glass monolith refracting light" hidden />
+
+    <div class="slider-ctl">
+      <button class="sc-arrow" id="prev" aria-label="Previous piece">←</button>
+      <div class="sc-dots" id="dots">
+        {PIECES.map((p, i) => <button class={`sc-dot ${i === 0 ? 'active' : ''}`} data-i={i} aria-label={p.name}></button>)}
+      </div>
+      <button class="sc-arrow" id="next" aria-label="Next piece">→</button>
+      <span class="sc-hint">drag · or use arrows</span>
+    </div>
+  </header>
+
+  <section class="section" id="collection">
+    <div class="sec-head">
+      <div><span class="overline">The Collection</span><h2>Three studies in light.</h2></div>
+      <p>Select one to bring it forward on the stage above. <a class="inline-link" href="/website12/collection">Full collection →</a></p>
+    </div>
+    <div class="coll-cards">
+      {PIECES.map((p, i) => (
+        <button class={`coll-card panel ${i === 0 ? 'active' : ''}`} data-i={i}>
+          <span class="cc-i">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{p.name}</h3>
+          <span class="cc-meta">{p.meta}</span>
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight craft-band">
+    <div class="cb-media" data-reveal="fade"><img src="/website12/crystal.jpg" alt="A clear lab-grown crystal cluster" loading="lazy" /></div>
+    <div class="cb-copy">
+      <span class="overline" data-reveal="fade">The Craft</span>
+      <h2 data-reveal="up">Spark is a by-product of precision.</h2>
+      <div class="craft-list">
+        {CRAFT.map((c) => (<div class="craft" data-reveal="up"><h4>{c.k}</h4><p>{c.v}</p></div>))}
+      </div>
+      <a href="/website12/craft" class="inline-link" data-reveal="fade">How each piece is made →</a>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="overline">Specification</span><h2>Optical, not ornamental.</h2></div><p><a class="inline-link" href="/website12/specs">Full spec sheet →</a></p></div>
+    <div class="spec-strip panel lit">
+      {SPECS.map((s) => (<div class="spec"><span class="sp-k">{s.k}</span><span class="sp-v">{s.v}</span></div>))}
+    </div>
+  </section>
+
+  <section class="section tight commission-cta">
+    <div class="cc-inner panel lit" data-reveal="up">
+      <span class="overline c">Commission</span>
+      <h2>Acquire a piece, or commission one.</h2>
+      <p>Each object is made to order and finished by hand. Price on request.</p>
+      <a href="/website12/commission" class="btn-cta" style="margin-top:26px;">Begin a commission</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 0 clamp(20px,5vw,56px); }
+    .hero-inner { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; width: 100%; pointer-events: none; }
+    .hero-inner a { pointer-events: auto; }
+    .hero h1 { font-size: clamp(3.4rem, 11vw, 9rem); line-height: 0.92; color: #fff; margin: 18px 0 26px; }
+    .hero h1 em { font-style: italic; color: var(--ice-soft); }
+    .piece { max-width: 38ch; transition: opacity 0.4s; }
+    .piece-name { font-size: clamp(1.5rem, 3vw, 2.2rem); color: #fff; }
+    .piece-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ice); display: block; margin: 6px 0 12px; }
+    .piece-line { color: var(--muted); font-size: 1.05rem; line-height: 1.6; }
+    .hero-actions { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .slider-fallback { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+
+    .slider-ctl { position: absolute; left: 50%; bottom: 32px; transform: translateX(-50%); z-index: 15; display: flex; align-items: center; gap: 16px; }
+    .sc-arrow { width: 44px; height: 44px; border: 1px solid var(--hair); border-radius: 50%; color: var(--ice); font-size: 16px; background: rgba(5,6,10,0.5); backdrop-filter: blur(10px); transition: all 0.25s; }
+    .sc-arrow:hover { background: var(--ice); color: #05060a; }
+    .sc-dots { display: flex; gap: 10px; }
+    .sc-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--hair); transition: all 0.3s; }
+    .sc-dot.active { background: var(--ice); border-color: var(--ice); box-shadow: 0 0 10px var(--ice); }
+    .sc-hint { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); margin-left: 8px; }
+
+    .coll-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .coll-card { text-align: left; padding: 28px 26px; transition: border-color 0.35s, transform 0.35s, background 0.35s; }
+    .coll-card:hover { transform: translateY(-4px); }
+    .coll-card.active { border-color: var(--hair); background: rgba(125,211,252,0.06); }
+    .cc-i { font-family: var(--mono); font-size: 11px; color: var(--ice); }
+    .coll-card h3 { font-size: 1.7rem; color: #fff; margin: 10px 0 6px; }
+    .cc-meta { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+    .craft-band { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(28px,5vw,60px); align-items: center; }
+    .cb-media { border-radius: 8px; overflow: hidden; aspect-ratio: 4/5; border: 1px solid var(--hair-soft); }
+    .cb-media img { width: 100%; height: 100%; object-fit: cover; }
+    .cb-copy { min-width: 0; }
+    .cb-copy h2 { font-size: clamp(2rem,3.8vw,3rem); color: #fff; margin: 12px 0 24px; }
+    .craft-list { display: flex; flex-direction: column; gap: 18px; margin-bottom: 22px; }
+    .craft h4 { font-family: var(--serif); font-size: 1.4rem; color: var(--ice-soft); }
+    .craft p { color: var(--muted); font-size: 0.95rem; margin-top: 4px; }
+
+    .spec-strip { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .spec { padding: 26px clamp(16px,2.4vw,28px); border-right: 1px solid var(--hair-soft); }
+    .spec:last-child { border-right: none; }
+    .sp-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ice); display: block; }
+    .sp-v { font-family: var(--serif); font-size: 1.5rem; color: #fff; margin-top: 8px; display: block; }
+
+    .commission-cta { display: flex; justify-content: center; }
+    .cc-inner { text-align: center; padding: clamp(40px,6vw,72px) clamp(24px,4vw,56px); max-width: 700px; }
+    .cc-inner .overline { justify-content: center; }
+    .cc-inner h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; margin-top: 14px; }
+    .cc-inner p { color: var(--muted); margin-top: 14px; }
+
+    @media (max-width: 900px) { .coll-cards { grid-template-columns: 1fr; } .craft-band { grid-template-columns: 1fr; } .spec-strip { grid-template-columns: 1fr 1fr; } .spec:nth-child(2) { border-right: none; } .spec:nth-child(1), .spec:nth-child(2) { border-bottom: 1px solid var(--hair-soft); } }
+  </style>
+
+  <script>
+    import { supportsWebGL } from '../../lib/three/webgl';
+    const PIECES = [
+      { name: 'Glacial Monolith', meta: 'Series 04 · Deep-cut facets', line: 'A weighty optical block with a slow, blue refraction , made to hold light like ice holds winter.', img: '/website12/prism.jpg' },
+      { name: 'Prism Alpha', meta: 'Series 09 · Spectral edge', line: 'Knife-clean geometry tuned for dispersion. A small object that throws a full spectrum on command.', img: '/website12/crystal.jpg' },
+      { name: 'Ice Stone', meta: 'Series 12 · Hand finish', line: 'Near-invisible internal structure. Built for pure transmission, quiet highlights, and crisp shadows.', img: '/website12/crystals.jpg' },
+    ];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const dots = Array.from(document.querySelectorAll<HTMLElement>('.sc-dot'));
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.coll-card'));
+    const nameEl = document.getElementById('pieceName')!, metaEl = document.getElementById('pieceMeta')!, lineEl = document.getElementById('pieceLine')!, pieceEl = document.getElementById('piece')!;
+    const fallback = document.getElementById('sliderFallback') as HTMLImageElement;
+    let cur = 0;
+
+    function setActiveUI(i: number) {
+      cur = i;
+      const p = PIECES[i];
+      pieceEl.style.opacity = '0';
+      setTimeout(() => { nameEl.textContent = p.name; metaEl.textContent = p.meta; lineEl.textContent = p.line; pieceEl.style.opacity = '1'; }, 180);
+      dots.forEach((d, di) => d.classList.toggle('active', di === i));
+      cards.forEach((c, ci) => c.classList.toggle('active', ci === i));
+    }
+
+    const canvas = document.getElementById('bg-gl');
+    if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+      import('../../scenes/crystal-slider-scene')
+        .then(({ initCrystalSlider }) => {
+          const slider = initCrystalSlider(canvas, PIECES.length);
+          slider.onChange((i) => setActiveUI(i));
+          document.getElementById('prev')?.addEventListener('click', () => slider.prev());
+          document.getElementById('next')?.addEventListener('click', () => slider.next());
+          dots.forEach((d) => d.addEventListener('click', () => slider.go(Number(d.dataset.i))));
+          cards.forEach((c) => c.addEventListener('click', () => slider.go(Number(c.dataset.i))));
+          window.addEventListener('pagehide', () => slider.dispose(), { once: true });
+        })
+        .catch(() => enableFallback());
+    } else {
+      enableFallback();
+    }
+
+    function enableFallback() {
+      if (canvas instanceof HTMLElement) canvas.style.display = 'none';
+      fallback.hidden = false;
+      const go = (i: number) => { const n = (i + PIECES.length) % PIECES.length; fallback.src = PIECES[n].img; setActiveUI(n); };
+      document.getElementById('prev')?.addEventListener('click', () => go(cur - 1));
+      document.getElementById('next')?.addEventListener('click', () => go(cur + 1));
+      dots.forEach((d) => d.addEventListener('click', () => go(Number(d.dataset.i))));
+      cards.forEach((c) => c.addEventListener('click', () => go(Number(c.dataset.i))));
+    }
+  </script>
+</AetherLayout>

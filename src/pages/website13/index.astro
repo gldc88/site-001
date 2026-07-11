@@ -1,0 +1,182 @@
+---
+/**
+ * LIGNUM ATELIER , Home (website13, round 2 multi-page).
+ * The living-wood species switcher + patina slider (drives the persistent WebGL surface in the layout),
+ * then joinery + works teasers. The wood tint persists across pages.
+ */
+import LignumLayout from '../../layouts/LignumLayout.astro';
+import { SPECIES, MAX_JANKA, grad } from '../../data/lignum';
+
+const STEPS = [
+  { n: '01', t: 'Select', d: 'Boards are chosen by hand at the mill, read for figure, then air-dried until the moisture settles to the room they will live in.' },
+  { n: '02', t: 'Mill', d: 'Faced, thicknessed, and cut oversize , every component marked from a single reference face so grain runs continuous.' },
+  { n: '03', t: 'Joint', d: 'Housings, mortises, and hand-cut dovetails. Metal appears only when it has a job to do.' },
+  { n: '04', t: 'Finish', d: 'Scraped, not sanded, then built up in thin coats of tung oil and hard wax , repairable for its whole life.' },
+];
+const WORKS = [
+  { id: '01', title: 'Vessel Library', type: 'Floor-to-ceiling joinery', year: '2024' },
+  { id: '02', title: 'Long Dining Table', type: 'Single-commission piece', year: '2022' },
+  { id: '03', title: 'Obsidian Bar', type: 'Hospitality fit-out', year: '2023' },
+];
+---
+
+<LignumLayout title="Lignum Atelier | Heirloom Woodwork & Master Joinery" description="Lignum Atelier builds heirloom woodwork: a living grain library you can switch by species, hand-cut joinery, and oiled finishes that deepen with time.">
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="overline" id="heroKicker">Heirloom woodwork · master joinery</span>
+      <h1 class="hero-title" id="heroTitle">Wood, kept alive.</h1>
+      <p class="hero-copy" id="heroCopy">Choose a timber and the surface behind everything re-tints to it. Drag the patina slider to age it by decades. This is wood as a material, not a finish.</p>
+
+      <div class="grain-tool" id="heroActions">
+        <div class="species-row" role="group" aria-label="Choose a timber">
+          {SPECIES.map((s) => (
+            <button class="species" data-species data-key={s.key} aria-pressed="false" style={`--sw:${s.light}`}>
+              <span class="sp-chip" style={`background:${grad(s)}; background-blend-mode:multiply,normal,normal;`}></span>
+              <span class="sp-label">{s.name}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="readout panel brass">
+          <div class="ro-head">
+            <div><span class="ro-name" id="roName">,</span><span class="ro-origin" id="roOrigin">,</span></div>
+            <span class="ro-swatch" id="roSwatch" aria-hidden="true"></span>
+          </div>
+          <p class="ro-note" id="roNote">,</p>
+          <div class="ro-janka">
+            <div class="rj-label"><span>Side hardness (Janka)</span><b id="roJanka">,</b></div>
+            <div class="rj-track"><span class="rj-bar" id="roBar"></span></div>
+          </div>
+          <div class="patina">
+            <div class="pt-label"><span>Patina</span><b id="ageYears">Fresh-cut</b></div>
+            <input id="ageSlider" type="range" min="0" max="100" value="0" aria-label="Patina age" />
+            <span class="pt-caption" id="patinaCaption">Freshly cut & oiled</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section tight craft-teaser">
+    <div class="sec-head"><div><span class="overline">The Bench</span><h2>Four slow steps.</h2></div><p>From standing board to finished face. <a class="inline-link" href="/website13/craft">Inside the joinery →</a></p></div>
+    <div class="steps-row">
+      {STEPS.map((s) => (<div class="step-card panel" data-reveal="up"><span class="sc-n">{s.n}</span><h3>{s.t}</h3><p>{s.d}</p></div>))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="overline">Works</span><h2>Pieces that outlive us.</h2></div><p><a class="inline-link" href="/website13/works">The full record →</a></p></div>
+    <div class="works-teaser">
+      {WORKS.map((w) => (
+        <a href="/website13/works" class="wt-row" data-reveal="up"><span class="wt-id">{w.id}</span><div class="wt-main"><h3>{w.title}</h3><span>{w.type}</span></div><span class="wt-year">{w.year}</span><span class="wt-arw">→</span></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight commission-cta">
+    <div class="cc-inner panel brass" data-reveal="up">
+      <span class="overline c">Commission</span>
+      <h2>Have something made that lasts.</h2>
+      <p>Furniture, fitted joinery, and architectural woodwork, made to order in the timber you just chose.</p>
+      <a href="/website13/commission" class="btn-cta" style="margin-top:26px;">Begin a commission</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 96px clamp(20px,5vw,56px) 40px; }
+    .hero-inner { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .hero-title { font-size: clamp(3rem, 9vw, 7.5rem); line-height: 0.96; color: #fff; margin: 16px 0 18px; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-copy { color: var(--muted); max-width: 50ch; font-size: 1.1rem; }
+    .grain-tool { margin-top: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px,3vw,40px); align-items: start; }
+    .species-row { display: flex; flex-direction: column; gap: 8px; }
+    .species { display: flex; align-items: center; gap: 14px; text-align: left; padding: 11px 14px; border: 1px solid var(--hair-soft); border-radius: 5px; transition: all 0.3s; background: var(--panel); }
+    .species:hover { border-color: var(--hair); }
+    .species[aria-pressed='true'] { border-color: var(--brass); background: rgba(201,162,75,0.08); }
+    .sp-chip { width: 40px; height: 26px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.4); }
+    .sp-label { font-family: var(--serif); font-size: 1.2rem; color: #fff; }
+
+    .readout { padding: clamp(22px,2.6vw,28px); }
+    .ro-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .ro-name { font-family: var(--serif); font-size: 1.6rem; color: #fff; display: block; }
+    .ro-origin { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); }
+    .ro-swatch { width: 56px; height: 40px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.4); flex-shrink: 0; }
+    .ro-note { color: var(--muted); font-size: 0.95rem; line-height: 1.6; margin: 16px 0; min-height: 3.6em; }
+    .ro-janka { margin-bottom: 18px; }
+    .rj-label, .pt-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .rj-label b, .pt-label b { color: var(--brass); }
+    .rj-track { height: 4px; background: rgba(236,227,211,0.1); border-radius: 100px; overflow: hidden; }
+    .rj-bar { display: block; height: 100%; background: linear-gradient(90deg, var(--brass-deep), var(--brass)); border-radius: 100px; transition: width 0.5s var(--ease); }
+    .patina { border-top: 1px solid var(--hair-soft); padding-top: 16px; }
+    .patina input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 100px; background: rgba(236,227,211,0.12); outline: none; margin: 4px 0 10px; }
+    .patina input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--brass); cursor: pointer; box-shadow: 0 0 0 4px rgba(201,162,75,0.2); }
+    .patina input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border: none; border-radius: 50%; background: var(--brass); cursor: pointer; }
+    .pt-caption { font-family: var(--serif); font-style: italic; font-size: 1.05rem; color: var(--brass-soft); }
+
+    .steps-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .step-card { padding: 26px 22px; }
+    .sc-n { font-family: var(--mono); font-size: 11px; color: var(--brass); }
+    .step-card h3 { font-size: 1.5rem; color: #fff; margin: 10px 0 8px; }
+    .step-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+
+    .works-teaser { display: flex; flex-direction: column; }
+    .wt-row { display: grid; grid-template-columns: 48px 1fr auto auto; gap: 22px; align-items: center; padding: 22px 8px; border-top: 1px solid var(--hair-soft); transition: background 0.3s, padding-left 0.3s; }
+    .wt-row:last-child { border-bottom: 1px solid var(--hair-soft); }
+    .wt-row:hover { background: rgba(201,162,75,0.05); padding-left: 14px; }
+    .wt-id { font-family: var(--mono); font-size: 12px; color: var(--brass); }
+    .wt-main h3 { font-size: 1.5rem; color: #fff; }
+    .wt-main span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .wt-year { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .wt-arw { color: var(--brass); opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+    .wt-row:hover .wt-arw { opacity: 1; transform: translateX(4px); }
+
+    .commission-cta { display: flex; justify-content: center; }
+    .cc-inner { text-align: center; padding: clamp(40px,6vw,72px) clamp(24px,4vw,56px); max-width: 700px; }
+    .cc-inner .overline { justify-content: center; }
+    .cc-inner h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; margin-top: 14px; }
+    .cc-inner p { color: var(--muted); margin-top: 14px; }
+
+    @media (max-width: 900px) { .grain-tool { grid-template-columns: 1fr; } .steps-row { grid-template-columns: 1fr 1fr; } .wt-row { grid-template-columns: 40px 1fr auto; } .wt-arw { display: none; } }
+    @media (max-width: 520px) { .steps-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    import { gsap, SplitText, ScrollTrigger } from '../../lib/motion/gsap-plus';
+    import { SPECIES, MAX_JANKA } from '../../data/lignum';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const byKey = Object.fromEntries(SPECIES.map((s) => [s.key, s]));
+
+    // hero intro
+    const heroTitle = document.getElementById('heroTitle');
+    const fades = ['heroKicker', 'heroCopy', 'heroActions'].map((id) => document.getElementById(id));
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (fades[0]) tl.to(fades[0], { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 120, opacity: 0, stagger: 0.03, duration: 0.9 }, 0.1);
+      tl.to(fades[1], { opacity: 1, duration: 0.8 }, 0.5).to(fades[2], { opacity: 1, duration: 0.8 }, 0.7);
+    }
+    ScrollTrigger.refresh();
+
+    // readout (the layout handles the scene + persistence; this updates the page's readout)
+    const ro = { name: document.getElementById('roName')!, origin: document.getElementById('roOrigin')!, note: document.getElementById('roNote')!, janka: document.getElementById('roJanka')!, bar: document.getElementById('roBar')!, swatch: document.getElementById('roSwatch')! };
+    function renderReadout(key: string) {
+      const s = byKey[key]; if (!s) return;
+      ro.name.textContent = s.name; ro.origin.textContent = s.origin; ro.note.textContent = s.note;
+      ro.janka.textContent = `${s.janka} lbf`; ro.bar.style.width = `${Math.round((s.janka / MAX_JANKA) * 100)}%`;
+      ro.swatch.style.background = `linear-gradient(95deg, ${s.deep}, ${s.mid} 35%, ${s.light} 50%, ${s.mid} 65%, ${s.deep})`;
+    }
+    renderReadout(localStorage.getItem('lignum-species') || 'walnut');
+    document.addEventListener('lignum:species', (e) => renderReadout((e as CustomEvent).detail));
+
+    // patina caption (layout handles scene.setAge)
+    const slider = document.getElementById('ageSlider') as HTMLInputElement;
+    const years = document.getElementById('ageYears')!, cap = document.getElementById('patinaCaption')!;
+    const CAPS = [{ at: 0, t: 'Freshly cut & oiled', y: 'Fresh-cut' }, { at: 25, t: 'A season of light', y: '~1 year' }, { at: 55, t: 'Hands, daily', y: '~10 years' }, { at: 80, t: 'A deepening russet', y: '~30 years' }, { at: 100, t: 'Heirloom patina', y: 'A lifetime' }];
+    slider?.addEventListener('input', () => {
+      const v = Number(slider.value);
+      const c = [...CAPS].reverse().find((x) => v >= x.at) || CAPS[0];
+      cap.textContent = c.t; years.textContent = c.y;
+    });
+  </script>
+</LignumLayout>

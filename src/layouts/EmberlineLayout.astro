@@ -1,0 +1,134 @@
+---
+/**
+ * EmberlineLayout , shared shell for EMBERLINE GAS & HEATING (website26, round 2). Dark "heat" theme
+ * (ember glow + #f6a11a). Persistent Gas-Alert toggle + a full-screen emergency overlay available on every
+ * page, nav, footer, and a global #toast (window.showToast). Props: title, description, active.
+ */
+import '../styles/global.css';
+import { BRAND, SHORT, TAGLINE, PHONE, TEL, EMAIL, AREA, HOURS } from '../data/emberline';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'services', label: 'Services', href: '/website26/services' },
+  { key: 'tools', label: 'Tools', href: '/website26/tools' },
+  { key: 'safety', label: 'Safety', href: '/website26/safety' },
+];
+const YEAR = new Date().getFullYear();
+const flame = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z"/><path d="M12 18a6 6 0 0 0 6-6c0-3.314-2.686-6-6-6s-6 2.686-6 6a6 6 0 0 0 6 6Z"/><path d="M12 14a2 2 0 0 0 2-2c0-1.105-.895-2-2-2s-2 .895-2 2a2 2 0 0 0 2 2Z"/></svg>`;
+const alert = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 17c-.77 1.333.192 3 1.732 3z"/></svg>`;
+const back = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      body { background:
+        radial-gradient(900px 520px at 18% 14%, rgba(246,161,26,.16), transparent 62%),
+        radial-gradient(860px 560px at 82% 68%, rgba(159,215,255,.10), transparent 64%),
+        linear-gradient(180deg, #07070a, #0b0c12); background-attachment: fixed; }
+      .reveal-on-scroll { opacity: 0; transform: translateY(18px); transition: all 0.7s cubic-bezier(0.2,0.8,0.2,1); }
+      .reveal-visible { opacity: 1; transform: translateY(0); }
+      .ember-pulse { box-shadow: 0 0 0 0 rgba(246,161,26,.5); animation: emberPulse 2.4s infinite; }
+      @keyframes emberPulse { 70% { box-shadow: 0 0 0 8px rgba(246,161,26,0); } 100% { box-shadow: 0 0 0 0 rgba(246,161,26,0); } }
+      #emergencyOverlay { transition: opacity .35s ease; }
+      @media (prefers-reduced-motion: reduce) { .ember-pulse { animation: none; } }
+    </style>
+  </head>
+
+  <body class="min-h-screen text-zinc-100 antialiased font-sans overflow-x-hidden selection:bg-[#f6a11a] selection:text-black">
+    <!-- Gas Alert toggle (every page) -->
+    <button id="alertBtn" type="button" class="fixed top-4 right-4 z-[60] flex items-center gap-3 bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 hover:border-red-500/60 transition-colors shadow-lg" aria-haspopup="dialog">
+      <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-300">Gas Alert</span>
+      <span class="relative block w-10 h-6 rounded-full bg-zinc-900 border border-zinc-700"><span class="absolute left-1 top-1 w-4 h-4 rounded-full bg-zinc-500"></span></span>
+    </button>
+
+    <!-- Emergency overlay -->
+    <div id="emergencyOverlay" class="fixed inset-0 z-[70] hidden opacity-0 grid place-items-center p-6" role="dialog" aria-modal="true" aria-label="Gas leak protocol"
+      style="background: radial-gradient(circle at 50% 40%, rgba(120,8,8,0.96), rgba(10,2,2,0.98));">
+      <div class="absolute inset-0 pointer-events-none opacity-30" style="background-image: repeating-linear-gradient(45deg, rgba(255,0,0,0.12) 0 2px, transparent 2px 12px);"></div>
+      <div class="relative max-w-sm text-center">
+        <div class="text-red-400 mb-6 mx-auto w-16 h-16 animate-pulse"><Fragment set:html={alert} /></div>
+        <h2 class="text-4xl font-black text-white uppercase tracking-tighter mb-4">Gas Leak Protocol</h2>
+        <p class="text-red-100/80 text-base mb-8 leading-relaxed">Ventilate if safe, leave the property, and contact the gas emergency line. Do not switch anything on or off, and do not create sparks.</p>
+        <a href={`tel:${TEL}`} class="block w-full bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-widest py-5 rounded transition-colors text-xl shadow-[0_0_40px_rgba(255,0,0,0.5)]">Call {PHONE} now</a>
+        <button id="closeEmergency" type="button" class="mt-8 text-[10px] text-red-200/60 hover:text-white uppercase tracking-widest underline transition-colors">Exit alert mode</button>
+      </div>
+    </div>
+
+    <header class="fixed top-0 inset-x-0 z-50 bg-[#07070a]/85 backdrop-blur-md border-b border-white/10">
+      <div class="mx-auto max-w-6xl px-5 h-20 flex items-center justify-between">
+        <div class="flex items-center gap-5">
+          <a href="/" class="group hidden sm:flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors border-r border-white/10 pr-5"><span class="group-hover:-translate-x-0.5 transition-transform"><Fragment set:html={back} /></span>Index</a>
+          <a href="/website26" class="flex items-center gap-2.5">
+            <span class="text-[#f6a11a] w-6 h-6 drop-shadow-[0_0_8px_rgba(246,161,26,0.8)]"><Fragment set:html={flame} /></span>
+            <span class="font-black text-white tracking-tight leading-none">{SHORT}<span class="text-[#f6a11a]">.</span></span>
+          </a>
+        </div>
+        <nav class="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+          {NAV.map((i) => <a href={i.href} class={`hover:text-[#f6a11a] transition-colors ${active === i.key ? 'text-[#f6a11a]' : ''}`}>{i.label}</a>)}
+        </nav>
+        <a href="/website26/book" class="bg-[#f6a11a] text-black px-5 py-2.5 text-[11px] font-black uppercase tracking-widest hover:bg-amber-400 transition-colors rounded-sm">Book a visit</a>
+      </div>
+    </header>
+
+    <main class="pt-20" id="top"><slot /></main>
+
+    <footer class="border-t border-white/10 bg-black/40">
+      <div class="mx-auto max-w-6xl px-5 py-14 grid md:grid-cols-[2fr_1fr_1fr] gap-10">
+        <div>
+          <div class="flex items-center gap-2.5 mb-4"><span class="text-[#f6a11a] w-6 h-6"><Fragment set:html={flame} /></span><span class="font-black text-white tracking-tight">{BRAND}</span></div>
+          <p class="text-sm text-zinc-500 max-w-xs leading-relaxed">{TAGLINE} Documented gas and heating work across {AREA}. Fictional brand, demonstration only.</p>
+          <p class="text-[11px] text-zinc-600 mt-3 uppercase tracking-widest">{HOURS}</p>
+        </div>
+        <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-500 flex flex-col gap-3">
+          <a href="/website26/services" class="hover:text-[#f6a11a]">Services</a>
+          <a href="/website26/tools" class="hover:text-[#f6a11a]">Tools</a>
+          <a href="/website26/safety" class="hover:text-[#f6a11a]">Safety</a>
+          <a href="/website26/book" class="hover:text-[#f6a11a]">Book a visit</a>
+        </div>
+        <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-500 flex flex-col gap-3">
+          <a href={`tel:${TEL}`} class="hover:text-[#f6a11a]">{PHONE}</a>
+          <a href={`mailto:${EMAIL}`} class="hover:text-[#f6a11a] normal-case tracking-normal">{EMAIL}</a>
+          <a href="/" class="hover:text-[#f6a11a]">Return to index</a>
+        </div>
+      </div>
+      <div class="border-t border-white/10 py-5 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">© {YEAR} {BRAND} · documented for safety and compliance · demonstration only</div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[80] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none rounded-lg bg-zinc-900 border border-[#f6a11a]/40 text-zinc-100 px-6 py-4 text-sm font-medium shadow-[0_0_40px_rgba(246,161,26,0.2)] transition-all duration-500" style="max-width:min(92vw,470px)"></div>
+
+    <script>
+      // emergency overlay
+      const overlay = document.getElementById('emergencyOverlay');
+      const alertBtn = document.getElementById('alertBtn');
+      const dot = alertBtn?.querySelector('span.absolute') as HTMLElement | null;
+      const track = alertBtn?.querySelector('span.relative') as HTMLElement | null;
+      const setEmergency = (on: boolean) => {
+        if (!overlay) return;
+        if (on) { overlay.classList.remove('hidden'); void overlay.offsetWidth; overlay.style.opacity = '1'; if (dot) { dot.style.transform = 'translateX(100%)'; dot.style.background = '#ff4d4d'; } if (track) track.style.borderColor = 'rgba(255,77,77,0.6)'; }
+        else { overlay.style.opacity = '0'; setTimeout(() => overlay.classList.add('hidden'), 350); if (dot) { dot.style.transform = 'translateX(0)'; dot.style.background = ''; } if (track) track.style.borderColor = ''; }
+      };
+      alertBtn?.addEventListener('click', () => setEmergency(overlay?.classList.contains('hidden') ?? true));
+      document.getElementById('closeEmergency')?.addEventListener('click', () => setEmergency(false));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setEmergency(false); });
+
+      // global toast
+      const toastEl = document.getElementById('toast');
+      let tT = 0;
+      (window as any).showToast = (html: string) => {
+        if (!toastEl) return;
+        toastEl.innerHTML = html; toastEl.style.opacity = '1'; toastEl.style.transform = 'translate(-50%,0)';
+        window.clearTimeout(tT); tT = window.setTimeout(() => { toastEl.style.opacity = '0'; toastEl.style.transform = 'translate(-50%,24px)'; }, 5400);
+      };
+      const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>

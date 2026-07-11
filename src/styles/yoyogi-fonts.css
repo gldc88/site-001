@@ -1,0 +1,36 @@
+/* Self-hosted (latin), was Google Fonts CDN , R3 fix. */
+@font-face {
+  font-family: 'Italiana';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/website3/fonts/QldNNTtLsx4E__B0XQmWaXw.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/website3/fonts/xn7gYHE41ni1AdIRggexSg.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/website3/fonts/xn7gYHE41ni1AdIRggexSg.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/website3/fonts/xn7gYHE41ni1AdIRggexSg.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/website3/fonts/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2') format('woff2');
+}

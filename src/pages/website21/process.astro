@@ -1,0 +1,39 @@
+---
+/**
+ * HEARTH & GROVE , Process (website21, round 2). Site walk to cultivation.
+ */
+import HearthLayout from '../../layouts/HearthLayout.astro';
+import { PROCESS } from '../../data/hearth.ts';
+---
+
+<HearthLayout title="Process | Hearth & Grove" description="How a garden happens at Hearth & Grove , site walk, definition, construction, cultivation. Controlled order, no noise." active="process">
+  <section class="px-6 pt-36 pb-16">
+    <div class="max-w-7xl mx-auto">
+      <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color)">Process</span>
+      <h1 class="font-serif text-5xl lg:text-7xl text-white mt-5 leading-[1.04]">In a controlled <span class="italic" style="color: var(--accent-color)">order.</span></h1>
+      <p class="text-lg max-w-xl mt-8" style="color: var(--text-muted)">A garden goes wrong when the order does. Four stages, each finished before the next begins , measured, defined, built, then grown.</p>
+    </div>
+  </section>
+
+  <section class="px-6 pb-24">
+    <div class="max-w-7xl mx-auto">
+      {PROCESS.map((p, idx) => (
+        <div class="grid md:grid-cols-[120px_1fr] gap-8 py-12 border-t" style="border-color: var(--border-color)" data-reveal="up">
+          <span class="text-6xl font-serif" style="color: var(--accent-color); opacity: 0.6">0{idx + 1}</span>
+          <div>
+            <h2 class="font-serif text-3xl lg:text-4xl text-white mb-4">{p.step}</h2>
+            <p class="text-lg leading-relaxed max-w-2xl" style="color: var(--text-muted)">{p.line}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="px-6 py-24 border-t" style="border-color: var(--border-color)">
+    <div class="max-w-3xl mx-auto text-center" data-reveal="up">
+      <h2 class="font-serif text-3xl lg:text-4xl text-white mb-5">Site discipline, every day.</h2>
+      <p class="text-lg mb-10" style="color: var(--text-muted)">Clean sites, protected surfaces, and a tidy hand-back. The garden should look considered before a single plant goes in.</p>
+      <a href="/website21/contact" class="inline-block px-10 py-4 text-black text-xs font-bold uppercase tracking-widest rounded transition-transform hover:-translate-y-0.5" style="background-color: var(--accent-color)">Book a site walk</a>
+    </div>
+  </section>
+</HearthLayout>

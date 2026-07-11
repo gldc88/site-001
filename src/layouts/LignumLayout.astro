@@ -1,0 +1,140 @@
+---
+/**
+ * LignumLayout , shared shell for LIGNUM ATELIER (website13, round 2).
+ * Persistent INTERACTIVE WebGL hardwood surface behind all pages: any page's [data-species]
+ * buttons re-tint it and #ageSlider ages it (event-delegated here). The chosen species is saved
+ * to localStorage and restored on every page (carries across navigation). Props: title, description, active.
+ */
+import '../styles/lignum-fonts.css';
+import '../styles/lignum.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+import { SPECIES, DEFAULT_KEY, grad, toSceneSpecies } from '../data/lignum';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'library', label: 'Grain Library', href: '/website13/library' },
+  { key: 'craft', label: 'Joinery', href: '/website13/craft' },
+  { key: 'works', label: 'Works', href: '/website13/works' },
+];
+// numeric lib for the client (tints + fallback gradient), keyed by species
+const LIB = Object.fromEntries(SPECIES.map((s) => [s.key, { sp: toSceneSpecies(s), grad: grad(s) }]));
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body data-default-species={DEFAULT_KEY}>
+    <script type="application/json" id="lignum-lib" set:html={JSON.stringify(LIB)}></script>
+
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="bg-veil" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website13" class="brand"><span class="mk"></span>Lignum</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website13/commission" class="cta">Commission</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Lignum Atelier</h3>
+          <p>Heirloom woodwork and master joinery , a living grain library, hand-cut joints, and quiet oiled finishes that deepen with time. Fictional brand, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Studio</h4><a href="/website13/library">Grain Library</a><a href="/website13/craft">Joinery</a><a href="/website13/works">Works</a><a href="/website13/commission">Commission</a></div>
+        <div class="f-col"><h4>Bench</h4><a href="mailto:bench@lignum.example">bench@lignum.example</a><a href="/website13/commission">Begin a commission</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Lignum Atelier. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · tung oil &amp; wax · never lacquer</span>
+      </div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      type Lib = Record<string, { sp: any; grad: string }>;
+      const LIB: Lib = JSON.parse(document.getElementById('lignum-lib')?.textContent || '{}');
+      const DEFAULT = document.body.dataset.defaultSpecies || Object.keys(LIB)[0];
+      let key = localStorage.getItem('lignum-species') || DEFAULT;
+      if (!LIB[key]) key = DEFAULT;
+      document.body.dataset.species = key;
+
+      const fallback = document.getElementById('bgFallback');
+      const paintFallback = (k: string) => { if (fallback && LIB[k]) { fallback.style.background = LIB[k].grad; fallback.style.backgroundBlendMode = 'multiply, normal, normal'; } };
+      paintFallback(key);
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      let scene: any = null;
+      const canvas = document.getElementById('bg-gl');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/lignum-scene')
+          .then(({ initLignumScene }) => {
+            scene = initLignumScene(canvas, LIB[key].sp);
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene?.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene?.dispose(), { once: true });
+            // window may expose for pages that want direct access
+            (window as any).__lignum = scene;
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+
+      // --- event delegation: species selection anywhere on the page ---
+      function applySpecies(k: string, persist = true) {
+        if (!LIB[k]) return;
+        key = k;
+        document.body.dataset.species = k;
+        if (persist) localStorage.setItem('lignum-species', k);
+        paintFallback(k);
+        scene?.setSpecies(LIB[k].sp);
+        document.querySelectorAll<HTMLElement>('[data-species]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === k)));
+        document.dispatchEvent(new CustomEvent('lignum:species', { detail: k }));
+      }
+      (window as any).__lignumApply = applySpecies;
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-species]');
+        if (btn && btn.dataset.key) applySpecies(btn.dataset.key);
+      });
+      // reflect saved species on the page's buttons at load
+      document.querySelectorAll<HTMLElement>('[data-species]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === key)));
+
+      // --- patina / age slider (delegated) ---
+      document.addEventListener('input', (e) => {
+        const el = e.target as HTMLInputElement;
+        if (el && el.id === 'ageSlider') scene?.setAge(Math.max(0, Math.min(1, Number(el.value) / 100)));
+      });
+    </script>
+  </body>
+</html>

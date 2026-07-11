@@ -1,0 +1,93 @@
+---
+/**
+ * YOYOGI , Visit / Book (website3, round 2). Signature: a validated session booking + toast.
+ */
+import YoyogiLayout from '../../layouts/YoyogiLayout.astro';
+
+const ROOMS = ['Cedar Pavilion', 'Basalt Chamber', 'Washi Tea Room'];
+---
+
+<YoyogiLayout title="Visit | YOYOGI" description="Book a session at Yoyogi urban bathhouse, Tokyo. Low light only, open late, booked one quiet message at a time." active="">
+  <section class="page-hero" style="min-height:52svh;">
+    <div class="page-hero-media"><img src="/website3/sauna2.jpg" alt="Yoyogi at night" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline ember">Visit</span>
+      <h1>Book a <em>session</em></h1>
+      <p class="sub">No app, no rush. Tell us the room, the night, and the hour; a person confirms by message within the day. Low light only , please arrive a little early and a little quiet.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="visit-grid">
+      <form id="bookForm" class="book-form panel" novalidate>
+        <div class="bf-row">
+          <div class="fld"><label for="bdate">Date</label><input id="bdate" name="date" type="date" /><span class="err" data-err="date"></span></div>
+          <div class="fld"><label for="bwindow">Window</label><select id="bwindow" name="window"><option>Afternoon · 14:00</option><option selected>Evening · 19:00</option><option>Late · 22:00</option></select></div>
+        </div>
+        <div class="bf-row">
+          <div class="fld"><label for="broom">Room</label><select id="broom" name="room">{ROOMS.map((r) => <option>{r}</option>)}</select></div>
+          <div class="fld"><label for="bparty">Party</label><select id="bparty" name="party"><option value="1">01 · solo</option><option value="2" selected>02 · pair</option><option value="3">03</option><option value="4">04</option></select></div>
+        </div>
+        <div class="fld"><label for="bname">Name</label><input id="bname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+        <div class="fld"><label for="bemail">Email</label><input id="bemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        <div class="fld"><label for="bnote">Notes for the house (optional)</label><textarea id="bnote" name="note" rows="3" placeholder="First time, an injury to mind, the kind of quiet you need…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request this session</button>
+        <p class="bf-fine">No card required. We hold the room and confirm by message.</p>
+      </form>
+
+      <aside class="visit-info">
+        <div class="vi-card panel">
+          <span class="overline ember">The House</span>
+          <div class="vi-line"><span>Hours</span><b>17:00 , 01:00</b></div>
+          <div class="vi-line"><span>Days</span><b>Tue , Sun</b></div>
+          <div class="vi-line"><span>Light</span><b>Low only</b></div>
+          <div class="vi-line"><span>Devices</span><b>In the locker</b></div>
+          <div class="vi-line"><span>Where</span><b>Yoyogi, Tokyo</b></div>
+          <p class="vi-note">A black door beside the park, no sign you'd notice. We send the exact entrance with your confirmation.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .visit-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .book-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .bf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .book-form textarea { resize: vertical; font-family: var(--body); }
+    .bf-fine { font-family: var(--head); font-size: 0.82rem; color: var(--faint); text-align: center; }
+    .visit-info { position: sticky; top: 96px; }
+    .vi-card { padding: clamp(24px,3vw,34px); }
+    .vi-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--hair); }
+    .vi-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .vi-line b { font-family: var(--head); font-size: 1.15rem; font-weight: 400; color: #fff; }
+    .vi-note { color: var(--muted); font-size: 0.82rem; line-height: 1.7; margin-top: 18px; }
+    @media (max-width: 900px) { .visit-grid { grid-template-columns: 1fr; } .visit-info { position: static; } }
+    @media (max-width: 560px) { .bf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('bookForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6000); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--ember-bright)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const room = String(d.get('room') || 'Cedar Pavilion');
+      const win = String(d.get('window') || '').split(' · ')[0];
+      let ok = true;
+      if (!String(d.get('date') || '')) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      form.reset();
+      showToast(`Held for you, ${name.split(' ')[0]} , the ${room}, ${win.toLowerCase()}. We confirm the exact door by message within the day.`);
+    });
+  </script>
+</YoyogiLayout>

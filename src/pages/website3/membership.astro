@@ -1,0 +1,114 @@
+---
+/**
+ * YOYOGI , Membership (website3, round 2). Signature: a tier selector that drives a join form + toast.
+ */
+import YoyogiLayout from '../../layouts/YoyogiLayout.astro';
+
+const TIERS = [
+  { id: 'visitor', name: 'Visitor', price: '¥0', cadence: 'pay per session', line: 'No commitment. Book a room when the city gets loud, at the standard rate.',
+    perks: ['Book any open room', 'Standard session rate', 'One quiet message to book', 'Tea always included'] },
+  { id: 'resident', name: 'Resident', price: '¥38,000', cadence: 'per month', line: 'For the weekly reset. Priority windows, a standing slot, and a softer rate.', featured: true,
+    perks: ['Two sessions / month included', '15% off further sessions', 'Priority evening windows', 'A held standing slot', 'Guest pass each season'] },
+  { id: 'keyholder', name: 'Keyholder', price: 'By invitation', cadence: 'annual', line: 'The quietest tier. After-hours access, your own locker, and a door that opens late.',
+    perks: ['Unlimited sessions', 'After-hours key access', 'Named locker & robe', 'Bring two, quietly', 'First call on new rooms'] },
+];
+---
+
+<YoyogiLayout title="Membership | YOYOGI" description="Quiet membership at Yoyogi urban bathhouse, Tokyo , Visitor, Resident, and Keyholder. No app, no rush." active="membership">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website3/sauna1.jpg" alt="Inside Yoyogi" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Quiet Membership</span>
+      <h1>Come in from the <em>cold</em>.</h1>
+      <p class="sub">No app, no points, no rush. Three quiet ways to belong , from booking a room when you need it to holding a key to the late hours. Pick a tier; we take it from there.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="tiers">
+      {TIERS.map((t, i) => (
+        <button class={`tier${t.featured ? ' featured' : ''}${i === 1 ? ' on' : ''}`} data-id={t.id} data-name={t.name}>
+          {t.featured && <span class="tier-flag">Most chosen</span>}
+          <span class="tier-mark" aria-hidden="true"></span>
+          <h3>{t.name}</h3>
+          <div class="tier-price">{t.price}<small>{t.cadence}</small></div>
+          <p class="tier-line">{t.line}</p>
+          <ul class="tier-perks">{t.perks.map((p) => <li>{p}</li>)}</ul>
+        </button>
+      ))}
+    </div>
+
+    <div class="join">
+      <div class="join-copy">
+        <span class="overline ember">Begin</span>
+        <h2 id="joinTier">Resident membership</h2>
+        <p>Leave your details and we reply with the next quiet step , no payment online, no pushy follow-up. A person reads it and writes back within the day.</p>
+      </div>
+      <form id="joinForm" class="join-form panel" novalidate>
+        <div class="fld"><label for="jname">Name</label><input id="jname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+        <div class="fld"><label for="jemail">Email</label><input id="jemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        <div class="fld"><label for="jnote">Anything we should know? (optional)</label><input id="jnote" name="note" type="text" placeholder="Best times, what you're after…" /></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request to join</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .tier { position: relative; text-align: left; padding: 34px 28px; border: 1px solid var(--hair); border-radius: 18px; display: flex; flex-direction: column; gap: 14px; transition: all 0.35s var(--ease); overflow: hidden; }
+    .tier::after { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(196,80,47,0.08), transparent 60%); opacity: 0; transition: opacity 0.35s; }
+    .tier:hover { border-color: rgba(255,255,255,0.18); transform: translateY(-4px); }
+    .tier.on { border-color: var(--ember-bright); }
+    .tier.on::after { opacity: 1; }
+    .tier.featured { border-color: rgba(255,122,60,0.3); }
+    .tier-flag { position: absolute; top: 0; right: 0; font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: #0f0d0c; background: var(--beige); padding: 6px 12px; border-bottom-left-radius: 10px; }
+    .tier-mark { position: absolute; top: 30px; right: 26px; width: 15px; height: 15px; border: 1px solid var(--faint); border-radius: 50%; transition: all 0.3s; }
+    .tier.featured .tier-mark { top: 44px; }
+    .tier.on .tier-mark { background: var(--ember-bright); border-color: var(--ember-bright); box-shadow: 0 0 12px rgba(255,122,60,0.6); }
+    .tier h3 { font-size: 1.8rem; color: #fff; position: relative; }
+    .tier-price { font-family: var(--head); font-size: 1.8rem; color: var(--ember-bright); display: flex; align-items: baseline; gap: 8px; position: relative; }
+    .tier-price small { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .tier-line { color: var(--muted); font-size: 0.85rem; line-height: 1.6; position: relative; }
+    .tier-perks { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-top: 4px; position: relative; }
+    .tier-perks li { font-size: 0.82rem; color: #cfc4b6; padding-left: 18px; position: relative; line-height: 1.5; }
+    .tier-perks li::before { content: '✦'; position: absolute; left: 0; color: var(--ember); font-size: 0.7em; top: 3px; }
+
+    .join { margin-top: 60px; display: grid; grid-template-columns: 1fr 0.9fr; gap: clamp(24px,4vw,50px); align-items: start; padding-top: 50px; border-top: 1px solid var(--hair); }
+    .join-copy h2 { font-size: clamp(2rem,3.6vw,3rem); color: #fff; margin: 14px 0 0; }
+    .join-copy p { color: var(--muted); line-height: 1.8; margin-top: 20px; max-width: 46ch; }
+    .join-form { padding: clamp(24px,3vw,36px); display: flex; flex-direction: column; gap: 16px; }
+    @media (max-width: 900px) { .tiers { grid-template-columns: 1fr; } .join { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const tiers = Array.from(document.querySelectorAll<HTMLButtonElement>('.tier'));
+    const joinTier = document.getElementById('joinTier')!;
+    let chosen = 'Resident';
+    tiers.forEach((t) => t.addEventListener('click', () => {
+      tiers.forEach((x) => x.classList.toggle('on', x === t));
+      chosen = t.dataset.name || 'Resident';
+      joinTier.textContent = chosen + ' membership';
+    }));
+
+    const form = document.getElementById('joinForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5600); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--ember-bright)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      form.reset();
+      showToast(`Welcome, ${name.split(' ')[0]}. Your ${chosen} request is in , a person reads it and writes back within the day.`);
+    });
+  </script>
+</YoyogiLayout>

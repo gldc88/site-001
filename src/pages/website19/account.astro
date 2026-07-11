@@ -1,0 +1,83 @@
+---
+/**
+ * MONARCH PRIVATE CHAUFFEUR , Account (website19, round 2). A private-account / standing-arrangement
+ * request -> reference + toast.
+ */
+import MonarchLayout from '../../layouts/MonarchLayout.astro';
+
+const FREQ = ['A few times a year', 'Monthly', 'Weekly', 'Daily / commute', 'On standby'];
+const PERKS = [
+  { k: 'Same chauffeur', v: 'Once we know you, the same driver and car each time , no re-explaining, no surprises.' },
+  { k: 'Stored preferences', v: 'Routes, temperature, the music or the silence , held on file and set before you board.' },
+  { k: 'Priority windows', v: 'The busy windows open to account holders first, and a standby car on the nights it matters.' },
+  { k: 'One invoice', v: 'Every journey on a single monthly statement, itemised, with nothing to settle at the kerb.' },
+];
+---
+
+<MonarchLayout title="Account | Monarch Private Chauffeur" description="Open a private account with Monarch , the same chauffeur, stored preferences, priority windows, and one monthly invoice." active="account">
+  <div class="page-hero">
+    <span class="kicker pl">Account</span>
+    <h1>Be known at the <em>kerb</em>.</h1>
+    <p class="sub">A standing arrangement for people who are driven often. The same car, the same chauffeur, your preferences already set , and a single invoice instead of a fare every time. By request only.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="acc-grid">
+      <div class="acc-perks">
+        {PERKS.map((p) => (<div class="perk panel" data-reveal="up"><h3>{p.k}</h3><p>{p.v}</p></div>))}
+      </div>
+
+      <form id="accForm" class="acc-form panel ch" novalidate>
+        <span class="kicker">Request an account</span>
+        <div class="af-row">
+          <div class="fld"><label for="aname">Name</label><input id="aname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="aemail">Email</label><input id="aemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="freq">How often driven?</label><select id="freq" name="freq">{FREQ.map((f) => <option>{f}</option>)}</select></div>
+        <div class="fld"><label for="route">Typical route (optional)</label><input id="route" name="route" type="text" placeholder="e.g. home → airport, weekly" /></div>
+        <div class="fld"><label for="anote">Anything we should know? (optional)</label><textarea id="anote" name="note" rows="3" placeholder="Preferences, accessibility, the kind of quiet you need…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request an account</button>
+        <p class="af-fine" id="afStatus">By request · we reply within the day.</p>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .acc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .acc-perks { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .perk { padding: 24px 24px; }
+    .perk h3 { font-size: 1.5rem; color: var(--champ-bright); }
+    .perk p { color: var(--muted); margin-top: 10px; font-size: 0.95rem; line-height: 1.6; }
+    .acc-form { padding: clamp(26px,3vw,38px); display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .acc-form .kicker { margin-bottom: 4px; }
+    .af-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .acc-form textarea { resize: vertical; font-family: var(--body); }
+    .af-fine { font-family: var(--mono); font-size: 0.7rem; color: var(--faint); text-align: center; }
+    @media (max-width: 900px) { .acc-grid { grid-template-columns: 1fr; } .acc-form { position: static; } }
+    @media (max-width: 540px) { .af-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('accForm') as HTMLFormElement;
+    const freq = document.getElementById('freq') as HTMLSelectElement;
+    const toast = document.getElementById('toast');
+    const fine = document.getElementById('afStatus')!;
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#e6a3a0' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('aname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('aemail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'MC-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      fine.textContent = `Request ${ref} received , we'll reply within the day.`; fine.style.color = 'var(--champagne)';
+      if (toast) { toast.textContent = `Thank you ${name.split(' ')[0]} , account request ${ref} logged (${freq.value.toLowerCase()}). We'll be in touch within the day.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6400); }
+      form.reset();
+    });
+  </script>
+</MonarchLayout>

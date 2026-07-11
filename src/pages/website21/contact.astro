@@ -1,0 +1,100 @@
+---
+/**
+ * HEARTH & GROVE , Contact (website21, round 2). Validated inquiry + toast; reads the grove from
+ * localStorage (composed on the Specimens page) and attaches it.
+ */
+import HearthLayout from '../../layouts/HearthLayout.astro';
+
+const SCOPES = ['Garden design', 'Design + build', 'Planting only', 'Maintenance', 'Not sure yet'];
+const FACTS = [
+  { k: 'Email', v: 'hello@hearthgrove.example' },
+  { k: 'Phone', v: '+31 6 2148 9031' },
+  { k: 'Service area', v: 'Amsterdam · Haarlem · Utrecht' },
+  { k: 'Reply', v: 'Within two working days' },
+];
+---
+
+<HearthLayout title="Contact | Hearth & Grove" description="Start a landscape project with Hearth & Grove. Tell us about the site; we reply within two working days.">
+  <section class="px-6 pt-36 pb-28">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-start">
+      <div data-reveal="up">
+        <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color)">Contact</span>
+        <h1 class="font-serif text-5xl lg:text-7xl text-white mt-5 leading-[1.04]">Start a <span class="italic" style="color: var(--accent-color)">project.</span></h1>
+        <p class="text-lg max-w-md mt-8 mb-12" style="color: var(--text-muted)">Tell us about the site and what you're picturing. If you composed a grove, it comes attached. We reply within two working days.</p>
+        <div class="grid grid-cols-2 gap-px rounded-2xl overflow-hidden border" style="border-color: var(--border-color); background-color: var(--border-color)">
+          {FACTS.map((f) => (
+            <div class="p-6" style="background-color: var(--card-bg-dark)">
+              <div class="text-[10px] font-bold uppercase tracking-widest mb-2" style="color: var(--accent-color)">{f.k}</div>
+              <div class="text-sm text-white">{f.v}</div>
+            </div>
+          ))}
+        </div>
+        <div id="groveRecap" class="mt-8 text-sm font-serif italic" style="color: var(--text-muted)"></div>
+      </div>
+
+      <form id="groveForm" class="p-8 lg:p-10 rounded-2xl border" style="border-color: var(--border-color); background-color: var(--card-bg-dark)" novalidate data-reveal="up">
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-muted)">Name</label>
+            <input name="name" type="text" aria-label="Name" class="bg-transparent border rounded-lg px-4 py-3 text-sm text-white outline-none" style="border-color: var(--border-color)" />
+            <span data-err-for="name" class="text-[11px]" style="color:#c2603e"></span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-muted)">Email</label>
+            <input name="email" type="email" aria-label="Email" class="bg-transparent border rounded-lg px-4 py-3 text-sm text-white outline-none" style="border-color: var(--border-color)" />
+            <span data-err-for="email" class="text-[11px]" style="color:#c2603e"></span>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2 mt-5">
+          <label class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-muted)">Scope</label>
+          <select name="scope" aria-label="Project scope" class="bg-transparent border rounded-lg px-4 py-3 text-sm text-white outline-none" style="border-color: var(--border-color)">
+            <option value="" style="background:#0c140f">Select a scope…</option>
+            {SCOPES.map((s) => <option value={s} style="background:#0c140f">{s}</option>)}
+          </select>
+          <span data-err-for="scope" class="text-[11px]" style="color:#c2603e"></span>
+        </div>
+        <div class="flex flex-col gap-2 mt-5">
+          <label class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-muted)">The site (optional)</label>
+          <textarea name="note" rows="4" class="bg-transparent border rounded-lg px-4 py-3 text-sm text-white outline-none resize-y" style="border-color: var(--border-color)" placeholder="Size, aspect, what's there now, what you're hoping for…"></textarea>
+        </div>
+        <button type="submit" class="w-full mt-7 py-4 text-xs font-bold uppercase tracking-widest rounded-lg transition-transform hover:-translate-y-0.5 text-black" style="background-color: var(--accent-color)">Send inquiry</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" class="fixed left-1/2 bottom-7 z-[9000] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none rounded-xl px-6 py-4 text-sm font-medium transition-all duration-500"
+    style="background-color: rgba(7,12,10,0.95); border: 1px solid var(--accent-color, #10b981); color: #e7f5ee; box-shadow: 0 0 34px rgba(16,185,129,0.22); max-width: min(92vw,480px);"></div>
+
+  <script>
+    // grove recap from localStorage
+    const recap = document.getElementById('groveRecap');
+    let groveCount = 0;
+    try {
+      const grove = JSON.parse(localStorage.getItem('hearth-grove') || '[]');
+      groveCount = grove.length;
+      if (recap) recap.textContent = groveCount ? `Your grove of ${groveCount} specimen${groveCount > 1 ? 's' : ''} will be attached to this inquiry.` : 'No grove composed yet , visit Specimens to plant one (optional).';
+    } catch (e) {}
+
+    const form = document.getElementById('groveForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (html: string) => { if (!toast) return; toast.innerHTML = html; toast.style.opacity = '1'; toast.style.transform = 'translate(-50%, 0)'; clearTimeout(tT); tT = window.setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translate(-50%, 24px)'; }, 5600); };
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err-for="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#c2603e' : 'var(--border-color)'; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const scope = String(d.get('scope') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'A name, please.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!scope) { setErr('scope', 'Pick a scope.'); ok = false; } else setErr('scope', '');
+      if (!ok) return;
+      const groveNote = groveCount ? ` Your grove of ${groveCount} is attached.` : '';
+      form.reset();
+      ['name', 'email', 'scope'].forEach((n) => setErr(n, ''));
+      showToast(`Thank you, <b style="color:var(--accent-color)">${name.split(' ')[0] || 'friend'}</b>. We'll reply within two working days.${groveNote}`);
+    });
+  </script>
+</HearthLayout>

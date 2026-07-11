@@ -1,0 +1,177 @@
+---
+/**
+ * AurumLayout , shared shell for AURUM THERMAL HOUSE (website18, round 2).
+ * Persistent INTERACTIVE golden water-caustics WebGL backdrop: any page's [data-room] selectors set
+ * the heat that feeds the caustics (event-delegated here). The chosen room/heat is saved to
+ * localStorage and restored on every page. Props: title, description, active.
+ */
+import '../styles/aurum-fonts.css';
+import '../styles/aurum.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+import { ROOMS, DEFAULT_ID } from '../data/aurum';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'house', label: 'The House', href: '/website18/house' },
+  { key: 'rituals', label: 'Rituals', href: '/website18/rituals' },
+  { key: 'membership', label: 'Membership', href: '/website18/membership' },
+];
+const HEATS = Object.fromEntries(ROOMS.map((r) => [r.id, r.heat]));
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script type="application/json" id="aurum-heats" set:html={JSON.stringify(HEATS)}></script>
+  </head>
+
+  <body data-default-room={DEFAULT_ID}>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website18" class="brand">Aurum</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website18/reserve" class="cta">Reserve</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Aurum Thermal House</h3>
+          <p>An Amsterdam canal-house thermal circuit , mineral baths, steam, sauna, a contrast cellar, a float room, and a quiet tea lounge, stacked floor by floor. Timed entry, capped capacity. Fictional brand, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>House</h4><a href="/website18/house">The House</a><a href="/website18/rituals">Rituals</a><a href="/website18/membership">Membership</a><a href="/website18/reserve">Reserve</a></div>
+        <div class="f-col"><h4>Visit</h4><a href="tel:+31205550148">+31 20 555 0148</a><a href="mailto:desk@aurum.example">desk@aurum.example</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Aurum Thermal House. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · timed entry · silent rule</span>
+      </div>
+    </footer>
+
+    <div class="circuitcard" id="circuitcard" aria-label="Thermal circuit card">
+      <span class="cc-key">Circuit</span>
+      <span class="cc-slots" aria-hidden="true">
+        <i class="cc-slot" data-slot="source" title="Source"></i><i class="cc-slot" data-slot="pool" title="Pool"></i><i class="cc-slot" data-slot="steam" title="Steam"></i><i class="cc-slot" data-slot="plunge" title="Plunge"></i>
+      </span>
+      <span class="cc-msg" id="ccMsg" aria-live="polite"></span>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "Circuit Card": stempel het thermale circuit in de juiste volgorde ---- */
+      const ROUTE = ['source', 'pool', 'steam', 'plunge'];
+      const REFUSE: Record<string, string> = {
+        pool: 'The pool before the source? The house says no.',
+        steam: 'Steam without the pool first - the house says no.',
+        plunge: 'The plunge before the steam? The house says no.',
+        source: 'Begin at the source.',
+      };
+      const CKEY = 'aurum-circuit';
+      const readC = (): string[] => { try { return JSON.parse(localStorage.getItem(CKEY) || '[]'); } catch { return []; } };
+      const writeC = (v: string[]) => { try { localStorage.setItem(CKEY, JSON.stringify(v)); } catch { /* private mode */ } };
+      const ccMsg = document.getElementById('ccMsg');
+
+      const syncCircuit = () => {
+        const done = readC();
+        document.querySelectorAll<HTMLElement>('.cc-slot').forEach((sl) => sl.classList.toggle('stamped', done.includes(sl.dataset.slot || '')));
+        document.querySelectorAll<HTMLElement>('.circuit-seal').forEach((seal) => {
+          seal.classList.toggle('stamped', done.includes(seal.dataset.station || ''));
+        });
+        const complete = done.length === ROUTE.length;
+        document.documentElement.classList.toggle('circuit-complete', complete);
+        if (complete && ccMsg) ccMsg.textContent = 'Circuit composed - 42 minutes of heat, timed.';
+      };
+      document.addEventListener('click', (e) => {
+        const seal = (e.target as HTMLElement).closest<HTMLElement>('.circuit-seal');
+        if (!seal) return;
+        const st = seal.dataset.station || '';
+        const done = readC();
+        if (done.includes(st)) return;
+        if (ROUTE[done.length] === st) {
+          done.push(st);
+          writeC(done);
+          syncCircuit();
+          if (ccMsg && done.length < ROUTE.length) ccMsg.textContent = `${st[0].toUpperCase() + st.slice(1)} stamped. Next: ${ROUTE[done.length]}.`;
+        } else if (ccMsg) {
+          ccMsg.textContent = REFUSE[st] || 'Not yet - follow the heat.';
+        }
+      });
+      syncCircuit();
+
+      const HEATS: Record<string, number> = JSON.parse(document.getElementById('aurum-heats')?.textContent || '{}');
+      const DEFAULT = document.body.dataset.defaultRoom || Object.keys(HEATS)[0];
+      let room = localStorage.getItem('aurum-room') || DEFAULT;
+      if (!(room in HEATS)) room = DEFAULT;
+      let heat = Number(localStorage.getItem('aurum-heat') || HEATS[room] || 0.6);
+      document.body.dataset.room = room;
+      document.body.dataset.heat = String(heat);
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      let scene: any = null;
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/aurum-scene')
+          .then(({ initAurumScene }) => {
+            scene = initAurumScene(canvas);
+            if (fallback) fallback.style.display = 'none';
+            scene.setHeat(heat);
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene?.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene?.dispose(), { once: true });
+            (window as any).__aurum = scene;
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+
+      function applyRoom(k: string) {
+        if (!(k in HEATS)) return;
+        room = k; heat = HEATS[k];
+        document.body.dataset.room = k;
+        document.body.dataset.heat = String(heat);
+        localStorage.setItem('aurum-room', k);
+        localStorage.setItem('aurum-heat', String(heat));
+        scene?.setHeat(heat);
+        document.querySelectorAll<HTMLElement>('[data-room]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === k)));
+        document.dispatchEvent(new CustomEvent('aurum:room', { detail: k }));
+      }
+      (window as any).__aurumRoom = applyRoom;
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-room]');
+        if (btn && btn.dataset.key) applyRoom(btn.dataset.key);
+      });
+      document.querySelectorAll<HTMLElement>('[data-room]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === room)));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+---
+/**
+ * CLEARSTREAM , The Rig (website22, round 2). Equipment spec sheet + the protocol + FAQ.
+ */
+import ClearstreamLayout from '../../layouts/ClearstreamLayout.astro';
+
+const SPECS = [
+  { label: 'MAX PRESSURE', val: '4000 PSI' },
+  { label: 'HOT WATER', val: '90°C' },
+  { label: 'ONBOARD TANK', val: '1000 L' },
+  { label: 'FLOW RATE', val: '21 L/min' },
+  { label: 'HOSE REACH', val: '100 m' },
+  { label: 'POWER', val: 'Self-contained' },
+];
+const STEPS = [
+  { n: '01', t: 'Assess', d: 'We read the surface and the staining, then set the pressure and chemistry to match , never the other way round.' },
+  { n: '02', t: 'Pre-treat', d: 'A targeted solution does the breaking-down, so the water does less of the work and the surface takes less of the hit.' },
+  { n: '03', t: 'Wash', d: 'Hot water at the right PSI, worked methodically, edge to edge , no missed strips, no zebra lines.' },
+  { n: '04', t: 'Rinse & check', d: 'A clean rinse, a walk-round with you, and the run-off handled responsibly. We leave only when it is right.' },
+];
+const FAQ = [
+  { q: 'WILL IT DAMAGE MY SURFACE?', a: 'We match pressure and chemistry to the material. Concrete, brick, wood, paint , we regulate PSI and use soft wash where needed.' },
+  { q: 'DO YOU NEED A WATER TAP?', a: 'A spigot is ideal, but we can run from onboard tanks. Commercial hydrant connection available where permitted.' },
+  { q: 'HOW FAST CAN YOU COME OUT?', a: 'Commercial urgent call-outs within 4 hours when available. Residential bookings typically within 48 hours.' },
+];
+---
+
+<ClearstreamLayout title="The Rig | Clearstream" description="The Clearstream rig , 4000 PSI, 90°C hot water, 1000L onboard. The protocol and the FAQ." active="rig">
+  <section class="pt-36 pb-16 px-6 lg:px-12 border-b border-black/5">
+    <div class="max-w-7xl mx-auto">
+      <span class="text-[10px] font-mono uppercase tracking-widest text-blue-600">// The Rig</span>
+      <h1 class="text-6xl lg:text-8xl font-black tracking-tighter leading-[0.85] mt-4">Built to lift.</h1>
+      <p class="max-w-md text-sm font-medium leading-relaxed mt-8">A self-contained hot-water rig that turns up ready , no relying on your tap, your power, or the weather.</p>
+    </div>
+  </section>
+
+  <section class="px-6 lg:px-12 py-16">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-px bg-black/10 border-2 border-black">
+      {SPECS.map((s) => (<div class="bg-[#F0F2F5] p-8"><div class="text-[10px] font-mono uppercase tracking-widest text-gray-500">{s.label}</div><div class="text-4xl lg:text-5xl font-black tracking-tighter mt-2">{s.val}</div></div>))}
+    </div>
+  </section>
+
+  <section class="px-6 lg:px-12 py-16 border-t border-black/5">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl lg:text-6xl font-black tracking-tighter mb-12">The protocol.</h2>
+      <div class="grid md:grid-cols-4 gap-px bg-black/10 border-2 border-black">
+        {STEPS.map((s) => (<div class="bg-[#F0F2F5] p-8"><span class="text-3xl font-black tracking-tighter text-blue-600">{s.n}</span><h3 class="text-xl font-black tracking-tighter mt-4 mb-3">{s.t}</h3><p class="text-sm font-medium leading-relaxed opacity-80">{s.d}</p></div>))}
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 lg:px-12 py-20 border-t border-black/5">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl lg:text-6xl font-black tracking-tighter mb-12">FAQ.</h2>
+      <div class="flex flex-col gap-px bg-black/10 border-2 border-black">
+        {FAQ.map((f, i) => (
+          <details class="bg-[#F0F2F5] group" open={i === 0}>
+            <summary class="flex justify-between items-center p-6 cursor-pointer font-black uppercase tracking-tight select-none text-sm">{f.q}<span class="text-xl group-open:rotate-45 transition-transform">+</span></summary>
+            <p class="px-6 pb-6 text-sm font-medium leading-relaxed max-w-2xl opacity-80">{f.a}</p>
+          </details>
+        ))}
+      </div>
+      <div class="mt-12 flex justify-center"><a href="/website22/quote" class="bg-blue-600 hover:bg-black text-white px-10 py-5 text-xs font-black uppercase tracking-[0.2em] transition-colors clip-button">Request dispatch</a></div>
+    </div>
+  </section>
+
+  <section class="section" id="nozzlebench">
+    <div class="nb-head">
+      <span class="kicker">The Nozzle Bench</span>
+      <h2>Pressure is a decision.</h2>
+      <p>Slide the pressure, pick the surface. Watch the fan change , and watch when we would
+        say no. Knowing when to hold back is the half of this trade nobody advertises.</p>
+    </div>
+    <div class="nb-stage">
+      <div class="nb-left">
+        <svg viewBox="0 0 420 180" class="nb-svg" aria-hidden="true">
+          <rect x="10" y="78" width="70" height="24" rx="4" fill="rgba(30,40,50,0.85)" stroke="rgba(90,110,125,0.6)" />
+          <rect x="80" y="84" width="26" height="12" rx="2" fill="rgba(60,75,88,0.9)" />
+          <polygon id="nbFan" points="106,90 300,50 300,130" fill="rgba(56,170,220,0.28)" stroke="rgba(56,170,220,0.6)" />
+          <line x1="106" y1="90" x2="300" y2="90" stroke="rgba(56,170,220,0.5)" stroke-dasharray="3 5" />
+          <text id="nbReach" x="310" y="94" font-family="monospace" font-size="12" fill="rgba(40,60,72,0.9)">1.2 m</text>
+        </svg>
+        <label class="nb-psi-label" for="nbPsi">Pressure <b id="nbPsiVal">1500 PSI</b></label>
+        <input type="range" id="nbPsi" min="500" max="3000" step="100" value="1500" aria-label="Pressure in PSI" />
+      </div>
+      <div class="nb-right">
+        <div class="nb-surfaces" role="radiogroup" aria-label="Choose a surface">
+          <button type="button" class="nb-surf" data-surf="cedar" data-max="900" role="radio" aria-checked="false">Cedar deck</button>
+          <button type="button" class="nb-surf" data-surf="car" data-max="1400" role="radio" aria-checked="false">Car paint</button>
+          <button type="button" class="nb-surf" data-surf="brick" data-max="2400" role="radio" aria-checked="false">Brick</button>
+          <button type="button" class="nb-surf" data-surf="concrete" data-max="3000" role="radio" aria-checked="false">Concrete</button>
+        </div>
+        <p class="nb-verdict" id="nbVerdict" aria-live="polite">Pick a surface , the bench will tell you the truth.</p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #nozzlebench .nb-head { max-width: 640px; margin-bottom: 26px; }
+    #nozzlebench h2 { margin: 10px 0 12px; }
+    .nb-stage { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(22px,4vw,48px); align-items: center; border: 1px solid rgba(30, 45, 55, 0.18); border-radius: 8px; padding: clamp(22px,3.5vw,38px); background: rgba(255, 255, 255, 0.55); }
+    .nb-svg { width: 100%; height: auto; display: block; }
+    #nbFan { transition: points 0.3s; }
+    .nb-psi-label { display: flex; justify-content: space-between; font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin: 14px 0 8px; }
+    .nb-psi-label b { font-variant-numeric: tabular-nums; }
+    #nbPsi { width: 100%; }
+    .nb-surfaces { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .nb-surf { font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; padding: 10px 12px; border: 1px solid rgba(30, 45, 55, 0.3); border-radius: 4px; background: rgba(255, 255, 255, 0.7); cursor: pointer; transition: background .3s, border-color .3s; }
+    .nb-surf[aria-checked='true'] { background: rgba(56, 170, 220, 0.18); border-color: rgba(56, 170, 220, 0.7); }
+    .nb-surf:focus-visible { outline: 2px solid rgba(56, 170, 220, 0.9); outline-offset: 2px; }
+    .nb-verdict { margin-top: 16px; font-size: 13.5px; line-height: 1.6; min-height: 44px; }
+    .nb-verdict.safe { color: #17694a; }
+    .nb-verdict.danger { color: #a33a2a; font-weight: 600; }
+    @media (max-width: 760px) { .nb-stage { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 "The Nozzle Bench" , druk × oppervlak = een eerlijk oordeel. */
+    (() => {
+      const psi = document.getElementById('nbPsi');
+      const psiVal = document.getElementById('nbPsiVal');
+      const fan = document.getElementById('nbFan');
+      const reach = document.getElementById('nbReach');
+      const verdict = document.getElementById('nbVerdict');
+      const surfs = Array.from(document.querySelectorAll<HTMLButtonElement>('.nb-surf'));
+      if (!(psi instanceof HTMLInputElement) || !fan || !verdict) return;
+      const NAMES: Record<string, string> = { cedar: 'cedar decking', car: 'car paintwork', brick: 'brick', concrete: 'concrete' };
+      let surf: HTMLButtonElement | null = null;
+
+      const sync = () => {
+        const v = Number(psi.value);
+        if (psiVal) psiVal.textContent = `${v} PSI`;
+        // kegel: hogere druk = smaller & langer
+        const t = (v - 500) / 2500;
+        const spread = 55 - t * 38;         // halve hoogte op einde
+        const len = 160 + t * 105;          // lengte vanaf x=106
+        fan.setAttribute('points', `106,90 ${106 + len},${90 - spread} ${106 + len},${90 + spread}`);
+        if (reach) { reach.setAttribute('x', String(116 + len)); reach.textContent = `${(0.6 + t * 2.6).toFixed(1)} m`; }
+        if (!surf) { verdict.textContent = 'Pick a surface , the bench will tell you the truth.'; verdict.className = 'nb-verdict'; return; }
+        const max = Number(surf.dataset.max);
+        const name = NAMES[surf.dataset.surf || ''] || 'that surface';
+        if (v <= max) {
+          verdict.textContent = `${v} PSI on ${name}: clean and safe. This is the setting we would bring.`;
+          verdict.className = 'nb-verdict safe';
+        } else {
+          verdict.textContent = `${v} PSI on ${name}? That surface will not survive it. We know when to hold back , that is what you hire.`;
+          verdict.className = 'nb-verdict danger';
+        }
+        try { localStorage.setItem('clearstream-bench', JSON.stringify({ psi: v, surf: surf.dataset.surf, safe: v <= max })); } catch { /* private mode */ }
+      };
+      psi.addEventListener('input', sync);
+      surfs.forEach((b) => b.addEventListener('click', () => {
+        surf = b;
+        surfs.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+        sync();
+      }));
+      sync();
+    })();
+  </script>
+</ClearstreamLayout>

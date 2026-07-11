@@ -1,0 +1,90 @@
+---
+/**
+ * ATELIER PRIVATE CATERING , Menus (website17, round 2). Signature: a menu-direction selector that
+ * warms the candle room + reveals its courses in sequence.
+ */
+import AtelierLayout from '../../layouts/AtelierLayout.astro';
+import { MENUS } from '../../data/atelier';
+---
+
+<AtelierLayout title="Menus | Atelier Private Catering" description="Three menu directions , Botanical, Coastal, Terroir. Each warms the room and lays out its courses. Choose where the evening sits." active="menus">
+  <div class="page-hero">
+    <span class="eyebrow">Menus</span>
+    <h1>Three <em>directions</em>, one evening.</h1>
+    <p class="sub">Not a fixed menu , a direction. Choose one and the candlelight warms to it as the courses lay themselves out. The final menu is set with you, around the season and the room.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="menu-browser">
+      <div class="menu-list">
+        {MENUS.map((m, i) => (
+          <button class={`menx ${i === 0 ? 'active' : ''}`} data-menu data-key={m.key} data-warmth={String(m.warmth)} aria-pressed="false">
+            <span class="mx-title">{m.title}</span>
+            <span class="mx-line">{m.line}</span>
+            <span class="mx-warmth"><span class="mw-track"><span class="mw-bar" style={`width:${Math.round(m.warmth * 100)}%`}></span></span></span>
+          </button>
+        ))}
+      </div>
+      <div class="menu-stage">
+        {MENUS.map((m, i) => (
+          <article class={`menu-detail ${i === 0 ? 'active' : ''}`} id={`menu-${m.key}`}>
+            <div class="md-head"><span class="md-warmth">Warmth {Math.round(m.warmth * 100)}</span></div>
+            <h2>{m.title}</h2>
+            <p class="md-line">{m.line}</p>
+            <p class="md-desc">{m.desc}</p>
+            <ol class="md-courses" data-courses={m.courses.join('|')}>
+              {m.courses.map((c, ci) => <li data-n={String(ci + 1).padStart(2, '0')}>{c}</li>)}
+            </ol>
+            <a href="/website17/reserve" class="btn-cta" style="margin-top:6px;">Compose around this</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .menu-browser { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(18px,3vw,40px); align-items: start; }
+    .menu-list { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 90px; }
+    .menx { text-align: left; padding: 20px 20px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); transition: all 0.3s; display: flex; flex-direction: column; gap: 8px; }
+    .menx:hover { border-color: var(--line-copper); }
+    .menx[aria-pressed='true'] { border-color: var(--copper); box-shadow: inset 0 0 40px -24px var(--copper); }
+    .mx-title { font-family: var(--head); font-size: 1.7rem; color: #fff; }
+    .mx-line { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+    .mw-track { display: block; height: 3px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; margin-top: 4px; }
+    .mw-bar { display: block; height: 100%; background: linear-gradient(90deg, var(--copper-deep), var(--copper-bright)); border-radius: 100px; }
+
+    .menu-stage { min-width: 0; }
+    .menu-detail { display: none; }
+    .menu-detail.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .md-head { margin-bottom: 12px; }
+    .md-warmth { font-family: var(--body); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--copper); }
+    .menu-detail h2 { font-size: clamp(2.4rem,5vw,4rem); color: #fff; }
+    .md-line { font-family: var(--head); font-style: italic; font-size: clamp(1.3rem,2.2vw,1.8rem); color: var(--copper-bright); margin: 10px 0 18px; }
+    .md-desc { color: var(--ink); font-size: 1.08rem; line-height: 1.75; max-width: 58ch; margin-bottom: 26px; }
+    .md-courses { list-style: none; display: flex; flex-direction: column; margin-bottom: 28px; max-width: 480px; }
+    .md-courses li { display: flex; align-items: baseline; gap: 16px; padding: 15px 0; border-bottom: 1px solid var(--line); font-family: var(--head); font-size: 1.5rem; color: #fff; opacity: 0; transform: translateY(8px); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+    .md-courses li.in { opacity: 1; transform: none; }
+    .md-courses li::before { content: attr(data-n); font-family: var(--body); font-size: 11px; letter-spacing: 0.1em; color: var(--copper); }
+
+    @media (max-width: 860px) { .menu-browser { grid-template-columns: 1fr; } .menu-list { position: static; } }
+  </style>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.menx'));
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.menu-detail'));
+    function reveal(detail: HTMLElement) {
+      const lis = Array.from(detail.querySelectorAll<HTMLElement>('.md-courses li'));
+      lis.forEach((li) => li.classList.remove('in'));
+      lis.forEach((li, i) => { if (reduce) li.classList.add('in'); else setTimeout(() => li.classList.add('in'), 60 + i * 120); });
+    }
+    function show(k: string) {
+      items.forEach((it) => it.classList.toggle('active', it.dataset.key === k));
+      details.forEach((d) => { const on = d.id === `menu-${k}`; d.classList.toggle('active', on); if (on) reveal(d); });
+    }
+    items.forEach((it) => it.addEventListener('click', () => show(it.dataset.key!)));
+    document.addEventListener('atelier:menu', (e) => show((e as CustomEvent).detail));
+    show(localStorage.getItem('atelier-menu') || 'coastal');
+  </script>
+</AtelierLayout>

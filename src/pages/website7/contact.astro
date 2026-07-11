@@ -1,0 +1,132 @@
+---
+/**
+ * GREENLINE TREE SURGERY , Contact / Get a Quote (website7, round 2).
+ * Signature: a quote builder with a live estimate band + generated job reference + toast.
+ */
+import GreenlineLayout from '../../layouts/GreenlineLayout.astro';
+
+const SERVICES = [
+  { v: 'Crown Reduction', base: 280 }, { v: 'Crown Lift & Thin', base: 220 }, { v: 'Tree Removal', base: 450 },
+  { v: 'Stump Grinding', base: 120 }, { v: 'Hedge Cutting', base: 140 }, { v: 'Emergency Call-out', base: 320 },
+];
+const SIZES = [{ v: 'Small (under 5m)', f: 0.7 }, { v: 'Medium (5–10m)', f: 1.0 }, { v: 'Large (10–18m)', f: 1.5 }, { v: 'Very large (18m+)', f: 2.2 }];
+const URGENCY = [{ v: 'Flexible', f: 1.0 }, { v: 'Within a few weeks', f: 1.1 }, { v: 'As soon as possible', f: 1.35 }];
+---
+
+<GreenlineLayout title="Get a Quote | Greenline Tree Surgery" description="Get a free, fixed quote from Greenline tree surgery. Tell us the job and your postcode for a same-day indicative estimate." active="contact">
+  <section class="page-hero" style="min-height:50svh;">
+    <div class="page-hero-media"><img src="/website7/canopy.jpg" alt="Light through a mature tree canopy" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="eyebrow">Get a Quote</span>
+      <h1>Free quote, <em>same day</em>.</h1>
+      <p class="sub">Tell us the job and your postcode for an instant indicative band. We confirm a fixed price after a quick look , no obligation either way.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="quote-grid">
+      <form id="quoteForm" class="quote-form panel warm" novalidate>
+        <div class="qf-row">
+          <div class="fld"><label for="service">Service</label><select id="service" name="service">{SERVICES.map((s) => <option data-base={String(s.base)}>{s.v}</option>)}</select></div>
+          <div class="fld"><label for="size">Tree / hedge size</label><select id="size" name="size">{SIZES.map((s) => <option data-f={String(s.f)}>{s.v}</option>)}</select></div>
+        </div>
+        <div class="qf-row">
+          <div class="fld"><label for="urgency">How soon?</label><select id="urgency" name="urgency">{URGENCY.map((u) => <option data-f={String(u.f)}>{u.v}</option>)}</select></div>
+          <div class="fld"><label for="postcode">Postcode</label><input id="postcode" name="postcode" type="text" placeholder="e.g. AB1 2CD" /><span class="err" data-err="postcode"></span></div>
+        </div>
+        <div class="qf-row">
+          <div class="fld"><label for="qname">Name</label><input id="qname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="qphone">Phone</label><input id="qphone" name="phone" type="tel" autocomplete="tel" /><span class="err" data-err="phone"></span></div>
+        </div>
+        <div class="fld"><label for="qemail">Email (optional)</label><input id="qemail" name="email" type="email" autocomplete="email" /></div>
+        <div class="fld"><label for="qnote">Anything else? (optional)</label><textarea id="qnote" name="note" rows="3" placeholder="Access notes, nearby power lines, photos to follow…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Send & get my quote</button>
+        <p class="qf-fine">Indicative only. Final fixed price confirmed after a site look.</p>
+      </form>
+
+      <aside class="quote-side">
+        <div class="est-card panel" id="estCard">
+          <span class="eyebrow rope">Indicative estimate</span>
+          <div class="est-band" id="estBand">£,</div>
+          <div class="est-meta">
+            <div class="em-line"><span>Service</span><b id="emService">,</b></div>
+            <div class="em-line"><span>Size</span><b id="emSize">,</b></div>
+            <div class="em-line"><span>Timing</span><b id="emUrgency">,</b></div>
+            <div class="em-line"><span>Ref</span><b id="emRef">,</b></div>
+          </div>
+          <div class="est-status" id="estStatus">Fill the form for a live band</div>
+        </div>
+        <a href="tel:+447900123456" class="btn-call" style="width:100%; justify-content:center;">Or call 07 900 123 456</a>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .quote-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .quote-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .qf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .quote-form textarea { resize: vertical; font-family: var(--body); }
+    .qf-fine { font-family: var(--mono); font-size: 0.72rem; color: var(--faint); text-align: center; }
+    .quote-side { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 14px; }
+    .est-card { padding: clamp(24px,3vw,32px); }
+    .est-band { font-family: var(--head); font-size: clamp(2.4rem,5vw,3.4rem); color: var(--leaf); margin: 14px 0 20px; }
+    .est-meta { border-top: 1px solid var(--hair); padding-top: 6px; }
+    .em-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--hair); }
+    .em-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .em-line b { font-family: var(--head); font-size: 1rem; font-weight: 500; color: #fff; text-align: right; }
+    .est-status { margin-top: 18px; padding: 11px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair); border-radius: 100px; }
+    .est-card.filed { border-color: var(--leaf); }
+    .est-card.filed .est-status { color: #0a1410; background: var(--leaf); border-style: solid; border-color: var(--leaf); }
+    @media (max-width: 900px) { .quote-grid { grid-template-columns: 1fr; } .quote-side { position: static; } }
+    @media (max-width: 560px) { .qf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('quoteForm') as HTMLFormElement;
+    const service = document.getElementById('service') as HTMLSelectElement;
+    const size = document.getElementById('size') as HTMLSelectElement;
+    const urgency = document.getElementById('urgency') as HTMLSelectElement;
+    const band = document.getElementById('estBand')!;
+    const em = { service: document.getElementById('emService')!, size: document.getElementById('emSize')!, urgency: document.getElementById('emUrgency')!, ref: document.getElementById('emRef')! };
+    const statusEl = document.getElementById('estStatus')!, card = document.getElementById('estCard');
+    const round10 = (n: number) => Math.round(n / 10) * 10;
+
+    function recalc() {
+      const base = Number(service.selectedOptions[0].dataset.base || '0');
+      const sf = Number(size.selectedOptions[0].dataset.f || '1');
+      const uf = Number(urgency.selectedOptions[0].dataset.f || '1');
+      const est = base * sf * uf;
+      band.textContent = `£${round10(est * 0.85)}–£${round10(est * 1.15)}`;
+      em.service.textContent = service.value;
+      em.size.textContent = size.value.replace(/\s*\(.*\)/, '');
+      em.urgency.textContent = urgency.value;
+    }
+    [service, size, urgency].forEach((el) => el.addEventListener('input', recalc));
+    recalc();
+
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#ffae8a' : ''; };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const postcode = String(d.get('postcode') || '').trim();
+      const name = String(d.get('name') || '').trim();
+      const phone = String(d.get('phone') || '').trim();
+      let ok = true;
+      if (postcode.length < 3) { setErr('postcode', 'Your postcode.'); ok = false; } else setErr('postcode', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (phone.replace(/\D/g, '').length < 7) { setErr('phone', 'A phone we can reach you on.'); ok = false; } else setErr('phone', '');
+      if (!ok) return;
+      const ref = 'GL-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      em.ref.textContent = ref;
+      statusEl.textContent = 'Sent · ' + ref;
+      card?.classList.add('filed');
+      if (toast) { toast.textContent = `Thanks ${name.split(' ')[0]} , request ${ref} received for ${service.value} (${postcode}). We'll confirm a fixed price, usually the same day.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+</GreenlineLayout>

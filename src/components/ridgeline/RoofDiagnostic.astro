@@ -1,0 +1,123 @@
+---
+/**
+ * RoofDiagnostic , RIDGELINE's interactive roof section (website23, round 2). Tap a hotspot to read the
+ * risk + fix, seal each detail (0/5), then run the storm test. Calls window.showToast (from the layout).
+ */
+import { ZONES } from '../../data/ridgeline';
+---
+<div class="relative rounded-2xl border border-stone-200 bg-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.4)] overflow-hidden">
+  <div class="flex items-center justify-between px-5 py-3 border-b border-stone-200 text-[10px] font-mono uppercase tracking-widest text-slate-500"><span>Roof section // tap a hotspot</span><span id="stormHud">Dry</span></div>
+  <div id="diagram" class="relative aspect-[4/3] bg-gradient-to-b from-sky-50 to-stone-100">
+    <canvas id="rainCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+    <svg viewBox="0 0 400 300" class="absolute inset-0 w-full h-full" fill="none" aria-hidden="true">
+      <path d="M70 290 V160 H330 V290" stroke="#94a3b8" stroke-width="2" />
+      <path d="M55 162 L200 70 L345 162 Z" fill="#e7e2da" stroke="#475569" stroke-width="2.5" stroke-linejoin="round" />
+      <path d="M200 70 V162" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4" />
+      <rect x="120" y="92" width="26" height="44" fill="#d6cfc4" stroke="#475569" stroke-width="2" />
+      <rect x="250" y="108" width="34" height="24" fill="#bfdbfe" stroke="#475569" stroke-width="2" transform="skewX(-14)" />
+      <path d="M188 70 H212" stroke="#475569" stroke-width="5" stroke-linecap="round" />
+      <path d="M52 164 H348" stroke="#64748b" stroke-width="4" stroke-linecap="round" />
+    </svg>
+    {ZONES.map((z) => (
+      <button type="button" class="zone group absolute -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full grid place-items-center" style={`left:${z.x}%; top:${z.y}%`} data-zone data-id={z.id} data-name={z.name} data-risk={z.risk} data-fix={z.fix} aria-label={z.name}>
+        <span class="absolute inset-0 rounded-full border-2 border-amber-500 bg-white/70 backdrop-blur-sm group-[.sealed]:border-emerald-500 group-[.sealed]:bg-emerald-500"></span>
+        <span class="zdot relative w-2.5 h-2.5 rounded-full bg-amber-500 group-[.sealed]:bg-white animate-pulse"></span>
+      </button>
+    ))}
+  </div>
+  <div id="readout" class="px-5 py-4 border-t border-stone-200 min-h-[120px]">
+    <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400">Detail report</div>
+    <div id="zName" class="text-lg font-bold text-slate-900 mt-1">Select a hotspot</div>
+    <div id="zRisk" class="text-sm text-slate-500 mt-1">Each detail is where roofs win or lose. Inspect, then seal.</div>
+    <div class="mt-3 flex items-center gap-3 flex-wrap">
+      <button id="sealBtn" type="button" disabled class="rounded bg-amber-600 disabled:opacity-30 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-white hover:bg-amber-500 transition-colors">Seal this detail</button>
+      <span id="zFix" class="text-xs text-slate-500"></span>
+    </div>
+  </div>
+  <div class="px-5 py-4 border-t border-stone-200">
+    <div class="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-slate-500"><span id="sealCount">0 / 5 sealed</span><button id="stormTest" type="button" class="rounded border border-slate-300 px-3 py-1.5 font-bold text-slate-700 hover:bg-slate-900 hover:text-white transition-colors">Run storm test</button></div>
+    <div class="mt-3 h-1.5 w-full rounded-full bg-stone-200 overflow-hidden"><div id="sealBar" class="h-full bg-amber-500 transition-all duration-500" style="width:0%"></div></div>
+    <div id="sealStatus" class="mt-2 text-sm font-bold text-slate-700">5 details still open.</div>
+  </div>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const show = (h: string) => (window as any).showToast?.(h);
+
+  const zones = Array.from(document.querySelectorAll<HTMLElement>('[data-zone]'));
+  if (zones.length) {
+    const sealed = new Set<string>();
+    const zName = document.getElementById('zName');
+    const zRisk = document.getElementById('zRisk');
+    const zFix = document.getElementById('zFix');
+    const sealBtn = document.getElementById('sealBtn') as HTMLButtonElement | null;
+    const sealCount = document.getElementById('sealCount');
+    const sealBar = document.getElementById('sealBar');
+    const sealStatus = document.getElementById('sealStatus');
+    const stormHud = document.getElementById('stormHud');
+    let active: HTMLElement | null = null;
+
+    const refresh = () => {
+      const n = sealed.size;
+      if (sealCount) sealCount.textContent = `${n} / 5 sealed`;
+      if (sealBar) sealBar.style.width = `${(n / 5) * 100}%`;
+      if (sealStatus) {
+        if (n === 5) { sealStatus.textContent = '✓ Watertight , storm-ready.'; sealStatus.className = 'mt-2 text-sm font-bold text-emerald-600'; if (sealBar) sealBar.className = 'h-full bg-emerald-500 transition-all duration-500'; }
+        else { sealStatus.textContent = `${5 - n} detail${5 - n > 1 ? 's' : ''} still open.`; sealStatus.className = 'mt-2 text-sm font-bold text-slate-700'; }
+      }
+    };
+    const select = (z: HTMLElement) => {
+      active = z; const d = z.dataset;
+      if (zName) zName.textContent = d.name || '';
+      const done = sealed.has(d.id || '');
+      if (zRisk) zRisk.textContent = done ? 'Sealed , detail restored and watertight.' : (d.risk || '');
+      if (zFix) zFix.textContent = done ? '' : d.fix || '';
+      if (sealBtn) { sealBtn.disabled = done; sealBtn.textContent = done ? 'Sealed ✓' : 'Seal this detail'; }
+      zones.forEach((x) => x.querySelector('.zdot')?.classList.toggle('ring-4', x === z));
+    };
+    zones.forEach((z) => z.addEventListener('click', () => select(z)));
+    sealBtn?.addEventListener('click', () => {
+      if (!active) return;
+      sealed.add(active.dataset.id || ''); active.classList.add('sealed');
+      active.querySelector('.zdot')?.classList.remove('animate-pulse');
+      select(active); refresh();
+      if (sealed.size === 5) show('Watertight ✓ , every critical detail sealed. Run the storm test.');
+    });
+    refresh();
+
+    // rain + storm test
+    const rain = document.getElementById('rainCanvas') as HTMLCanvasElement | null;
+    const diagram = document.getElementById('diagram');
+    let intensity = 0.25, targetI = 0.25;
+    if (rain && diagram) {
+      const ctx = rain.getContext('2d')!;
+      let W = 0, H = 0; const DPR = Math.min(2, window.devicePixelRatio || 1);
+      const drops: { x: number; y: number; l: number; s: number }[] = [];
+      const resize = () => { W = diagram.clientWidth; H = diagram.clientHeight; rain.width = W * DPR; rain.height = H * DPR; rain.style.width = W + 'px'; rain.style.height = H + 'px'; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); };
+      resize(); window.addEventListener('resize', resize, { passive: true });
+      const loop = () => {
+        requestAnimationFrame(loop);
+        intensity += (targetI - intensity) * 0.05;
+        ctx.clearRect(0, 0, W, H);
+        const want = Math.round(intensity * 80);
+        while (drops.length < want) drops.push({ x: Math.random() * W, y: Math.random() * -H, l: 8 + Math.random() * 14, s: 4 + Math.random() * 6 });
+        ctx.strokeStyle = `rgba(100,130,170,${0.25 + intensity * 0.35})`; ctx.lineWidth = 1;
+        for (let i = drops.length - 1; i >= 0; i--) {
+          const d = drops[i]; d.y += d.s * (0.6 + intensity); d.x += intensity * 1.2;
+          ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - intensity * 3, d.y + d.l); ctx.stroke();
+          if (d.y > H + 20) { if (drops.length > want) drops.splice(i, 1); else { d.y = -20; d.x = Math.random() * W; } }
+        }
+      };
+      if (!reduce) loop();
+      document.getElementById('stormTest')?.addEventListener('click', () => {
+        targetI = 1; if (stormHud) stormHud.textContent = 'STORM CLASS 4';
+        window.setTimeout(() => {
+          targetI = 0.25; if (stormHud) stormHud.textContent = 'Dry';
+          if (sealed.size === 5) show('Storm test passed , no ingress. The assembly held.');
+          else { const open = zones.filter((z) => !sealed.has(z.dataset.id || '')).map((z) => z.dataset.name).join(', '); show(`Ingress at: ${open}. Seal these details first.`); }
+        }, 2600);
+      });
+    }
+  }
+</script>

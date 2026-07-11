@@ -1,0 +1,61 @@
+---
+/**
+ * NORTHRIDGE , Materials (website20, round 2). The curated materials library.
+ */
+import NorthridgeLayout from '../../layouts/NorthridgeLayout.astro';
+
+const MATERIALS = [
+  { name: 'Grigio Carnico', type: 'Stone', id: 'MAT-001', specs: 'Origin: Italy · Deep grey', bg: 'bg-[#1b1b1d]', overlay: 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/12 via-transparent to-transparent opacity-60', cols: 'md:col-span-2' },
+  { name: 'Fumed Oak', type: 'Wood', id: 'MAT-002', specs: 'Cut: Rift sawn', bg: 'bg-[#0f0d0b]', overlay: 'bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-900/30 via-black/40 to-black', cols: '' },
+  { name: 'Patinated Bronze', type: 'Metal', id: 'MAT-003', specs: 'Finish: Hand-rubbed', bg: 'bg-gradient-to-br from-[#2a2320] to-[#0f0d0c]', overlay: 'bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-amber-500/15 via-transparent to-transparent', cols: '' },
+  { name: 'Venetian Plaster', type: 'Finish', id: 'MAT-004', specs: 'Grain: Ultra-fine', bg: 'bg-[#242426]', overlay: 'bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-white/12 via-transparent to-transparent', cols: 'md:col-span-2' },
+  { name: 'Belgian Bluestone', type: 'Stone', id: 'MAT-005', specs: 'Finish: Honed', bg: 'bg-[#16181a]', overlay: 'bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-sky-200/10 via-transparent to-transparent', cols: '' },
+  { name: 'Smoked Brass', type: 'Metal', id: 'MAT-006', specs: 'Finish: Brushed', bg: 'bg-gradient-to-br from-[#241f15] to-[#0d0b08]', overlay: 'bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-yellow-600/15 via-transparent to-transparent', cols: '' },
+];
+---
+
+<NorthridgeLayout title="Materials | Northridge" description="The Northridge materials library , curated stone, wood, metal, and plaster. The palette we build from." active="materials">
+  <section class="px-8 pt-40 pb-16">
+    <div class="max-w-[1400px] mx-auto">
+      <span class="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-mono">Materials</span>
+      <h1 class="text-6xl lg:text-8xl font-bold tracking-tighter leading-[0.95] mt-6 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-neutral-600">A palette you can trust.</h1>
+      <p class="text-lg text-neutral-400 leading-relaxed max-w-xl mt-8 font-light border-l-2 border-white/20 pl-6">Every finish in the library is one we have specified, installed, and stood behind. No samples we haven't lived with. Curated stone, wood, metal, and plaster.</p>
+    </div>
+  </section>
+
+  <section class="px-8 pb-32">
+    <div class="max-w-[1400px] mx-auto">
+      <div class="flex items-end justify-between border-b border-white/[0.08] pb-8 mb-12" data-reveal="up">
+        <h2 class="text-3xl font-extralight text-white tracking-tight">Curated finishes &amp; fixtures.</h2>
+        <span class="text-neutral-500 text-xs uppercase tracking-[0.2em] hidden md:block">Six of forty in the library</span>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        {MATERIALS.map((mat) => (
+          <div class={`group relative h-[400px] rounded-3xl overflow-hidden border-[0.5px] border-white/[0.08] ${mat.bg} ${mat.cols}`}>
+            <div class={`absolute inset-0 ${mat.overlay}`}></div>
+            <div class="absolute inset-0 p-8 flex flex-col justify-between opacity-80 group-hover:opacity-100 transition-opacity">
+              <div class="flex gap-2">
+                <span class="text-[9px] uppercase tracking-widest text-white/50 border border-white/10 px-2 py-1 rounded bg-black/40 backdrop-blur-md">{mat.type}</span>
+                <span class="text-[9px] uppercase tracking-widest text-white/50 border border-white/10 px-2 py-1 rounded bg-black/40 backdrop-blur-md">{mat.id}</span>
+              </div>
+              <div>
+                <div class="flex justify-between items-end mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0">
+                  <span class="text-[10px] text-white/60 font-mono">{mat.specs}</span>
+                  <span class="text-[10px] text-white/60 font-mono">Approved</span>
+                </div>
+                <h3 class="text-3xl font-light text-white mb-2 drop-shadow-lg">{mat.name}</h3>
+                <div class="w-full h-[1px] bg-white/10 overflow-hidden"><div class="h-full bg-white w-0 group-hover:w-full transition-all duration-1000 ease-out"></div></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="mt-16 flex justify-center" data-reveal="up">
+        <a href="/website20/contact" class="inline-flex items-center gap-3 pl-7 pr-2 py-2 bg-white text-black text-sm font-bold uppercase tracking-wide rounded-full hover:bg-neutral-200 transition-all duration-300 group">
+          <span>Spec a material with us</span>
+          <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white group-hover:rotate-45 transition-transform duration-500">→</div>
+        </a>
+      </div>
+    </div>
+  </section>
+</NorthridgeLayout>

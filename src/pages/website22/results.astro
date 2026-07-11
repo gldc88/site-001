@@ -1,0 +1,41 @@
+---
+/**
+ * CLEARSTREAM , Results (website22, round 2). A wall of drag-to-clean before/after panels.
+ */
+import ClearstreamLayout from '../../layouts/ClearstreamLayout.astro';
+import WashBay from '../../components/clearstream/WashBay.astro';
+
+const RESULTS = [
+  { title: 'CONCRETE DRIVE', sub: 'OIL + ALGAE LIFTED', label: 'Driveway · 4000 PSI · Hot', loc: 'Haarlem · residential' },
+  { title: 'BRICK FACADE', sub: 'SOFT-WASHED', label: 'Facade · Low PSI · Bio', loc: 'Amsterdam · 1908 canal house' },
+  { title: 'TILED ROOF', sub: 'MOSS NEUTRALISED', label: 'Roof · Bio-chem · Gentle', loc: 'Utrecht · pitched roof' },
+];
+---
+
+<ClearstreamLayout title="Results | Clearstream" description="Drag any panel to power-wash it clean , real before/after results across driveways, facades, and roofs." active="results">
+  <section class="pt-36 pb-16 px-6 lg:px-12 border-b border-black/5">
+    <div class="max-w-7xl mx-auto">
+      <span class="text-[10px] font-mono uppercase tracking-widest text-blue-600">// Results</span>
+      <h1 class="text-6xl lg:text-8xl font-black tracking-tighter leading-[0.85] mt-4">Drag to reveal.</h1>
+      <p class="max-w-md text-sm font-medium leading-relaxed mt-8">Every panel below is a real job. Drag across the grime to power-wash it clean , and watch the cleaned percentage climb.</p>
+    </div>
+  </section>
+
+  <section class="px-6 lg:px-12 py-20">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {RESULTS.map((r) => (
+        <div>
+          <WashBay title={r.title} sub={r.sub} label={r.label} />
+          <div class="mt-4 flex justify-between items-baseline">
+            <span class="text-sm font-black tracking-tight">{r.title}</span>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500">{r.loc}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="max-w-7xl mx-auto mt-16 text-center">
+      <p class="text-sm font-medium mb-8">Yours could be the next panel.</p>
+      <a href="/website22/quote" class="inline-block bg-blue-600 hover:bg-black text-white px-10 py-5 text-xs font-black uppercase tracking-[0.2em] transition-colors clip-button">Request dispatch</a>
+    </div>
+  </section>
+</ClearstreamLayout>

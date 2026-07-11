@@ -1,0 +1,112 @@
+---
+/**
+ * OVERSEAS LINE , Crossings (website5, round 2). Signature: a voyage selector + itinerary detail.
+ */
+import OverseasLayout from '../../layouts/OverseasLayout.astro';
+
+const VOYAGES = [
+  { id: 'atlantic', code: 'NYC,SOU', name: 'New York → Southampton', meta: '14 Nights · April', rate: '38,000',
+    desc: 'The classic westerly crossing, the way it was meant to be done , days of open ocean, formal nights, and a horizon that belongs only to the ship. No ports to chase, nowhere to be.',
+    ports: ['New York', 'Open Atlantic', 'Open Atlantic', 'Southampton'],
+    incl: ['All suites, butler service', 'Chef-led dining, included', 'Observatory & silence lounge', 'Private pier, both ends'] },
+  { id: 'riviera', code: 'MED,LOOP', name: 'Riviera Circuit', meta: '12 Nights · July', rate: '44,000',
+    desc: 'A slow loop of the Mediterranean done from the water. Anchor off the headlands, tender in for a late dinner ashore, and return to a ship that never feels crowded.',
+    ports: ['Nice', 'Monaco', 'Portofino', 'Capri', 'Palma'],
+    incl: ['All suites, butler service', 'Tender ports, no queues', 'Shore concierge included', 'Thermal deck & spa suites'] },
+  { id: 'pacific', code: 'PAC,DRIFT', name: 'Pacific Drift', meta: '18 Nights · January', rate: '62,000',
+    desc: 'The longest crossing we run, and the quietest. Eighteen nights of sea days, recovery, and a single gold line moving with you across the largest empty space on earth.',
+    ports: ['Los Angeles', 'Honolulu', 'Open Pacific', 'Auckland'],
+    incl: ['All suites, butler service', 'Recovery-first programme', 'Chef salons & cellar', 'Private transfer, both ends'] },
+];
+---
+
+<OverseasLayout title="Crossings | OVERSEAS LINE" description="Private overseas crossings , the Atlantic, the Riviera, and the Pacific , aboard an all-suite liner." active="crossings">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website5/ship.jpg" alt="A liner crossing at dusk" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="eyebrow">Crossings</span>
+      <h1>Three ways <em>across</em>.</h1>
+      <p class="sub">We run a handful of crossings a year, each a season of its own. Choose the ocean; we hold a suite and arrange everything from the pier to the car at the far end.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="picker">
+      <div class="picker-list" role="tablist" aria-label="Choose a crossing">
+        {VOYAGES.map((v, i) => (
+          <button class={`p-tab${i === 0 ? ' active' : ''}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-target={v.id}>
+            <span class="pt-code">{v.code}</span>
+            <span class="pt-b"><span class="pt-name">{v.name}</span><span class="pt-meta">{v.meta}</span></span>
+            <span class="pt-rate">¥{v.rate}</span>
+          </button>
+        ))}
+      </div>
+      <div class="picker-stage">
+        {VOYAGES.map((v, i) => (
+          <article class={`v-panel${i === 0 ? ' active' : ''}`} id={v.id} aria-hidden={i === 0 ? 'false' : 'true'}>
+            <span class="eyebrow">{v.code} · {v.meta}</span>
+            <h2>{v.name}</h2>
+            <p class="v-desc">{v.desc}</p>
+            <div class="v-route">
+              {v.ports.map((p, j) => (
+                <span class="v-port">{p}{j < v.ports.length - 1 ? <span class="v-sep" aria-hidden="true">,,,</span> : ''}</span>
+              ))}
+            </div>
+            <div class="v-incl">
+              {v.incl.map((x) => <span class="v-chip">{x}</span>)}
+            </div>
+            <div class="v-foot">
+              <div class="v-rate"><span class="rl">From, per suite</span><span class="rv">¥{v.rate}</span></div>
+              <a href="/website5/concierge" class="btn-cta">Hold a suite</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .picker { display: grid; grid-template-columns: 0.95fr 1.4fr; gap: clamp(22px,4vw,50px); align-items: start; }
+    .picker-list, .picker-stage { min-width: 0; }
+    .picker-list { display: flex; flex-direction: column; border-top: 1px solid var(--hair-soft); }
+    .p-tab { display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'code rate' 'body body'; gap: 6px 14px; text-align: left; padding: 24px 12px; border-bottom: 1px solid var(--hair-soft); position: relative; transition: background 0.4s var(--ease), padding 0.4s var(--ease); }
+    .p-tab::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: top; transition: transform 0.45s var(--ease); }
+    .p-tab:hover { background: rgba(255,255,255,0.02); }
+    .p-tab.active { background: rgba(214,184,135,0.05); padding-left: 20px; }
+    .p-tab.active::before { transform: scaleY(1); }
+    .pt-code { grid-area: code; font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; color: var(--faint); }
+    .p-tab.active .pt-code { color: var(--gold); }
+    .pt-rate { grid-area: rate; font-family: var(--mono); font-size: 10px; color: var(--gold); white-space: nowrap; }
+    .pt-b { grid-area: body; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .pt-name { font-family: var(--serif); font-size: clamp(1.2rem,1.8vw,1.6rem); color: #fff; }
+    .pt-meta { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+    .v-panel { display: none; min-width: 0; }
+    .v-panel.active { display: block; animation: fadeup 0.5s var(--ease); }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .v-panel h2 { font-size: clamp(2.2rem,4vw,3.4rem); color: #fff; margin-top: 12px; }
+    .v-desc { color: var(--muted); line-height: 1.85; margin-top: 22px; max-width: 60ch; }
+    .v-route { margin-top: 30px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 22px 0; border-top: 1px solid var(--hair-soft); border-bottom: 1px solid var(--hair-soft); }
+    .v-port { font-family: var(--serif); font-size: clamp(1.1rem,1.6vw,1.4rem); color: #efe9da; display: inline-flex; align-items: center; gap: 12px; }
+    .v-sep { color: var(--gold-dim); font-size: 0.7em; letter-spacing: -2px; }
+    .v-incl { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .v-chip { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #cfc7b6; border: 1px solid var(--hair-soft); padding: 8px 12px; transition: border-color 0.3s, color 0.3s; }
+    .v-chip:hover { border-color: var(--hair); color: var(--gold); }
+    .v-foot { margin-top: 36px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .v-rate { display: flex; flex-direction: column; gap: 4px; }
+    .v-rate .rl { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .v-rate .rv { font-family: var(--serif); font-size: 2rem; color: var(--gold); }
+    @media (max-width: 900px) { .picker { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.p-tab'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.v-panel'));
+    tabs.forEach((tab) => tab.addEventListener('click', () => {
+      const id = tab.dataset.target;
+      tabs.forEach((t) => { const on = t === tab; t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); });
+      panels.forEach((p) => { const on = p.id === id; p.classList.toggle('active', on); p.setAttribute('aria-hidden', String(!on)); });
+    }));
+  </script>
+</OverseasLayout>

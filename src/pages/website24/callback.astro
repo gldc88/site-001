@@ -1,0 +1,77 @@
+---
+/**
+ * NIGHTWATCH , Callback (website24, round 2). 24/7 callback request -> validated -> toast.
+ */
+import NightwatchLayout from '../../layouts/NightwatchLayout.astro';
+import { INCIDENTS, PHONE, TEL, EMAIL, SERVICE_AREA } from '../../data/nightwatch';
+---
+
+<NightwatchLayout title="Request a Callback | Nightwatch" description="Request a 24/7 locksmith callback. Tell us where you are and what happened; dispatch rings back in minutes.">
+  <section class="mx-auto max-w-[1800px] px-6 lg:px-24 pt-16 pb-24 grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-20 items-start">
+    <div>
+      <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-4">/ Dispatch</h2>
+      <h1 class="text-5xl lg:text-7xl font-black tracking-tighter text-white leading-[0.9]">One call. <br />Door open.</h1>
+      <p class="mt-6 max-w-md text-zinc-400 text-lg">Tell us where you are and what happened. Dispatch rings you back in minutes with an ETA and a price before any work starts.</p>
+      <div class="mt-10 flex flex-col gap-4 text-sm">
+        <a href={`tel:${TEL}`} class="flex items-center gap-3 text-zinc-300 hover:text-yellow-500"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-600 w-16">Phone</span>{PHONE}</a>
+        <a href={`mailto:${EMAIL}`} class="flex items-center gap-3 text-zinc-300 hover:text-yellow-500"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-600 w-16">Email</span>{EMAIL}</a>
+        <div class="flex items-center gap-3 text-zinc-300"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-600 w-16">Area</span>{SERVICE_AREA}</div>
+        <div class="flex items-center gap-3 text-emerald-400"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-600 w-16">Status</span><span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> On call · 24/7</span></div>
+      </div>
+    </div>
+
+    <form id="callbackForm" class="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 lg:p-10" novalidate>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <label class="flex flex-col gap-2"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Name</span>
+          <input name="name" type="text" class="rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-yellow-500/60" /><span data-err-for="name" class="text-[11px] text-yellow-500"></span></label>
+        <label class="flex flex-col gap-2"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Phone</span>
+          <input name="phone" type="tel" class="rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-yellow-500/60" /><span data-err-for="phone" class="text-[11px] text-yellow-500"></span></label>
+      </div>
+      <label class="flex flex-col gap-2 mt-5"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Situation</span>
+        <select name="incident" class="rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-yellow-500/60">
+          <option value="" class="bg-zinc-900">Select a situation…</option>
+          {INCIDENTS.map((i) => <option value={i.label} class="bg-zinc-900">{i.label}</option>)}
+        </select><span data-err-for="incident" class="text-[11px] text-yellow-500"></span></label>
+      <label class="flex flex-col gap-2 mt-5"><span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Location / address (optional)</span>
+        <input name="location" type="text" class="rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-yellow-500/60" placeholder="Street, area, or postcode" /></label>
+      <button type="submit" class="w-full mt-7 rounded bg-yellow-500 hover:bg-yellow-400 text-black py-4 text-xs font-black uppercase tracking-widest transition-colors">Request callback</button>
+      <p id="cbStatus" class="mt-4 text-[11px] font-mono uppercase tracking-widest text-zinc-600 text-center">Price confirmed before any work · {SERVICE_AREA}</p>
+      <p class="tr-ref" id="trRef" hidden></p>
+      </form>
+  </section>
+
+  <script>
+    /* R3 Triage: je prioriteiten reizen mee. */
+    try {
+      const t = JSON.parse(localStorage.getItem('nightwatch-triage') || 'null');
+      if (t && t.order?.length === 5) {
+        const el = document.getElementById('trRef');
+        if (el) { el.textContent = `Your triage is on file (${t.hits}/5 matched the trade) , we will start the visit from your list.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    const form = document.getElementById('callbackForm') as HTMLFormElement;
+    const status = document.getElementById('cbStatus')!;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err-for="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) (i as HTMLElement).style.borderColor = m ? '#eab308' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const phone = String(d.get('phone') || '').replace(/[^\d+]/g, '');
+      const incident = String(d.get('incident') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Need a name.'); ok = false; } else setErr('name', '');
+      if (phone.length < 8) { setErr('phone', 'A reachable number.'); ok = false; } else setErr('phone', '');
+      if (!incident) { setErr('incident', 'Pick a situation.'); ok = false; } else setErr('incident', '');
+      if (!ok) return;
+      const ref = 'NW-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      status.textContent = `Callback ${ref} logged , dispatch is ringing you back.`;
+      (window as any).showToast?.(`On it, <b>${name.split(' ')[0] || 'there'}</b>. Dispatch <b>${ref}</b> rings you back about your ${incident.toLowerCase()} within minutes.`);
+      form.reset();
+      ['name', 'phone', 'incident'].forEach((n) => setErr(n, ''));
+    });
+  </script>
+<style>
+  .tr-ref { font-family: ui-monospace, monospace; font-size: 11px; color: #e6c83c; border-top: 1px solid rgba(230, 200, 60, 0.25); padding-top: 12px; }
+</style>
+</NightwatchLayout>

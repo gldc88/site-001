@@ -1,0 +1,80 @@
+---
+/**
+ * OVERSEAS LINE , Onboard (website5, round 2). Signature: a facility selector with detail.
+ */
+import OverseasLayout from '../../layouts/OverseasLayout.astro';
+
+const FACILITIES = [
+  { id: 'thermal', n: '01', name: 'Thermal Deck', hours: '06:00 , 23:00', body: 'A full circuit at sea , sauna, steam, and a cold plunge that resets the day against the roll of the ship. Heated stone loungers face the wake; the horizon does the rest.' },
+  { id: 'spa', n: '02', name: 'Private Spa Suites', hours: 'By appointment', body: 'Treatment rooms booked by the hour and never shared. A therapist who reads your file, oils blended onboard, and a quiet that the open sea makes total.' },
+  { id: 'silence', n: '03', name: 'Silence Lounge', hours: 'Always open', body: 'Low light, deep chairs, and a wall of glass to the horizon. No screens, no music, no announcements , the one room on any ship designed to ask nothing of you.' },
+  { id: 'salons', n: '04', name: 'Chef Salons', hours: 'Lunch & late', body: 'A counter where the chef works in front of eight guests, with the cellar a step away. Menus follow the crossing and the catch; late suppers run as long as the table wants.' },
+  { id: 'horizon', n: '05', name: 'Horizon Deck', hours: 'Daylight to dark', body: 'Sheltered seating along the beam, salt air without the wind, and deck service that finds you before you think to ask. The best seat for the gold hour, every evening.' },
+];
+---
+
+<OverseasLayout title="Onboard | OVERSEAS LINE" description="A day with nowhere to be , thermal deck, private spa suites, silence lounge, chef salons, and the horizon deck aboard Overseas Line." active="onboard">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website5/thermal.jpg" alt="The thermal deck at sea" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="eyebrow">Onboard</span>
+      <h1>A day with nowhere <em>to be</em>.</h1>
+      <p class="sub">Recovery-first, never busy. The whole ship is sized so that nothing is ever full , you move from thermal deck to silence lounge to a late supper without once joining a line.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="fac-board">
+      <div class="fac-rail" role="tablist" aria-label="Facilities">
+        {FACILITIES.map((f, i) => (
+          <button class={`fac-node${i === 0 ? ' active' : ''}`} data-target={f.id} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+            <span class="fn-n">{f.n}</span><span class="fn-name">{f.name}</span><span class="fn-hours">{f.hours}</span>
+          </button>
+        ))}
+      </div>
+      <div class="fac-detail">
+        {FACILITIES.map((f, i) => (
+          <div class={`fd${i === 0 ? ' active' : ''}`} id={f.id}>
+            <span class="fd-n">{f.n}</span><h3>{f.name}</h3><span class="fd-hours">{f.hours}</span><p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div style="margin-top:46px; display:flex; gap:22px; flex-wrap:wrap; align-items:center;">
+      <a href="/website5/concierge" class="btn-cta">Request a crossing</a>
+      <a href="/website5/suites" class="inline-link" style="align-self:center;">See the suites →</a>
+    </div>
+  </section>
+
+  <style>
+    .fac-board { display: grid; grid-template-columns: 0.95fr 1.25fr; gap: clamp(22px,4vw,56px); align-items: start; }
+    .fac-rail { display: flex; flex-direction: column; min-width: 0; }
+    .fac-node { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 22px 6px; border-bottom: 1px solid var(--hair-soft); }
+    .fac-node:first-child { border-top: 1px solid var(--hair-soft); }
+    .fn-n { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+    .fac-node.active .fn-n { color: var(--gold); }
+    .fn-name { font-family: var(--serif); font-size: clamp(1.15rem,1.8vw,1.55rem); color: #cfc7b6; transition: color 0.3s; }
+    .fac-node.active .fn-name, .fac-node:hover .fn-name { color: #fff; }
+    .fn-hours { font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .fac-detail { position: relative; border: 1px solid var(--hair-soft); padding: clamp(28px,4vw,52px); min-height: 300px; background: linear-gradient(160deg, rgba(214,184,135,0.05), transparent 62%); display: flex; flex-direction: column; justify-content: center; }
+    .fd { display: none; }
+    .fd.active { display: block; animation: fadeup 0.5s var(--ease); }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .fd-n { font-family: var(--serif); font-size: clamp(3.5rem,8vw,7rem); color: transparent; -webkit-text-stroke: 1px rgba(214,184,135,0.22); line-height: 1; }
+    .fd h3 { font-size: clamp(1.8rem,3.2vw,2.6rem); color: #fff; margin-top: 6px; }
+    .fd-hours { display: inline-block; margin-top: 10px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+    .fd p { color: var(--muted); line-height: 1.85; margin-top: 16px; max-width: 48ch; }
+    @media (max-width: 900px) { .fac-board { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.fac-node'));
+    const fds = Array.from(document.querySelectorAll<HTMLElement>('.fd'));
+    let auto = !reduce;
+    const go = (n: HTMLElement) => { const id = n.dataset.target; nodes.forEach((x) => { const on = x === n; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); }); fds.forEach((p) => p.classList.toggle('active', p.id === id)); };
+    nodes.forEach((n) => n.addEventListener('click', () => { auto = false; go(n); }));
+    if (!reduce) { let i = 0; setInterval(() => { if (!auto) return; i = (i + 1) % nodes.length; go(nodes[i]); }, 5000); }
+  </script>
+</OverseasLayout>

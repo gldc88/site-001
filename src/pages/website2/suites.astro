@@ -1,0 +1,111 @@
+---
+/**
+ * NOCTURNE , Suites (website2, round 2). Signature: a neon suite selector + live detail/rate.
+ */
+import NocturneLayout from '../../layouts/NocturneLayout.astro';
+
+const SUITES = [
+  { id: 'atrium', n: '01', name: 'Atrium Suite', meta: '46 m² · Inner court · Floor 4', rate: '62,000', img: '/website2/room-night.jpg',
+    desc: 'Stone warmth and soft shadow around a quiet inner court. The city you can hear but not see , a room built to lower your pulse the moment the door clicks shut.',
+    amen: ['Soaking tub', 'Blackout to true dark', 'Pillow & scent menu', 'Record player + vinyl', 'Filtered silent air', 'Tea service, late'] },
+  { id: 'corner', n: '02', name: 'Neon Corner', meta: '58 m² · Glass corner · Floor 11', rate: '88,000', img: '/website2/neon2.jpg',
+    desc: 'A glass corner over the izakaya alleys. Watch Minato flicker through the rain, then pull the blackout and let the room go silent and dark around you.',
+    amen: ['Corner city view', 'One-touch blackout', 'Deep tub at the glass', 'Smart climate', 'In-room bar', 'Heated floors'] },
+  { id: 'lantern', n: '03', name: 'Lantern Room', meta: '40 m² · Lantern hall · Floor 7', rate: '54,000', img: '/website2/room-corner.jpg',
+    desc: 'Reached down a low-lit lantern hall, a warm and intimate room for one purpose: a long, complete quiet at the end of a loud night.',
+    amen: ['Lantern-lit approach', 'Tatami corner', 'Cedar bath', 'Futon or bed', 'Incense service', 'No screens by request'] },
+  { id: 'penthouse', n: '04', name: 'Signature Penthouse', meta: '120 m² · Top floor · Private lift', rate: 'On Request', img: '/website2/neon1.jpg',
+    desc: 'The top of the house. A private lift, a wall of glass over the neon, a deep bath at the edge of the city, and a host who appears only when wanted.',
+    amen: ['Private lift', 'Wraparound glass', 'Bath over the city', 'Private host', 'Listening lounge', 'Discreet entrance'] },
+];
+---
+
+<NocturneLayout title="Suites | NOCTURNE" description="Four ways to disappear above Minato , from the Atrium Suite to the Signature Penthouse at Nocturne, Tokyo." active="suites">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website2/room-night.jpg" alt="A suite at Nocturne" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Accommodations</span>
+      <h1>Suites &amp; <em>Residences</em></h1>
+      <p class="sub">Four ways to disappear above Minato. Each one released quietly and held for a single guest at a time. Pick the one that lowers your pulse fastest.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="picker">
+      <div class="picker-list" role="tablist" aria-label="Choose a suite">
+        {SUITES.map((s, i) => (
+          <button class={`p-tab${i === 0 ? ' active' : ''}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-target={s.id}>
+            <span class="pt-n">{s.n}</span>
+            <span class="pt-b"><span class="pt-name">{s.name}</span><span class="pt-meta">{s.meta}</span></span>
+            <span class="pt-rate">{s.rate === 'On Request' ? 'Enquire' : `¥${s.rate}`}</span>
+          </button>
+        ))}
+      </div>
+      <div class="picker-stage">
+        {SUITES.map((s, i) => (
+          <article class={`s-panel${i === 0 ? ' active' : ''}`} id={s.id} aria-hidden={i === 0 ? 'false' : 'true'}>
+            <div class="s-fig"><img src={s.img} alt={s.name} loading={i === 0 ? 'eager' : 'lazy'} /><span class="s-tag">{s.meta}</span></div>
+            <div class="s-info">
+              <span class="overline cyan">Suite {s.n}</span>
+              <h2>{s.name}</h2>
+              <p class="s-desc">{s.desc}</p>
+              <div class="s-amen">{s.amen.map((a) => <span class="chip">{a}</span>)}</div>
+              <div class="s-foot">
+                <div class="s-rate"><span class="rl">Per night</span><span class="rv">{s.rate === 'On Request' ? 'On Request' : `¥${s.rate}`}</span></div>
+                <a href="/website2/reserve" class="btn-cta">Reserve this suite</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .picker { display: grid; grid-template-columns: 0.85fr 1.4fr; gap: clamp(22px,4vw,50px); align-items: start; }
+    .picker-list, .picker-stage { min-width: 0; }
+    .picker-list { display: flex; flex-direction: column; border-top: 1px solid var(--hair); }
+    .p-tab { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 24px 12px; border-bottom: 1px solid var(--hair); position: relative; transition: background 0.4s var(--ease), padding 0.4s var(--ease); }
+    .p-tab::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--cyan); transform: scaleY(0); transform-origin: top; transition: transform 0.45s var(--ease); box-shadow: 0 0 12px var(--cyan); }
+    .p-tab:hover { background: rgba(255,255,255,0.02); }
+    .p-tab.active { background: rgba(25,230,255,0.04); padding-left: 20px; }
+    .p-tab.active::before { transform: scaleY(1); }
+    .pt-n { font-family: var(--head); font-size: 17px; color: var(--faint); }
+    .p-tab.active .pt-n { color: var(--cyan); }
+    .pt-b { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .pt-name { font-family: var(--head); font-size: clamp(1.15rem,1.7vw,1.5rem); color: #fff; }
+    .pt-meta { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .pt-rate { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ember); white-space: nowrap; }
+
+    .s-panel { display: none; grid-template-columns: 1fr; gap: 28px; min-width: 0; }
+    .s-panel.active { display: grid; animation: fadeup 0.5s var(--ease); }
+    @media (min-width: 900px) { .s-panel { grid-template-columns: 1.1fr 1fr; gap: 40px; } }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .s-fig { position: relative; overflow: hidden; border-radius: 14px; min-height: 340px; min-width: 0; border: 1px solid var(--hair); }
+    @media (max-width: 899px) { .s-fig { aspect-ratio: 16/10; min-height: 0; } }
+    .s-fig img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.86) saturate(1.08); }
+    .s-tag { position: absolute; left: 14px; bottom: 14px; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan); background: rgba(6,6,10,0.6); backdrop-filter: blur(6px); padding: 7px 11px; border-radius: 4px; }
+    .s-info { min-width: 0; display: flex; flex-direction: column; }
+    .s-info h2 { font-size: clamp(2rem,3.4vw,3rem); color: #fff; margin-top: 12px; }
+    .s-desc { color: var(--muted); line-height: 1.8; margin-top: 20px; font-size: 0.95rem; }
+    .s-amen { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+    .chip { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #cfc8bb; border: 1px solid var(--hair); padding: 8px 12px; border-radius: 999px; transition: border-color 0.3s, color 0.3s; }
+    .chip:hover { border-color: rgba(25,230,255,0.4); color: var(--cyan); }
+    .s-foot { margin-top: auto; padding-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .s-rate { display: flex; flex-direction: column; gap: 4px; }
+    .s-rate .rl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .s-rate .rv { font-family: var(--head); font-size: 2rem; color: var(--ember); }
+    @media (max-width: 900px) { .picker { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.p-tab'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.s-panel'));
+    tabs.forEach((tab) => tab.addEventListener('click', () => {
+      const id = tab.dataset.target;
+      tabs.forEach((t) => { const on = t === tab; t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); });
+      panels.forEach((p) => { const on = p.id === id; p.classList.toggle('active', on); p.setAttribute('aria-hidden', String(!on)); });
+    }));
+  </script>
+</NocturneLayout>

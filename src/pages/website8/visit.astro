@@ -1,0 +1,140 @@
+---
+/**
+ * VELLUM & OAK , Visit (website8, round 2). Hours + address + a reading-room booking -> ref + toast.
+ */
+import VellumLayout from '../../layouts/VellumLayout.astro';
+
+const HOURS = [
+  { day: 'Monday', h: '10:00 – 18:00' }, { day: 'Tuesday', h: '10:00 – 18:00' },
+  { day: 'Wednesday', h: '10:00 – 18:00' }, { day: 'Thursday', h: '10:00 – 19:30' },
+  { day: 'Friday', h: '10:00 – 19:30' }, { day: 'Saturday', h: '10:00 – 18:00' },
+  { day: 'Sunday', h: '11:00 – 16:00' },
+];
+const SLOTS = ['10:30', '12:00', '13:30', '15:00', '16:30'];
+const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const todayIdx = new Date().getDay();
+---
+
+<VellumLayout title="Visit | Vellum & Oak" description="Find Vellum & Oak at 14 High Street, Oxford. Opening hours, contact, and reading-room bookings." active="visit">
+  <section class="page-hero" style="min-height:54svh;">
+    <div class="page-hero-media"><img src="/website8/staircase.jpg" alt="The wood-panelled interior of the bookshop" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="label">Visit</span>
+      <h1>14 High Street, <em>Oxford</em>.</h1>
+      <p class="sub">Two minutes from Carfax, the green door under the oak sign. Open seven days; the reading room is bookable by the hour.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="visit-grid">
+      <div class="visit-info">
+        <div class="info-block panel">
+          <span class="label">Opening Hours</span>
+          <ul class="hours" id="hoursList">
+            {HOURS.map((row, i) => (
+              <li class={i + 1 === (todayIdx === 0 ? 7 : todayIdx) ? 'today' : ''}>
+                <span class="h-day">{row.day}{i + 1 === (todayIdx === 0 ? 7 : todayIdx) ? ' · today' : ''}</span><span class="h-time">{row.h}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="info-block panel">
+          <span class="label">Find &amp; Contact</span>
+          <p class="addr">Vellum &amp; Oak Booksellers<br />14 High Street<br />Oxford, OX1 4AB</p>
+          <div class="contacts">
+            <a href="tel:+441865555120">+44 1865 555 120</a>
+            <a href="mailto:hello@vellumoak.example">hello@vellumoak.example</a>
+          </div>
+          <div class="getting"><span>By foot</span> 2 min from Carfax Tower · <span>By bus</span> any High Street stop · <span>Step-free</span> ground floor &amp; reading room lift</div>
+        </div>
+      </div>
+
+      <form id="rrForm" class="rr-form panel foil" novalidate>
+        <span class="label">Book the Reading Room</span>
+        <h2>An hour, a chair, a pot of tea.</h2>
+        <div class="rr-row">
+          <div class="fld"><label for="rrDate">Date</label><input id="rrDate" name="date" type="date" /><span class="err" data-err="date"></span></div>
+          <div class="fld"><label for="rrSlot">Time</label><select id="rrSlot" name="slot">{SLOTS.map((s) => <option>{s}</option>)}</select></div>
+        </div>
+        <div class="rr-row">
+          <div class="fld"><label for="rrGuests">Guests</label><select id="rrGuests" name="guests"><option value="1">1 reader</option><option value="2">2 readers</option><option value="3">3 readers</option><option value="4">4 readers</option></select></div>
+          <div class="fld"><label for="rrName">Name</label><input id="rrName" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+        </div>
+        <div class="fld"><label for="rrEmail">Email</label><input id="rrEmail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Reserve the room</button>
+        <p class="rr-fine" id="rrStatus">Free for members · £6/hour otherwise, redeemable against a book.</p>
+        <p class="rr-stack" id="rrStack" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .visit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px,4vw,40px); align-items: start; }
+    .visit-info { display: flex; flex-direction: column; gap: 16px; }
+    .info-block { padding: clamp(24px,3vw,32px); }
+    .hours { list-style: none; margin-top: 18px; }
+    .hours li { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--hair); font-size: 1.05rem; }
+    .hours li:last-child { border-bottom: none; }
+    .hours li.today { color: var(--paper); }
+    .hours li.today .h-time { color: var(--gold); }
+    .h-day { color: var(--muted); } .hours li.today .h-day { color: var(--gold); font-style: italic; }
+    .h-time { font-variant-numeric: tabular-nums; }
+
+    .addr { font-family: var(--display); font-size: 1.3rem; line-height: 1.5; color: var(--paper); margin-top: 16px; }
+    .contacts { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+    .contacts a { color: var(--gold); font-size: 1.05rem; transition: opacity 0.3s; }
+    .contacts a:hover { opacity: 0.7; }
+    .getting { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hair); color: var(--muted); font-size: 0.98rem; line-height: 1.9; }
+    .getting span { font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 11px; color: var(--gold); margin-right: 4px; }
+
+    .rr-form { padding: clamp(26px,3vw,38px); display: flex; flex-direction: column; gap: 16px; position: sticky; top: 96px; }
+    .rr-form h2 { font-size: clamp(1.6rem,2.6vw,2.2rem); color: var(--paper); margin-bottom: 4px; }
+    .rr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .rr-fine { font-style: italic; color: var(--faint); text-align: center; font-size: 0.95rem; }
+
+    @media (max-width: 900px) { .visit-grid { grid-template-columns: 1fr; } .rr-form { position: static; } }
+    @media (max-width: 540px) { .rr-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 "The Stack": toon de meegebrachte stapel bij de reading-room boeking. */
+    try {
+      const stack = JSON.parse(localStorage.getItem('vellum-stack') || '[]') as { t: string }[];
+      const rrStack = document.getElementById('rrStack');
+      if (stack.length && rrStack) {
+        rrStack.textContent = `Set aside for you: ${stack.map((b) => b.t).join(' · ')} , we'll have them at the counter.`;
+        rrStack.hidden = false;
+      }
+    } catch { /* private mode */ }
+
+    const form = document.getElementById('rrForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    const statusEl = document.getElementById('rrStatus')!;
+    const dateInput = document.getElementById('rrDate') as HTMLInputElement;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    dateInput.min = today.toISOString().split('T')[0];
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#e09a86' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const date = String(d.get('date') || '');
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (!date) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'RR-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      const slot = String(d.get('slot') || '');
+      const pretty = new Date(date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+      statusEl.textContent = `Reading room held · ${ref}`;
+      statusEl.style.color = 'var(--gold)';
+      if (toast) { toast.textContent = `Booked, ${name.split(' ')[0]} , ${pretty} at ${slot}, ref ${ref}. The kettle will be on.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+</VellumLayout>

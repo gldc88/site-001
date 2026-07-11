@@ -1,0 +1,179 @@
+---
+/**
+ * THE OBSIDIAN , Concierge (website1, round 2).
+ * Signature: a request builder , toggle services across categories, compose a request,
+ * then a validated form + toast carrying the selection.
+ */
+import ObsidianLayout from '../../layouts/ObsidianLayout.astro';
+
+const CATEGORIES = [
+  { key: 'Logistics', items: ['Private Airport Transfer', 'Chauffeur Fleet, Discreet', 'Helipad Coordination', 'Luggage Forwarding'] },
+  { key: 'In-Room', items: ['Chef on Call Dining', 'Sommelier Pairings', 'Private Network Setup', 'Pressing & Tailoring'] },
+  { key: 'Experiences', items: ['After-Hours Gallery Access', 'Watchmaking Atelier Visit', 'Lake Zürich Private Charter', 'Alpine Day Escape'] },
+];
+---
+
+<ObsidianLayout title="Concierge | THE OBSIDIAN" description="One contact for everything. Compose a request , transfers, dining, experiences , and the concierge handles the rest, quietly." active="concierge">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website1/lobby.jpg" alt="The Obsidian lobby" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Concierge</span>
+      <h1>Quietly, <em>Whatever</em></h1>
+      <p class="sub">One contact for everything, who remembers how you take your coffee by day two. Tap what you need; we assemble it before you arrive and never mention the effort.</p>
+    </div>
+  </section>
+
+  <section class="section tight" id="builder">
+    <div class="builder-head" data-reveal="up">
+      <span class="overline">Compose a Request</span>
+      <h2 class="section-title" style="margin-top:16px;">Tap what you need</h2>
+      <p>Choose freely across the three desks. Your selection gathers on the right; send it and one concierge takes ownership of all of it.</p>
+    </div>
+
+    <div class="builder">
+      <div class="builder-cats">
+        {CATEGORIES.map((cat) => (
+          <div class="cat">
+            <h3>{cat.key}</h3>
+            <div class="cat-items">
+              {cat.items.map((it) => (
+                <button class="svc hover-target" data-svc={it} data-cat={cat.key}>
+                  <span class="svc-mark" aria-hidden="true"></span>{it}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <aside class="builder-panel">
+        <div class="bp-card">
+          <span class="overline">Your Request</span>
+          <div class="bp-count"><span id="svcCount">0</span><small>selected</small></div>
+          <ul id="svcList" class="bp-list"><li class="bp-empty">Nothing yet , tap a service to begin.</li></ul>
+          <form id="conForm" novalidate>
+            <label class="fld"><span>Name</span><input name="name" type="text" autocomplete="name" /><i class="err" data-err="name"></i></label>
+            <label class="fld"><span>Email</span><input name="email" type="email" autocomplete="email" /><i class="err" data-err="email"></i></label>
+            <label class="fld"><span>Arrival date</span><input name="date" type="date" /><i class="err" data-err="date"></i></label>
+            <label class="fld"><span>Anything specific? (optional)</span><input name="notes" type="text" placeholder="Times, names, preferences…" /></label>
+            <button type="submit" class="btn-gold hover-target" style="width:100%;justify-content:center;text-align:center;">Send to the concierge</button>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section tight promise" id="promise">
+    <div class="promise-grid" data-stagger="0.08">
+      {[
+        ['One contact', 'A single name and number for the whole stay. No transfers, no “let me check with another department.”'],
+        ['No spectacle', 'Requests are met without a show. You ask once; it simply appears, on time, correctly.'],
+        ['Off the record', 'Guest lists, movements, and preferences stay inside the house. Discretion is the service.'],
+      ].map(([t, d]) => (
+        <div class="promise-card"><h4>{t}</h4><p>{d}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .builder-head { max-width: 640px; margin-bottom: 54px; }
+    .builder-head p { color: var(--c-muted); margin-top: 18px; line-height: 1.7; }
+    .builder { display: grid; grid-template-columns: 1.5fr 0.95fr; gap: clamp(24px,4vw,54px); align-items: start; }
+    .builder-cats { display: flex; flex-direction: column; gap: 44px; }
+    .cat h3 { font-family: var(--f-head); font-size: 1.6rem; color: var(--c-gold); padding-bottom: 16px; border-bottom: 1px solid var(--hair-soft); }
+    .cat-items { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+    .svc { display: flex; align-items: center; gap: 12px; text-align: left; padding: 16px 18px; border: 1px solid var(--hair-soft); color: var(--c-muted); font-size: 0.82rem; letter-spacing: 0.02em; transition: all .25s ease; }
+    .svc-mark { width: 14px; height: 14px; border: 1px solid var(--c-faint); border-radius: 50%; flex: 0 0 auto; position: relative; transition: all .25s ease; }
+    .svc:hover { border-color: var(--hair); color: #fff; }
+    .svc.on { border-color: var(--c-gold); color: #fff; background: rgba(212,175,55,0.05); }
+    .svc.on .svc-mark { background: var(--c-gold); border-color: var(--c-gold); box-shadow: 0 0 12px rgba(212,175,55,0.5); }
+
+    .builder-panel { position: sticky; top: 100px; }
+    .bp-card { border: 1px solid var(--hair); background: linear-gradient(180deg, rgba(20,18,16,0.6), rgba(8,7,6,0.6)); padding: clamp(24px,3vw,34px); }
+    .bp-count { display: flex; align-items: baseline; gap: 8px; margin-top: 16px; }
+    .bp-count #svcCount { font-family: var(--f-head); font-size: 2.6rem; color: var(--c-gold); line-height: 1; }
+    .bp-count small { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .bp-list { list-style: none; margin: 20px 0 0; display: flex; flex-direction: column; gap: 10px; min-height: 50px; }
+    .bp-empty { color: var(--c-faint); font-style: italic; font-family: var(--f-head); font-size: 0.9rem; }
+    .bp-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.78rem; color: #cfc8bb; padding-bottom: 10px; border-bottom: 1px solid var(--hair-soft); }
+    .bp-item .bp-cat { color: var(--c-muted); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .bp-item .bp-rm { color: var(--c-faint); font-size: 15px; line-height: 1; transition: color .2s ease; }
+    .bp-item .bp-rm:hover { color: var(--c-gold); }
+    #conForm { margin-top: 26px; display: flex; flex-direction: column; gap: 15px; }
+    .fld { display: flex; flex-direction: column; gap: 7px; }
+    .fld span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .fld input { background: rgba(255,255,255,0.03); border: 1px solid var(--hair-soft); color: #fff; padding: 12px; font: inherit; font-size: 0.9rem; transition: border-color .25s ease; }
+    .fld input:focus { outline: none; border-color: var(--c-gold); }
+    .fld input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(3) hue-rotate(5deg); opacity: 0.4; }
+    .err { font-size: 10px; color: var(--c-gold); min-height: 1em; }
+
+    .promise { border-top: 1px solid var(--hair-soft); }
+    .promise-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hair-soft); border: 1px solid var(--hair-soft); }
+    .promise-card { background: var(--c-bg); padding: clamp(28px,3vw,44px); }
+    .promise-card h4 { font-family: var(--f-head); font-size: 1.5rem; color: var(--c-gold); }
+    .promise-card p { color: var(--c-muted); margin-top: 14px; font-size: 0.9rem; line-height: 1.75; }
+
+    #toast { position: fixed; left: 50%; bottom: 28px; z-index: 9000; transform: translate(-50%, 24px); opacity: 0; pointer-events: none; max-width: min(92vw, 470px); background: var(--c-gold); color: #050504; padding: 15px 22px; font-size: 0.82rem; font-weight: 500; box-shadow: 0 30px 70px -20px rgba(0,0,0,0.8); transition: opacity .5s var(--ease-lux), transform .5s var(--ease-lux); }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 900px) {
+      .builder { grid-template-columns: 1fr; }
+      .builder-panel { position: static; }
+      .promise-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) { .cat-items { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    type Sel = { svc: string; cat: string };
+    const selected: Sel[] = [];
+    const countEl = document.getElementById('svcCount')!;
+    const listEl = document.getElementById('svcList')!;
+    const btns = Array.from(document.querySelectorAll<HTMLButtonElement>('.svc'));
+
+    function render() {
+      countEl.textContent = String(selected.length);
+      if (!selected.length) { listEl.innerHTML = '<li class="bp-empty">Nothing yet , tap a service to begin.</li>'; return; }
+      listEl.innerHTML = selected.map((s, i) => `<li class="bp-item"><span><span class="bp-cat">${s.cat}</span><br>${s.svc}</span><button class="bp-rm hover-target" data-rm="${i}" aria-label="Remove">×</button></li>`).join('');
+      listEl.querySelectorAll<HTMLElement>('[data-rm]').forEach((b) => b.addEventListener('click', () => {
+        const idx = Number(b.dataset.rm);
+        const removed = selected.splice(idx, 1)[0];
+        btns.find((x) => x.dataset.svc === removed.svc)?.classList.remove('on');
+        render();
+      }));
+    }
+    btns.forEach((b) => b.addEventListener('click', () => {
+      const svc = b.dataset.svc!, cat = b.dataset.cat!;
+      const i = selected.findIndex((s) => s.svc === svc);
+      if (i >= 0) { selected.splice(i, 1); b.classList.remove('on'); }
+      else { selected.push({ svc, cat }); b.classList.add('on'); }
+      render();
+    }));
+
+    const form = document.getElementById('conForm') as HTMLFormElement | null;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5600); };
+    const setErr = (n: string, m: string) => { const e = form?.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form?.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--c-gold)' : ''; };
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const date = String(d.get('date') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name, please.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!date) { setErr('date', 'Arrival date.'); ok = false; } else setErr('date', '');
+      if (!selected.length) { showToast('Tap at least one service to compose your request.'); return; }
+      if (!ok) return;
+      const n = selected.length;
+      selected.length = 0; btns.forEach((b) => b.classList.remove('on'));
+      form.reset(); ['name', 'email', 'date'].forEach((x) => setErr(x, '')); render();
+      showToast(`Noted, ${name.split(' ')[0]}. One concierge now owns your ${n} request${n > 1 ? 's' : ''} and confirms before you arrive.`);
+    });
+  </script>
+</ObsidianLayout>

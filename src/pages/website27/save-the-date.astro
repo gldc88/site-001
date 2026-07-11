@@ -1,0 +1,17 @@
+---
+/**
+ * VELLUM WEDDING BUREAU , Save the Date (website27, round 2). The live invitation composer, showpiece.
+ */
+import VellumBureauLayout from '../../layouts/VellumBureauLayout.astro';
+import InviteComposer from '../../components/vellum-bureau/InviteComposer.astro';
+---
+
+<VellumBureauLayout title="Save the Date | Vellum Wedding Bureau" description="Compose a live save-the-date , set your names, date, and city and watch the invitation take shape." active="save-the-date">
+  <section class="mx-auto max-w-6xl px-6 pt-20 pb-10">
+    <span class="text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--champ-d)]">Save the Date</span>
+    <h1 class="font-display text-6xl md:text-8xl font-semibold leading-[0.95] mt-4">Begin with the <span class="italic gold-text">happy part.</span></h1>
+    <p class="mt-7 max-w-xl text-[var(--mut)] text-lg leading-relaxed">Set your names and date, and watch your save-the-date take shape. It is a small thing , but it is the first thing that makes it feel real.</p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-20"><InviteComposer /></section>
+</VellumBureauLayout>

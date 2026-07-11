@@ -1,0 +1,126 @@
+---
+/**
+ * FIELD STUDIO , Home (website16, round 2 multi-page). Editorial + asymmetric.
+ * Intro, season dial + capture viewfinder onto the live field, specimen + trail teasers, intake CTA.
+ */
+import FieldLayout from '../../layouts/FieldLayout.astro';
+import { SEASONS, SPECIMENS, TRAIL } from '../../data/field';
+---
+
+<FieldLayout title="Field Studio , Living-Systems & Nature-Interface Studio" description="Field Studio documents living systems , forest structure, air movement, water logic , and builds calm, high-density interfaces. Season-tuned, archive-led.">
+  <section class="intro">
+    <span class="eyebrow">Living systems · nature interfaces</span>
+    <h1>We read the field <em>before</em> we draw it.</h1>
+    <p>A studio that documents living systems , forest structure, air movement, water logic , and builds calm, high-density interfaces from what it finds. The field behind this page is live; retune its season below.</p>
+  </section>
+
+  <section class="sec tight">
+    <div class="capture-grid">
+      <div class="dial-block">
+        <span class="eyebrow">Season dial</span>
+        <div class="dial" role="group" aria-label="Season">
+          {SEASONS.map((s) => (<button class="dial-btn" data-season={s.key} aria-pressed="false">{s.label}</button>))}
+        </div>
+        <p class="dial-note" id="dialNote">Green density · spore traffic · active air</p>
+        <p class="dial-copy">The dial retunes the field's speed, turbulence, scale, and colour , and follows you across every page. Pick the air you want to read in.</p>
+      </div>
+
+      <div class="capture card">
+        <div class="cap-head"><span class="eyebrow">Capture · viewfinder</span><span class="cap-rec"><span class="dot"></span>live</span></div>
+        <div class="cap-frame"><div class="cap-cross"></div><div class="cap-cross v"></div></div>
+        <div class="cap-readout">
+          <div class="cr"><span>Season</span><b id="capSeason">Canopy</b></div>
+          <div class="cr"><span>Density</span><b id="capDensity">2.6k</b></div>
+          <div class="cr"><span>Drift</span><b id="capDrift">0.42</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec tight">
+    <div class="sec-top"><span class="eyebrow">Archive</span><a class="inline-link" href="/website16/archive">Open the archive →</a></div>
+    <h2 class="sec-h">A record of what was moving.</h2>
+    <div class="spec-teaser">
+      {SPECIMENS.slice(0, 4).map((s, i) => (
+        <a href="/website16/archive" class={`spt ${i % 2 ? 'down' : ''}`} data-reveal="up">
+          <span class="spt-id">{s.id}</span>
+          <h3>{s.title}</h3>
+          <p>{s.line}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec tight">
+    <div class="sec-top"><span class="eyebrow">Field trail</span><a class="inline-link" href="/website16/method">The method →</a></div>
+    <h2 class="sec-h">Wind, water, light.</h2>
+    <div class="trail-teaser" id="trailList">
+      {TRAIL.map((t) => (
+        <button class="trail-item" data-flow={t.type}><span class="ti-type">{t.title}</span><p>{t.line}</p></button>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec intake-cta">
+    <h2>Bring us a system to read.</h2>
+    <p>We take a small number of field projects a year. Tell us what you're trying to understand.</p>
+    <a href="/website16/intake" class="btn" style="margin-top:24px;">Start an intake</a>
+  </section>
+
+  <style>
+    .capture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px,4vw,56px); align-items: start; }
+    .dial-block .eyebrow { margin-bottom: 18px; }
+    .dial-note { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--accent); margin: 16px 0 14px; transition: color 0.6s ease; }
+    .dial-copy { color: var(--muted); max-width: 44ch; }
+
+    .capture { padding: 22px; }
+    .cap-head { display: flex; justify-content: space-between; align-items: center; }
+    .cap-rec { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; }
+    .cap-rec .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+    .cap-frame { position: relative; aspect-ratio: 16/9; margin: 16px 0; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+    .cap-frame::before { content: ''; position: absolute; inset: 0; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); margin: 14px; border-radius: 2px; }
+    .cap-cross { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: color-mix(in srgb, var(--accent) 24%, transparent); }
+    .cap-cross.v { left: 0; right: 0; top: 50%; bottom: auto; width: auto; height: 1px; }
+    .cap-readout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+    .cr { background: color-mix(in srgb, var(--bg0) 70%, transparent); padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+    .cr span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .cr b { font-family: var(--serif); font-size: 1.3rem; color: #fff; }
+
+    .sec-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+    .sec-h { font-size: clamp(2rem,4.4vw,3.6rem); color: #fff; margin: 14px 0 40px; max-width: 18ch; }
+
+    .spec-teaser { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .spt { display: block; border-top: 1px solid var(--line-strong); padding-top: 18px; transition: border-color 0.3s; }
+    .spt.down { margin-top: 48px; }
+    .spt:hover { border-color: var(--accent); }
+    .spt-id { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: var(--accent); transition: color 0.6s ease; }
+    .spt h3 { font-family: var(--serif); font-size: 1.5rem; color: #fff; margin: 10px 0 8px; }
+    .spt p { color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+
+    .trail-teaser { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .trail-item { text-align: left; border: 1px solid var(--line); border-radius: 4px; padding: 26px 24px; transition: border-color 0.3s, background 0.3s; background: color-mix(in srgb, var(--bg0) 50%, transparent); }
+    .trail-item:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent); }
+    .ti-type { font-family: var(--serif); font-size: 1.7rem; color: #fff; }
+    .trail-item p { color: var(--muted); margin-top: 10px; font-size: 0.9rem; line-height: 1.55; }
+
+    .intake-cta { text-align: left; max-width: 700px; }
+    .intake-cta h2 { font-size: clamp(2rem,4.4vw,3.4rem); color: #fff; }
+    .intake-cta p { color: var(--muted); margin-top: 14px; max-width: 50ch; }
+
+    @media (max-width: 900px) { .capture-grid { grid-template-columns: 1fr; } .spec-teaser { grid-template-columns: 1fr 1fr; } .spt.down { margin-top: 0; } .trail-teaser { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) { .spec-teaser { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    import { SEASONS } from '../../data/field';
+    const byKey = Object.fromEntries(SEASONS.map((s) => [s.key, s]));
+    const dialNote = document.getElementById('dialNote')!, capSeason = document.getElementById('capSeason')!, capDensity = document.getElementById('capDensity')!, capDrift = document.getElementById('capDrift')!;
+    function render(k: string) { const s = byKey[k]; if (!s) return; dialNote.textContent = s.note; capSeason.textContent = s.label; capDensity.textContent = s.density; }
+    render(localStorage.getItem('field-season') || 'canopy');
+    document.addEventListener('field:season', (e) => render((e as CustomEvent).detail));
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let drift = 0.42;
+    if (!reduce) setInterval(() => { drift += (Math.random() - 0.5) * 0.06; drift = Math.max(0.12, Math.min(0.92, drift)); capDrift.textContent = drift.toFixed(2); }, 1100);
+  </script>
+</FieldLayout>

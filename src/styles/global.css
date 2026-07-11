@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Round-2 polish , global accessibility baseline (shared by all 30 sites).
+   Only activates when the visitor has asked their OS to reduce motion.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Never leave scroll-reveal content hidden while waiting for the observer. */
+  .reveal-on-scroll,
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+
+/* Keyboard focus: a visible, brand-neutral ring for users tabbing through.
+   :focus-visible only shows for keyboard/AT, never on mouse click. */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}

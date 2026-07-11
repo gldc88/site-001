@@ -1,0 +1,64 @@
+/* Self-hosted (latin), was Google Fonts CDN , R3 fix. */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/website27/fonts/co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtImSo.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/website27/fonts/co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtImSo.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/website27/fonts/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/website27/fonts/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/website27/fonts/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/website27/fonts/rP2Hp2ywxg089UriCZOIHQ.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/website27/fonts/rP2Hp2ywxg089UriCZOIHQ.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/website27/fonts/rP2Hp2ywxg089UriCZOIHQ.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/website27/fonts/rP2Hp2ywxg089UriCZOIHQ.woff2') format('woff2');
+}

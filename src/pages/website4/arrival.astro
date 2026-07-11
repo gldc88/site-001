@@ -1,0 +1,94 @@
+---
+/**
+ * AURELIA SKYPORT , Arrival (website4, round 2). Signature: a gate-to-cabin step timeline (stepper).
+ */
+import AureliaLayout from '../../layouts/AureliaLayout.astro';
+
+const STEPS = [
+  { n: '01', clock: 'T+00:00', name: 'Private Drive-In', body: 'Turn off the public road through a coded gate and park under cover. No terminal, no kerbside scrum , your car meets nobody.' },
+  { n: '02', clock: 'T+01:30', name: 'Identity, Quiet', body: 'A single verified check at a desk, not a queue. No shoes off, no trays, no announcements. You are expected and already cleared.' },
+  { n: '03', clock: 'T+03:00', name: 'Baggage to Vault', body: 'Luggage is taken straight to the secure vault and loaded for you. You carry only what you want in the cabin.' },
+  { n: '04', clock: 'T+05:00', name: 'The Lounge', body: 'A low-lit room with a drink already poured, a desk if you need it, and the kind of silence the day has not allowed.' },
+  { n: '05', clock: 'T+12:00', name: 'Cabin, Door Closed', body: 'A short walk to an aircraft staged like a suite. Crew briefed, lights set. You step in; the door closes the world out.' },
+];
+const CHIPS = ['Identity-verified entry', 'Private drive-in', 'Covered parking', 'Hangar staging', 'Secure baggage vault', 'Car at both ends'];
+---
+
+<AureliaLayout title="Arrival | AURELIA SKYPORT" description="The arrival protocol at Aurelia Skyport , private drive-in to cabin in about twelve minutes, no public terminals." active="arrival">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website4/jet.jpg" alt="A staged aircraft on the apron" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Arrival Protocol</span>
+      <h1>Curb to cabin, <em>cleared</em>.</h1>
+      <p class="sub">No public terminal stands between your car and your aircraft. The whole arrival is engineered to take about twelve minutes , and to feel like none of it happened.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="timeline">
+      <div class="tl-rail" role="tablist" aria-label="Arrival steps">
+        {STEPS.map((s, i) => (
+          <button class={`tl-node${i === 0 ? ' active' : ''}`} data-target={`st-${s.n}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+            <span class="tl-dot"></span><span class="tl-clock">{s.clock}</span><span class="tl-name">{s.name}</span>
+          </button>
+        ))}
+      </div>
+      <div class="tl-detail">
+        {STEPS.map((s, i) => (
+          <div class={`tl-panel${i === 0 ? ' active' : ''}`} id={`st-${s.n}`}>
+            <span class="tlp-n">{s.n}</span>
+            <span class="tlp-clock">{s.clock}</span>
+            <h3>{s.name}</h3>
+            <p>{s.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="chips" data-reveal="up">
+      {CHIPS.map((c) => <span class="chip">{c}</span>)}
+    </div>
+
+    <div style="margin-top:48px; display:flex; gap:22px; flex-wrap:wrap; align-items:center;">
+      <a href="/website4/dispatch" class="btn-cta">Request a flight</a>
+      <a href="/website4/terminal" class="inline-link" style="align-self:center;">See the terminal →</a>
+    </div>
+  </section>
+
+  <style>
+    .timeline { display: grid; grid-template-columns: 0.95fr 1.25fr; gap: clamp(22px,4vw,56px); align-items: start; }
+    .tl-rail { display: flex; flex-direction: column; min-width: 0; position: relative; }
+    .tl-node { display: grid; grid-template-columns: 16px auto 1fr; align-items: center; gap: 14px; text-align: left; padding: 22px 6px; border-bottom: 1px solid var(--hair-soft); }
+    .tl-node:first-child { border-top: 1px solid var(--hair-soft); }
+    .tl-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--faint); justify-self: center; transition: all 0.4s var(--ease); }
+    .tl-node.active .tl-dot { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 14px var(--gold); }
+    .tl-clock { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--faint); }
+    .tl-node.active .tl-clock { color: var(--gold); }
+    .tl-name { font-family: var(--head); font-size: clamp(1.15rem,1.8vw,1.5rem); color: #cfc6b4; transition: color 0.3s; }
+    .tl-node.active .tl-name, .tl-node:hover .tl-name { color: #fff; }
+    .tl-detail { position: relative; border: 1px solid var(--hair-soft); padding: clamp(28px,4vw,52px); min-height: 320px; background: linear-gradient(160deg, rgba(200,168,107,0.06), transparent 62%); display: flex; flex-direction: column; justify-content: center; }
+    .tl-panel { display: none; }
+    .tl-panel.active { display: block; animation: fadeup 0.5s var(--ease); }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .tlp-n { font-family: var(--head); font-size: clamp(3.5rem,8vw,7rem); color: transparent; -webkit-text-stroke: 1px rgba(200,168,107,0.22); line-height: 1; }
+    .tlp-clock { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--gold); margin-top: 6px; }
+    .tl-panel h3 { font-size: clamp(1.8rem,3.2vw,2.6rem); color: #fff; margin-top: 8px; }
+    .tl-panel p { color: var(--muted); line-height: 1.8; margin-top: 16px; max-width: 48ch; }
+
+    .chips { margin-top: 44px; display: flex; flex-wrap: wrap; gap: 9px; }
+    .chip { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #cfc6b4; border: 1px solid var(--hair-soft); padding: 9px 13px; transition: border-color 0.3s, color 0.3s; }
+    .chip:hover { border-color: var(--hair); color: var(--gold); }
+    @media (max-width: 900px) { .timeline { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.tl-node'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.tl-panel'));
+    let auto = !reduce;
+    const go = (n: HTMLElement) => { const id = n.dataset.target; nodes.forEach((x) => { const on = x === n; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); }); panels.forEach((p) => p.classList.toggle('active', p.id === id)); };
+    nodes.forEach((n) => n.addEventListener('click', () => { auto = false; go(n); }));
+    if (!reduce) { let i = 0; setInterval(() => { if (!auto) return; i = (i + 1) % nodes.length; go(nodes[i]); }, 4600); }
+  </script>
+</AureliaLayout>

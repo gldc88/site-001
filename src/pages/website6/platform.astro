@@ -1,0 +1,129 @@
+---
+/**
+ * ORBITAL CRYPTO , Platform (website6, round 2). Signature: an interactive dashboard mockup
+ * with Balances / Orders / Treasury tabs.
+ */
+import OrbitalLayout from '../../layouts/OrbitalLayout.astro';
+---
+
+<OrbitalLayout title="Platform | ORBITAL CRYPTO" description="A look at the Orbital Crypto console , balances, orders, and treasury controls in one audited interface." active="platform">
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <span class="eyebrow">Platform</span>
+      <h1>One console, <em>every desk</em>.</h1>
+      <p class="sub">Balances, execution, and treasury controls in a single audited interface. Switch the tabs below for a look at the console your team would actually use.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="console panel glow">
+      <div class="console-bar">
+        <div class="cb-left"><span class="cb-dot"></span><span class="cb-title">ORBITAL · Console</span></div>
+        <div class="cb-tabs" role="tablist">
+          <button class="cb-tab active" data-tab="balances" role="tab">Balances</button>
+          <button class="cb-tab" data-tab="orders" role="tab">Orders</button>
+          <button class="cb-tab" data-tab="treasury" role="tab">Treasury</button>
+        </div>
+        <div class="cb-status"><span class="dot"></span>live</div>
+      </div>
+
+      <div class="console-body">
+        <!-- Balances -->
+        <div class="cpanel active" id="balances">
+          <div class="metrics">
+            <div class="metric"><span class="m-k">Total AUM</span><span class="m-v">$99.4M</span></div>
+            <div class="metric"><span class="m-k">24h Δ</span><span class="m-v green">+1.18%</span></div>
+            <div class="metric"><span class="m-k">Assets</span><span class="m-v">4</span></div>
+            <div class="metric"><span class="m-k">Cold</span><span class="m-v">82%</span></div>
+          </div>
+          <div class="dtable">
+            <div class="dt-head"><span>Asset</span><span>Balance</span><span>USD value</span><span>Custody</span></div>
+            {[['BTC','412.50','$28.2M','Cold'],['ETH','8,940.0','$32.0M','Cold'],['SOL','145,200','$25.0M','Warm'],['USDC','14.20M','$14.2M','Warm']].map((r) => (
+              <div class="dt-row"><span class="dt-sym">{r[0]}</span><span>{r[1]}</span><span>{r[2]}</span><span class="dt-pill">{r[3]}</span></div>
+            ))}
+          </div>
+        </div>
+        <!-- Orders -->
+        <div class="cpanel" id="orders">
+          <div class="dtable">
+            <div class="dt-head"><span>Side</span><span>Order</span><span>Avg fill</span><span>Status</span></div>
+            {[['BUY','50 BTC','$68,402','Filled','filled'],['SELL','1,200 ETH','$3,588','Working','working'],['BUY','8,000 SOL','$172.1','Filled','filled'],['BUY','2.4M USDC','$1.000','Filled','filled'],['SELL','85 BTC',',','Quoting','quoting']].map((r) => (
+              <div class="dt-row"><span class={`dt-side ${r[0]==='BUY'?'buy':'sell'}`}>{r[0]}</span><span>{r[1]}</span><span>{r[2]}</span><span class={`dt-status ${r[4]}`}>{r[3]}</span></div>
+            ))}
+          </div>
+        </div>
+        <!-- Treasury -->
+        <div class="cpanel" id="treasury">
+          <div class="metrics">
+            <div class="metric"><span class="m-k">Daily limit</span><span class="m-v">500 BTC</span></div>
+            <div class="metric"><span class="m-k">Used today</span><span class="m-v">120 BTC</span></div>
+            <div class="metric"><span class="m-k">Pending</span><span class="m-v violet">2</span></div>
+            <div class="metric"><span class="m-k">Approvers</span><span class="m-v">3 / 5</span></div>
+          </div>
+          <div class="dtable">
+            <div class="dt-head"><span>Request</span><span>Amount</span><span>Stage</span><span>Action</span></div>
+            {[['Move to cold','250 BTC','Compliance','Approve','await'],['Vendor payout','1.2M USDC','Operations','Execute','ready'],['Rebalance','400 ETH','Trader','Draft','draft']].map((r) => (
+              <div class="dt-row"><span>{r[0]}</span><span>{r[1]}</span><span class="dt-stage">{r[2]}</span><span class={`dt-act ${r[4]}`}>{r[3]}</span></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px; display:flex; gap:20px; flex-wrap:wrap; align-items:center;">
+      <a href="/website6/access" class="btn-cta">Request a walkthrough</a>
+      <a href="/website6/security" class="inline-link" style="align-self:center;">See the controls →</a>
+    </div>
+  </section>
+
+  <style>
+    .console { overflow: hidden; }
+    .console-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--hair); background: rgba(255,255,255,0.02); flex-wrap: wrap; }
+    .cb-left { display: flex; align-items: center; gap: 10px; }
+    .cb-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+    .cb-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--ink); }
+    .cb-tabs { display: flex; gap: 4px; }
+    .cb-tab { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 8px 14px; border-radius: 4px; transition: all 0.25s; }
+    .cb-tab:hover { color: #fff; }
+    .cb-tab.active { background: rgba(53,241,255,0.12); color: var(--cyan); }
+    .cb-status { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; }
+    .cb-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+    .console-body { padding: clamp(18px,2.5vw,28px); min-height: 360px; }
+    .cpanel { display: none; }
+    .cpanel.active { display: block; animation: fadein 0.4s var(--ease); }
+    @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hair); border: 1px solid var(--hair); margin-bottom: 22px; border-radius: 6px; overflow: hidden; }
+    .metric { background: rgba(7,10,22,0.6); padding: 18px 16px; display: flex; flex-direction: column; gap: 6px; }
+    .m-k { font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .m-v { font-family: var(--head); font-size: 1.4rem; color: #fff; font-variant-numeric: tabular-nums; }
+    .m-v.green { color: var(--green); } .m-v.violet { color: var(--violet); }
+
+    .dtable { font-family: var(--mono); font-size: 0.82rem; }
+    .dt-head, .dt-row { display: grid; grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr; gap: 12px; align-items: center; padding: 13px 8px; }
+    .dt-head { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--hair); }
+    .dt-row { border-bottom: 1px solid var(--hair); color: var(--ink); font-variant-numeric: tabular-nums; }
+    .dt-row:hover { background: rgba(255,255,255,0.02); }
+    .dt-sym { color: #fff; font-weight: 500; }
+    .dt-pill { font-size: 0.7rem; color: var(--cyan); }
+    .dt-side.buy { color: var(--green); } .dt-side.sell { color: #ff7a9c; }
+    .dt-status { font-size: 0.7rem; }
+    .dt-status.filled { color: var(--green); } .dt-status.working { color: var(--cyan); } .dt-status.quoting { color: var(--violet); }
+    .dt-stage { color: var(--muted); }
+    .dt-act { font-size: 0.72rem; padding: 4px 9px; border-radius: 3px; justify-self: start; }
+    .dt-act.await { color: var(--violet); border: 1px solid rgba(167,123,255,0.3); }
+    .dt-act.ready { color: #040610; background: var(--cyan); }
+    .dt-act.draft { color: var(--muted); border: 1px solid var(--hair); }
+
+    @media (max-width: 720px) { .metrics { grid-template-columns: 1fr 1fr; } .dt-head, .dt-row { grid-template-columns: 1fr 1fr 1fr; } .dt-head span:nth-child(4), .dt-row span:nth-child(4) { display: none; } }
+  </style>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll<HTMLElement>('.cb-tab'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.cpanel'));
+    tabs.forEach((t) => t.addEventListener('click', () => {
+      tabs.forEach((x) => x.classList.toggle('active', x === t));
+      panels.forEach((p) => p.classList.toggle('active', p.id === t.dataset.tab));
+    }));
+  </script>
+</OrbitalLayout>

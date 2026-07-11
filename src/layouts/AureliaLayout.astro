@@ -1,0 +1,191 @@
+---
+/**
+ * AureliaLayout , shared shell for AURELIA SKYPORT (website4, round 2).
+ * Persistent WebGL dawn-runway scene behind all pages; champagne aviation-HUD.
+ * Props: title, description, active.
+ */
+import '../styles/aurelia-fonts.css';
+import '../styles/aurelia.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const BRAND = 'AURELIA SKYPORT';
+const NAV = [
+  { key: 'arrival', label: 'Arrival', href: '/website4/arrival' },
+  { key: 'terminal', label: 'Terminal', href: '/website4/terminal' },
+  { key: 'membership', label: 'Program', href: '/website4/membership' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script is:inline>
+      // R3 "Wheels-Up": pre-paint data-dep (far/near/imminent) voor fallback-tinten.
+      try {
+        var wu = Number(localStorage.getItem('aurelia-wheelsup') || 0);
+        var msLeft = wu - Date.now();
+        document.documentElement.dataset.dep = !wu || msLeft <= 0 ? 'far' : msLeft < 2 * 3600e3 ? 'imminent' : msLeft < 8 * 3600e3 ? 'near' : 'far';
+      } catch (e) { document.documentElement.dataset.dep = 'far'; }
+    </script>
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website4" class="brand">{BRAND}</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website4/dispatch" class="cta">Dispatch</a>
+    </nav>
+
+    <div class="wheelsup" id="wheelsup">
+      <div class="wu-row">
+        <span class="wu-key">WHEELS-UP</span>
+        <span class="wu-tminus" id="wuTminus" aria-hidden="true">, : , : ,</span>
+      </div>
+      <div class="wu-slots" role="radiogroup" aria-label="Choose a wheels-up slot">
+        <button type="button" class="wu-slot" data-hours="2" role="radio" aria-checked="false">T+2H</button>
+        <button type="button" class="wu-slot" data-hours="6" role="radio" aria-checked="false">T+6H</button>
+        <button type="button" class="wu-slot" data-hours="tomorrow" role="radio" aria-checked="false">TMRW 06:00</button>
+      </div>
+      <div class="wu-steps" aria-hidden="true">
+        <span class="wu-dot" data-step="terminal" title="Terminal"></span>
+        <span class="wu-dot" data-step="arrival" title="Arrival"></span>
+        <span class="wu-dot" data-step="dispatch" title="Dispatch"></span>
+      </div>
+      <div class="wu-status" id="wuStatus" aria-live="polite"></div>
+    </div>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>{BRAND}</h3>
+          <p>A members-only private airport layer. Private runway, private terminal, gate to cabin in minutes , no public terminals, no crowds, no waiting.</p>
+        </div>
+        <div class="f-col"><h4>Operations</h4><a href="/website4/arrival">Arrival</a><a href="/website4/terminal">Terminal</a><a href="/website4/membership">Program</a><a href="/website4/dispatch">Dispatch</a></div>
+        <div class="f-col"><h4>Flight Desk</h4><a href="tel:+10000000000">24/7 · +1 000 000 0000</a><a href="mailto:dispatch@aurelia.example">dispatch@aurelia.example</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} {BRAND}. Fictional brand , demonstration only.</span>
+        <span><a href="#top">Ascend ↑</a> · Cleared for departure</span>
+      </div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* ---- R3 "Wheels-Up" ---- */
+      let sceneSetDeparture: ((p: number) => void) | null = null;
+      const WINDOW_MS = 24 * 3600e3; // dageraad-venster: 24h vóór vertrek
+      const slots = Array.from(document.querySelectorAll<HTMLButtonElement>('.wu-slot'));
+      const tminusEl = document.getElementById('wuTminus');
+      const statusEl = document.getElementById('wuStatus');
+      const dots = Array.from(document.querySelectorAll<HTMLElement>('.wu-dot'));
+
+      const getWheelsUp = (): number => { try { return Number(localStorage.getItem('aurelia-wheelsup') || 0); } catch { return 0; } };
+      const getSteps = (): string[] => { try { return JSON.parse(localStorage.getItem('aurelia-steps') || '[]'); } catch { return []; } };
+
+      function departureProgress(): number {
+        const wu = getWheelsUp();
+        if (!wu) return 0;
+        const left = wu - Date.now();
+        if (left <= 0) return 1;
+        return Math.max(0, Math.min(1, 1 - left / WINDOW_MS));
+      }
+      function depBucket(): string {
+        const wu = getWheelsUp();
+        const left = wu - Date.now();
+        return !wu || left <= 0 ? 'far' : left < 2 * 3600e3 ? 'imminent' : left < 8 * 3600e3 ? 'near' : 'far';
+      }
+      function fmtLeft(ms: number): string {
+        if (ms <= 0) return 'NOW';
+        const s = Math.floor(ms / 1000);
+        const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+        const ss = String(s % 60).padStart(2, '0');
+        return `T−${hh}:${mm}:${ss}`;
+      }
+      function syncCleared() {
+        const done = getSteps();
+        dots.forEach((d) => d.classList.toggle('done', done.includes(d.dataset.step || '')));
+        const cleared = getWheelsUp() > Date.now() && ['terminal', 'arrival', 'dispatch'].every((k) => done.includes(k));
+        document.documentElement.classList.toggle('cleared', cleared);
+        if (statusEl) statusEl.textContent = cleared ? 'CLEARED FOR DEPARTURE' : '';
+      }
+      function syncWheelsUp() {
+        const wu = getWheelsUp();
+        document.documentElement.dataset.dep = depBucket();
+        if (tminusEl) tminusEl.textContent = wu ? fmtLeft(wu - Date.now()) : ', : , : ,';
+        let chosen = '';
+        try { chosen = localStorage.getItem('aurelia-slot') || ''; } catch { /* private mode */ }
+        slots.forEach((b) => b.setAttribute('aria-checked', String(wu > 0 && b.dataset.hours === chosen)));
+        sceneSetDeparture?.(departureProgress());
+        syncCleared();
+      }
+      slots.forEach((b) => b.addEventListener('click', () => {
+        const h = b.dataset.hours;
+        let wu: number;
+        if (h === 'tomorrow') { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(6, 0, 0, 0); wu = d.getTime(); }
+        else wu = Date.now() + Number(h) * 3600e3;
+        try { localStorage.setItem('aurelia-wheelsup', String(wu)); localStorage.setItem('aurelia-slot', h || ''); } catch { /* private mode */ }
+        syncWheelsUp();
+      }));
+      // stap afvinken op bezoek (pad -> stap)
+      const path = location.pathname;
+      const step = path.includes('/terminal') ? 'terminal' : path.includes('/arrival') ? 'arrival' : path.includes('/dispatch') ? 'dispatch' : null;
+      if (step) {
+        const cur = getSteps();
+        if (!cur.includes(step)) { cur.push(step); try { localStorage.setItem('aurelia-steps', JSON.stringify(cur)); } catch { /* private mode */ } }
+      }
+      syncWheelsUp();
+      setInterval(syncWheelsUp, 1000);
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/aurelia-scene')
+          .then(({ initAureliaScene }) => {
+            const scene = initAureliaScene(canvas);
+            sceneSetDeparture = scene.setDeparture;
+            scene.setDeparture(departureProgress());
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

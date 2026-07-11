@@ -1,0 +1,147 @@
+---
+/**
+ * VELLUM & OAK , The Shelves / Catalog (website8, round 2).
+ * Signature: a live catalog search + genre filter over the full stock list.
+ */
+import VellumLayout from '../../layouts/VellumLayout.astro';
+
+const GENRES = ['Modern Classics', 'Literary Fiction', 'Poetry', 'Philosophy', 'History', 'Art & Design', "Children's", 'Rare & Signed'];
+const CATALOG = [
+  { t: 'The Picture of Dorian Gray', a: 'Oscar Wilde', g: 'Modern Classics', f: 'Paperback', p: '£13', s: 'In stock' },
+  { t: 'The Iliad', a: 'Homer', g: 'Modern Classics', f: 'Hardback', p: '£20', s: 'Low stock' },
+  { t: 'Brave New World', a: 'Aldous Huxley', g: 'Modern Classics', f: 'Paperback', p: '£12', s: 'In stock' },
+  { t: 'Nineteen Eighty-Four', a: 'George Orwell', g: 'Modern Classics', f: 'Clothbound', p: '£18', s: 'In stock' },
+  { t: 'Mrs Dalloway', a: 'Virginia Woolf', g: 'Literary Fiction', f: 'Paperback', p: '£14', s: 'In stock' },
+  { t: 'Beloved', a: 'Toni Morrison', g: 'Literary Fiction', f: 'Paperback', p: '£15', s: 'In stock' },
+  { t: 'The Remains of the Day', a: 'Kazuo Ishiguro', g: 'Literary Fiction', f: 'Paperback', p: '£13', s: 'Low stock' },
+  { t: 'The Waste Land', a: 'T. S. Eliot', g: 'Poetry', f: 'Paperback', p: '£12', s: 'In stock' },
+  { t: 'Ariel', a: 'Sylvia Plath', g: 'Poetry', f: 'Paperback', p: '£11', s: 'In stock' },
+  { t: 'Meditations', a: 'Marcus Aurelius', g: 'Philosophy', f: 'Hardback', p: '£16', s: 'In stock' },
+  { t: 'The Book of Tea', a: 'Kakuzō Okakura', g: 'Philosophy', f: 'Paperback', p: '£11', s: 'In stock' },
+  { t: 'Beyond Good and Evil', a: 'Friedrich Nietzsche', g: 'Philosophy', f: 'Paperback', p: '£12', s: 'Low stock' },
+  { t: 'SPQR', a: 'Mary Beard', g: 'History', f: 'Paperback', p: '£18', s: 'In stock' },
+  { t: 'The Silk Roads', a: 'Peter Frankopan', g: 'History', f: 'Paperback', p: '£16', s: 'In stock' },
+  { t: 'Ways of Seeing', a: 'John Berger', g: 'Art & Design', f: 'Paperback', p: '£15', s: 'In stock' },
+  { t: 'The Story of Art', a: 'E. H. Gombrich', g: 'Art & Design', f: 'Hardback', p: '£30', s: 'Low stock' },
+  { t: 'The Tale of Peter Rabbit', a: 'Beatrix Potter', g: "Children's", f: 'Hardback', p: '£9', s: 'In stock' },
+  { t: 'Where the Wild Things Are', a: 'Maurice Sendak', g: "Children's", f: 'Hardback', p: '£12', s: 'In stock' },
+  { t: 'Selected Poems (Signed)', a: 'W. B. Yeats', g: 'Rare & Signed', f: 'Hardback', p: '£220', s: 'By request' },
+  { t: 'Leaves of Grass (1st Ed.)', a: 'Walt Whitman', g: 'Rare & Signed', f: 'Rare', p: '£1,400', s: 'By request' },
+];
+---
+
+<VellumLayout title="The Shelves | Vellum & Oak" description="Search the Vellum & Oak catalog , fiction, poetry, philosophy, history, art, children's, and rare & signed editions." active="catalog">
+  <section class="page-hero" style="min-height:54svh;">
+    <div class="page-hero-media"><img src="/website8/shelves.jpg" alt="A narrow aisle of crammed wooden bookshelves" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="label">The Shelves</span>
+      <h1>Find your <em>next</em> book.</h1>
+      <p class="sub">A slice of what's in store right now. Search by title or author, or narrow by section. Anything you can't see, we can usually order.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="cat-tools">
+      <div class="search-wrap">
+        <span class="search-ic" aria-hidden="true">⌕</span>
+        <input id="catSearch" type="search" placeholder="Search title or author…" autocomplete="off" aria-label="Search the catalog" />
+      </div>
+      <div class="genre-pills" id="genrePills">
+        <button class="gp active" data-genre="all">All sections</button>
+        {GENRES.map((g) => <button class="gp" data-genre={g}>{g}</button>)}
+      </div>
+    </div>
+
+    <div class="cat-count" id="catCount"></div>
+
+    <div class="cat-table">
+      <div class="ct-head"><span>Title</span><span>Author</span><span>Section</span><span>Format</span><span class="ct-r">Price</span><span aria-hidden="true"></span></div>
+      <div id="catList">
+        {CATALOG.map((b) => (
+          <div class="ct-row" data-title={b.t.toLowerCase()} data-author={b.a.toLowerCase()} data-genre={b.g}>
+            <span class="cr-title">{b.t}<span class={`cr-stock ${b.s === 'In stock' ? 'in' : b.s === 'Low stock' ? 'low' : 'req'}`}>{b.s}</span></span>
+            <span class="cr-author">{b.a}</span>
+            <span class="cr-genre">{b.g}</span>
+            <span class="cr-format">{b.f}</span>
+            <span class="cr-price ct-r">{b.p}</span>
+            <button type="button" class="ct-add" data-t={b.t} data-a={b.a} aria-label={`Add ${b.t} to your stack`}>+ Stack</button>
+          </div>
+        ))}
+      </div>
+      <p class="cat-empty" id="catEmpty" hidden>Nothing on the shelf matches that , but ask us, we'll go looking.</p>
+    </div>
+
+    <div class="cat-cta">
+      <span class="label c">Can't find it?</span>
+      <a href="/website8/services" class="btn-cta" style="margin-top:16px;">Request a special order</a>
+    </div>
+  </section>
+
+  <style>
+    .cat-tools { display: flex; flex-direction: column; gap: 18px; margin-bottom: 18px; }
+    .search-wrap { position: relative; max-width: 460px; }
+    .search-ic { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 1.3rem; }
+    #catSearch { width: 100%; background: rgba(243,234,214,0.05); border: 1px solid var(--hair-gold); color: var(--paper); padding: 14px 16px 14px 44px; font: inherit; font-size: 1.05rem; border-radius: 3px; transition: border-color 0.25s; }
+    #catSearch:focus { outline: none; border-color: var(--gold); }
+    .genre-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gp { font-family: var(--body); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; color: var(--muted); border: 1px solid var(--hair); padding: 8px 15px; border-radius: 100px; transition: all 0.25s; }
+    .gp:hover { color: var(--ink); border-color: var(--hair-gold); }
+    .gp.active { background: var(--gold); color: #17120b; border-color: var(--gold); }
+
+    .cat-count { font-style: italic; color: var(--muted); margin-bottom: 14px; font-size: 0.98rem; }
+    .cat-table { border-top: 1px solid var(--hair-gold); }
+    .ct-head, .ct-row { display: grid; grid-template-columns: 2.2fr 1.4fr 1.3fr 1fr 0.7fr auto; gap: 16px; align-items: center; padding: 15px 8px; }
+    .ct-head { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--hair); }
+    .ct-r { text-align: right; }
+    .ct-row { border-bottom: 1px solid var(--hair); transition: background 0.25s; }
+    .ct-row:hover { background: rgba(200,162,76,0.05); }
+    .ct-row.hide { display: none; }
+    .cr-title { font-family: var(--display); font-size: 1.18rem; color: var(--paper); display: flex; flex-direction: column; gap: 4px; }
+    .cr-stock { font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; width: fit-content; }
+    .cr-stock.in { color: #8bbf8e; } .cr-stock.low { color: var(--gold-bright); } .cr-stock.req { color: var(--rust); }
+    .cr-author { font-style: italic; color: var(--muted); }
+    .cr-genre { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--gold); }
+    .cr-format { font-size: 13px; color: var(--muted); }
+    .cr-price { font-family: var(--display); font-size: 1.2rem; color: var(--paper); }
+    .cat-empty { color: var(--muted); font-style: italic; padding: 30px 0; font-size: 1.05rem; }
+
+    .cat-cta { text-align: center; margin-top: 56px; display: flex; flex-direction: column; align-items: center; }
+    .cat-cta .label { justify-content: center; }
+
+    @media (max-width: 820px) {
+      .ct-head { display: none; }
+      .ct-row { grid-template-columns: 1fr auto; gap: 4px 16px; padding: 18px 6px; }
+      .ct-add { grid-column: 1 / -1; justify-self: start; margin-top: 6px; }
+      .cr-title { grid-column: 1; }
+      .cr-price { grid-column: 2; grid-row: 1; align-self: start; }
+      .cr-author { grid-column: 1; } .cr-genre { grid-column: 1 / -1; } .cr-format { display: none; }
+    }
+  </style>
+
+  <script>
+    const search = document.getElementById('catSearch') as HTMLInputElement;
+    const pills = Array.from(document.querySelectorAll<HTMLElement>('.gp'));
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('.ct-row'));
+    const empty = document.getElementById('catEmpty');
+    const count = document.getElementById('catCount')!;
+    let genre = 'all';
+
+    function apply() {
+      const q = search.value.trim().toLowerCase();
+      let shown = 0;
+      rows.forEach((r) => {
+        const matchG = genre === 'all' || r.dataset.genre === genre;
+        const matchQ = !q || (r.dataset.title || '').includes(q) || (r.dataset.author || '').includes(q);
+        const show = matchG && matchQ;
+        r.classList.toggle('hide', !show);
+        if (show) shown++;
+      });
+      if (empty) empty.hidden = shown > 0;
+      count.textContent = `${shown} ${shown === 1 ? 'title' : 'titles'}${genre !== 'all' ? ' in ' + genre : ''}${q ? ` matching “${search.value.trim()}”` : ''}`;
+    }
+    search.addEventListener('input', apply);
+    pills.forEach((p) => p.addEventListener('click', () => { pills.forEach((x) => x.classList.toggle('active', x === p)); genre = p.dataset.genre || 'all'; apply(); }));
+    apply();
+  </script>
+</VellumLayout>

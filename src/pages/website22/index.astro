@@ -1,0 +1,71 @@
+---
+/**
+ * CLEARSTREAM , Home (website22, round 2 multi-page). Tailwind, light industrial.
+ * Hero with the drag-to-power-wash bay, services teaser, rig specs, dispatch CTA.
+ */
+import ClearstreamLayout from '../../layouts/ClearstreamLayout.astro';
+import WashBay from '../../components/clearstream/WashBay.astro';
+
+const SERVICES = [
+  { id: '01', title: 'Driveway Deep Clean', price: 'HIGH PSI', desc: 'Hot-water pre-treat, oil lift, algae removal, crisp edges restored.' },
+  { id: '02', title: 'Soft Wash Facades', price: 'LOW PSI', desc: 'Biodegradable wash to break down organics , no paint strip, no damage.' },
+  { id: '03', title: 'Roof Moss Treatment', price: 'BIO-CHEM', desc: 'Moss and lichen neutralised, gentle rinse, longer roof life.' },
+  { id: '04', title: 'Commercial + Fleets', price: 'CONTRACT', desc: 'Loading bays, forecourts, machinery, vehicles , scheduled, consistent.' },
+  { id: '05', title: 'Graffiti Removal', price: 'URGENT', desc: 'Targeted chemical lift, controlled rinse, minimal ghosting on masonry.' },
+];
+const SPECS = [
+  { label: 'MAX PRESSURE', val: '4000 PSI' },
+  { label: 'HOT WATER', val: '90°C' },
+  { label: 'ONBOARD', val: '1000L' },
+];
+---
+
+<ClearstreamLayout title="Clearstream , Exterior Cleaning Protocol" description="Hot-water pressure washing and soft wash. Drag to power-wash the panel clean. Driveways, facades, roofs, commercial.">
+  <section class="min-h-screen flex flex-col justify-center pt-28 pb-12 px-6 lg:px-12 border-b border-black/5">
+    <div class="max-w-7xl w-full mx-auto grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-center">
+      <div>
+        <div class="flex items-center gap-3 mb-8 text-[10px] font-mono uppercase tracking-widest text-blue-600"><div class="w-2 h-2 bg-blue-600"></div> Status: ready · 4h urgent call-out</div>
+        <h1 class="text-6xl lg:text-8xl font-black tracking-tighter leading-[0.85]">Exterior <br /><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-black">Cleaning</span> <br />Protocol.</h1>
+        <p class="max-w-md text-sm font-medium leading-relaxed mt-8">Hot-water pressure washing and soft wash. We remove grime, algae, grease, and staining , without wrecking the surface. <b class="text-blue-600">Drag the panel to see it.</b></p>
+        <div class="flex flex-wrap items-center gap-5 mt-10">
+          <a href="/website22/quote" class="bg-blue-600 hover:bg-black text-white px-8 py-4 text-xs font-black uppercase tracking-[0.2em] transition-colors clip-button">Request dispatch</a>
+          <a href="/website22/services" class="text-xs font-black uppercase tracking-[0.2em] border-b-2 border-black pb-1 hover:text-blue-600 hover:border-blue-600 transition-colors">See services</a>
+        </div>
+        <div class="grid grid-cols-3 gap-px bg-black/10 border border-black/10 mt-12 max-w-md">
+          {SPECS.map((s) => (<div class="bg-[#F0F2F5] p-5"><div class="text-[9px] font-mono uppercase tracking-widest text-gray-500">{s.label}</div><div class="text-2xl font-black tracking-tighter mt-1">{s.val}</div></div>))}
+        </div>
+      </div>
+      <WashBay label="CONCRETE · 4000 PSI · HOT" />
+    </div>
+  </section>
+
+  <section class="px-6 lg:px-12 py-24 border-b border-black/5">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex items-end justify-between mb-12">
+        <h2 class="text-4xl lg:text-6xl font-black tracking-tighter">Services.</h2>
+        <a href="/website22/services" class="text-xs font-black uppercase tracking-[0.2em] hover:text-blue-600 transition-colors">All services →</a>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-black/10 border-2 border-black">
+        {SERVICES.map((s) => (
+          <a href="/website22/services" class="bg-[#F0F2F5] p-8 group hover:bg-blue-600 hover:text-white transition-colors">
+            <div class="flex justify-between items-start mb-6"><span class="text-[10px] font-mono">{s.id}</span><span class="text-[10px] font-mono border border-current px-2 py-1">{s.price}</span></div>
+            <h3 class="text-2xl font-black tracking-tighter mb-3">{s.title}</h3>
+            <p class="text-sm font-medium leading-relaxed opacity-80">{s.desc}</p>
+          </a>
+        ))}
+        <a href="/website22/quote" class="bg-black text-white p-8 flex flex-col justify-between hover:bg-blue-600 transition-colors">
+          <span class="text-[10px] font-mono">→</span>
+          <h3 class="text-2xl font-black tracking-tighter">Book a clean →</h3>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 lg:px-12 py-28">
+    <div class="max-w-5xl mx-auto text-center">
+      <h2 class="text-5xl lg:text-7xl font-black tracking-tighter mb-6">Filthy in. Spotless out.</h2>
+      <p class="max-w-xl mx-auto text-sm font-medium mb-10">Tell us the surface and the problem. We bring the right pressure, the right chemistry, and a tidy finish , fast.</p>
+      <a href="/website22/quote" class="inline-block bg-blue-600 hover:bg-black text-white px-10 py-5 text-xs font-black uppercase tracking-[0.2em] transition-colors clip-button">Request dispatch</a>
+    </div>
+  </section>
+</ClearstreamLayout>

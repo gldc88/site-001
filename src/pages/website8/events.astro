@@ -1,0 +1,96 @@
+---
+/**
+ * VELLUM & OAK , Events (website8, round 2). Signature: reserve-a-seat with a live seat count + ref.
+ */
+import VellumLayout from '../../layouts/VellumLayout.astro';
+
+const EVENTS = [
+  { id: 'classics', date: 'Thu', time: '19:00', title: 'After-Hours Reading: Modern Classics', where: 'Reading Room', seats: 12, blurb: 'A glass of something and three short readings from the shelves, chosen by staff. Doors at half six.' },
+  { id: 'poetry', date: 'Sat', time: '16:30', title: 'Poetry & Tea', where: 'Reading Room', seats: 20, blurb: 'Open mic, five-minute slots, no pressure. Bring a poem of your own or read someone else\'s.' },
+  { id: 'story', date: 'Sun', time: '12:00', title: "Children's Story Hour", where: 'Ground Floor', seats: 30, blurb: 'A picture book read aloud, then a small craft. Families welcome, no booking needed but seats help.' },
+  { id: 'club', date: 'Wed', time: '18:30', title: 'Book Club: Literary Fiction', where: 'Reading Room', seats: 12, blurb: 'This month: Mrs Dalloway. Read it (or don\'t) and come for the conversation. Newcomers always welcome.' },
+  { id: 'author', date: 'Fri', time: '19:00', title: 'Author Evening: In Conversation', where: 'Main Floor', seats: 40, blurb: 'A visiting author reads and takes questions, followed by a signing. Books available on the night.' },
+];
+---
+
+<VellumLayout title="Events | Vellum & Oak" description="Readings, poetry nights, book clubs, and story hours at Vellum & Oak. Reserve a seat in the reading room." active="events">
+  <section class="page-hero" style="min-height:54svh;">
+    <div class="page-hero-media"><img src="/website8/staircase.jpg" alt="The wood-panelled staircase inside the bookshop" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="label">Events</span>
+      <h1>Something on <em>most</em> nights.</h1>
+      <p class="sub">Readings, poetry, book clubs, and the occasional author evening , most of it in the reading room upstairs. Reserve a seat below; it's free, we just like to know.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="ev-list">
+      {EVENTS.map((e) => (
+        <article class="evt panel" id={`evt-${e.id}`} data-seats={String(e.seats)}>
+          <div class="evt-when"><span class="evt-day">{e.date}</span><span class="evt-time">{e.time}</span></div>
+          <div class="evt-main">
+            <span class="evt-where">{e.where}</span>
+            <h3>{e.title}</h3>
+            <p>{e.blurb}</p>
+          </div>
+          <div class="evt-book">
+            <span class="evt-seats"><b class="seat-n">{e.seats}</b> seats left</span>
+            <button class="evt-btn" data-id={e.id}>Reserve a seat</button>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="rr-note panel foil">
+      <span class="label">The Reading Room</span>
+      <p>Outside of events, the reading room is a quiet place to sit with a book and a pot of tea. Booked by the hour , <a href="/website8/visit" class="inline-link" style="display:inline;">arrange a slot on the Visit page</a>.</p>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .ev-list { display: flex; flex-direction: column; gap: 14px; }
+    .evt { display: grid; grid-template-columns: 96px 1fr 200px; gap: 26px; align-items: center; padding: 26px 30px; transition: border-color 0.35s; }
+    .evt:hover { border-color: var(--hair-gold); }
+    .evt-when { text-align: center; border-right: 1px solid var(--hair); padding-right: 20px; }
+    .evt-day { font-family: var(--display); font-style: italic; font-size: 1.6rem; color: var(--gold); display: block; }
+    .evt-time { font-family: var(--body); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); }
+    .evt-main { min-width: 0; }
+    .evt-where { font-family: var(--body); font-size: 12px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+    .evt-main h3 { font-size: 1.5rem; color: var(--paper); margin: 4px 0 8px; }
+    .evt-main p { color: var(--muted); font-size: 1rem; line-height: 1.55; max-width: 60ch; }
+    .evt-book { text-align: right; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+    .evt-seats { font-style: italic; color: var(--muted); font-size: 0.98rem; }
+    .evt-seats b { font-family: var(--display); font-style: normal; color: var(--paper); font-size: 1.2rem; }
+    .evt-btn { font-family: var(--body); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #17120b; background: var(--gold); padding: 11px 20px; border-radius: 2px; transition: background 0.3s; white-space: nowrap; }
+    .evt-btn:hover { background: var(--gold-bright); }
+    .evt.full .evt-btn { background: rgba(243,234,214,0.08); color: var(--faint); cursor: not-allowed; }
+    .evt.full .evt-seats b { color: var(--rust); }
+
+    .rr-note { margin-top: 30px; padding: 30px 34px; }
+    .rr-note p { color: var(--muted); margin-top: 14px; font-size: 1.08rem; line-height: 1.6; max-width: 70ch; }
+
+    @media (max-width: 820px) { .evt { grid-template-columns: 1fr; gap: 16px; text-align: left; } .evt-when { display: flex; gap: 12px; align-items: baseline; border-right: none; border-bottom: 1px solid var(--hair); padding: 0 0 12px; } .evt-book { text-align: left; align-items: flex-start; flex-direction: row; justify-content: space-between; width: 100%; } }
+  </style>
+
+  <script>
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const buttons = Array.from(document.querySelectorAll<HTMLElement>('.evt-btn'));
+    buttons.forEach((btn) => btn.addEventListener('click', () => {
+      const card = document.getElementById(`evt-${btn.dataset.id}`);
+      if (!card) return;
+      let seats = Number(card.dataset.seats || '0');
+      if (seats <= 0) return;
+      seats--;
+      card.dataset.seats = String(seats);
+      const seatN = card.querySelector('.seat-n'); if (seatN) seatN.textContent = String(seats);
+      const title = card.querySelector('h3')?.textContent || 'the event';
+      const ref = 'VO-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      if (seats <= 0) { card.classList.add('full'); (btn as HTMLButtonElement).disabled = true; btn.textContent = 'Fully booked'; const sLabel = card.querySelector('.evt-seats'); if (sLabel) sLabel.innerHTML = '<b>0</b> seats left'; }
+      if (toast) { toast.textContent = `Seat reserved for ${title} , ref ${ref}. We'll hold it; just give your name on the night.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5600); }
+    }));
+  </script>
+</VellumLayout>

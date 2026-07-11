@@ -1,0 +1,50 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div aria-hidden="true" class:list={['factory-beam-grid pointer-events-none absolute inset-0', className]}>
+  <span class="factory-beam-grid__scan"></span>
+</div>
+
+<style>
+  .factory-beam-grid {
+    overflow: hidden;
+    background-image:
+      linear-gradient(rgba(125, 211, 252, 0.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(216, 180, 254, 0.08) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+  }
+
+  .factory-beam-grid__scan {
+    position: absolute;
+    inset: 0;
+    transform: translateY(-100%);
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(34, 211, 238, 0.18),
+      rgba(217, 70, 239, 0.16),
+      transparent
+    );
+    animation: factory-beam-scan 8s linear infinite;
+  }
+
+  @keyframes factory-beam-scan {
+    to {
+      transform: translateY(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .factory-beam-grid__scan {
+      animation: none;
+      transform: translateY(0);
+      opacity: 0.35;
+    }
+  }
+</style>

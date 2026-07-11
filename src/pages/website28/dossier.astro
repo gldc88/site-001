@@ -1,0 +1,17 @@
+---
+/**
+ * CIVIL HOUSE MAKELAARS , Dossier (website28, round 2). The client dossier builder tool.
+ */
+import CivilHouseLayout from '../../layouts/CivilHouseLayout.astro';
+import DossierBuilder from '../../components/civilhouse/DossierBuilder.astro';
+---
+
+<CivilHouseLayout title="Client Dossier Builder | Civil House Makelaars" description="Generate a one-page brief , document checklist and first-week plan , on your device. Cuts the back-and-forth." active="dossier">
+  <section class="mx-auto max-w-[1480px] px-6 pt-16 pb-10">
+    <span class="text-[11px] font-semibold uppercase tracking-[0.3em] brass-text">Dossier builder</span>
+    <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.92] mt-4">A brief that <span class="brass-text">cuts friction.</span></h1>
+    <p class="mt-7 max-w-2xl text-[var(--mut)] text-lg leading-relaxed">A practical tool sellers and buyers rarely get: a one-page brief that prevents delays. Everything stays on your device , generate it, copy it, send it when ready. Your brief travels into a callback request, too.</p>
+  </section>
+
+  <section class="mx-auto max-w-[1480px] px-6 pb-20"><DossierBuilder /></section>
+</CivilHouseLayout>

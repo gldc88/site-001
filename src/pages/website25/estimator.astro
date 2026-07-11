@@ -1,0 +1,19 @@
+---
+/**
+ * GROUNDSPEC , Estimator (website25, round 2). The live CAD takeoff console.
+ */
+import GroundspecLayout from '../../layouts/GroundspecLayout.astro';
+import Estimator from '../../components/groundspec/Estimator.astro';
+---
+
+<GroundspecLayout title="Estimator | Groundspec" description="A live CAD estimator for paving and fencing , area, fence run, and an indicative budget as you drag the dimensions." active="estimator">
+  <section class="py-12 md:py-16 px-4 md:px-8 mx-auto max-w-5xl">
+    <div class="mb-8">
+      <span class="text-xs font-black text-yellow-500 uppercase tracking-[0.3em]">/ Estimator console</span>
+      <h1 class="mt-4 text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">Draw it. Price it.</h1>
+      <p class="mt-5 text-zinc-400 max-w-2xl leading-relaxed font-light">Pick a shape and finish, drag the dimensions, and toggle a perimeter fence. Area, fence run, and an indicative budget update live , then send the takeoff straight to a quote.</p>
+    </div>
+    <Estimator />
+    <p class="mt-6 text-[11px] font-mono text-zinc-600 uppercase tracking-widest">Indicative only · final quote confirmed after a site visit · materials + base prep + labour</p>
+  </section>
+</GroundspecLayout>

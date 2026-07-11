@@ -1,0 +1,132 @@
+---
+/**
+ * FieldLayout , shared shell for FIELD STUDIO (website16, round 2).
+ * Persistent 2D curl-noise flow field behind an editorial layout. Any page's [data-season] dial
+ * retunes the field + the --accent/--bg0 theme; [data-flow] elements overlay a transient mood.
+ * The season is saved to localStorage and restored (pre-paint) on every page. Props: title, description, active.
+ */
+import '../styles/field-fonts.css';
+import '../styles/field.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+import { SEASONS, DEFAULT_SEASON } from '../data/field';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'field', label: 'The Field', href: '/website16/field' },
+  { key: 'archive', label: 'Archive', href: '/website16/archive' },
+  { key: 'method', label: 'Method', href: '/website16/method' },
+];
+const THEME = Object.fromEntries(SEASONS.map((s) => [s.key, { accent: s.accent, bg: s.bg, density: s.density, note: s.note }]));
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script type="application/json" id="field-theme" set:html={JSON.stringify(THEME)}></script>
+    <script is:inline define:vars={{ DEFAULT_SEASON }}>
+      try {
+        const th = JSON.parse(document.getElementById('field-theme').textContent);
+        let k = localStorage.getItem('field-season') || DEFAULT_SEASON;
+        if (!th[k]) k = DEFAULT_SEASON;
+        document.documentElement.style.setProperty('--accent', th[k].accent);
+        document.documentElement.style.setProperty('--bg0', th[k].bg);
+      } catch (e) {}
+    </script>
+  </head>
+
+  <body data-default-season={DEFAULT_SEASON}>
+    <canvas id="field" aria-hidden="true"></canvas>
+    <div class="field-fallback" id="fieldFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <a href="/" class="sys-exit"><i>←</i> Index</a>
+
+    <header class="topbar">
+      <div class="brand">
+        <a href="/website16" class="name">Field Studio</a>
+        <div class="meta">Living systems · nature interfaces</div>
+      </div>
+      <nav class="nav">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+        <a href="/website16/intake" class="nav-cta">Intake</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <slot />
+    </main>
+
+    <footer class="foot">
+      <div class="foot-grid">
+        <div>
+          <h3>Field Studio</h3>
+          <p>We document living systems , forest structure, air movement, water logic , and build calm, high-density interfaces from what we find. Season-tuned, archive-led. Fictional studio, built for demonstration.</p>
+        </div>
+        <div><h4>Studio</h4><a class="fl" href="/website16/field">The Field</a><a class="fl" href="/website16/archive">Archive</a><a class="fl" href="/website16/method">Method</a><a class="fl" href="/website16/intake">Intake</a></div>
+        <div><h4>Relay</h4><a class="fl" href="mailto:hello@field.studio.example">hello@field.studio.example</a><a class="fl" href="/website16/intake">Start an intake</a><a class="fl" href="/">Return to Index</a></div>
+      </div>
+      <div class="foot-copy"><span>© {YEAR} Field Studio. Demonstration only.</span><span><a class="inline-link" href="#top">Top ↑</a> · season-tuned · self-contained</span></div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      type Theme = Record<string, { accent: string; bg: string; density: string; note: string }>;
+      const THEME: Theme = JSON.parse(document.getElementById('field-theme')?.textContent || '{}');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const DEFAULT = document.body.dataset.defaultSeason || Object.keys(THEME)[0];
+      let season = localStorage.getItem('field-season') || DEFAULT;
+      if (!THEME[season]) season = DEFAULT;
+      document.body.dataset.season = season;
+
+      const fallback = document.getElementById('fieldFallback');
+      const paintFallback = (k: string) => { if (fallback && THEME[k]) fallback.style.background = `radial-gradient(900px 600px at 24% 18%, ${THEME[k].accent}22, transparent 60%), radial-gradient(800px 600px at 80% 70%, ${THEME[k].accent}11, transparent 62%)`; };
+      paintFallback(season);
+
+      let field: any = null;
+      const canvas = document.getElementById('field');
+      if (!reduce && canvas instanceof HTMLCanvasElement) {
+        import('../scenes/field-flow-scene')
+          .then(({ initFieldFlow }) => {
+            field = initFieldFlow(canvas);
+            field.setSeason(season);
+            window.addEventListener('pagehide', () => field?.dispose(), { once: true });
+            (window as any).__field = field;
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+
+      function applySeason(k: string) {
+        if (!THEME[k]) return;
+        season = k;
+        document.body.dataset.season = k;
+        localStorage.setItem('field-season', k);
+        document.documentElement.style.setProperty('--accent', THEME[k].accent);
+        document.documentElement.style.setProperty('--bg0', THEME[k].bg);
+        paintFallback(k);
+        field?.setSeason(k);
+        document.querySelectorAll<HTMLElement>('[data-season]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.season === k)));
+        document.dispatchEvent(new CustomEvent('field:season', { detail: k }));
+      }
+      (window as any).__fieldSeason = applySeason;
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-season]');
+        if (btn && btn.dataset.season) applySeason(btn.dataset.season);
+      });
+      document.querySelectorAll<HTMLElement>('[data-season]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.season === season)));
+
+      // transient flow mood from [data-flow] elements
+      document.addEventListener('mouseover', (e) => { const el = (e.target as HTMLElement).closest<HTMLElement>('[data-flow]'); if (el && el.dataset.flow) field?.setFlowState(el.dataset.flow); });
+      document.addEventListener('click', (e) => { const el = (e.target as HTMLElement).closest<HTMLElement>('[data-flow]'); if (el && el.dataset.flow) { field?.setFlowState(el.dataset.flow); document.dispatchEvent(new CustomEvent('field:flow', { detail: el.dataset.flow })); } });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+---
+/**
+ * LIGNUM ATELIER , Works (website13, round 2). Signature: selecting a project re-tints the persistent
+ * wood surface to that project's timber.
+ */
+import LignumLayout from '../../layouts/LignumLayout.astro';
+import { SPECIES, grad } from '../../data/lignum';
+
+const byKey = Object.fromEntries(SPECIES.map((s) => [s.key, s]));
+const WORKS = [
+  { id: '01', title: 'Kyoto Tea Room', type: 'Wall cladding & screens', year: '2024', sp: 'ash', note: 'Olive ash screens that filter light without blocking it , bright figure, kept pale and quiet.' },
+  { id: '02', title: 'Vessel Library', type: 'Floor-to-ceiling joinery', year: '2024', sp: 'oak', note: 'European oak shelving run continuous across an entire wall, grain matched board to board.' },
+  { id: '03', title: 'Apothecary Counter', type: 'Solid-surface furniture', year: '2023', sp: 'cherry', note: 'A wild cherry counter that arrived rose-pink and is already glowing russet under daily hands.' },
+  { id: '04', title: 'Obsidian Bar', type: 'Hospitality fit-out', year: '2023', sp: 'ebony', note: 'Macassar ebony faces and handles against blackened steel , dense, striped, and near-black.' },
+  { id: '05', title: 'Long Dining Table', type: 'Single-commission piece', year: '2022', sp: 'walnut', note: 'A single black-walnut top, book-matched, on hand-cut trestles. Built to seat three generations.' },
+];
+---
+
+<LignumLayout title="Works | Lignum Atelier" description="Selected works from Lignum Atelier , cladding, libraries, counters, bars, and tables. Select one to set the surface to its timber." active="works">
+  <div class="page-hero">
+    <span class="overline">Works</span>
+    <h1>Pieces that <em>outlive</em> us.</h1>
+    <p class="sub">A record of commissions. Select any project below and the surface behind the page re-tints to the timber it was built from , the same wood you'd be choosing for your own.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="works-list" id="worksList">
+      {WORKS.map((w, i) => (
+        <button class={`work ${i === 0 ? 'active' : ''}`} data-species data-key={w.sp} aria-pressed="false">
+          <span class="wk-id">{w.id}</span>
+          <div class="wk-main">
+            <div class="wk-top"><h2>{w.title}</h2><span class="wk-chip" style={`background:${grad(byKey[w.sp])}; background-blend-mode:multiply,normal,normal;`}></span></div>
+            <span class="wk-type">{w.type} · {byKey[w.sp].name}</span>
+            <p class="wk-note">{w.note}</p>
+          </div>
+          <span class="wk-year">{w.year}</span>
+        </button>
+      ))}
+    </div>
+
+    <p class="works-hint">Selecting a project sets the surface to its timber , and that choice follows you across the site.</p>
+
+    <div class="works-cta">
+      <a href="/website13/commission" class="btn-cta">Commission something like this</a>
+    </div>
+  </section>
+
+  <style>
+    .works-list { display: flex; flex-direction: column; }
+    .work { display: grid; grid-template-columns: 56px 1fr auto; gap: 26px; align-items: start; text-align: left; padding: 30px 10px; border-top: 1px solid var(--hair-soft); transition: background 0.3s, padding-left 0.3s; }
+    .work:last-child { border-bottom: 1px solid var(--hair-soft); }
+    .work:hover { background: rgba(201,162,75,0.05); padding-left: 16px; }
+    .work[aria-pressed='true'] { background: rgba(201,162,75,0.08); }
+    .wk-id { font-family: var(--mono); font-size: 13px; color: var(--brass); padding-top: 8px; }
+    .wk-main { min-width: 0; }
+    .wk-top { display: flex; align-items: center; gap: 14px; }
+    .wk-top h2 { font-size: clamp(1.6rem,3vw,2.4rem); color: #fff; }
+    .wk-chip { width: 44px; height: 26px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.4); flex-shrink: 0; }
+    .wk-type { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); display: block; margin: 6px 0 10px; }
+    .wk-note { color: var(--muted); line-height: 1.6; max-width: 64ch; }
+    .wk-year { font-family: var(--mono); font-size: 13px; color: var(--muted); padding-top: 8px; }
+    .works-hint { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--faint); text-align: center; margin-top: 34px; }
+    .works-cta { display: flex; justify-content: center; margin-top: 24px; }
+
+    @media (max-width: 720px) { .work { grid-template-columns: 40px 1fr; } .wk-year { grid-column: 2; padding-top: 0; } }
+  </style>
+
+  <script>
+    // The layout's delegation already re-tints + persists on [data-species] click; here we just toggle
+    // the page's active row state to match.
+    const works = Array.from(document.querySelectorAll<HTMLElement>('.work'));
+    const sync = () => { const key = document.body.dataset.species || localStorage.getItem('lignum-species') || 'walnut'; works.forEach((w) => w.classList.toggle('active', w.dataset.key === key)); };
+    works.forEach((w) => w.addEventListener('click', () => setTimeout(sync, 0)));
+    document.addEventListener('lignum:species', sync);
+    sync();
+  </script>
+</LignumLayout>

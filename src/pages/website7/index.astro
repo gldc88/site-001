@@ -1,0 +1,170 @@
+---
+/**
+ * GREENLINE TREE SURGERY , Home (website7, round 2 multi-page).
+ * Golden-hour canopy WebGL hero, trust strip, services + method + work teasers, contact CTA.
+ */
+import GreenlineLayout from '../../layouts/GreenlineLayout.astro';
+
+const SPECS = [
+  { k: 'Insured', v: '£10M Public Liability' },
+  { k: 'Qualified', v: 'NPTC / LANTRA' },
+  { k: 'Safe Work', v: 'On-site risk assessment' },
+  { k: 'Tidy Finish', v: 'Waste removed & recycled' },
+];
+const SERVICES = [
+  { t: 'Crown Reduction', line: 'Reduce height and spread while keeping a natural shape.' },
+  { t: 'Crown Lift & Thin', line: 'More clearance and light through the canopy.' },
+  { t: 'Tree Removal', line: 'Straight fell where possible, or sectional dismantle with rigging.' },
+  { t: 'Stump Grinding', line: 'Stumps removed below ground level, area left tidy.' },
+  { t: 'Hedge Cutting', line: 'Annual trims, reductions, and boundary shaping.' },
+  { t: 'Emergency Call-outs', line: 'Storm damage, hanging limbs, and hazard make-safe.' },
+];
+const PROCESS = [
+  { id: '01', t: 'Call or message', d: 'Tell us what you need and where you are. Photos help.' },
+  { id: '02', t: 'Site visit', d: 'We check access, hazards, wildlife, and any TPO constraints.' },
+  { id: '03', t: 'Fixed quote', d: 'Clear scope, clear price, and a date that works for you.' },
+  { id: '04', t: 'Job day', d: 'Safe rigging, controlled cuts, site left clean and tidy.' },
+];
+---
+
+<GreenlineLayout title="Greenline Tree Surgery , Local Tree Surgeon" description="Greenline , a local, fully insured tree surgeon for pruning, removals, stump grinding, hedges, and emergency call-outs. Qualified, careful, and tidy.">
+  <header class="hero" id="hero">
+    <div class="hero-inner">
+      <span class="eyebrow" id="heroEye">Local Tree Surgeon · Fully Insured</span>
+      <h1 class="hero-title" id="heroTitle">Tall work,<br /><em>safe hands.</em></h1>
+      <p class="hero-tag" id="heroTag">Pruning, removals, stump grinding, and emergency call-outs , done by qualified climbers who leave the site cleaner than they found it.</p>
+      <div class="hero-actions" id="heroActions">
+        <a href="/website7/contact" class="btn-cta">Get a free quote</a>
+        <a href="/website7/services" class="btn-ghost">See services</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="specs-wrap">
+    <div class="specs panel warm">
+      {SPECS.map((s) => (<div class="spec"><span class="sp-k">{s.k}</span><span class="sp-v">{s.v}</span></div>))}
+    </div>
+  </div>
+
+  <section class="section" id="services">
+    <div class="sec-head">
+      <div><span class="eyebrow" data-reveal="fade">What we do</span><h2 data-reveal="up">Trees, hedges, stumps , sorted.</h2></div>
+      <p data-reveal="up">Domestic and commercial tree work across the area. <a class="inline-link" href="/website7/services">All services →</a></p>
+    </div>
+    <div class="svc-grid">
+      {SERVICES.map((s) => (
+        <a href="/website7/services" class="svc panel" data-reveal="up">
+          <h3>{s.t}</h3><p>{s.line}</p><span class="svc-arw">→</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight method-band">
+    <div class="mb-media" data-reveal="fade"><img src="/website7/arborB.jpg" alt="A qualified climber working high in an oak, in full harness and helmet" loading="lazy" /></div>
+    <div class="mb-copy">
+      <span class="eyebrow rope" data-reveal="fade">How we work</span>
+      <h2 data-reveal="up">Careful, qualified, tidy.</h2>
+      <div class="proc-list">
+        {PROCESS.map((p) => (
+          <div class="proc" data-reveal="up"><span class="pr-id">{p.id}</span><div><h4>{p.t}</h4><p>{p.d}</p></div></div>
+        ))}
+      </div>
+      <a href="/website7/method" class="inline-link" data-reveal="fade" style="margin-top:8px;">Our full method →</a>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow" data-reveal="fade">Recent jobs</span><h2 data-reveal="up">Work from around the area.</h2></div><p data-reveal="up"><a class="inline-link" href="/website7/work">See more →</a></p></div>
+    <div class="work-teaser">
+      <a href="/website7/work" class="wt-card" data-reveal="up"><img src="/website7/arborA.jpg" alt="Sectional limb removal over a property" loading="lazy" /><div class="wt-cap"><h4>Sectional Dismantle</h4><span>Over a driveway</span></div></a>
+      <a href="/website7/work" class="wt-card" data-reveal="up"><img src="/website7/canopy.jpg" alt="A mature tree reduced and reshaped" loading="lazy" /><div class="wt-cap"><h4>Crown Reduction</h4><span>Mature garden tree</span></div></a>
+    </div>
+  </section>
+
+  <section class="section contact-cta">
+    <div class="cc-inner panel warm" data-reveal="up">
+      <span class="eyebrow rope c">Free, no-obligation</span>
+      <h2>Got a tree that needs looking at?</h2>
+      <p>Send a photo and a postcode and we'll give you a clear, fixed quote , usually the same day.</p>
+      <div class="cc-actions">
+        <a href="/website7/contact" class="btn-cta">Get a free quote</a>
+        <a href="tel:+447900123456" class="btn-call">Call 07 900 123 456</a>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 0 clamp(20px,5vw,56px); }
+    .hero-inner { position: relative; max-width: 1220px; margin: 0 auto; width: 100%; }
+    .hero .eyebrow { opacity: 0; transform: translateY(8px); }
+    .hero-title { font-size: clamp(3rem, 10vw, 8.5rem); line-height: 0.96; color: #fff; margin: 22px 0; max-width: 14ch; }
+    .hero-title em { color: var(--leaf); font-style: italic; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-tag { font-size: clamp(1rem, 1.7vw, 1.3rem); color: rgba(238,243,238,0.84); max-width: 48ch; opacity: 0; line-height: 1.6; }
+    .hero-actions { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; opacity: 0; }
+
+    .specs-wrap { position: relative; z-index: 20; display: flex; justify-content: center; padding: 0 18px; margin-top: -36px; }
+    .specs { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); }
+    .spec { padding: 22px clamp(16px,2vw,26px); display: flex; flex-direction: column; gap: 5px; border-right: 1px solid var(--hair); }
+    .spec:last-child { border-right: none; }
+    .sp-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--leaf); }
+    .sp-v { font-family: var(--head); font-size: clamp(1rem,1.5vw,1.3rem); color: #fff; }
+
+    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .svc { position: relative; padding: 30px 26px; overflow: hidden; transition: border-color 0.35s, transform 0.35s; min-height: 160px; }
+    .svc:hover { border-color: var(--hair-leaf); transform: translateY(-4px); }
+    .svc h3 { font-size: 1.5rem; color: #fff; }
+    .svc p { color: var(--muted); margin-top: 12px; font-size: 0.9rem; line-height: 1.6; }
+    .svc-arw { position: absolute; bottom: 22px; right: 24px; color: var(--leaf); opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+    .svc:hover .svc-arw { opacity: 1; transform: translateX(4px); }
+
+    .method-band { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(28px,5vw,60px); align-items: center; }
+    .mb-media { border-radius: 16px; overflow: hidden; aspect-ratio: 4/5; }
+    .mb-media img { width: 100%; height: 100%; object-fit: cover; }
+    .mb-copy { min-width: 0; }
+    .mb-copy h2 { font-size: clamp(1.9rem,3.4vw,2.9rem); color: #fff; margin: 12px 0 26px; }
+    .proc-list { display: flex; flex-direction: column; gap: 18px; margin-bottom: 24px; }
+    .proc { display: grid; grid-template-columns: 44px 1fr; gap: 16px; }
+    .pr-id { font-family: var(--mono); font-size: 12px; color: var(--rope); padding-top: 4px; }
+    .proc h4 { font-family: var(--head); font-size: 1.2rem; color: #fff; }
+    .proc p { color: var(--muted); font-size: 0.9rem; margin-top: 3px; }
+
+    .work-teaser { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .wt-card { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 16/10; }
+    .wt-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+    .wt-card:hover img { transform: scale(1.05); }
+    .wt-cap { position: absolute; left: 0; bottom: 0; right: 0; padding: 24px; background: linear-gradient(180deg, transparent, rgba(10,20,16,0.85)); }
+    .wt-cap h4 { font-family: var(--head); font-size: 1.4rem; color: #fff; }
+    .wt-cap span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); }
+
+    .contact-cta { display: flex; justify-content: center; }
+    .cc-inner { text-align: center; padding: clamp(40px,6vw,72px) clamp(24px,4vw,56px); max-width: 760px; }
+    .cc-inner h2 { font-size: clamp(1.9rem,4vw,3.2rem); color: #fff; margin-top: 14px; }
+    .cc-inner p { color: var(--muted); margin-top: 16px; max-width: 46ch; margin-inline: auto; }
+    .cc-actions { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+    @media (max-width: 900px) { .svc-grid { grid-template-columns: 1fr; } .specs { grid-template-columns: 1fr 1fr; } .spec:nth-child(2) { border-right: none; } .spec:nth-child(1), .spec:nth-child(2) { border-bottom: 1px solid var(--hair); } .method-band { grid-template-columns: 1fr; } .work-teaser { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .hero .eyebrow, .hero-tag, .hero-actions { opacity: 1 !important; transform: none !important; } }
+  </style>
+
+  <script>
+    import { gsap, ScrollTrigger, SplitText } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroTitle = document.getElementById('heroTitle');
+    const heroEye = document.getElementById('heroEye');
+    const heroTag = document.getElementById('heroTag');
+    const heroActions = document.getElementById('heroActions');
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'words,chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (heroEye) tl.to(heroEye, { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 120, opacity: 0, stagger: 0.04, duration: 1 }, 0.1);
+      if (heroTag) tl.to(heroTag, { opacity: 1, duration: 0.8 }, 0.6);
+      if (heroActions) tl.to(heroActions, { opacity: 1, duration: 0.8 }, 0.8);
+    } else {
+      [heroEye, heroTag, heroActions].forEach((el) => el && (el.style.opacity = '1'));
+    }
+    ScrollTrigger.refresh();
+  </script>
+</GreenlineLayout>

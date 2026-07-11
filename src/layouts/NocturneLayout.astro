@@ -1,0 +1,149 @@
+---
+/**
+ * NocturneLayout , shared shell for NOCTURNE multi-page hotel (website2, round 2).
+ * Persistent WebGL night scene behind all pages; content floats over it.
+ * Props: title, description, active.
+ */
+import '../styles/nocturne-fonts.css';
+import '../styles/nocturne.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const HOTEL = 'Nocturne';
+const NAV = [
+  { key: 'suites', label: 'Suites', href: '/website2/suites' },
+  { key: 'kitchen', label: 'Kitchen', href: '/website2/kitchen' },
+  { key: 'bathhouse', label: 'Bathhouse', href: '/website2/bathhouse' },
+  { key: 'rituals', label: 'Rituals', href: '/website2/rituals' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script is:inline>
+      // R3 Night Clock: fase pre-paint (localStorage-override of afgeleid van echte Tokyo-tijd).
+      try {
+        var stored = localStorage.getItem('nocturne-phase');
+        var hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tokyo', hour: 'numeric', hourCycle: 'h23' }).format(new Date()));
+        var derived = hour >= 16 && hour < 21 ? 'dusk' : hour >= 21 || hour < 1 ? 'night' : hour < 4 ? 'deep' : hour < 8 ? 'dawn' : 'night';
+        document.documentElement.dataset.phase = stored || derived;
+      } catch (e) { document.documentElement.dataset.phase = 'night'; }
+    </script>
+    <link rel="preload" as="font" type="font/woff2" href="/website2/fonts/8vIJ7ww63mVu7gt79mT7.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/website2/fonts/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2" crossorigin />
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="topbar" id="topbar">
+      <div class="tb-left">
+        <a href="/" class="back-link">← Index</a>
+        <a href="/website2" class="brand">{HOTEL}</a>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </nav>
+      <a href="/website2/reserve" class="cta">Reserve</a>
+    </header>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>{HOTEL}</h3>
+          <p>Neon outside, hush within. A small after-dark hotel in Minato , suites, an eight-seat kitchen, a bathhouse below the street, and rituals booked one whisper at a time.</p>
+        </div>
+        <div class="f-col"><h4>Visit</h4><a href="/website2/suites">Suites</a><a href="/website2/kitchen">Kitchen</a><a href="/website2/bathhouse">Bathhouse</a><a href="/website2/rituals">Rituals</a></div>
+        <div class="f-col"><h4>Contact</h4><a href="tel:+81300000000">+81 3 0000 0000</a><a href="mailto:stay@nocturne.example">stay@nocturne.example</a><a href="/website2/reserve">Minato-ku, Tokyo</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} {HOTEL} Hotel. Fictional brand , demonstration only.</span>
+        <span><a href="/">Index</a> · Neon outside · Hush within</span>
+      </div>
+    </footer>
+
+    <div class="nightclock" id="nightclock" role="radiogroup" aria-label="Tokyo night phase">
+      <div class="nc-face" aria-hidden="true">
+        <span class="nc-hand" id="ncHand"></span>
+        <span class="nc-pin"></span>
+      </div>
+      <div class="nc-time" id="ncTime" aria-hidden="true">--:--</div>
+      <div class="nc-phases">
+        <button type="button" class="nc-phase" data-phase="dusk" role="radio" aria-checked="false">Dusk 18:00</button>
+        <button type="button" class="nc-phase" data-phase="night" role="radio" aria-checked="false">Night 22:00</button>
+        <button type="button" class="nc-phase" data-phase="deep" role="radio" aria-checked="false">Deep 02:00</button>
+        <button type="button" class="nc-phase" data-phase="dawn" role="radio" aria-checked="false">Dawn 05:00</button>
+      </div>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const topbar = document.getElementById('topbar');
+      const onScroll = () => topbar?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* ---- R3 Night Clock ---- */
+      type Phase = 'dusk' | 'night' | 'deep' | 'dawn';
+      const HAND_DEG: Record<Phase, number> = { dusk: 45, night: 135, deep: 225, dawn: 315 };
+      let sceneSetPhase: ((p: Phase, instant?: boolean) => void) | null = null;
+      const phaseButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.nc-phase'));
+      const hand = document.getElementById('ncHand');
+
+      const currentPhase = (): Phase => (document.documentElement.dataset.phase as Phase) || 'night';
+      function applyPhase(phase: Phase, instant = false) {
+        document.documentElement.dataset.phase = phase;
+        try { localStorage.setItem('nocturne-phase', phase); } catch { /* private mode */ }
+        phaseButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.phase === phase)));
+        if (hand) hand.style.transform = `rotate(${HAND_DEG[phase]}deg)`;
+        sceneSetPhase?.(phase, instant || reduce);
+      }
+      phaseButtons.forEach((b) => b.addEventListener('click', () => applyPhase(b.dataset.phase as Phase)));
+      applyPhase(currentPhase(), true);
+
+      const ncTime = document.getElementById('ncTime');
+      const fmtJst = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+      const tickTime = () => { if (ncTime) ncTime.textContent = `${fmtJst.format(new Date())} JST`; };
+      tickTime();
+      setInterval(tickTime, 30_000);
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/nocturne-scene')
+          .then(({ initNocturneScene }) => {
+            const scene = initNocturneScene(canvas);
+            sceneSetPhase = scene.setPhase;
+            scene.setPhase(currentPhase(), true);
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

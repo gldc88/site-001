@@ -1,0 +1,113 @@
+---
+/**
+ * AURELIA SKYPORT , Program / Membership (website4, round 2). Signature: tier selector + join form.
+ */
+import AureliaLayout from '../../layouts/AureliaLayout.astro';
+
+const TIERS = [
+  { id: 'charter', name: 'Charter', price: 'Per flight', cadence: 'no commitment', line: 'Fly when you need to, at the published rate. Full access to the terminal and protocol, billed by the leg.',
+    perks: ['Private terminal access', 'Arrival protocol', 'Aircraft on availability', 'Standard hourly rate'] },
+  { id: 'resident', name: 'Resident', price: '$ on request', cadence: 'annual', line: 'For the regular flyer. Standing slots, a fixed hourly rate, and preferred aircraft profiles kept on file.', featured: true,
+    perks: ['Standing departure slots', 'Fixed hourly rate', 'Preferred aircraft profiles', 'Secure baggage vault', 'Dedicated flight-desk line'] },
+  { id: 'founder', name: 'Founder', price: 'By invitation', cadence: 'bespoke', line: 'The quietest tier. A guaranteed aircraft, a dedicated crew, and a tail number that is effectively yours.',
+    perks: ['Guaranteed aircraft', 'Dedicated crew', 'Your tail number', 'Global repositioning', 'A single name to call'] },
+];
+---
+
+<AureliaLayout title="The Program | AURELIA SKYPORT" description="Membership at Aurelia Skyport , Charter, Resident, and Founder. A desk that knows your name and your schedule." active="membership">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website4/lounge.jpg" alt="The Aurelia lounge" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">The Program</span>
+      <h1>Membership, not a <em>booking line</em>.</h1>
+      <p class="sub">Three ways to belong , from flying by the leg to holding your own tail number. Every tier is the same quiet desk: it knows your name, your aircraft, and your schedule before you call.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="tiers">
+      {TIERS.map((t, i) => (
+        <button class={`tier panel${t.featured ? ' featured' : ''}${i === 1 ? ' on' : ''}`} data-id={t.id} data-name={t.name}>
+          {t.featured && <span class="tier-flag">Most chosen</span>}
+          <span class="tier-mark" aria-hidden="true"></span>
+          <h3>{t.name}</h3>
+          <div class="tier-price">{t.price}<small>{t.cadence}</small></div>
+          <p class="tier-line">{t.line}</p>
+          <ul class="tier-perks">{t.perks.map((p) => <li>{p}</li>)}</ul>
+        </button>
+      ))}
+    </div>
+
+    <div class="join">
+      <div class="join-copy">
+        <span class="overline">Apply</span>
+        <h2 id="joinTier">Resident program</h2>
+        <p>No public sign-up. Leave your details and the flight desk replies with the next step , a short call, a profile, and a tail when you are ready. We read every line ourselves.</p>
+      </div>
+      <form id="joinForm" class="join-form panel ticked" novalidate>
+        <div class="fld"><label for="jname">Name</label><input id="jname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+        <div class="fld"><label for="jemail">Email</label><input id="jemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        <div class="fld"><label for="jbase">Home base (optional)</label><input id="jbase" name="base" type="text" placeholder="City or airport code…" /></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request to join</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .tier { position: relative; text-align: left; padding: 34px 28px; display: flex; flex-direction: column; gap: 14px; transition: all 0.35s var(--ease); overflow: hidden; }
+    .tier::after { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(200,168,107,0.08), transparent 60%); opacity: 0; transition: opacity 0.35s; }
+    .tier:hover { border-color: var(--hair); transform: translateY(-4px); }
+    .tier.on { border-color: var(--gold); }
+    .tier.on::after { opacity: 1; }
+    .tier-flag { position: absolute; top: 0; right: 0; font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: #040406; background: var(--champagne); padding: 6px 12px; }
+    .tier-mark { position: absolute; top: 32px; right: 26px; width: 15px; height: 15px; border: 1px solid var(--faint); border-radius: 50%; transition: all 0.3s; }
+    .tier.featured .tier-mark { top: 46px; }
+    .tier.on .tier-mark { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 12px var(--gold); }
+    .tier h3 { font-size: 1.9rem; color: #fff; position: relative; }
+    .tier-price { font-family: var(--head); font-size: 1.7rem; color: var(--champagne); display: flex; align-items: baseline; gap: 8px; position: relative; }
+    .tier-price small { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .tier-line { color: var(--muted); font-size: 0.85rem; line-height: 1.6; position: relative; }
+    .tier-perks { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-top: 4px; position: relative; }
+    .tier-perks li { font-size: 0.82rem; color: #cfc6b4; padding-left: 18px; position: relative; line-height: 1.5; }
+    .tier-perks li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-size: 0.85em; }
+
+    .join { margin-top: 60px; display: grid; grid-template-columns: 1fr 0.9fr; gap: clamp(24px,4vw,50px); align-items: start; padding-top: 50px; border-top: 1px solid var(--hair-soft); }
+    .join-copy h2 { font-size: clamp(2rem,3.6vw,3rem); color: #fff; margin: 14px 0 0; }
+    .join-copy p { color: var(--muted); line-height: 1.8; margin-top: 20px; max-width: 46ch; }
+    .join-form { padding: clamp(24px,3vw,36px); display: flex; flex-direction: column; gap: 16px; }
+    @media (max-width: 900px) { .tiers { grid-template-columns: 1fr; } .join { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const tiers = Array.from(document.querySelectorAll<HTMLButtonElement>('.tier'));
+    const joinTier = document.getElementById('joinTier')!;
+    let chosen = 'Resident';
+    tiers.forEach((t) => t.addEventListener('click', () => {
+      tiers.forEach((x) => x.classList.toggle('on', x === t));
+      chosen = t.dataset.name || 'Resident';
+      joinTier.textContent = chosen + ' program';
+    }));
+
+    const form = document.getElementById('joinForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5600); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#e8927a' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      form.reset();
+      showToast(`Received, ${name.split(' ')[0]}. Your ${chosen} application is with the flight desk , we reply within the day.`);
+    });
+  </script>
+</AureliaLayout>

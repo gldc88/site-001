@@ -1,0 +1,78 @@
+---
+/**
+ * CIVIL HOUSE MAKELAARS , Callback (website28, round 2). Request-a-call -> validate -> toast that
+ * references the dossier brief (from localStorage) if one was built.
+ */
+import CivilHouseLayout from '../../layouts/CivilHouseLayout.astro';
+import { NEXT_STEPS, PHONE, TEL, EMAIL, AREA } from '../../data/civilhouse';
+---
+
+<CivilHouseLayout title="Request a Call | Civil House Makelaars" description="Leave your details and we reply with one clear next step , not a brochure. Your dossier travels with the request.">
+  <section class="mx-auto max-w-[1480px] px-6 pt-16 pb-24 grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+    <div>
+      <span class="text-[11px] font-semibold uppercase tracking-[0.3em] brass-text">Request a call</span>
+      <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.92] mt-4">One clear <br />next step.</h1>
+      <p class="mt-7 max-w-md text-[var(--mut)] text-lg leading-relaxed">If you want to sell without chaos, or buy without guessing, leave your details. We reply with one clear next step , not a brochure. If you built a dossier, it travels with your request.</p>
+      <div id="briefNote" class="mt-6 text-[11px] font-mono uppercase tracking-widest brass-text"></div>
+      <ul class="mt-8 space-y-4 text-sm text-[var(--mut)]">
+        {NEXT_STEPS.map((s, i) => (<li class="flex gap-4"><span class="brass-text font-black">{i + 1}</span><span>{s}</span></li>))}
+      </ul>
+    </div>
+
+    <form id="cb" class="spotlight rounded-2xl border border-[var(--line)] bg-white/[0.03] p-8 lg:p-10" novalidate>
+      <div class="flex flex-col gap-5">
+        <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Name<input id="cbName" name="name" type="text" autocomplete="name" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors normal-case tracking-normal" /><span class="text-[11px] text-[#ff8a7a] mt-1 block min-h-[1em]" data-err-for="name"></span></label>
+        <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Email<input id="cbEmail" name="email" type="email" autocomplete="email" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors normal-case tracking-normal" /><span class="text-[11px] text-[#ff8a7a] mt-1 block min-h-[1em]" data-err-for="email"></span></label>
+        <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Phone<input id="cbPhone" name="phone" type="tel" autocomplete="tel" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors normal-case tracking-normal" /><span class="text-[11px] text-[#ff8a7a] mt-1 block min-h-[1em]" data-err-for="phone"></span></label>
+        <div class="flex items-center gap-4 flex-wrap mt-1">
+          <button type="submit" class="bg-[var(--brass)] text-black px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] rounded-md hover:bg-[var(--brass2)] transition-colors">Request a call</button>
+          <span class="text-[11px] text-[var(--mut)]">Or <a href={`tel:${TEL}`} class="brass-text hover:underline">call {PHONE}</a> · <a href={`mailto:${EMAIL}`} class="brass-text hover:underline">email</a></span>
+        </div>
+      </div>
+      <p id="cbStatus" class="mt-5 text-[11px] font-mono uppercase tracking-widest text-[var(--mut)]">Replies within one business day · {AREA}</p>
+      <p class="os-ref" id="osRef" hidden></p>
+      </form>
+  </section>
+
+  <script>
+    /* R3 Other Side: de verkopers-lezing reist mee. */
+    try {
+      const o = JSON.parse(localStorage.getItem('civilhouse-otherside') || 'null');
+      if (o) {
+        const el = document.getElementById('osRef');
+        const stapel = o.bucket === 'top' ? 'the take-it-seriously pile' : o.bucket === 'maybe' ? 'the maybe pile' : 'the bottom of the stack';
+        if (el) { el.textContent = `Seen from the other side, your offer sits in ${stapel} , we will move it up before it goes in.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    const briefNote = document.getElementById('briefNote');
+    let brief = null;
+    try { brief = JSON.parse(localStorage.getItem('civil-brief') || 'null'); } catch (e) {}
+    if (briefNote && brief && brief.city) briefNote.textContent = `Dossier attached: ${brief.lane} · ${brief.type} · ${brief.city}`;
+
+    const form = document.getElementById('cb') as HTMLFormElement;
+    const status = document.getElementById('cbStatus')!;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err-for="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) (i as HTMLElement).style.borderColor = m ? 'rgba(255,138,122,0.6)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const nm = String(d.get('name') || '').trim();
+      const em = String(d.get('email') || '').trim();
+      const ph = String(d.get('phone') || '').replace(/[^\d+]/g, '');
+      let ok = true;
+      if (nm.length < 2) { setErr('name', 'Need a name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setErr('email', 'Valid email.'); ok = false; } else setErr('email', '');
+      if (ph.length < 8) { setErr('phone', 'A reachable number.'); ok = false; } else setErr('phone', '');
+      if (!ok) return;
+      const ctx = brief && brief.city ? ` Your ${String(brief.lane).toLowerCase()} brief for ${brief.city} travels with it.` : '';
+      const ref = 'CH-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      status.textContent = `Request ${ref} logged , the desk replies within one business day.`;
+      (window as any).showToast?.(`Thanks, <b>${nm.split(' ')[0] || 'there'}</b> , ref <b>${ref}</b>. The desk replies within one business day.${ctx}`);
+      form.reset();
+      ['name', 'email', 'phone'].forEach((n) => setErr(n, ''));
+    });
+  </script>
+<style>
+  .os-ref { font-family: ui-monospace, monospace; font-size: 11px; color: #d9b878; border-top: 1px solid rgba(200, 170, 110, 0.25); padding-top: 12px; }
+</style>
+</CivilHouseLayout>

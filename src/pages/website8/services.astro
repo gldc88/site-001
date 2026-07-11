@@ -1,0 +1,113 @@
+---
+/**
+ * VELLUM & OAK , Services (website8, round 2). Signature: a special-order request -> ref + toast.
+ */
+import VellumLayout from '../../layouts/VellumLayout.astro';
+
+const SERVICES = [
+  { k: 'Special Orders', v: 'Tell us the title and edition you want. We source it and let you know , most books arrive within a few days.' },
+  { k: 'Holds & Pickup', v: 'See something online or over the phone? We\'ll set it aside for seven days, ready to collect at the counter.' },
+  { k: 'Gift Wrap', v: 'Archival paper, a stamped wax seal, and a hand-written note. Free with any book, all year round.' },
+  { k: 'The Reading Room', v: 'A quiet seat upstairs and a pot of tea, booked by the hour. Members read free; everyone else, a small fee.' },
+  { k: 'Book Clubs', v: 'A monthly fiction club and a classics club, both in the reading room. Newcomers always welcome.' },
+  { k: 'Gift Cards', v: 'A physical card or an email, any amount, no expiry. The safest gift for a reader you can\'t quite predict.' },
+];
+---
+
+<VellumLayout title="Services | Vellum & Oak" description="Special orders, holds, gift wrap, the reading room, book clubs, and gift cards at Vellum & Oak." active="services">
+  <section class="page-hero" style="min-height:54svh;">
+    <div class="page-hero-media"><img src="/website8/spines.jpg" alt="A shelf of antique gold-lettered leather spines" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="label">Services</span>
+      <h1>More than a <em>till</em>.</h1>
+      <p class="sub">A good bookshop does the small things well , sources the edition you actually wanted, wraps it properly, and keeps a quiet chair for you upstairs.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="svc-grid">
+      {SERVICES.map((s, i) => (
+        <div class="svc panel"><span class="svc-i">{String(i + 1).padStart(2, '0')}</span><h3>{s.k}</h3><p>{s.v}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="order-grid">
+      <div class="order-copy">
+        <span class="label">Special Order</span>
+        <h2>Looking for something we haven't got?</h2>
+        <p>Out-of-print, an obscure translation, a specific cover , tell us what you're after and we'll see what we can find. No payment until it's in your hands.</p>
+        <ul class="order-notes">
+          <li>Most in-print titles arrive in 2–4 days</li>
+          <li>We'll quote rare or imported editions first</li>
+          <li>Held for seven days once it lands</li>
+        </ul>
+      </div>
+      <form id="orderForm" class="order-form panel foil" novalidate>
+        <div class="fld"><label for="bookTitle">Book title</label><input id="bookTitle" name="title" type="text" placeholder="e.g. The Rings of Saturn" /><span class="err" data-err="title"></span></div>
+        <div class="of-row">
+          <div class="fld"><label for="bookAuthor">Author</label><input id="bookAuthor" name="author" type="text" placeholder="optional" /></div>
+          <div class="fld"><label for="bookEd">Edition / notes</label><input id="bookEd" name="edition" type="text" placeholder="hardback, 1st ed…" /></div>
+        </div>
+        <div class="of-row">
+          <div class="fld"><label for="oName">Your name</label><input id="oName" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="oEmail">Email</label><input id="oEmail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request this book</button>
+        <p class="of-fine" id="ofStatus">No payment now , we'll email a quote and a date.</p>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .svc { padding: 32px 28px; transition: border-color 0.35s, transform 0.35s; }
+    .svc:hover { border-color: var(--hair-gold); transform: translateY(-4px); }
+    .svc-i { font-family: var(--display); font-style: italic; font-size: 1.3rem; color: var(--gold); }
+    .svc h3 { font-size: 1.5rem; color: var(--paper); margin-top: 8px; }
+    .svc p { color: var(--muted); margin-top: 12px; font-size: 1rem; line-height: 1.6; }
+
+    .order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px,4vw,56px); align-items: center; }
+    .order-copy { min-width: 0; }
+    .order-copy h2 { font-size: clamp(1.9rem,3.4vw,2.8rem); color: var(--paper); margin: 12px 0 16px; }
+    .order-copy > p { color: var(--muted); font-size: 1.08rem; line-height: 1.7; max-width: 48ch; }
+    .order-notes { list-style: none; margin-top: 22px; display: flex; flex-direction: column; gap: 11px; }
+    .order-notes li { color: var(--ink); font-size: 1rem; padding-left: 24px; position: relative; }
+    .order-notes li::before { content: '❧'; position: absolute; left: 0; color: var(--gold); }
+    .order-form { padding: clamp(26px,3vw,38px); display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .of-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .of-fine { font-style: italic; color: var(--faint); text-align: center; font-size: 0.95rem; }
+
+    @media (max-width: 900px) { .svc-grid { grid-template-columns: 1fr; } .order-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 540px) { .of-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('orderForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    const statusEl = document.getElementById('ofStatus')!;
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#e09a86' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const title = String(d.get('title') || '').trim();
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (title.length < 2) { setErr('title', 'Which book?'); ok = false; } else setErr('title', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'VO-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      statusEl.textContent = `Order ${ref} logged , we'll be in touch by email.`;
+      statusEl.style.color = 'var(--gold)';
+      if (toast) { toast.textContent = `Thank you ${name.split(' ')[0]} , we're on the hunt for “${title}”. Order ${ref}; we'll email a quote and a date.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+      form.reset();
+    });
+  </script>
+</VellumLayout>

@@ -1,0 +1,79 @@
+---
+/**
+ * MONARCH PRIVATE CHAUFFEUR , Fleet (website19, round 2). Signature: the fleet selector , picking a
+ * class gives the night-drive a small rev (setSpeed >1).
+ */
+import MonarchLayout from '../../layouts/MonarchLayout.astro';
+import { FLEET } from '../../data/monarch';
+---
+
+<MonarchLayout title="Fleet | Monarch Private Chauffeur" description="Three quiet cars , Shadow Class saloon, Obsidian Class rear suite, Nightfall Class VIP van. Privacy glass, whisper-quiet cabins." active="fleet">
+  <div class="page-hero">
+    <span class="kicker pl">Fleet</span>
+    <h1>Three quiet <em>cars</em>.</h1>
+    <p class="sub">A small fleet, kept anonymous on the outside and silent on the inside. Select a class , the streaks behind the page give a small rev , and read what makes each one disappear into the night.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="fleet-browser">
+      <div class="fleet-list">
+        {FLEET.map((f, i) => (
+          <button class={`fltx ${i === 0 ? 'active' : ''}`} data-key={f.key}>
+            <span class="fx-name redact">{f.name}</span>
+            <span class="fx-meta">{f.meta}</span>
+          </button>
+        ))}
+      </div>
+      <div class="fleet-stage">
+        {FLEET.map((f, i) => (
+          <article class={`fleet-detail ${i === 0 ? 'active' : ''}`} id={`flt-${f.key}`}>
+            <h2 class="redact">{f.name}</h2>
+            <p class="fd-meta">{f.meta}</p>
+            <p class="fd-long">{f.long}</p>
+            <div class="fd-specs">
+              {f.specs.map((s) => (<div class="fd-spec"><span>{s.k}</span><b>{s.v}</b></div>))}
+            </div>
+            <a href="/website19/dispatch" class="btn-cta" style="margin-top:6px;">Dispatch this car</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .fleet-browser { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(18px,3vw,40px); align-items: start; }
+    .fleet-list { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 90px; }
+    .fltx { text-align: left; padding: 18px 20px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); transition: all 0.3s; display: flex; flex-direction: column; gap: 6px; }
+    .fltx:hover { border-color: var(--line-ch); }
+    .fltx.active { border-color: var(--champagne); box-shadow: inset 0 0 40px -24px var(--champagne); }
+    .fx-name { font-family: var(--serif); font-size: 1.4rem; color: #fff; }
+    .fx-meta { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; color: var(--muted); }
+
+    .fleet-stage { min-width: 0; }
+    .fleet-detail { display: none; }
+    .fleet-detail.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .fleet-detail h2 { font-size: clamp(2.2rem,4.6vw,3.6rem); color: #fff; }
+    .fd-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--champagne); margin: 12px 0 20px; }
+    .fd-long { color: var(--ink); font-size: 1.1rem; line-height: 1.8; max-width: 60ch; margin-bottom: 26px; }
+    .fd-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; margin-bottom: 28px; }
+    .fd-spec { background: var(--panel-2); padding: 18px 18px; display: flex; flex-direction: column; gap: 6px; }
+    .fd-spec span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .fd-spec b { font-family: var(--serif); font-size: 1.3rem; font-weight: 400; color: #fff; }
+
+    @media (max-width: 860px) { .fleet-browser { grid-template-columns: 1fr; } .fleet-list { position: static; flex-direction: row; overflow-x: auto; } .fltx { min-width: 200px; } }
+  </style>
+
+  <script>
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.fltx'));
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.fleet-detail'));
+    function show(k: string, rev = false) {
+      items.forEach((x) => x.classList.toggle('active', x.dataset.key === k));
+      details.forEach((d) => d.classList.toggle('active', d.id === `flt-${k}`));
+      if (rev) (window as any).__drive?.setSpeed(1.35); // a small rev
+    }
+    items.forEach((it) => it.addEventListener('click', () => { show(it.dataset.key!, true); localStorage.setItem('monarch-fleet', it.dataset.key!); }));
+    const saved = localStorage.getItem('monarch-fleet');
+    if (saved && items.some((x) => x.dataset.key === saved)) show(saved);
+  </script>
+</MonarchLayout>

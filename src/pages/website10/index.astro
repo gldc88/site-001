@@ -1,0 +1,151 @@
+---
+/**
+ * UNFORM / 010 , Home (website10, round 2 multi-page).
+ * A desktop of draggable glass windows (each a launcher), then a manifesto + work teaser.
+ */
+import UnformLayout from '../../layouts/UnformLayout.astro';
+
+const WINDOWS = [
+  { id: 'readme', title: 'README.txt', x: 4, y: 6, w: 360, href: '/website10/studio', kind: 'text',
+    body: 'Most portfolios are a template wearing a brand. This one is an interface. Drag the windows. Change the theme. Then look at the work.' },
+  { id: 'artifacts', title: 'Artifacts', x: 40, y: 30, w: 380, href: '/website10/work', kind: 'list',
+    items: ['Aeon Tower , Architecture', 'Monobrand , Identity', 'Flux Interface , UI/UX', 'Vellum , Print'] },
+  { id: 'settings', title: 'Settings', x: 8, y: 54, w: 320, href: '/website10/settings', kind: 'text',
+    body: 'This site is yours to retune , accent, density, corners, wallpaper. Your choices follow you across every page.' },
+  { id: 'contact', title: 'Contact', x: 58, y: 62, w: 300, href: '/website10/contact', kind: 'text',
+    body: 'A studio of three. We take on four projects a quarter. Open the console to say hello.' },
+];
+const ARTIFACTS = [
+  { name: 'Aeon Tower', type: 'Architecture', year: '2024' },
+  { name: 'Monobrand', type: 'Identity', year: '2023' },
+  { name: 'Flux Interface', type: 'UI/UX', year: '2024' },
+  { name: 'Vellum', type: 'Print', year: '2022' },
+];
+---
+
+<UnformLayout title="UNFORM / 010 , Anti-Template Studio" description="An anti-template design studio presented as a desktop you can rearrange. Architecture, identity, UI, and print.">
+  <section class="desktop" id="desktop" aria-label="Draggable window desktop">
+    <div class="desk-title">
+      <span class="overline">Anti-template studio · est. 010</span>
+      <h1>Not a page.<br /><em>An interface.</em></h1>
+      <p>Drag the windows around. Retune the theme in Settings. The work is underneath the chrome.</p>
+    </div>
+
+    {WINDOWS.map((w, i) => (
+      <article class="win float" id={`win-${w.id}`} style={`--x:${w.x}%; --y:${w.y}%; --w:${w.w}px; z-index:${10 + i};`}>
+        <header class="win-bar" data-drag>
+          <span class="win-dots"><i></i><i></i><i></i></span>
+          <span class="win-title">{w.title}</span>
+        </header>
+        <div class="win-body">
+          {w.kind === 'text' && <p class="win-text">{w.body}</p>}
+          {w.kind === 'list' && (
+            <ul class="win-list">{w.items?.map((it) => <li>{it}</li>)}</ul>
+          )}
+          <a href={w.href} class="win-open">Open →</a>
+        </div>
+      </article>
+    ))}
+    <span class="desk-hint" id="deskHint">drag a window ↕</span>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head">
+      <div><span class="overline">Selected artifacts</span><h2>Four we'll stand behind.</h2></div>
+      <p>A small, deliberate body of work. <a class="inline-link" href="/website10/work">Open the archive →</a></p>
+    </div>
+    <div class="art-grid">
+      {ARTIFACTS.map((a, i) => (
+        <a href="/website10/work" class="art win" data-reveal="up">
+          <div class="win-bar"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-title">{String(i + 1).padStart(2, '0')} · {a.type}</span></div>
+          <div class="win-body"><h3>{a.name}</h3><span class="art-year">{a.year}</span></div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight statement">
+    <p data-reveal="up">We design <em>less</em>, on purpose. A brand that survives being stripped to type. A UI that stays calm under pressure. Printed matter with a digital spine.</p>
+    <a href="/website10/contact" class="btn" data-reveal="up" style="margin-top:30px;">Start a project</a>
+  </section>
+
+  <style>
+    .desktop { position: relative; min-height: 92svh; max-width: 1280px; margin: 0 auto; padding: 110px clamp(16px,4vw,40px) 40px; overflow: hidden; }
+    .desk-title { position: relative; z-index: 2; max-width: 30ch; pointer-events: none; }
+    .desk-title h1 { font-size: clamp(2.6rem, 7vw, 6rem); color: #fff; margin: 16px 0; letter-spacing: -0.03em; }
+    .desk-title em { font-style: normal; background: linear-gradient(100deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .desk-title p { color: var(--muted); }
+    .desk-hint { position: absolute; right: 24px; bottom: 22px; font-family: var(--mono); font-size: 11px; color: var(--faint); z-index: 2; }
+
+    .win.float { position: absolute; left: var(--x); top: var(--y); width: var(--w); max-width: calc(100% - 24px); touch-action: none; transition: box-shadow 0.3s; }
+    .win.float.dragging { box-shadow: 0 30px 70px -16px rgba(0,0,0,0.75); }
+    .win-bar[data-drag] { cursor: grab; }
+    .win.float.dragging .win-bar { cursor: grabbing; }
+    .win-text { color: var(--muted); font-size: 0.92rem; line-height: 1.6; }
+    .win-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .win-list li { font-family: var(--mono); font-size: 0.84rem; color: var(--ink); padding: 9px 12px; border: 1px solid var(--hair); border-radius: 8px; background: rgba(255,255,255,0.02); }
+    .win-open { display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 11px; color: var(--accent); transition: opacity 0.2s; }
+    .win-open:hover { opacity: 0.7; }
+
+    .art-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .art { transition: transform 0.3s, border-color 0.3s; }
+    .art:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+    .art .win-body { display: flex; flex-direction: column; gap: 8px; min-height: 120px; justify-content: flex-end; }
+    .art h3 { font-size: 1.4rem; color: #fff; }
+    .art-year { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+
+    .statement { text-align: center; }
+    .statement p { font-size: clamp(1.4rem, 3vw, 2.4rem); color: var(--ink); max-width: 22ch; margin: 0 auto; line-height: 1.3; letter-spacing: -0.02em; font-weight: 500; }
+    .statement em { font-style: normal; color: var(--accent); }
+    .statement > * { max-width: 700px; margin-inline: auto; }
+
+    @media (max-width: 860px) {
+      .desktop { min-height: 0; overflow: visible; display: flex; flex-direction: column; gap: 16px; }
+      .desk-title { max-width: none; margin-bottom: 8px; }
+      .win.float { position: static; width: 100%; }
+      .desk-hint { display: none; }
+      .art-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) { .art-grid { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    // Draggable windows (desktop only). Pointer-based, clamped to the desktop box, focus raises z.
+    const desktop = document.getElementById('desktop');
+    const wins = Array.from(document.querySelectorAll<HTMLElement>('.win.float'));
+    let zTop = 30;
+    const isFloating = () => window.matchMedia('(min-width: 861px)').matches;
+
+    wins.forEach((win) => {
+      const bar = win.querySelector<HTMLElement>('[data-drag]');
+      if (!bar) return;
+      let sx = 0, sy = 0, ox = 0, oy = 0, dragging = false;
+      const onMove = (e: PointerEvent) => {
+        if (!dragging || !desktop) return;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        const box = desktop.getBoundingClientRect();
+        let nx = ox + dx, ny = oy + dy;
+        nx = Math.max(0, Math.min(nx, box.width - win.offsetWidth));
+        ny = Math.max(0, Math.min(ny, box.height - win.offsetHeight));
+        win.style.left = nx + 'px'; win.style.top = ny + 'px';
+      };
+      const onUp = (e: PointerEvent) => { dragging = false; win.classList.remove('dragging'); bar.releasePointerCapture?.(e.pointerId); window.removeEventListener('pointermove', onMove); };
+      bar.addEventListener('pointerdown', (e) => {
+        if (!isFloating() || !desktop) return;
+        e.preventDefault();
+        const box = desktop.getBoundingClientRect();
+        const wr = win.getBoundingClientRect();
+        // convert current position to px-left/top relative to desktop
+        ox = wr.left - box.left; oy = wr.top - box.top;
+        win.style.left = ox + 'px'; win.style.top = oy + 'px';
+        sx = e.clientX; sy = e.clientY; dragging = true;
+        win.style.zIndex = String(++zTop);
+        win.classList.add('dragging');
+        bar.setPointerCapture?.(e.pointerId);
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp, { once: true });
+      });
+      win.addEventListener('pointerdown', () => { if (isFloating()) win.style.zIndex = String(++zTop); });
+    });
+  </script>
+</UnformLayout>

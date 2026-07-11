@@ -1,0 +1,105 @@
+---
+/**
+ * GroundspecLayout , shared shell for GROUNDSPEC (website25, round 2). Dark engineering aesthetic
+ * (#0a0a0a + noise texture, yellow + emerald). Nav, footer, global #toast (window.showToast), and the
+ * range-input / shape-button CSS the estimator needs. Props: title, description, active.
+ */
+import '../styles/global.css';
+import { BRAND, PHONE, TEL, EMAIL, AREA, SHEET } from '../data/groundspec';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'estimator', label: 'Estimator', href: '/website25/estimator' },
+  { key: 'standards', label: 'Standards', href: '/website25/standards' },
+  { key: 'work', label: 'Work', href: '/website25/work' },
+];
+const YEAR = new Date().getFullYear();
+const mark = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`;
+const back = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      .bg-premium-texture { background-color: #0a0a0a; background-image:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 70%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+        background-repeat: no-repeat, repeat; background-size: cover, 120px 120px; background-attachment: fixed; }
+      input[type=range] { -webkit-appearance: none; appearance: none; background: transparent; }
+      input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; height: 18px; width: 18px; border-radius: 0; background: #eab308; cursor: pointer; margin-top: -7px; border: 2px solid #fff; }
+      input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #333; }
+      input[type=range]::-moz-range-thumb { height: 16px; width: 16px; border-radius: 0; background: #eab308; cursor: pointer; border: 2px solid #fff; }
+      .shape-btn.active { background-color: #eab308; color: black; border-color: #eab308; }
+      #fenceToggle.on { background-color: #10b981; color: black; border-color: #10b981; }
+      svg path#svgMainPath { transition: d 0.25s ease; }
+      .reveal-on-scroll { opacity: 0; transform: translateY(18px); transition: all 0.7s cubic-bezier(0.2,0.8,0.2,1); }
+      .reveal-visible { opacity: 1; transform: translateY(0); }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-[#0a0a0a] text-zinc-200 font-sans antialiased selection:bg-yellow-500 selection:text-black bg-premium-texture overflow-x-hidden">
+    <header class="fixed top-0 inset-x-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/10">
+      <div class="mx-auto max-w-7xl px-6 h-24 flex items-center justify-between">
+        <div class="flex items-center gap-6">
+          <a href="/" class="group hidden sm:flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors border-r border-white/10 pr-6 h-10"><span class="group-hover:-translate-x-1 transition-transform"><Fragment set:html={back} /></span>Index</a>
+          <a href="/website25" class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-yellow-500 flex items-center justify-center text-black shadow-lg shadow-yellow-500/20"><span class="w-6 h-6"><Fragment set:html={mark} /></span></div>
+            <div><span class="block font-black text-xl text-white tracking-tight leading-none">{BRAND}</span><span class="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Paving & Fencing</span></div>
+          </a>
+        </div>
+        <nav class="hidden md:flex items-center gap-9">
+          {NAV.map((i) => <a href={i.href} class={`text-sm font-bold uppercase transition-colors hover:text-yellow-500 ${active === i.key ? 'text-yellow-500' : 'text-zinc-400'}`}>{i.label}</a>)}
+          <a href="/website25/quote" class="bg-white/5 hover:bg-yellow-500 hover:text-black text-white px-5 py-3 font-black text-xs uppercase tracking-widest transition-all border border-white/10">Get a quote</a>
+        </nav>
+        <a href={`tel:${TEL}`} class="md:hidden bg-yellow-500 text-black px-4 py-2.5 font-black text-xs uppercase">Call</a>
+      </div>
+    </header>
+
+    <main class="pt-24" id="top"><slot /></main>
+
+    <footer class="bg-black/80 border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-6 py-16 grid md:grid-cols-[2fr_1fr_1fr] gap-10">
+        <div>
+          <div class="flex items-center gap-3 mb-4"><div class="w-9 h-9 bg-yellow-500 flex items-center justify-center text-black"><span class="w-5 h-5"><Fragment set:html={mark} /></span></div><span class="font-black text-lg text-white tracking-tight">{BRAND}</span></div>
+          <p class="text-sm text-zinc-500 max-w-xs leading-relaxed">Paving and fencing, built square. Accurate takeoffs before we break ground. {AREA}. Fictional brand, demonstration only.</p>
+        </div>
+        <div class="text-[11px] font-black uppercase tracking-widest text-zinc-500 flex flex-col gap-3">
+          <a href="/website25/estimator" class="hover:text-yellow-500">Estimator</a>
+          <a href="/website25/standards" class="hover:text-yellow-500">Standards</a>
+          <a href="/website25/work" class="hover:text-yellow-500">Work</a>
+          <a href="/website25/quote" class="hover:text-yellow-500">Get a quote</a>
+        </div>
+        <div class="text-[11px] font-black uppercase tracking-widest text-zinc-500 flex flex-col gap-3">
+          <a href={`tel:${TEL}`} class="hover:text-yellow-500">{PHONE}</a>
+          <a href={`mailto:${EMAIL}`} class="hover:text-yellow-500 normal-case tracking-normal">{EMAIL}</a>
+          <a href="/" class="hover:text-yellow-500">Return to index</a>
+        </div>
+      </div>
+      <div class="mx-auto max-w-7xl px-6 pb-10 border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between gap-4 text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em]">
+        <span>© {YEAR} {BRAND} · paving & fencing · demonstration only</span>
+        <span class="opacity-40">Build {SHEET.rev} · {SHEET.id}</span>
+      </div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[80] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none bg-yellow-500 text-black border-2 border-black px-6 py-4 text-sm font-black uppercase tracking-wide transition-all duration-500 shadow-2xl" style="max-width:min(92vw,470px)"></div>
+
+    <script>
+      const toastEl = document.getElementById('toast');
+      let tT = 0;
+      (window as any).showToast = (html: string) => {
+        if (!toastEl) return;
+        toastEl.innerHTML = html; toastEl.style.opacity = '1'; toastEl.style.transform = 'translate(-50%,0)';
+        window.clearTimeout(tT); tT = window.setTimeout(() => { toastEl.style.opacity = '0'; toastEl.style.transform = 'translate(-50%,24px)'; }, 5400);
+      };
+      const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>

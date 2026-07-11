@@ -1,0 +1,88 @@
+---
+/**
+ * AtlasLayout , shared shell for ATLAS INTERFACE (website11, round 2).
+ * Persistent WebGL starfield behind all pages. Props: title, description, active.
+ */
+import '../styles/atlas-fonts.css';
+import '../styles/atlas.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'map', label: 'The Map', href: '/website11' },
+  { key: 'system', label: 'System', href: '/website11/system' },
+  { key: 'modules', label: 'Modules', href: '/website11/modules' },
+  { key: 'notes', label: 'Field Notes', href: '/website11/notes' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website11" class="brand"><span class="glyph"></span>Atlas Interface</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website11/access" class="cta">Request Access</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Atlas Interface</h3>
+          <p>A living map for systems , pan, zoom, and select to read the field notes behind each node and the flows between them. Fictional concept, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Surface</h4><a href="/website11">The Map</a><a href="/website11/system">System</a><a href="/website11/modules">Modules</a><a href="/website11/notes">Field Notes</a><a href="/website11/access">Request Access</a></div>
+        <div class="f-col"><h4>Signal</h4><a href="mailto:atlas@interface.example">atlas@interface.example</a><a href="/website11/access">Request access</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Atlas Interface. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · pan · zoom · select</span>
+      </div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      const canvas = document.getElementById('bg-gl');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/atlas-scene')
+          .then(({ initAtlasScene }) => {
+            const scene = initAtlasScene(canvas);
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

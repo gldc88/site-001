@@ -1,0 +1,52 @@
+---
+/**
+ * EMBERLINE , Safety (website26, round 2). Gas safety guidance + the documented safety-check record.
+ */
+import EmberlineLayout from '../../layouts/EmberlineLayout.astro';
+import { SAFETY, CERT_ROWS, PHONE, TEL } from '../../data/emberline';
+---
+
+<EmberlineLayout title="Safety | Emberline Gas & Heating" description="Gas safety guidance and the documented safety-check record behind every Emberline visit." active="safety">
+  <section class="mx-auto max-w-6xl px-5 pt-16 pb-10">
+    <div class="text-[11px] font-black uppercase tracking-[0.3em] text-[#f6a11a] mb-3">Safety</div>
+    <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9]">If you smell gas.</h1>
+    <p class="mt-6 max-w-xl text-zinc-300 text-lg font-light leading-relaxed">Treat it as urgent. Get to fresh air if needed and contact your local gas emergency service. Do not use open flames, and do not create sparks.</p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 pb-16 grid lg:grid-cols-2 gap-8">
+    <div class="rounded-xl border border-red-500/20 bg-red-950/20 p-8 shadow-[0_0_30px_-10px_rgba(255,91,91,0.15)]">
+      <strong class="text-red-400 text-lg block mb-4">If you smell gas or suspect a leak:</strong>
+      <ul class="space-y-4">
+        {SAFETY.map((s) => (<li class="flex items-start gap-3 text-zinc-300"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span><span>{s}</span></li>))}
+      </ul>
+      <a href={`tel:${TEL}`} class="mt-8 inline-block bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-widest px-7 py-3.5 rounded transition-colors">Call {PHONE}</a>
+    </div>
+
+    <div class="rounded-xl border-l-[3px] border-l-[#f6a11a] border border-white/10 bg-white/5 p-8">
+      <div class="flex justify-between items-start mb-6 pb-4 border-b border-white/10">
+        <div><h2 class="text-white font-black uppercase text-xl tracking-tight">Safety Check Record</h2><span class="text-xs text-zinc-500 uppercase tracking-widest">Commissioning & test log v.04</span></div>
+        <span class="text-emerald-500 font-black uppercase border border-emerald-500/30 px-2 py-1 rounded bg-emerald-500/10 text-xs">Passed</span>
+      </div>
+      <ul class="space-y-4">
+        {CERT_ROWS.map((r) => (
+          <li class="flex items-center justify-between border-b border-dashed border-white/10 pb-3">
+            <span class="text-sm uppercase tracking-wide text-zinc-400">{r.label}</span>
+            <svg viewBox="0 0 40 24" class="w-10 h-6" fill="none" stroke="#10b981" stroke-width="4"><path d="M8 12 l5 5 l12 -12" class="cert-tick" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </li>
+        ))}
+      </ul>
+      <div class="mt-6 pt-4 border-t border-white/10">
+        <span class="block text-[10px] uppercase tracking-widest text-zinc-600 mb-2">Engineer signature</span>
+        <svg viewBox="0 0 220 40" class="w-44 h-8" fill="none" stroke="#f6a11a" stroke-width="2"><path d="M10 28 c12 -16, 24 12, 36 0 s 24 -14, 36 0 s 24 -12, 40 -2" class="cert-sig" stroke-linecap="round" /></svg>
+      </div>
+      <p class="mt-6 text-sm text-zinc-500 leading-relaxed">Every visit ends with a record: what we tested, the readings we took, and what your system should do next. You keep a copy.</p>
+    </div>
+  </section>
+
+  <style>
+    .cert-tick { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw 0.7s ease forwards; }
+    .cert-sig { stroke-dasharray: 320; stroke-dashoffset: 320; animation: draw 1.4s ease 0.4s forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) { .cert-tick, .cert-sig { animation: none; stroke-dashoffset: 0; } }
+  </style>
+</EmberlineLayout>

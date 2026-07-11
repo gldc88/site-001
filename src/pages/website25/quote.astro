@@ -1,0 +1,77 @@
+---
+/**
+ * GROUNDSPEC , Quote (website25, round 2). The estimator spec (from localStorage) travels with the
+ * request -> validated -> reference + toast.
+ */
+import GroundspecLayout from '../../layouts/GroundspecLayout.astro';
+import { PHONE, TEL, EMAIL, AREA } from '../../data/groundspec';
+---
+
+<GroundspecLayout title="Get the Quote | Groundspec" description="Send your estimator takeoff and we reply with a clean quote , materials, base prep, and labour, line by line.">
+  <section class="py-16 px-6">
+    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 gap-16 items-start">
+      <div>
+        <span class="text-xs font-black text-yellow-500 uppercase tracking-[0.3em]">/ Quote</span>
+        <h1 class="mt-4 text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-[0.85]">Get the quote.</h1>
+        <p class="mt-8 text-zinc-400 text-lg max-w-md leading-relaxed font-light">Send the takeoff and we reply with a clean quote , materials, base prep, and labour, line by line. Your estimator spec travels with it.</p>
+        <ul class="mt-10 space-y-4 text-sm text-zinc-200 font-bold uppercase tracking-wide">
+          <li><a href={`tel:${TEL}`} class="hover:text-yellow-500 transition-all">{PHONE}</a></li>
+          <li><a href={`mailto:${EMAIL}`} class="hover:text-yellow-500 transition-all normal-case tracking-normal">{EMAIL}</a></li>
+          <li class="text-zinc-500">{AREA}</li>
+        </ul>
+        <a href="/website25/estimator" class="mt-8 inline-block text-xs font-black uppercase tracking-widest text-white border-b-2 border-yellow-500 pb-1 hover:text-yellow-500 transition-colors">← Adjust the takeoff</a>
+      </div>
+
+      <form id="quoteForm" novalidate class="bg-[#141414] border border-white/10 p-8 md:p-10">
+        <div class="text-xs font-mono uppercase tracking-widest text-yellow-500 mb-2">Quote request</div>
+        <div id="specEcho" class="text-[11px] font-mono text-zinc-500 mb-6">Spec: ,</div>
+        <div class="grid gap-5">
+          <label class="block"><span class="text-[10px] font-bold uppercase text-zinc-500 mb-2 block">Name</span><input name="name" class="w-full bg-black/50 border border-white/10 p-3.5 text-white focus:border-yellow-500 focus:outline-none transition-colors" /><div class="err text-[10px] font-mono text-yellow-500 mt-1 min-h-[1em]" data-err-for="name" role="alert"></div></label>
+          <label class="block"><span class="text-[10px] font-bold uppercase text-zinc-500 mb-2 block">Email</span><input name="email" type="email" class="w-full bg-black/50 border border-white/10 p-3.5 text-white focus:border-yellow-500 focus:outline-none transition-colors" /><div class="err text-[10px] font-mono text-yellow-500 mt-1 min-h-[1em]" data-err-for="email" role="alert"></div></label>
+          <label class="block"><span class="text-[10px] font-bold uppercase text-zinc-500 mb-2 block">Postcode</span><input name="postcode" class="w-full bg-black/50 border border-white/10 p-3.5 text-white focus:border-yellow-500 focus:outline-none transition-colors uppercase" /><div class="err text-[10px] font-mono text-yellow-500 mt-1 min-h-[1em]" data-err-for="postcode" role="alert"></div></label>
+        </div>
+        <button type="submit" class="mt-6 w-full bg-white text-black py-4 text-sm font-black uppercase tracking-[0.2em] hover:bg-yellow-500 transition-colors">Send takeoff + request quote</button>
+        <p class="dp-ref" id="dpRef" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    /* R3 Dig Profile: de grondsoort reist mee naar de offerte. */
+    try {
+      const soil = localStorage.getItem('groundspec-soil');
+      if (soil) {
+        const el = document.getElementById('dpRef');
+        if (el) { el.textContent = `Dig profile on file: ${soil} ground , the quote will carry the right build-up, not the cheapest one.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    const specEcho = document.getElementById('specEcho');
+    let spec = '';
+    try { spec = localStorage.getItem('groundspec-spec') || ''; } catch (e) {}
+    if (specEcho) specEcho.textContent = spec ? 'Spec: ' + spec : 'Spec: , (build one in the estimator)';
+
+    const form = document.getElementById('quoteForm') as HTMLFormElement;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err-for="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) (i as HTMLElement).style.borderColor = m ? '#eab308' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const postcode = String(d.get('postcode') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'NEED A NAME.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'VALID EMAIL.'); ok = false; } else setErr('email', '');
+      if (postcode.length < 4) { setErr('postcode', 'A POSTCODE.'); ok = false; } else setErr('postcode', '');
+      if (!ok) return;
+      const ref = 'GS-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      const job = spec ? spec.split(' · ')[2] || 'job' : 'job';
+      (window as any).showToast?.(`Takeoff sent, ${name.split(' ')[0] || 'there'} , ref ${ref}. We quote your ${job} within two working days.`);
+      form.reset();
+      ['name', 'email', 'postcode'].forEach((n) => setErr(n, ''));
+    });
+  </script>
+<style>
+  .dp-ref { font-family: ui-monospace, monospace; font-size: 11px; color: #d9c94a; border-top: 1px solid rgba(230, 210, 60, 0.25); padding-top: 12px; }
+</style>
+</GroundspecLayout>

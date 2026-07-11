@@ -1,0 +1,155 @@
+---
+/**
+ * YOYOGI , Home (website3, round 2 multi-page).
+ * Heat-haze hero over the persistent WebGL scene; intro, stats, teasers to
+ * The Ritual / Rooms / Membership / Visit.
+ */
+import YoyogiLayout from '../../layouts/YoyogiLayout.astro';
+
+const STATS = [
+  { num: 3, label: 'Ritual Rooms' },
+  { num: 7, label: 'Thermal Steps' },
+  { num: 42, label: 'Minutes to Reset' },
+  { text: 'UNTIMED', label: 'Stillness' },
+];
+const ROOMS = [
+  { id: '01', name: 'Cedar Pavilion', material: 'Cedar & Glass', desc: 'Dry heat, cold rinse, then a quiet bed that turns your brain off.', price: 'From ¥85,000' },
+  { id: '02', name: 'Basalt Chamber', material: 'Raw Concrete', desc: 'Heavy walls, warm steam, and silence thick enough to lean on.', price: 'From ¥110,000' },
+  { id: '03', name: 'Washi Tea Room', material: 'Washi & Tatami', desc: 'Slow pour, soft light, breathwork that drops you back into your body.', price: 'From ¥65,000' },
+];
+const MARQUEE = ['Yoyogi, Tokyo', 'Open Late', 'Thermal Reset', 'Breathwork Sessions', 'Low Light Only', 'Quiet Membership'];
+---
+
+<YoyogiLayout title="YOYOGI | Thermal Quiet" description="Yoyogi , an urban bathhouse in Tokyo. Thermal quiet: heat, water, breath. Private ritual rooms, low light only, open late." active="">
+  <header class="hero" id="hero">
+    <span class="overline c" id="heroOver">Yoyogi · Urban Bathhouse · Tokyo</span>
+    <h1 class="hero-title" id="heroTitle">Thermal<br />Quiet</h1>
+    <div class="hero-scroll" id="heroScroll" aria-hidden="true"><div class="rail"></div><span>Descend</span></div>
+  </header>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">{[...MARQUEE, ...MARQUEE].map((m) => <span class="m-item">{m}</span>)}</div>
+  </div>
+
+  <section class="section" id="intro">
+    <h2 class="intro-text" id="introText">Tokyo pulls you forward. We pull you <em>back</em>, into <em>heat</em>, into <em>breath</em>.</h2>
+    <a href="/website3/ritual" class="btn-ghost" data-reveal="up" style="margin-top:40px;">Walk the ritual</a>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="stats" id="stats">
+      {STATS.map((s) => (
+        <div class="stat">
+          {s.text ? <div class="num txt">{s.text}</div> : <div class="num" data-count={s.num}>0</div>}
+          <div class="lbl">{s.label}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="rooms">
+    <div class="sec-head">
+      <div><span class="overline" data-reveal="fade">Private Ritual Rooms</span><h2 data-reveal="up">Three ways to reset</h2></div>
+      <p data-reveal="up">Each room is a complete ritual , heat, water, rest. <a class="inline-link" href="/website3/rooms">All rooms →</a></p>
+    </div>
+    {ROOMS.map((r) => (
+      <a href="/website3/rooms" class="room" aria-label={r.name}>
+        <span class="rid" data-reveal="fade">ROOM {r.id}</span>
+        <div class="rmain">
+          <span class="rmat" data-reveal="up">{r.material}</span>
+          <h3 data-reveal="up">{r.name}</h3>
+          <p data-reveal="up">{r.desc}</p>
+        </div>
+        <div class="price" data-reveal="fade">{r.price}</div>
+      </a>
+    ))}
+  </section>
+
+  <section class="section visit" id="visit">
+    <span class="overline c" data-reveal="fade" style="display:flex; justify-content:center;">Quiet Membership</span>
+    <h2 data-reveal="up" style="margin-top:20px;">Come in from the <em>cold</em>.</h2>
+    <p data-reveal="up">Low light only. Open late. Booked one quiet message at a time , no app, no rush.</p>
+    <div class="visit-actions" data-reveal="up">
+      <a href="/website3/visit" class="btn-cta">Book a Session</a>
+      <a href="/website3/membership" class="inline-link" style="align-self:center;">See membership →</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; }
+    .hero .overline { opacity: 0; transform: translateY(8px); }
+    .hero-title { font-size: clamp(4rem, 18vw, 16rem); letter-spacing: 0.02em; line-height: 0.92; color: #f3ece2; text-shadow: 0 0 80px rgba(196, 80, 47, 0.35); margin: 24px 0; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-scroll { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; }
+    .hero-scroll .rail { width: 1px; height: 46px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+    .hero-scroll .rail::after { content: ''; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: var(--ember-bright); animation: drop 2.4s var(--ease) infinite; }
+    .hero-scroll span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+
+    .intro-text { font-family: var(--head); font-size: clamp(2rem, 5.2vw, 4.6rem); line-height: 1.22; color: #efe7da; max-width: 18ch; }
+    .intro-text .word { display: inline-block; }
+    .intro-text em { color: var(--ember-bright); font-style: normal; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+    .stat { padding: 48px 24px; text-align: center; border-right: 1px solid var(--hair); }
+    .stat:last-child { border-right: none; }
+    .stat .num { font-family: var(--head); font-size: clamp(2.8rem, 6vw, 5rem); color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+    .stat .num.txt { color: var(--ember-bright); }
+    .stat .lbl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 16px; }
+
+    .room { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: clamp(20px, 4vw, 56px); padding: 38px 28px; border-top: 1px solid var(--hair); border-radius: 14px; transition: background 0.5s var(--ease); min-width: 0; }
+    .room:last-of-type { border-bottom: 1px solid var(--hair); }
+    .room:hover { background: rgba(196, 80, 47, 0.06); }
+    .rmain { min-width: 0; }
+    .room .rid { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--faint); }
+    .room .rmat { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--beige); }
+    .room h3 { font-size: clamp(1.9rem, 3.2vw, 3rem); color: #fff; margin: 8px 0 10px; transition: color 0.4s; }
+    .room:hover h3 { color: var(--ember-bright); }
+    .room p { color: var(--muted); max-width: 46ch; }
+    .room .price { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--ink); white-space: nowrap; }
+
+    .visit { text-align: center; }
+    .visit h2 { font-size: clamp(2.4rem, 5vw, 4.6rem); color: #fff; }
+    .visit h2 em { color: var(--ember-bright); font-style: normal; }
+    .visit p { color: var(--muted); margin-top: 18px; }
+    .visit-actions { margin-top: 34px; display: flex; gap: 24px; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+    @media (max-width: 1024px) { .stats { grid-template-columns: 1fr 1fr; } .stat:nth-child(2) { border-right: none; } .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--hair); } .room { grid-template-columns: 1fr; gap: 12px; } .room .price { margin-top: 8px; } }
+    @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } .stat { border-right: none; border-bottom: 1px solid var(--hair); } }
+    @media (prefers-reduced-motion: reduce) { .hero .overline, .hero-scroll { opacity: 1 !important; transform: none !important; } .hero-scroll .rail::after { animation: none; } }
+  </style>
+
+  <script>
+    import { gsap, ScrollTrigger, SplitText } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const heroTitle = document.getElementById('heroTitle');
+    const heroOver = document.getElementById('heroOver');
+    const heroScroll = document.getElementById('heroScroll');
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'words,chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (heroOver) tl.to(heroOver, { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 130, opacity: 0, stagger: 0.05, duration: 1.1 }, 0.1);
+      if (heroScroll) tl.to(heroScroll, { opacity: 1, duration: 0.8 }, 0.9);
+    } else {
+      [heroOver, heroScroll].forEach((el) => el && (el.style.opacity = '1'));
+    }
+
+    if (!reduce) {
+      const intro = document.getElementById('introText');
+      if (intro) {
+        const s = new SplitText(intro, { type: 'words', wordsClass: 'word' });
+        gsap.set(s.words, { opacity: 0.16 });
+        gsap.to(s.words, { opacity: 1, stagger: 0.06, ease: 'none', scrollTrigger: { trigger: intro, start: 'top 82%', end: 'top 34%', scrub: true } });
+      }
+      document.querySelectorAll<HTMLElement>('.num[data-count]').forEach((el) => {
+        const target = Number(el.dataset.count || '0');
+        const o = { v: 0 };
+        gsap.to(o, { v: target, duration: 1.6, ease: 'power2.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true }, onUpdate: () => (el.textContent = String(Math.round(o.v)).padStart(2, '0')) });
+      });
+      ScrollTrigger.refresh();
+    } else {
+      document.querySelectorAll<HTMLElement>('.num[data-count]').forEach((el) => (el.textContent = String(el.dataset.count).padStart(2, '0')));
+    }
+  </script>
+</YoyogiLayout>

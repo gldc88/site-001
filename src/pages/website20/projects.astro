@@ -1,0 +1,52 @@
+---
+/**
+ * NORTHRIDGE , Projects (website20, round 2). The recent-work carousel.
+ */
+import NorthridgeLayout from '../../layouts/NorthridgeLayout.astro';
+
+const PROJECTS = [
+  { name: 'Canal House Revival', loc: 'Herengracht', scope: 'Full gut · 280m² · 7 months', grad: 'from-[#10201c] to-[#05080a]' },
+  { name: 'Zuidas Apartment Refit', loc: 'Amsterdam-Zuid', scope: 'Kitchen + baths · 140m² · 4 months', grad: 'from-[#1a1714] to-[#06070a]' },
+  { name: 'Villa Modernisation', loc: 'Aerdenhout', scope: 'Extension + finish · 420m² · 11 months', grad: 'from-[#141a20] to-[#05080a]' },
+  { name: 'Jordaan Loft Conversion', loc: 'Jordaan', scope: 'Attic conversion · 90m² · 5 months', grad: 'from-[#1c1620] to-[#05080a]' },
+];
+const plan = `<svg viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="0.8" class="w-full h-full"><rect x="20" y="20" width="160" height="110"/><path d="M90 20 V130 M20 80 H90 M130 80 H180 M90 50 H130 V130"/><path d="M20 20 l10 0 M55 130 l0 -10" stroke-width="1.4"/><circle cx="150" cy="105" r="14"/></svg>`;
+---
+
+<NorthridgeLayout title="Projects | Northridge" description="Recent Northridge work , canal houses, apartments, and villas across the city. Planned clean, built tight." active="projects">
+  <section class="px-8 pt-40 pb-16">
+    <div class="max-w-[1400px] mx-auto">
+      <span class="text-[10px] uppercase tracking-[0.2em] text-emerald-400 font-mono">Projects</span>
+      <h1 class="text-6xl lg:text-8xl font-bold tracking-tighter leading-[0.95] mt-6 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-neutral-600">Built tight.</h1>
+      <p class="text-lg text-neutral-400 leading-relaxed max-w-xl mt-8 font-light border-l-2 border-white/20 pl-6">A selection of recent renovations across the city , each one planned clean and finished like it matters. Scroll the deck.</p>
+    </div>
+  </section>
+
+  <section class="pb-16 overflow-hidden">
+    <div class="flex gap-8 px-8 overflow-x-auto pb-16 snap-x snap-mandatory no-scrollbar">
+      {PROJECTS.map((proj) => (
+        <div class={`relative flex-none w-[80vw] md:w-[600px] aspect-[4/3] rounded-[2rem] overflow-hidden border-[0.5px] border-white/[0.1] snap-center group bg-gradient-to-br ${proj.grad}`}>
+          <div class="absolute inset-0 grid place-items-center text-white/[0.08] group-hover:text-emerald-400/20 transition-colors duration-700 p-20"><Fragment set:html={plan} /></div>
+          <div class="absolute inset-0" style="background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 38px), repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 38px);"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-0 inset-x-0 p-12">
+            <span class="block text-xs uppercase tracking-widest text-neutral-400 mb-3">{proj.loc}</span>
+            <h3 class="text-4xl font-light text-white mb-3">{proj.name}</h3>
+            <span class="text-[11px] font-mono text-emerald-400/80 uppercase tracking-wider">{proj.scope}</span>
+          </div>
+        </div>
+      ))}
+      <a href="/website20/contact" class="flex-none w-[300px] aspect-[4/3] rounded-[2rem] border-[0.5px] border-white/[0.1] bg-white/[0.02] flex items-center justify-center hover:bg-white/[0.05] transition-colors snap-center">
+        <span class="text-sm font-bold uppercase tracking-widest text-white text-center px-8">Start your project →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="px-8 py-24 border-t border-white/[0.05]">
+    <div class="max-w-[1400px] mx-auto grid md:grid-cols-3 gap-8 text-center">
+      <div data-reveal="up"><div class="text-6xl font-bold text-white tracking-tighter">120+</div><span class="text-xs uppercase tracking-widest text-neutral-500 mt-3 block">Renovations delivered</span></div>
+      <div data-reveal="up"><div class="text-6xl font-bold text-white tracking-tighter">1 day</div><span class="text-xs uppercase tracking-widest text-neutral-500 mt-3 block">To a budget range</span></div>
+      <div data-reveal="up"><div class="text-6xl font-bold text-white tracking-tighter">100%</div><span class="text-xs uppercase tracking-widest text-neutral-500 mt-3 block">Licensed &amp; insured</span></div>
+    </div>
+  </section>
+</NorthridgeLayout>

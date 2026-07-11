@@ -1,0 +1,140 @@
+---
+/**
+ * HeatTools , EMBERLINE's interactive trio (website26, round 2): a heat-output (BTU) estimator, a boiler-
+ * type guide, and a fault-triage decision tree. Triage is wired by data-attributes (no inline onclick).
+ */
+import { TRIAGE, TEL, EMAIL } from '../../data/emberline';
+
+const toneText: Record<string, string> = { danger: 'text-red-500', heat: 'text-[#f6a11a]', blue: 'text-blue-400', emerald: 'text-emerald-400', zinc: 'text-zinc-300' };
+const optTone: Record<string, string> = { danger: 'border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white', default: 'border-zinc-700 text-zinc-300 hover:border-[#f6a11a] hover:text-[#f6a11a]' };
+const stepIds = Object.keys(TRIAGE);
+---
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <!-- BTU estimator -->
+  <div class="rounded-xl border border-white/10 bg-white/5 p-8 shadow-lg hover:border-white/20 transition-colors">
+    <h3 class="text-white font-black uppercase text-sm tracking-wide mb-6 flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-[#f6a11a] animate-pulse"></span> Heat Output Estimator</h3>
+    <div class="space-y-6">
+      <div><div class="flex justify-between text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2"><span>Room length</span><span id="dispL" class="text-[#f6a11a]">4.0m</span></div><input type="range" id="inL" min="2" max="10" step="0.5" value="4" aria-label="Room length in metres" class="w-full accent-[#f6a11a]" /></div>
+      <div><div class="flex justify-between text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2"><span>Room width</span><span id="dispW" class="text-[#f6a11a]">3.5m</span></div><input type="range" id="inW" min="2" max="8" step="0.5" value="3.5" aria-label="Room width in metres" class="w-full accent-[#f6a11a]" /></div>
+      <div><div class="flex justify-between text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2"><span>Ceiling height</span><span id="dispH" class="text-[#f6a11a]">2.4m</span></div><input type="range" id="inH" min="2" max="4" step="0.1" value="2.4" aria-label="Ceiling height in metres" class="w-full accent-[#f6a11a]" /></div>
+      <div class="pt-6 border-t border-white/10 flex items-center justify-between">
+        <span class="text-xs font-bold text-zinc-500 uppercase">Estimated output</span>
+        <div class="text-right"><span id="outBTU" class="block text-2xl font-black text-white tracking-tighter drop-shadow-[0_0_10px_rgba(246,161,26,0.3)]">-- BTU</span><span id="outWatts" class="block text-xs font-bold text-zinc-500">-- Watts</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- boiler guide -->
+  <div class="rounded-xl border border-white/10 bg-white/5 p-8 shadow-lg flex flex-col hover:border-white/20 transition-colors">
+    <h3 class="text-white font-black uppercase text-sm tracking-wide mb-6 flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-blue-400"></span> Boiler Type Guide</h3>
+    <svg viewBox="0 0 320 96" class="w-full h-auto mb-6 opacity-80" fill="none" stroke="#9fd7ff" stroke-width="1.5" aria-label="Combi boiler schematic">
+      <rect x="8" y="10" width="120" height="76" rx="4" />
+      <text x="68" y="24" fill="#9fd7ff" stroke="none" font-size="8" text-anchor="middle" font-family="monospace" letter-spacing="1">COMBI UNIT</text>
+      <circle cx="40" cy="52" r="13" stroke="#f6a11a" /><path d="M36 56c1-3 3-3 4-6 1 3 3 3 4 6" stroke="#f6a11a" stroke-width="2" stroke-linecap="round" />
+      <rect x="78" y="40" width="34" height="26" rx="2" /><path d="M84 53h22M84 58h22" stroke-width="1" opacity="0.6" />
+      <path d="M128 30h60" stroke="#ff6b6b" stroke-width="2" /><text x="158" y="24" fill="#ff6b6b" stroke="none" font-size="7" text-anchor="middle" font-family="monospace">HOT OUT</text>
+      <path d="M128 66h60" stroke-width="2" /><text x="158" y="80" fill="#9fd7ff" stroke="none" font-size="7" text-anchor="middle" font-family="monospace">COLD / GAS IN</text>
+      <rect x="200" y="20" width="48" height="56" rx="3" /><path d="M210 34h28M210 44h28M210 54h28M210 64h28" stroke-width="3" opacity="0.5" />
+      <text x="224" y="90" fill="#9fd7ff" stroke="none" font-size="7" text-anchor="middle" font-family="monospace">RADIATOR</text>
+    </svg>
+    <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">Bathrooms needing hot water?</p>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <button class="bath-btn py-3 border border-white/10 rounded text-zinc-400 text-sm font-bold transition-all bg-white/5 hover:border-[#f6a11a] hover:text-[#f6a11a]" data-val="1">1</button>
+      <button class="bath-btn py-3 border border-white/10 rounded text-zinc-400 text-sm font-bold transition-all bg-white/5 hover:border-[#f6a11a] hover:text-[#f6a11a]" data-val="2">2</button>
+      <button class="bath-btn py-3 border border-white/10 rounded text-zinc-400 text-sm font-bold transition-all bg-white/5 hover:border-[#f6a11a] hover:text-[#f6a11a]" data-val="3">3+</button>
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-auto">
+      <div data-res="1" class="sys-card border border-white/5 bg-black/20 rounded p-3 flex flex-col justify-center items-center text-center opacity-40 transition-all duration-500"><span class="text-[10px] font-black uppercase text-zinc-500 mb-1">1 bath</span><strong class="text-white text-sm">Combi Boiler</strong></div>
+      <div data-res="2" class="sys-card border border-white/5 bg-black/20 rounded p-3 flex flex-col justify-center items-center text-center opacity-40 transition-all duration-500"><span class="text-[10px] font-black uppercase text-zinc-500 mb-1">2 baths</span><strong class="text-white text-sm">System Boiler</strong></div>
+      <div data-res="3" class="sys-card border border-white/5 bg-black/20 rounded p-3 flex flex-col justify-center items-center text-center opacity-40 transition-all duration-500"><span class="text-[10px] font-black uppercase text-zinc-500 mb-1">3+ baths</span><strong class="text-white text-sm">Boiler + Cylinder</strong></div>
+    </div>
+  </div>
+
+  <!-- fault triage -->
+  <div class="col-span-1 lg:col-span-2 rounded-xl border border-white/10 bg-white/5 p-8 shadow-lg hover:border-white/20 transition-colors">
+    <div class="flex justify-between items-start mb-6">
+      <h3 class="text-white font-black uppercase text-sm tracking-wide flex items-center gap-3"><span class="text-red-500 w-2 h-2 rounded-full bg-red-500"></span> Fault Triage Tool</h3>
+      <button data-reset type="button" class="text-zinc-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest">↺ Reset</button>
+    </div>
+    <div id="triageContainer" class="relative min-h-[150px] flex items-center justify-center">
+      {stepIds.map((id, idx) => {
+        const node = TRIAGE[id];
+        return (
+          <div class={`triage-step w-full text-center transition-all duration-300 ${idx === 0 ? '' : 'hidden opacity-0'}`} data-step={id}>
+            {!node.result && (
+              <>
+                <p class="text-xl text-white font-bold mb-7">{node.q}</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                  {node.opts.map((o: any) => (
+                    <button type="button" data-next={o.next} class={`px-7 py-3 border font-bold uppercase rounded transition-all text-sm ${o.tone === 'danger' ? optTone.danger : optTone.default}`}>{o.label}</button>
+                  ))}
+                </div>
+              </>
+            )}
+            {node.result && (
+              <>
+                <p class={`font-black uppercase tracking-widest mb-4 ${toneText[node.tone] || 'text-white'}`}>{node.title}</p>
+                <p class="text-zinc-400 mb-6 max-w-md mx-auto">{node.body}</p>
+                <div class="flex flex-col items-center gap-5">
+                  {node.cta === 'call' && <a href={`tel:${TEL}`} class="inline-block bg-red-600 text-white font-bold px-8 py-3 rounded uppercase tracking-widest hover:bg-red-500 transition-colors">Call now</a>}
+                  {node.cta === 'book' && <a href="/website26/book" class="inline-block border border-[#f6a11a] text-[#f6a11a] font-bold px-8 py-3 rounded uppercase tracking-widest hover:bg-[#f6a11a] hover:text-black transition-all">Book diagnostic</a>}
+                  {node.cta === 'reset' && <button type="button" data-reset class="inline-block bg-zinc-700 text-white font-bold px-8 py-3 rounded uppercase tracking-widest hover:bg-zinc-600 transition-colors">Start over</button>}
+                  <button type="button" data-back class="text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">← Back</button>
+                </div>
+              </>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
+<script>
+  // BTU estimator
+  const $ = (id: string) => document.getElementById(id);
+  const inL = $('inL') as HTMLInputElement | null, inW = $('inW') as HTMLInputElement | null, inH = $('inH') as HTMLInputElement | null;
+  if (inL && inW && inH) {
+    const calc = () => {
+      const l = parseFloat(inL.value), w = parseFloat(inW.value), h = parseFloat(inH.value);
+      $('dispL')!.textContent = l.toFixed(1) + 'm'; $('dispW')!.textContent = w.toFixed(1) + 'm'; $('dispH')!.textContent = h.toFixed(1) + 'm';
+      const btu = Math.round(l * w * h * 150);
+      $('outBTU')!.textContent = btu.toLocaleString() + ' BTU';
+      $('outWatts')!.textContent = Math.round(btu / 3.412).toLocaleString() + ' Watts';
+      try { localStorage.setItem('emberline-btu', $('outBTU')!.textContent); } catch (e) {}
+    };
+    [inL, inW, inH].forEach((el) => el.addEventListener('input', calc));
+    calc();
+  }
+
+  // boiler guide
+  const bathBtns = Array.from(document.querySelectorAll<HTMLElement>('.bath-btn'));
+  const resCards = Array.from(document.querySelectorAll<HTMLElement>('[data-res]'));
+  bathBtns.forEach((btn) => btn.addEventListener('click', () => {
+    bathBtns.forEach((b) => b.classList.remove('border-[#f6a11a]', 'text-[#f6a11a]', 'bg-[#f6a11a]/10'));
+    btn.classList.add('border-[#f6a11a]', 'text-[#f6a11a]', 'bg-[#f6a11a]/10');
+    const val = Math.min(3, parseInt(btn.dataset.val || '1'));
+    resCards.forEach((c) => { const on = c.dataset.res === String(val); c.classList.toggle('opacity-100', on); c.classList.toggle('opacity-40', !on); c.classList.toggle('border-[#f6a11a]', on); c.classList.toggle('bg-[#f6a11a]/20', on); c.classList.toggle('border-white/5', !on); c.classList.toggle('bg-black/20', !on); });
+  }));
+
+  // fault triage (data-attribute state machine)
+  const steps = Array.from(document.querySelectorAll<HTMLElement>('.triage-step'));
+  if (steps.length) {
+    const history: string[] = [];
+    const show = (id: string, isBack = false) => {
+      const target = steps.find((s) => s.dataset.step === id); if (!target) return;
+      const current = steps.find((s) => !s.classList.contains('hidden'));
+      if (current && !isBack) history.push(current.dataset.step!);
+      steps.forEach((el) => { if (!el.classList.contains('hidden')) { el.classList.add('opacity-0'); el.style.transform = isBack ? 'scale(1.04)' : 'scale(0.96)'; setTimeout(() => { if (el !== target) el.classList.add('hidden'); }, 280); } });
+      setTimeout(() => { target.classList.remove('hidden'); void target.offsetWidth; target.classList.remove('opacity-0'); target.style.transform = 'scale(1)'; }, 285);
+    };
+    const reset = () => { history.length = 0; steps.forEach((el, i) => { el.classList.toggle('hidden', i !== 0); el.classList.toggle('opacity-0', i !== 0); el.style.transform = i === 0 ? 'scale(1)' : 'scale(0.96)'; }); };
+    document.getElementById('triageContainer')?.addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest('[data-next],[data-back],[data-reset]') as HTMLElement | null; if (!t) return;
+      if (t.hasAttribute('data-next')) show(t.dataset.next!);
+      else if (t.hasAttribute('data-back')) { if (history.length) show(history.pop()!, true); }
+      else if (t.hasAttribute('data-reset')) reset();
+    });
+    document.querySelectorAll('[data-reset]').forEach((b) => b.addEventListener('click', reset));
+  }
+</script>

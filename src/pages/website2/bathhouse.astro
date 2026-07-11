@@ -1,0 +1,126 @@
+---
+/**
+ * NOCTURNE , Bathhouse (website2, round 2). Signature: clickable thermal circuit + session request.
+ */
+import NocturneLayout from '../../layouts/NocturneLayout.astro';
+
+const CIRCUIT = [
+  { n: '01', name: 'Warm Stone', time: '15 min', body: 'Heated basalt and rising steam below the street. The body softens before anything is asked of it.' },
+  { n: '02', name: 'Cold Plunge', time: '45 sec', body: 'One sharp, deliberate descent into cold. The reset that makes the heat mean something.' },
+  { n: '03', name: 'Steam', time: '20 min', body: 'Cedar-scented fog and slow breathing. The city leaves your shoulders one breath at a time.' },
+  { n: '04', name: 'The Soak', time: '40 min', body: 'A deep mineral bath at body temperature, lit by a single lantern. Time loses its grip.' },
+  { n: '05', name: 'Quiet Room', time: 'Unhurried', body: 'A heated stone bed, a blanket, a tisane, no devices. You leave when you are ready.' },
+];
+---
+
+<NocturneLayout title="The Bathhouse | NOCTURNE" description="Two levels below the street: a thermal circuit, cold plunge, and a quiet room at Nocturne, Tokyo." active="bathhouse">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website2/onsen.jpg" alt="The bathhouse in low light" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">, 2 Levels Below Street</span>
+      <h1>Heat, Water, <em>Hush</em></h1>
+      <p class="sub">Descend below the street into steam and shadow. A thermal circuit, a cold plunge, and a quiet room where the only schedule is your own breathing.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head" style="margin-bottom:46px;"><div><span class="overline cyan">The Thermal Circuit</span><h2 style="font-size:clamp(2rem,3.6vw,3rem);">Five stations, one descent</h2></div><p>Move through it in order, or stay where your body wants to stay. Allow ninety minutes; most stay longer.</p></div>
+    <div class="circuit">
+      <div class="c-rail" role="tablist" aria-label="Stations">
+        {CIRCUIT.map((c, i) => (
+          <button class={`c-node${i === 0 ? ' active' : ''}`} data-target={`st-${c.n}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+            <span class="c-dot"></span><span class="c-num">{c.n}</span><span class="c-name">{c.name}</span><span class="c-time">{c.time}</span>
+          </button>
+        ))}
+      </div>
+      <div class="c-detail">
+        {CIRCUIT.map((c, i) => (
+          <div class={`cd${i === 0 ? ' active' : ''}`} id={`st-${c.n}`}>
+            <span class="cd-n">{c.n}</span><h3>{c.name}</h3><span class="cd-time">{c.time}</span><p>{c.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="b-grid">
+      <div class="b-copy">
+        <span class="overline cyan">Reserve the Circuit</span>
+        <h2 style="font-size:clamp(2rem,3.6vw,3rem); margin-top:14px;">Book your descent</h2>
+        <p>Sessions are capped to keep the rooms quiet. House guests have standing access; visitors are welcome by request, off-peak.</p>
+        <div class="b-hours"><div><span class="bk">Open</span><span class="bv">06:30 , 23:00</span></div><div><span class="bk">Quiet Room</span><span class="bv">No devices</span></div></div>
+      </div>
+      <form id="spaForm" class="panel b-form" novalidate>
+        <div class="fld"><label for="bdate">Date</label><input id="bdate" name="date" type="date" /><span class="err" data-err="date"></span></div>
+        <div class="fld"><label for="btime">Window</label><select id="btime" name="time"><option>Morning · 07:00</option><option selected>Afternoon · 15:00</option><option>Evening · 21:00</option></select></div>
+        <div class="fld"><label for="bname">Name</label><input id="bname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+        <div class="fld"><label for="bemail">Email</label><input id="bemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request a session</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .circuit { display: grid; grid-template-columns: 0.9fr 1.3fr; gap: clamp(22px,4vw,56px); align-items: start; }
+    .c-rail { display: flex; flex-direction: column; }
+    .c-node { display: grid; grid-template-columns: 16px 28px 1fr auto; align-items: center; gap: 13px; text-align: left; padding: 20px 6px; border-bottom: 1px solid var(--hair); }
+    .c-node:first-child { border-top: 1px solid var(--hair); }
+    .c-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--faint); justify-self: center; transition: all 0.4s var(--ease); }
+    .c-node.active .c-dot { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 14px var(--cyan); }
+    .c-num { font-family: var(--head); font-size: 14px; color: var(--faint); }
+    .c-name { font-family: var(--head); font-size: clamp(1.15rem,1.8vw,1.5rem); color: #cfc8bb; transition: color 0.3s; }
+    .c-node.active .c-name, .c-node:hover .c-name { color: #fff; }
+    .c-time { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .c-detail { position: relative; border: 1px solid var(--hair); border-radius: 16px; padding: clamp(28px,4vw,52px); min-height: 300px; background: linear-gradient(160deg, rgba(25,230,255,0.05), transparent 60%); display: flex; align-items: center; }
+    .cd { display: none; }
+    .cd.active { display: block; animation: fadeup 0.5s var(--ease); }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .cd-n { font-family: var(--head); font-size: clamp(3.5rem,8vw,7rem); color: transparent; -webkit-text-stroke: 1px rgba(25,230,255,0.2); line-height: 1; }
+    .cd h3 { font-size: clamp(1.8rem,3.2vw,2.6rem); color: #fff; margin-top: 6px; }
+    .cd-time { display: inline-block; margin-top: 10px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); }
+    .cd p { color: var(--muted); line-height: 1.8; margin-top: 16px; max-width: 46ch; }
+
+    .b-grid { display: grid; grid-template-columns: 1fr 0.85fr; gap: clamp(24px,4vw,50px); align-items: start; }
+    .b-copy p { color: var(--muted); line-height: 1.8; margin-top: 20px; max-width: 44ch; }
+    .b-hours { margin-top: 30px; display: flex; gap: 40px; flex-wrap: wrap; }
+    .b-hours .bk { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .b-hours .bv { display: block; font-family: var(--head); font-size: 1.25rem; color: #fff; margin-top: 6px; }
+    .b-form { padding: clamp(24px,3vw,36px); display: flex; flex-direction: column; gap: 15px; }
+    @media (max-width: 900px) { .circuit, .b-grid { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.c-node'));
+    const cds = Array.from(document.querySelectorAll<HTMLElement>('.cd'));
+    nodes.forEach((n) => n.addEventListener('click', () => {
+      const id = n.dataset.target;
+      nodes.forEach((x) => { const on = x === n; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); });
+      cds.forEach((p) => p.classList.toggle('active', p.id === id));
+    }));
+    if (!reduce) { let i = 0; setInterval(() => { i = (i + 1) % nodes.length; nodes[i].click(); }, 5200); }
+
+    const form = document.getElementById('spaForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5600); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--magenta)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (!String(d.get('date') || '')) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      form.reset();
+      showToast(`Thank you, ${name.split(' ')[0]}. Your descent is held; the bathhouse confirms within the day.`);
+    });
+  </script>
+</NocturneLayout>

@@ -1,0 +1,82 @@
+---
+/**
+ * VULCANIC ATELIER , Strata (website15, round 2). Signature: a strata selector that raises the
+ * thermal circuit (feeds the magma) + a detail panel per stratum.
+ */
+import VulcanLayout from '../../layouts/VulcanLayout.astro';
+import { STRATA } from '../../data/vulcan';
+---
+
+<VulcanLayout title="Strata | Vulcanic Atelier" description="The five strata of Vulcanic Atelier , basalt suites, ash bar, thermal deck, obsidian dining, afterglow service. Each raises the heat." active="strata">
+  <div class="page-hero">
+    <span class="kicker">Strata</span>
+    <h1>Five ways to spend a <em>night</em>.</h1>
+    <p class="sub">Each stratum sits at its own temperature. Select one , the magma behind the page rises to its heat, and that warmth follows you to every other page. Choose where you want the night to sit.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="str-browser">
+      <div class="str-list">
+        {STRATA.map((s, i) => (
+          <button class={`strx ${i === 0 ? 'active' : ''}`} data-suite data-key={s.key} data-heat={String(s.heat)} aria-pressed="false">
+            <span class="sx-main"><span class="sx-name">{s.name}</span><span class="sx-stat">{s.stat}</span></span>
+            <span class="sx-heat">{s.heat}°</span>
+          </button>
+        ))}
+      </div>
+      <div class="str-stage">
+        {STRATA.map((s, i) => (
+          <article class={`str-detail ${i === 0 ? 'active' : ''}`} id={`str-${s.key}`}>
+            <div class="sd-head"><span class="sd-stat">{s.stat}</span><span class="sd-heat">{s.heat}° on the circuit</span></div>
+            <h2>{s.name}</h2>
+            <p class="sd-long">{s.long}</p>
+            <div class="sd-heatbar"><span style={`width:${s.heat}%`}></span></div>
+            <ul class="sd-includes">{s.includes.map((x) => <li>{x}</li>)}</ul>
+            <a href="/website15/reserve" class="btn-cta" style="margin-top:6px;">Reserve this stratum</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .str-browser { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(18px,3vw,40px); align-items: start; }
+    .str-list { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 90px; }
+    .strx { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; padding: 16px 16px; border: 1px solid var(--line2); border-radius: 5px; background: var(--panel); transition: all 0.3s; }
+    .strx:hover { border-color: var(--line); }
+    .strx[aria-pressed='true'] { border-color: var(--magma1); box-shadow: inset 0 0 40px -26px var(--magma1); }
+    .sx-main { display: flex; flex-direction: column; gap: 3px; }
+    .sx-name { font-family: var(--disp); font-size: 1.25rem; color: #fff; }
+    .sx-stat { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .sx-heat { font-family: var(--mono); font-size: 12px; color: var(--magma2); }
+
+    .str-stage { min-width: 0; }
+    .str-detail { display: none; }
+    .str-detail.active { display: block; animation: fade 0.4s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .sd-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+    .sd-stat { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--magma2); }
+    .sd-heat { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--muted); }
+    .str-detail h2 { font-size: clamp(2.2rem,4.6vw,3.6rem); color: #fff; }
+    .sd-long { color: var(--ink); font-size: 1.12rem; line-height: 1.75; margin: 20px 0 22px; max-width: 60ch; }
+    .sd-heatbar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; margin-bottom: 28px; max-width: 360px; }
+    .sd-heatbar span { display: block; height: 100%; background: linear-gradient(90deg, var(--magma0), var(--magma2)); border-radius: 100px; transition: width 0.5s var(--ease); }
+    .sd-includes { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+    .sd-includes li { font-size: 0.95rem; color: var(--ink); padding-left: 22px; position: relative; }
+    .sd-includes li::before { content: '◢'; position: absolute; left: 0; color: var(--magma1); font-size: 0.7em; top: 4px; }
+
+    @media (max-width: 860px) { .str-browser { grid-template-columns: 1fr; } .str-list { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 4px; } .strx { min-width: 220px; } .sd-includes { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.str-detail'));
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.strx'));
+    function show(k: string) {
+      details.forEach((d) => d.classList.toggle('active', d.id === `str-${k}`));
+      items.forEach((it) => it.classList.toggle('active', it.dataset.key === k));
+    }
+    items.forEach((it) => it.addEventListener('click', () => show(it.dataset.key!)));
+    document.addEventListener('vulcan:suite', (e) => show((e as CustomEvent).detail));
+    show(localStorage.getItem('vulcan-suite') || 'thermal');
+  </script>
+</VulcanLayout>

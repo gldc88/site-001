@@ -1,0 +1,166 @@
+---
+/**
+ * ATELIER PRIVATE CATERING , Philosophy (website17, round 2). The four standards, long-form.
+ */
+import AtelierLayout from '../../layouts/AtelierLayout.astro';
+import { PHILOSOPHY } from '../../data/atelier';
+---
+
+<AtelierLayout title="Philosophy | Atelier Private Catering" description="Four standards we hold every night , silence, pacing, sourcing, closeout. The service you never notice running." active="philosophy">
+  <div class="page-hero">
+    <span class="eyebrow">Philosophy</span>
+    <h1>The service you never <em>notice</em>.</h1>
+    <p class="sub">A good private dinner should feel like it cooked itself. Four standards make that possible , and they are the ones we will not bend on, whatever the room or the night asks.</p>
+  </div>
+
+  <section class="section">
+    <div class="phil-list">
+      {PHILOSOPHY.map((p, i) => (
+        <article class="phil-block" data-reveal="up">
+          <span class="pb-n">{String(i + 1).padStart(2, '0')}</span>
+          <div class="pb-body"><h2>{p.k}</h2><p>{p.v}</p></div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="phil-cta panel copper">
+      <span class="eyebrow">The standard</span>
+      <h2>You should wake to no sign we were there.</h2>
+      <p>An early, quiet load-in. An evening paced to your table, not our kitchen. And a closeout that leaves the room exactly as we found it. That is the whole promise , the rest is dinner.</p>
+      <div class="pc-actions"><a href="/website17/menus" class="btn-ghost">See the menus</a><a href="/website17/reserve" class="btn-cta">Compose an evening</a></div>
+    </div>
+  </section>
+
+  <section class="section tableplan" id="tableplan">
+    <div class="tp-head">
+      <span class="overline">The Table Plan</span>
+      <h2>Seat your evening.</h2>
+      <p>A dinner is a composition. Choose who sits where , the kitchen reads the table
+        before it writes the menu.</p>
+    </div>
+    <div class="tp-stage panel">
+      <div class="tp-left">
+        <div class="tp-types" role="radiogroup" aria-label="Choose a guest type to seat">
+          <button type="button" class="tp-type" data-type="host" role="radio" aria-checked="false">Host</button>
+          <button type="button" class="tp-type" data-type="talker" role="radio" aria-checked="false">The talker</button>
+          <button type="button" class="tp-type" data-type="quiet" role="radio" aria-checked="false">The quiet one</button>
+          <button type="button" class="tp-type" data-type="curious" role="radio" aria-checked="false">The curious eater</button>
+        </div>
+        <p class="tp-chef" id="tpChef" aria-live="polite">Choose a guest, then a chair.</p>
+        <button type="button" class="tp-clear" id="tpClear">Clear the table</button>
+      </div>
+      <div class="tp-table">
+        <svg viewBox="0 0 400 300" aria-hidden="true">
+          <circle cx="200" cy="150" r="78" fill="rgba(200, 140, 80, 0.08)" stroke="rgba(200, 140, 80, 0.4)" />
+          <circle cx="200" cy="150" r="8" fill="rgba(255, 190, 120, 0.5)" />
+        </svg>
+        <div class="tp-chairs">
+          <button type="button" class="tp-chair" data-seat="0" style="left:50%; top:8%;" aria-label="Chair at north"></button>
+          <button type="button" class="tp-chair" data-seat="1" style="left:85%; top:30%;" aria-label="Chair at north-east"></button>
+          <button type="button" class="tp-chair" data-seat="2" style="left:85%; top:70%;" aria-label="Chair at south-east"></button>
+          <button type="button" class="tp-chair" data-seat="3" style="left:50%; top:92%;" aria-label="Chair at south"></button>
+          <button type="button" class="tp-chair" data-seat="4" style="left:15%; top:70%;" aria-label="Chair at south-west"></button>
+          <button type="button" class="tp-chair" data-seat="5" style="left:15%; top:30%;" aria-label="Chair at north-west"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* ===== R3: "The Table Plan" ===== */
+    .tableplan .tp-head { max-width: 620px; margin-bottom: 26px; }
+    .tableplan h2 { font-size: clamp(1.9rem,3.4vw,2.7rem); margin: 10px 0 12px; }
+    .tableplan p { line-height: 1.75; }
+    .tp-stage { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(22px,4vw,48px); padding: clamp(24px,3.5vw,40px); align-items: center; }
+    .tp-types { display: flex; flex-direction: column; gap: 8px; }
+    .tp-type { text-align: left; font-size: 12px; letter-spacing: 0.06em; padding: 10px 14px; border: 1px solid rgba(200, 140, 80, 0.3); border-radius: 4px; background: rgba(200, 140, 80, 0.05); cursor: pointer; transition: border-color .3s, background .3s; }
+    .tp-type[aria-checked='true'] { background: rgba(200, 140, 80, 0.2); border-color: rgba(255, 190, 120, 0.7); }
+    .tp-type:focus-visible { outline: 1px solid rgba(255, 190, 120, 0.9); outline-offset: 2px; }
+    .tp-chef { font-style: italic; font-size: 14px; line-height: 1.6; min-height: 44px; margin: 16px 0 10px; }
+    .tp-clear { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; background: none; border: 1px solid rgba(200, 140, 80, 0.3); border-radius: 3px; padding: 7px 12px; cursor: pointer; opacity: 0.75; }
+    .tp-clear:hover { opacity: 1; }
+    .tp-table { position: relative; max-width: 400px; margin: 0 auto; width: 100%; }
+    .tp-table svg { width: 100%; height: auto; display: block; }
+    .tp-chairs { position: absolute; inset: 0; }
+    .tp-chair { position: absolute; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; border: 1px dashed rgba(200, 140, 80, 0.45); background: rgba(30, 20, 14, 0.5); cursor: pointer; font-size: 9px; letter-spacing: 0.05em; color: rgba(255, 220, 180, 0.95); display: grid; place-items: center; transition: border-color .3s, background .3s; }
+    .tp-chair:hover { border-color: rgba(255, 190, 120, 0.8); }
+    .tp-chair:focus-visible { outline: 1px solid rgba(255, 190, 120, 0.9); outline-offset: 2px; }
+    .tp-chair.seated { border-style: solid; background: rgba(200, 140, 80, 0.25); }
+    @media (max-width: 720px) { .tp-stage { grid-template-columns: 1fr; } }
+
+    .phil-list { display: flex; flex-direction: column; }
+    .phil-block { display: grid; grid-template-columns: 110px 1fr; gap: clamp(20px,4vw,48px); padding: 44px 0; border-top: 1px solid var(--line); align-items: start; }
+    .phil-block:last-child { border-bottom: 1px solid var(--line); }
+    .pb-n { font-family: var(--head); font-size: clamp(2.4rem,5vw,4rem); color: var(--copper-deep); line-height: 1; }
+    .pb-body h2 { font-size: clamp(2rem,4vw,3rem); color: #fff; }
+    .pb-body p { color: var(--muted); margin-top: 14px; line-height: 1.85; max-width: 64ch; font-size: 1.08rem; }
+
+    .phil-cta { padding: clamp(30px,4vw,46px); max-width: 820px; }
+    .phil-cta .eyebrow { margin-bottom: 16px; }
+    .phil-cta h2 { font-size: clamp(2rem,3.8vw,3rem); color: #fff; }
+    .phil-cta p { color: var(--muted); margin: 16px 0 24px; line-height: 1.8; max-width: 60ch; }
+    .pc-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    @media (max-width: 860px) { .phil-block { grid-template-columns: 1fr; gap: 8px; } }
+  </style>
+
+  <script>
+    /* R3 "The Table Plan" , de keuken leest de tafel voordat ze het menu schrijft. */
+    (() => {
+      const KEY = 'atelier-table';
+      const LABEL: Record<string, string> = { host: 'H', talker: 'T', quiet: 'Q', curious: 'C' };
+      const types = Array.from(document.querySelectorAll<HTMLButtonElement>('.tp-type'));
+      const chairs = Array.from(document.querySelectorAll<HTMLButtonElement>('.tp-chair'));
+      const chef = document.getElementById('tpChef');
+      const clearBtn = document.getElementById('tpClear');
+      if (!types.length || !chairs.length || !chef) return;
+      let picked = '';
+
+      const read = (): Record<string, string> => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
+      const write = (v: Record<string, string>) => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch { /* private mode */ } };
+
+      const chefRead = (plan: Record<string, string>) => {
+        const seats = Object.values(plan);
+        if (!seats.length) return 'Choose a guest, then a chair.';
+        const q = seats.filter((v) => v === 'quiet').length;
+        const t = seats.filter((v) => v === 'talker').length;
+        const host = Object.entries(plan).find(([, v]) => v === 'host');
+        const parts: string[] = [`A table of ${seats.length}.`];
+        if (host) parts.push('The host anchors the room.');
+        if (t >= 2) parts.push('Two talkers , courses will come quicker, between stories.');
+        if (q >= 2) parts.push('Quiet corners , the kitchen will pace the evening slower.');
+        if (q === 1 && t >= 1) parts.push('One quiet seat among voices; we will keep that corner warm.');
+        if (seats.length >= 5) parts.push('Nearly full , a family-style middle course, then.');
+        return parts.join(' ');
+      };
+      const sync = () => {
+        const plan = read();
+        chairs.forEach((ch) => {
+          const v = plan[ch.dataset.seat || ''];
+          ch.classList.toggle('seated', !!v);
+          ch.textContent = v ? LABEL[v] || '?' : '';
+          const base = ch.getAttribute('aria-label')?.split(' , ')[0] || 'Chair';
+          ch.setAttribute('aria-label', v ? `${base} , ${v}` : base);
+        });
+        chef.textContent = chefRead(plan);
+      };
+      types.forEach((t) => t.addEventListener('click', () => {
+        picked = t.dataset.type || '';
+        types.forEach((x) => x.setAttribute('aria-checked', String(x === t)));
+      }));
+      chairs.forEach((ch) => ch.addEventListener('click', () => {
+        const plan = read();
+        const seat = ch.dataset.seat || '';
+        if (plan[seat]) { delete plan[seat]; }
+        else if (picked) { plan[seat] = picked; }
+        else { chef.textContent = 'Choose who sits there first.'; return; }
+        write(plan);
+        sync();
+      }));
+      clearBtn?.addEventListener('click', () => { write({}); sync(); });
+      sync();
+    })();
+  </script>
+</AtelierLayout>

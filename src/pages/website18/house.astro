@@ -1,0 +1,97 @@
+---
+/**
+ * AURUM THERMAL HOUSE , The House (website18, round 2). Signature: the canal-house cross-section ,
+ * select a floor to set its heat (warms the caustics) + read its full detail.
+ */
+import AurumLayout from '../../layouts/AurumLayout.astro';
+import { ROOMS } from '../../data/aurum';
+---
+
+<AurumLayout title="The House | Aurum Thermal House" description="The Aurum canal-house, floor by floor , attic tea lounge down to the ice cellar. Select a floor to set its heat and read its detail." active="house">
+  <div class="page-hero">
+    <span class="eyebrow">The House</span>
+    <h1>Read it like a <em>section</em>.</h1>
+    <p class="sub">Six floors of a canal house, each a different temperature, stacked attic to cellar. Select a floor , the water warms to its heat and follows you everywhere , and read what waits on it.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="house-grid">
+      <div class="section-stack">
+        {ROOMS.map((r, i) => (
+          <button class={`sf ${i === 0 ? 'active' : ''}`} data-room data-key={r.id} data-heat={String(r.heat)} aria-pressed="false" style={`--h:${r.heat}`}>
+            <span class="sf-bar"></span>
+            <span class="sf-main"><span class="sf-floor">{r.floor}</span><span class="sf-name">{r.name}</span></span>
+            <span class="sf-temp">{r.temp}</span>
+          </button>
+        ))}
+      </div>
+      <div class="house-stage">
+        {ROOMS.map((r, i) => (
+          <article class={`room ${i === 0 ? 'active' : ''}`} id={`room-${r.id}`}>
+            <div class="rm-head"><span class="rm-floor">{r.floor} floor</span><span class="rm-temp">{r.temp}</span></div>
+            <h2>{r.name}</h2>
+            <p class="rm-long">{r.long}</p>
+            <div class="rm-heat"><span>Cool</span><div class="rmh-track"><span style={`width:${Math.round(r.heat * 100)}%`}></span></div><span>Sauna</span></div>
+            <ul class="rm-bullets">{r.bullets.map((b) => <li>{b}</li>)}</ul>
+            <a href="/website18/reserve" class="btn-cta" style="margin-top:6px;">Reserve around this</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="seal-row">
+      <button type="button" class="circuit-seal" data-station="source">Stamp the source</button>
+      <button type="button" class="circuit-seal" data-station="pool">Stamp the pool</button>
+    </div>
+  </section>
+
+  <style>
+    .seal-row { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .house-grid { display: grid; grid-template-columns: 0.85fr 1.4fr; gap: clamp(18px,3vw,40px); align-items: start; }
+    .section-stack { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; position: sticky; top: 90px; }
+    .sf { display: grid; grid-template-columns: 6px 1fr auto; gap: 14px; align-items: center; text-align: left; padding: 18px 16px; border-bottom: 1px solid var(--line); transition: background 0.3s; }
+    .sf:last-child { border-bottom: none; }
+    .sf:hover { background: rgba(245,236,224,0.03); }
+    .sf[aria-pressed='true'] { background: rgba(224,176,121,0.1); }
+    .sf-bar { width: 6px; height: 100%; min-height: 34px; border-radius: 2px; background: color-mix(in srgb, var(--gold) calc(var(--h) * 100%), var(--jade)); opacity: 0.5; transition: opacity 0.3s; }
+    .sf[aria-pressed='true'] .sf-bar { opacity: 1; box-shadow: 0 0 10px color-mix(in srgb, var(--gold) calc(var(--h) * 100%), var(--jade)); }
+    .sf-main { display: flex; flex-direction: column; gap: 2px; }
+    .sf-floor { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .sf-name { font-family: var(--serif); font-size: 1.35rem; color: #fff; }
+    .sf-temp { font-family: var(--mono); font-size: 11px; color: var(--gold); }
+
+    .house-stage { min-width: 0; }
+    .room { display: none; }
+    .room.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .rm-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 12px; }
+    .rm-floor { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--jade); }
+    .rm-temp { font-family: var(--mono); font-size: 12px; color: var(--gold); }
+    .room h2 { font-size: clamp(2.4rem,5vw,4rem); color: #fff; }
+    .rm-long { color: var(--ink); font-size: 1.12rem; line-height: 1.8; margin: 20px 0 24px; max-width: 60ch; }
+    .rm-heat { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; max-width: 420px; }
+    .rm-heat span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+    .rmh-track { flex: 1; height: 4px; background: rgba(245,236,224,0.08); border-radius: 100px; overflow: hidden; }
+    .rmh-track span { display: block; height: 100%; background: linear-gradient(90deg, var(--jade), var(--gold-bright)); border-radius: 100px; }
+    .rm-bullets { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+    .rm-bullets li { font-size: 0.95rem; color: var(--ink); padding-left: 20px; position: relative; }
+    .rm-bullets li::before { content: '◇'; position: absolute; left: 0; color: var(--gold); font-size: 0.7em; top: 4px; }
+
+    @media (max-width: 860px) { .house-grid { grid-template-columns: 1fr; } .section-stack { position: static; } .rm-bullets { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const floors = Array.from(document.querySelectorAll<HTMLElement>('.sf'));
+    const rooms = Array.from(document.querySelectorAll<HTMLElement>('.room'));
+    function show(k: string) {
+      floors.forEach((f) => f.classList.toggle('active', f.dataset.key === k));
+      rooms.forEach((r) => r.classList.toggle('active', r.id === `room-${k}`));
+    }
+    floors.forEach((f) => f.addEventListener('click', () => show(f.dataset.key!)));
+    document.addEventListener('aurum:room', (e) => show((e as CustomEvent).detail));
+    show(localStorage.getItem('aurum-room') || 'mineral');
+  </script>
+</AurumLayout>

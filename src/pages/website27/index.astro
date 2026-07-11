@@ -1,0 +1,67 @@
+---
+/**
+ * VELLUM WEDDING BUREAU , Home (website27, round 2). Letterhead hero + teasers into the composer, the
+ * commission, and coverage.
+ */
+import VellumBureauLayout from '../../layouts/VellumBureauLayout.astro';
+import { TAGLINE, AREA, EMAIL, PHONE, TEL, DOSSIER, LEDGER } from '../../data/vellum-bureau';
+---
+
+<VellumBureauLayout title="Vellum Wedding Bureau , Design-led Planning, Discreet Execution" description="A full-service wedding planning bureau: design, logistics, vendors, guest experience, and on-site production , end-to-end, calm, and precise.">
+  <section class="mx-auto max-w-6xl px-6 pt-20 pb-16">
+    <div class="grid lg:grid-cols-[1.3fr_1fr] gap-12 items-end border-b border-[var(--line)] pb-12">
+      <div>
+        <span class="text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--champ-d)]">Wedding Bureau · est. quietly</span>
+        <h1 class="font-display text-6xl md:text-8xl font-semibold leading-[0.95] mt-5">A day that feels <span class="italic gold-text">unhurried.</span></h1>
+        <p class="mt-7 max-w-md text-[var(--mut)] text-lg leading-relaxed">Design direction, logistics, vendors, guest experience , handled end-to-end. Your day feels unhurried because every decision is made earlier, documented properly, and executed quietly.</p>
+        <div class="mt-9 flex flex-wrap gap-4">
+          <a href="/website27/save-the-date" class="bg-[var(--ink)] text-white px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] rounded-full hover:bg-[var(--champ-d)] transition-colors">Compose a save-the-date</a>
+          <a href="/website27/inquiry" class="border border-[var(--ink)]/30 px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] rounded-full hover:border-[var(--champ)] hover:text-[var(--champ-d)] transition-all">Begin an inquiry</a>
+        </div>
+      </div>
+      <div class="text-sm text-[var(--mut)] space-y-2.5">
+        <div><span class="font-semibold text-[var(--ink)]">Area</span> , {AREA}</div>
+        <div><span class="font-semibold text-[var(--ink)]">Email</span> , <a href={`mailto:${EMAIL}`} class="text-[var(--champ-d)] hover:underline">{EMAIL}</a></div>
+        <div><span class="font-semibold text-[var(--ink)]">Phone</span> , <a href={`tel:${TEL}`} class="text-[var(--champ-d)] hover:underline">{PHONE}</a></div>
+        <p class="font-display italic text-xl text-[var(--ink)] pt-4">{TAGLINE}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- commission teaser -->
+  <section class="mx-auto max-w-6xl px-6 py-16">
+    <div class="flex items-end justify-between mb-10"><h2 class="font-display text-4xl md:text-5xl font-semibold">The Commission.</h2><a href="/website27/commission" class="hidden sm:inline text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] hover:text-[var(--ink)] v-link">In full →</a></div>
+    <div class="grid sm:grid-cols-2 gap-6">
+      {DOSSIER.map((d) => (
+        <a href="/website27/commission" class="reveal-on-scroll block rounded-2xl border border-[var(--line)] bg-[#fbf8f3]/60 p-8 hover:border-[var(--champ)]/50 transition-colors group">
+          <span class="text-[var(--champ)] font-display text-2xl">{d.n}</span>
+          <h3 class="font-display text-2xl font-semibold mt-2 group-hover:text-[var(--champ-d)] transition-colors">{d.title}</h3>
+          <p class="mt-3 text-sm text-[var(--mut)] leading-relaxed line-clamp-3">{d.body}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- coverage teaser -->
+  <section class="mx-auto max-w-6xl px-6 py-16 border-t border-[var(--line)]">
+    <div class="grid lg:grid-cols-[1fr_1.4fr] gap-12">
+      <div>
+        <h2 class="font-display text-4xl md:text-5xl font-semibold">What we handle.</h2>
+        <p class="mt-4 text-[var(--mut)] max-w-sm leading-relaxed">When it is done properly, it feels simple. We carry the whole production , without the noise.</p>
+        <a href="/website27/coverage" class="mt-6 inline-block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--ink)] border-b border-[var(--champ)] pb-1 hover:text-[var(--champ-d)] transition-colors">The full ledger →</a>
+      </div>
+      <dl class="divide-y divide-[var(--line)] border-t border-[var(--line)]">
+        {LEDGER.slice(0, 4).map((r) => (<div class="py-4 grid sm:grid-cols-[200px_1fr] gap-2 sm:gap-6"><dt class="font-display text-lg font-semibold">{r.dt}</dt><dd class="text-sm text-[var(--mut)] leading-relaxed">{r.dd}</dd></div>))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 py-20 text-center">
+    <h2 class="font-display text-5xl md:text-6xl font-semibold">Begin with the happy part.</h2>
+    <p class="mt-4 text-[var(--mut)] max-w-lg mx-auto">Set your names and date and watch your save-the-date take shape , then carry it into an inquiry.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <a href="/website27/save-the-date" class="bg-[var(--ink)] text-white px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] rounded-full hover:bg-[var(--champ-d)] transition-colors">Compose a save-the-date</a>
+      <a href={`tel:${TEL}`} class="border border-[var(--ink)]/30 px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] rounded-full hover:border-[var(--champ)] transition-all">Call {PHONE}</a>
+    </div>
+  </section>
+</VellumBureauLayout>

@@ -1,0 +1,164 @@
+---
+/**
+ * OVERSEAS LINE , Home (website5, round 2 multi-page).
+ * Night-sea hero over the persistent WebGL scene; lede, teasers to Crossings / The Ship /
+ * Onboard / Concierge.
+ */
+import OverseasLayout from '../../layouts/OverseasLayout.astro';
+
+const VOYAGES = [
+  { name: 'New York → Southampton', meta: '14 Nights · April', code: 'NYC,SOU' },
+  { name: 'Riviera Circuit', meta: '12 Nights · July', code: 'MED,LOOP' },
+  { name: 'Pacific Drift', meta: '18 Nights · January', code: 'PAC,DRIFT' },
+];
+const DETAILS = [
+  { title: 'Fleet', line: 'All-suite ships. A dedicated butler to every deck.' },
+  { title: 'Dining', line: 'Chef-led menus, always included, never rushed.' },
+  { title: 'Wellness', line: 'A thermal deck and recovery-first onboard days.' },
+  { title: 'Access', line: 'A private pier and a quiet, unhurried embark.' },
+];
+const FACILITIES = ['Thermal Deck', 'Private Spa Suites', 'Silence Lounge', 'Chef Salons', 'Horizon Deck', 'Suite Butler', 'Shore Concierge', 'Private Transfer'];
+---
+
+<OverseasLayout title="OVERSEAS LINE | Private Overseas Voyages" description="Private overseas crossings on an all-suite liner. Quiet, recovery-first onboard life, concierge embarkation, and a gold horizon at night.">
+  <header class="hero" id="hero">
+    <span class="eyebrow c" id="heroEye">Overseas Line · Private Crossings</span>
+    <h1 class="hero-title" id="heroTitle">Cross by<br /><em>night.</em></h1>
+    <p class="hero-tag" id="heroTag">An all-suite liner for those who treat the journey as the destination , quiet, recovery-first, and lit only by a gold horizon.</p>
+    <div class="hero-scroll" id="heroScroll" aria-hidden="true"><div class="rail"></div><span>Set sail</span></div>
+  </header>
+
+  <section class="section">
+    <p class="lede" id="lede" data-reveal="up">There is nowhere to be for days. <em>No notifications, no queues, no rush</em> , only the slow gold line of the horizon and a ship built entirely of quiet.</p>
+  </section>
+
+  <section class="section tight" id="crossings">
+    <div class="sec-head">
+      <div><span class="eyebrow" data-reveal="fade">Crossings</span><h2 data-reveal="up">Three ways across.</h2></div>
+      <p data-reveal="up">Each crossing is a season of its own. <a class="inline-link" href="/website5/crossings">All crossings →</a></p>
+    </div>
+    <div class="voyages">
+      {VOYAGES.map((v) => (
+        <a href="/website5/crossings" class="voyage">
+          <span class="v-code" data-reveal="fade">{v.code}</span>
+          <div class="v-main"><h3 data-reveal="up">{v.name}</h3><span class="v-meta" data-reveal="up">{v.meta}</span></div>
+          <span class="v-arw" data-reveal="fade">→</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight" id="details">
+    <div class="ship-split">
+      <div class="ship-fig" data-reveal="scale"><img src="/website5/ship.jpg" alt="A liner on the horizon at dusk" loading="lazy" decoding="async" /><span class="ship-tag">FIG · CROSSING AT DUSK</span></div>
+      <div class="ship-body">
+        <span class="eyebrow" data-reveal="fade">The Ship</span>
+        <h2 data-reveal="up" style="font-size:clamp(2rem,3.6vw,3.2rem); color:#fff; margin-top:14px;">An all-suite liner.</h2>
+        <div class="detail-rows" data-stagger="0.08">
+          {DETAILS.map((d) => (
+            <div class="d-row"><span class="d-k">{d.title}</span><span class="d-v">{d.line}</span></div>
+          ))}
+        </div>
+        <a href="/website5/suites" class="btn-ghost" data-reveal="up" style="margin-top:34px;">Tour the suites</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight" id="onboard">
+    <div class="sec-head">
+      <div><span class="eyebrow" data-reveal="fade">Onboard</span><h2 data-reveal="up">A day with nowhere to be.</h2></div>
+      <p data-reveal="up">Recovery-first, never busy. <a class="inline-link" href="/website5/onboard">All of onboard →</a></p>
+    </div>
+    <div class="fac-grid" data-stagger="0.05">
+      {FACILITIES.map((f) => <div class="fac">{f}</div>)}
+    </div>
+  </section>
+
+  <section class="section concierge-cta" id="concierge">
+    <span class="eyebrow c" data-reveal="fade" style="display:flex;justify-content:center;">Concierge</span>
+    <h2 data-reveal="up">Hold a suite for the quiet.</h2>
+    <p data-reveal="up">No booking line. A single message, and the concierge arranges the crossing, the suite, the pier, and the car at both ends.</p>
+    <a href="/website5/concierge" class="btn-cta" data-reveal="up" style="margin-top:34px;">Request a crossing</a>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; }
+    .hero .eyebrow { opacity: 0; transform: translateY(8px); }
+    .hero-title { font-size: clamp(3.4rem, 12vw, 11rem); letter-spacing: 0; line-height: 0.96; color: #f6f3ec; margin: 22px 0; }
+    .hero-title em { color: var(--gold); font-style: italic; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-tag { font-family: var(--serif); font-style: italic; font-size: clamp(1rem, 2vw, 1.5rem); color: var(--muted); max-width: 42ch; opacity: 0; }
+    .hero-scroll { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; }
+    .hero-scroll .rail { width: 1px; height: 46px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+    .hero-scroll .rail::after { content: ''; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: var(--gold); animation: drop 2.6s var(--ease) infinite; }
+    .hero-scroll span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+
+    .lede .word { display: inline-block; }
+
+    .voyages { display: flex; flex-direction: column; border-top: 1px solid var(--hair-soft); }
+    .voyage { display: grid; grid-template-columns: 130px 1fr auto; align-items: center; gap: clamp(16px,4vw,40px); padding: 34px 16px; border-bottom: 1px solid var(--hair-soft); transition: background 0.4s var(--ease), padding 0.4s var(--ease); min-width: 0; }
+    .voyage:hover { background: rgba(214,184,135,0.05); padding-left: 26px; }
+    .v-code { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; color: var(--faint); }
+    .v-main { min-width: 0; }
+    .voyage h3 { font-size: clamp(1.6rem, 3vw, 2.6rem); color: #fff; transition: color 0.3s; }
+    .voyage:hover h3 { color: var(--gold); }
+    .v-meta { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .v-arw { color: var(--gold); font-size: 1.2rem; transition: transform 0.4s var(--ease); }
+    .voyage:hover .v-arw { transform: translateX(8px); }
+
+    .ship-split { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(28px,5vw,64px); align-items: center; }
+    .ship-fig { position: relative; overflow: hidden; aspect-ratio: 16/11; min-width: 0; border: 1px solid var(--hair-soft); }
+    .ship-fig img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); }
+    .ship-tag { position: absolute; left: 14px; bottom: 14px; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); background: rgba(2,3,5,0.6); backdrop-filter: blur(6px); padding: 6px 10px; }
+    .ship-body { min-width: 0; }
+    .detail-rows { margin-top: 26px; display: flex; flex-direction: column; }
+    .d-row { display: grid; grid-template-columns: 120px 1fr; gap: 18px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--hair-soft); }
+    .d-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+    .d-v { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+
+    .fac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hair-soft); border: 1px solid var(--hair-soft); }
+    .fac { background: var(--bg); padding: 28px 22px; font-family: var(--serif); font-size: 1.3rem; color: #efe9da; transition: background 0.3s, color 0.3s; }
+    .fac:hover { background: rgba(214,184,135,0.06); color: var(--gold); }
+
+    .concierge-cta { text-align: center; }
+    .concierge-cta h2 { font-size: clamp(2.2rem, 5vw, 4.4rem); color: #fff; margin-top: 20px; }
+    .concierge-cta p { color: var(--muted); margin-top: 18px; max-width: 52ch; margin-inline: auto; }
+
+    @media (max-width: 900px) {
+      .voyage { grid-template-columns: 1fr auto; }
+      .v-code { display: none; }
+      .ship-split { grid-template-columns: 1fr; }
+      .fac-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) { .fac-grid { grid-template-columns: 1fr; } .d-row { grid-template-columns: 1fr; gap: 4px; } }
+    @media (prefers-reduced-motion: reduce) { .hero .eyebrow, .hero-tag, .hero-scroll { opacity: 1 !important; transform: none !important; } .hero-scroll .rail::after { animation: none; } }
+  </style>
+
+  <script>
+    import { gsap, ScrollTrigger, SplitText } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroTitle = document.getElementById('heroTitle');
+    const heroEye = document.getElementById('heroEye');
+    const heroTag = document.getElementById('heroTag');
+    const heroScroll = document.getElementById('heroScroll');
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'words,chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (heroEye) tl.to(heroEye, { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 130, opacity: 0, stagger: 0.05, duration: 1.1 }, 0.1);
+      if (heroTag) tl.to(heroTag, { opacity: 1, duration: 0.8 }, 0.7);
+      if (heroScroll) tl.to(heroScroll, { opacity: 1, duration: 0.8 }, 0.9);
+    } else {
+      [heroEye, heroTag, heroScroll].forEach((el) => el && (el.style.opacity = '1'));
+    }
+    if (!reduce) {
+      const lede = document.getElementById('lede');
+      if (lede) {
+        const s = new SplitText(lede, { type: 'words', wordsClass: 'word' });
+        gsap.set(s.words, { opacity: 0.16 });
+        gsap.to(s.words, { opacity: 1, stagger: 0.05, ease: 'none', scrollTrigger: { trigger: lede, start: 'top 82%', end: 'top 36%', scrub: true } });
+      }
+      ScrollTrigger.refresh();
+    }
+  </script>
+</OverseasLayout>

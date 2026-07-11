@@ -1,0 +1,102 @@
+---
+/**
+ * ORBITAL ARCHIVE , Collections (website9, round 2). Signature: a briefing reader (list -> pane).
+ */
+import CosmosLayout from '../../layouts/CosmosLayout.astro';
+
+const BRIEFINGS = [
+  { id: 'OA-2207', kind: 'Briefing', date: '02 / 2026', conf: 82, title: 'The Quiet Consolidation', abstract: 'A sector that looks fragmented is not. Three balance sheets now set the price for everyone else, and they are coordinating without needing to talk. We trace the ownership graph and the shared suppliers that make it move as one.', watch: 'A fourth entrant funded above market , the signal the cartel is being challenged.' },
+  { id: 'OA-2199', kind: 'Briefing', date: '02 / 2026', conf: 74, title: 'Edge of the Supply Curve', abstract: 'Marginal production is migrating to two regions with very different risk profiles. The cost story is clean; the political story is not. We separate the durable advantage from the subsidy that will expire.', watch: 'Any change to the export rebate in the larger of the two regions.' },
+  { id: 'OA-2188', kind: 'Map', date: '01 / 2026', conf: 90, title: 'Cartography: Capital Flows', abstract: 'A navigable map of where money is actually going, stripped of the press-release layer. Nodes are allocators; edges are flows weighted by conviction, not headline size.', watch: 'Two nodes that have started routing through the same intermediary.' },
+  { id: 'OA-2176', kind: 'Briefing', date: '01 / 2026', conf: 68, title: 'Latency as a Moat', abstract: 'A competitive edge that is invisible on the income statement: time. We model where milliseconds compound into market share, and where the advantage is already being arbitraged away.', watch: 'New shared infrastructure that collapses the latency gap to zero.' },
+  { id: 'OA-2165', kind: 'Briefing', date: '12 / 2025', conf: 79, title: 'Signal in the Noise Floor', abstract: 'Most early indicators are noise wearing a suit. We isolate the three that actually preceded the last two regime changes, and show why the others only looked predictive in hindsight.', watch: 'The lead indicator turning while the lagging consensus is still euphoric.' },
+  { id: 'OA-2150', kind: 'Map', date: '12 / 2025', conf: 85, title: 'The Slow Reversal', abstract: 'A trend everyone treats as permanent is bending. Not breaking , bending. We map the second-order effects that arrive before the headline reversal is legible to the crowd.', watch: 'The first mainstream outlet to name the reversal , by then, mostly priced.' },
+];
+---
+
+<CosmosLayout title="Collections | Orbital Archive" description="Deep-field briefings and system maps from the Orbital Archive , synthesis with confidence levels and evidence." active="collections">
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <span class="overline">Collections</span>
+      <h1>Read the <em>field</em>.</h1>
+      <p class="sub">Briefings to read and maps to navigate, each with a date and a confidence level. Select an entry to open it. Nothing here is advice , it is synthesis, with its evidence attached.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="reader">
+      <div class="reader-list" id="readerList">
+        {BRIEFINGS.map((b, i) => (
+          <button class={`entry ${i === 0 ? 'active' : ''}`} data-id={b.id}>
+            <div class="en-top"><span class={`en-kind ${b.kind === 'Map' ? 'map' : ''}`}>{b.kind}</span><span class="coord">{b.id}</span></div>
+            <span class="en-title">{b.title}</span>
+            <div class="en-foot"><span class="coord">{b.date}</span><span class="en-conf">{b.conf}%</span></div>
+          </button>
+        ))}
+      </div>
+      <div class="reader-pane">
+        {BRIEFINGS.map((b, i) => (
+          <article class={`brief ${i === 0 ? 'active' : ''}`} id={b.id}>
+            <div class="br-head">
+              <span class={`en-kind ${b.kind === 'Map' ? 'map' : ''}`}>{b.kind}</span>
+              <span class="coord">{b.id} · {b.date}</span>
+            </div>
+            <h2>{b.title}</h2>
+            <div class="br-conf">
+              <span class="brc-label">Confidence</span>
+              <div class="brc-bar"><span style={`width:${b.conf}%`}></span></div>
+              <span class="brc-val">{b.conf}%</span>
+            </div>
+            <p class="br-abstract">{b.abstract}</p>
+            <div class="br-watch">
+              <span class="overline p">What to watch</span>
+              <p>{b.watch}</p>
+            </div>
+            <div class="br-foot"><span class="coord">Primary sources on file · access on request</span><a href="/website9/access" class="inline-link">Request full packet →</a></div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .reader { display: grid; grid-template-columns: 0.85fr 1.4fr; gap: clamp(18px,3vw,36px); align-items: start; }
+    .reader-list { display: flex; flex-direction: column; gap: 8px; min-width: 0; position: sticky; top: 96px; max-height: calc(100svh - 130px); overflow-y: auto; }
+    .entry { text-align: left; padding: 16px 18px; border: 1px solid var(--hair); border-radius: 6px; transition: all 0.3s; background: rgba(10,14,31,0.4); display: flex; flex-direction: column; gap: 9px; }
+    .entry:hover { border-color: var(--hair-c1); }
+    .entry.active { border-color: var(--c1); background: rgba(98,245,255,0.06); }
+    .en-top, .en-foot { display: flex; justify-content: space-between; align-items: center; }
+    .en-kind { font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--c1); border: 1px solid var(--hair-c1); padding: 3px 7px; border-radius: 2px; }
+    .en-kind.map { color: var(--c2); border-color: rgba(180,107,255,0.3); }
+    .en-title { font-family: var(--head); font-size: 1.1rem; color: #fff; line-height: 1.2; }
+    .en-conf { font-family: var(--mono); font-size: 11px; color: var(--c3); }
+
+    .reader-pane { position: relative; min-width: 0; }
+    .brief { display: none; }
+    .brief.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .br-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .brief h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; }
+    .br-conf { display: flex; align-items: center; gap: 14px; margin: 22px 0; }
+    .brc-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .brc-bar { flex: 1; max-width: 300px; height: 4px; background: var(--hair); border-radius: 100px; overflow: hidden; }
+    .brc-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--c1), var(--c3)); border-radius: 100px; }
+    .brc-val { font-family: var(--mono); font-size: 13px; color: var(--c3); }
+    .br-abstract { color: var(--ink); font-size: 1.12rem; line-height: 1.75; max-width: 60ch; }
+    .br-watch { margin: 30px 0; padding: 22px 24px; border: 1px solid var(--hair); border-left: 2px solid var(--c3); border-radius: 4px; background: rgba(255,94,168,0.04); }
+    .br-watch p { color: var(--ink); margin-top: 12px; line-height: 1.6; }
+    .br-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 20px; border-top: 1px solid var(--hair); flex-wrap: wrap; }
+
+    @media (max-width: 860px) { .reader { grid-template-columns: 1fr; } .reader-list { position: static; flex-direction: row; overflow-x: auto; max-height: none; } .entry { min-width: 220px; } }
+  </style>
+
+  <script>
+    const entries = Array.from(document.querySelectorAll<HTMLElement>('.entry'));
+    const briefs = Array.from(document.querySelectorAll<HTMLElement>('.brief'));
+    entries.forEach((e) => e.addEventListener('click', () => {
+      entries.forEach((x) => x.classList.toggle('active', x === e));
+      briefs.forEach((b) => b.classList.toggle('active', b.id === e.dataset.id));
+      document.querySelector('.reader-pane')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }));
+  </script>
+</CosmosLayout>

@@ -1,0 +1,35 @@
+---
+/**
+ * VELLUM WEDDING BUREAU , The Commission (website27, round 2). The four-part production dossier.
+ */
+import VellumBureauLayout from '../../layouts/VellumBureauLayout.astro';
+import { DOSSIER, SCOPES } from '../../data/vellum-bureau';
+---
+
+<VellumBureauLayout title="The Commission | Vellum Wedding Bureau" description="Full-service production, vendor atelier, design and spatial flow, and contingency , how Vellum makes the day feel effortless." active="commission">
+  <section class="mx-auto max-w-6xl px-6 pt-20 pb-12">
+    <span class="text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--champ-d)]">The Commission</span>
+    <h1 class="font-display text-6xl md:text-8xl font-semibold leading-[0.95] mt-4">Planning is visible. <br /><span class="italic gold-text">Production</span> is the magic.</h1>
+    <p class="mt-7 max-w-xl text-[var(--mut)] text-lg leading-relaxed">Planning is the visible part. Production is what makes it feel effortless. Four disciplines, one master plan.</p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-16 grid md:grid-cols-2 gap-6">
+    {DOSSIER.map((d) => (
+      <div class="reveal-on-scroll rounded-2xl border border-[var(--line)] bg-[#fbf8f3]/60 p-9">
+        <div class="flex items-baseline gap-4 mb-4"><span class="font-display text-3xl gold-text">{d.n}</span><h2 class="font-display text-3xl font-semibold">{d.title}</h2></div>
+        <p class="text-[var(--mut)] leading-relaxed">{d.body}</p>
+      </div>
+    ))}
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-20">
+    <div class="rounded-2xl border border-[var(--champ)]/30 bg-gradient-to-br from-[#fffdf8] to-[#f3ead8]/60 p-9 md:p-12">
+      <h2 class="font-display text-3xl font-semibold mb-2">Scopes we work in</h2>
+      <p class="text-[var(--mut)] mb-7 max-w-xl">Pick the level of involvement that fits , we will shape the rest in the inquiry.</p>
+      <div class="flex flex-wrap gap-3">
+        {SCOPES.map((s) => (<a href="/website27/inquiry" class="rounded-full border border-[var(--ink)]/20 bg-white/50 px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] hover:border-[var(--champ)] hover:text-[var(--champ-d)] transition-all">{s}</a>))}
+      </div>
+      <a href="/website27/inquiry" class="mt-9 inline-block bg-[var(--ink)] text-white px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] rounded-full hover:bg-[var(--champ-d)] transition-colors">Begin an inquiry</a>
+    </div>
+  </section>
+</VellumBureauLayout>

@@ -1,0 +1,115 @@
+---
+/**
+ * OBSIDIAN MOTORS , Showroom (website30, round 2). Searchable, filterable catalog of SVG vehicles with a
+ * focus viewer and shortlist (persists to localStorage).
+ */
+import ObsidianMotorsLayout from '../../layouts/ObsidianMotorsLayout.astro';
+import { PRODUCTS, carSvg } from '../../data/obsidian-motors';
+const CYCLES = [
+  { key: 'body', values: 'All|Coupe|SUV|Sedan' },
+  { key: 'power', values: 'All|Electric|Hybrid|V8|Classic' },
+  { key: 'stock', values: 'All|Showroom|Inbound|Order' },
+];
+---
+
+<ObsidianMotorsLayout title="Showroom | Obsidian Motors" description="Browse the floor: filter by body, drivetrain, and availability. Shortlist vehicles and reserve a private viewing." active="showroom">
+  <section class="mx-auto max-w-[1320px] px-6 pt-12 pb-6">
+    <h1 class="text-4xl md:text-6xl font-black tracking-tighter">The showroom.</h1>
+    <div class="mt-6 flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
+      <input id="q" type="search" placeholder="Search model, drivetrain, or availability…" autocomplete="off" class="w-full lg:max-w-sm bg-white/[0.04] border border-[var(--line)] rounded px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] transition-colors" />
+      <div class="flex flex-wrap gap-3">
+        {CYCLES.map((c) => (
+          <button type="button" class="js-cycle flex items-center gap-2 border border-[var(--line)] rounded px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.15em] hover:border-[var(--accent)] transition-colors" data-key={c.key} data-values={c.values}>
+            <span class="text-[var(--mut)] capitalize">{c.key}:</span><span id={`v-${c.key}`} class="accent">All</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <div id="applied" class="mt-4 text-[11px] font-mono uppercase tracking-[0.15em] text-[var(--mut)]">Showing all vehicles</div>
+  </section>
+
+  <section class="mx-auto max-w-[1320px] px-6 pb-8 grid lg:grid-cols-[1fr_360px] gap-8 items-start">
+    <div id="grid" class="grid sm:grid-cols-2 gap-5">
+      {PRODUCTS.map((p) => (
+        <article class="js-frame rounded-2xl border border-[var(--line)] bg-white/[0.02] overflow-hidden hover:border-[var(--accent)]/50 transition-colors cursor-pointer"
+          data-id={p.id} data-name={p.name} data-price={String(p.price)} data-note={p.note} data-shape={p.shape} data-paint={p.paint} data-body={p.body} data-power={p.power} data-stock={p.stock}>
+          <div class="carart" set:html={carSvg(p.shape, p.paint, p.id)} />
+          <div class="p-5">
+            <div class="flex items-baseline justify-between gap-3"><h3 class="font-bold text-sm">{p.name}</h3><span class="accent font-bold text-sm whitespace-nowrap">€{(p.price / 1000).toFixed(0)}k</span></div>
+            <p class="text-[10px] text-[var(--mut)] uppercase tracking-[0.1em] mt-1">{p.body} · {p.power} · {p.stock}</p>
+            <button class="js-add mt-4 w-full border border-[var(--accent)]/50 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded transition-colors" data-id={p.id}>Shortlist</button>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <aside class="lg:sticky lg:top-20 rounded-2xl border border-[var(--line)] bg-black/40 p-5">
+      <div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] mb-3">In focus</div>
+      <div id="focusArt" class="rounded-xl overflow-hidden border border-[var(--line)]"></div>
+      <h3 id="focusName" class="font-bold text-lg mt-4">,</h3>
+      <p id="focusTags" class="text-[10px] text-[var(--mut)] uppercase tracking-[0.12em] mt-1">,</p>
+      <p id="focusNote" class="text-sm text-[var(--mut)] leading-relaxed mt-3">,</p>
+      <div class="flex items-center justify-between mt-5 pt-4 border-t border-[var(--line)]"><span class="text-[10px] uppercase tracking-[0.2em] text-[var(--mut)]">From</span><span id="focusPrice" class="text-xl font-black accent">,</span></div>
+      <button id="addFocused" class="mt-4 w-full bg-[var(--accent)] text-white py-3 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:bg-[#3d63d8] transition-colors">Add to shortlist</button>
+      <a href="/website30/reserve" class="mt-2 block text-center w-full border border-[var(--line)] py-3 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:border-[var(--accent)] transition-colors">Reserve a viewing →</a>
+    </aside>
+  </section>
+
+  <script>
+    const SK = 'obsidian-shortlist';
+    const $ = (s: string) => document.querySelector(s);
+    const $$ = (s: string) => Array.from(document.querySelectorAll(s));
+    const frames = $$('.js-frame') as HTMLElement[];
+    const state: Record<string, string> = { body: 'All', power: 'All', stock: 'All', query: '' };
+    let focusedId = frames[0]?.dataset.id || '';
+
+    const readCart = () => { try { return JSON.parse(localStorage.getItem(SK) || '[]'); } catch (e) { return []; } };
+    const writeCart = (items: any[]) => { localStorage.setItem(SK, JSON.stringify(items)); document.dispatchEvent(new Event('cart-change')); };
+    const addToCart = (id: string) => {
+      const f = document.querySelector(`.js-frame[data-id="${id}"]`) as HTMLElement; if (!f) return;
+      const items = readCart(); const ex = items.find((i: any) => i.id === id);
+      if (ex) ex.qty++; else items.push({ id, name: f.dataset.name, price: Number(f.dataset.price), body: f.dataset.body, qty: 1 });
+      writeCart(items);
+      (window as any).showToast?.(`Shortlisted <b>${f.dataset.name}</b>. Reserve a private viewing when ready.`);
+    };
+
+    const setFocus = (f: HTMLElement) => {
+      focusedId = f.dataset.id!;
+      const art = f.querySelector('.carart'); if (art) ($('#focusArt') as HTMLElement).innerHTML = art.innerHTML;
+      ($('#focusName') as HTMLElement).textContent = f.dataset.name!;
+      ($('#focusTags') as HTMLElement).textContent = `${f.dataset.body} · ${f.dataset.power} · ${f.dataset.stock}`;
+      ($('#focusNote') as HTMLElement).textContent = f.dataset.note!;
+      ($('#focusPrice') as HTMLElement).textContent = '€' + (Number(f.dataset.price) / 1000).toFixed(0) + 'k';
+    };
+
+    const applyFilters = () => {
+      let visible: HTMLElement[] = [];
+      frames.forEach((f) => {
+        let match = true;
+        if (state.body !== 'All' && f.dataset.body !== state.body) match = false;
+        if (state.power !== 'All' && f.dataset.power !== state.power) match = false;
+        if (state.stock !== 'All' && f.dataset.stock !== state.stock) match = false;
+        if (state.query && !f.innerText.toLowerCase().includes(state.query.toLowerCase())) match = false;
+        f.hidden = !match; if (match) visible.push(f);
+      });
+      ($('#applied') as HTMLElement).textContent = `Showing ${visible.length} vehicle${visible.length === 1 ? '' : 's'}`;
+      const cur = document.querySelector(`.js-frame[data-id="${focusedId}"]`) as HTMLElement;
+      if (visible.length && (!cur || cur.hidden)) setFocus(visible[0]);
+    };
+
+    $$('.js-cycle').forEach((b) => b.addEventListener('click', () => {
+      const key = (b as HTMLElement).dataset.key!; const vals = (b as HTMLElement).dataset.values!.split('|');
+      state[key] = vals[(vals.indexOf(state[key]) + 1) % vals.length];
+      ($('#v-' + key) as HTMLElement).textContent = state[key];
+      applyFilters();
+    }));
+    ($('#q') as HTMLInputElement).addEventListener('input', (e) => { state.query = (e.target as HTMLInputElement).value; applyFilters(); });
+    frames.forEach((f) => {
+      f.addEventListener('click', () => setFocus(f));
+      (f.querySelector('.js-add') as HTMLElement).addEventListener('click', (e) => { e.stopPropagation(); addToCart(f.dataset.id!); });
+    });
+    ($('#addFocused') as HTMLElement).addEventListener('click', () => addToCart(focusedId));
+    if (frames[0]) setFocus(frames[0]);
+    applyFilters();
+  </script>
+</ObsidianMotorsLayout>

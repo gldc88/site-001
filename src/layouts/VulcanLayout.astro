@@ -1,0 +1,148 @@
+---
+/**
+ * VulcanLayout , shared shell for VULCANIC ATELIER (website15, round 2).
+ * Persistent INTERACTIVE WebGL magma surface behind all pages: any page's [data-suite] selectors set
+ * the heat that feeds the magma, and #heatSlider feeds it directly (event-delegated here). The chosen
+ * heat is saved to localStorage and restored on every page. Props: title, description, active.
+ */
+import '../styles/vulcan-fonts.css';
+import '../styles/vulcan.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+import { STRATA, DEFAULT_KEY } from '../data/vulcan';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'strata', label: 'Strata', href: '/website15/strata' },
+  { key: 'forge', label: 'The Forge', href: '/website15/forge' },
+  { key: 'arrival', label: 'Arrival', href: '/website15/arrival' },
+];
+const HEATS = Object.fromEntries(STRATA.map((s) => [s.key, s.heat]));
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script type="application/json" id="vulcan-heats" set:html={JSON.stringify(HEATS)}></script>
+  </head>
+
+  <body data-default-suite={DEFAULT_KEY}>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website15" class="brand"><span class="em"></span>Vulcanic</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website15/reserve" class="cta">Reserve</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Vulcanic Atelier</h3>
+          <p>A reservation-only volcanic retreat over a living magma surface , basalt suites, a thermal circuit, obsidian dining. Warmth without the noise. Fictional brand, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Retreat</h4><a href="/website15/strata">Strata</a><a href="/website15/forge">The Forge</a><a href="/website15/arrival">Arrival</a><a href="/website15/reserve">Reserve</a></div>
+        <div class="f-col"><h4>Contact</h4><a href="mailto:desk@vulcanic.example">desk@vulcanic.example</a><a href="/website15/reserve">Request a night</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Vulcanic Atelier. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · reservation-only · quiet by design</span>
+      </div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const HEATS: Record<string, number> = JSON.parse(document.getElementById('vulcan-heats')?.textContent || '{}');
+      const DEFAULT = document.body.dataset.defaultSuite || Object.keys(HEATS)[0];
+      let suite = localStorage.getItem('vulcan-suite') || DEFAULT;
+      if (!(suite in HEATS)) suite = DEFAULT;
+      let heat = Number(localStorage.getItem('vulcan-heat') || HEATS[suite] || 60);
+      document.body.dataset.suite = suite;
+      document.body.dataset.heat = String(heat);
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      let scene: any = null;
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/vulcan-scene')
+          .then(({ initVulcanScene }) => {
+            scene = initVulcanScene(canvas);
+            if (fallback) fallback.style.display = 'none';
+            scene.setIntensity(heat / 100);
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene?.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene?.dispose(), { once: true });
+            (window as any).__vulcan = scene;
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+
+      function setHeat(v: number, persist = true) {
+        heat = Math.max(0, Math.min(100, v));
+        document.body.dataset.heat = String(heat);
+        if (persist) localStorage.setItem('vulcan-heat', String(heat));
+        scene?.setIntensity(heat / 100);
+        document.dispatchEvent(new CustomEvent('vulcan:heat', { detail: heat }));
+      }
+      function applySuite(k: string) {
+        if (!(k in HEATS)) return;
+        suite = k;
+        document.body.dataset.suite = k;
+        localStorage.setItem('vulcan-suite', k);
+        setHeat(HEATS[k]);
+        document.querySelectorAll<HTMLElement>('[data-suite]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === k)));
+        document.dispatchEvent(new CustomEvent('vulcan:suite', { detail: k }));
+      }
+      (window as any).__vulcanSuite = applySuite;
+      (window as any).__vulcanHeat = setHeat;
+      /* R3 "The Offering": een offer laat de magma even oplaaien. */
+      let offerT = 0;
+      document.addEventListener('vulcan:offer', () => {
+        scene?.setIntensity(1);
+        clearTimeout(offerT);
+        offerT = window.setTimeout(() => scene?.setIntensity(heat / 100), 1400);
+      });
+
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-suite]');
+        if (btn && btn.dataset.key) applySuite(btn.dataset.key);
+      });
+      document.querySelectorAll<HTMLElement>('[data-suite]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === suite)));
+      document.addEventListener('input', (e) => {
+        const el = e.target as HTMLInputElement;
+        if (el && el.id === 'heatSlider') setHeat(Number(el.value));
+      });
+    </script>
+  </body>
+</html>

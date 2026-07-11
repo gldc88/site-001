@@ -1,0 +1,91 @@
+---
+/**
+ * ATLAS INTERFACE , Field Notes (website11, round 2). Signature: a versioned changelog feed with
+ * a type filter (the Archive made readable).
+ */
+import AtlasLayout from '../../layouts/AtlasLayout.astro';
+
+const FILTERS = [
+  { id: 'all', label: 'All notes' }, { id: 'added', label: 'Added' }, { id: 'changed', label: 'Changed' }, { id: 'fixed', label: 'Fixed' }, { id: 'observed', label: 'Observed' },
+];
+const NOTES = [
+  { v: 'v1.4.0', date: '02 Jun 2026', node: 'Engine', type: 'added', text: 'Deterministic replay , re-run any past job directly from its Archive snapshot, byte-for-byte.' },
+  { v: 'v1.3.2', date: '28 May 2026', node: 'Observatory', type: 'changed', text: 'Anomaly thresholds are now adaptive to baseline drift, so quiet periods stop generating false flags.' },
+  { v: 'v1.3.1', date: '21 May 2026', node: 'Relay', type: 'fixed', text: 'Throttle no longer drops the final burst on slow channels; delivery is now exactly-once at the edge.' },
+  { v: 'v1.3.0', date: '14 May 2026', node: 'Sanctum', type: 'added', text: 'Per-session access scopes. Nothing is inherited by default , every grant is explicit and expiring.' },
+  { v: 'v1.2.4', date: '06 May 2026', node: 'Forge', type: 'observed', text: 'Prototypes promoted too early correlate with later rollbacks. Added a hold gate before promotion.' },
+  { v: 'v1.2.1', date: '28 Apr 2026', node: 'Lighthouse', type: 'changed', text: 'Wayfinding heuristics rewritten around recency rather than frequency. Fewer dead ends.' },
+  { v: 'v1.2.0', date: '20 Apr 2026', node: 'Archive', type: 'added', text: 'Time-travel queries , ask what was true at any past snapshot, not only the current state.' },
+];
+---
+
+<AtlasLayout title="Field Notes | Atlas Interface" description="A versioned log of what changed across Atlas Interface and what we observed , the Archive, made readable." active="notes">
+  <div class="page-hero">
+    <span class="tag m">Field Notes</span>
+    <h1>The map <em>remembers</em>.</h1>
+    <p class="sub">Every change and observation is versioned and attached to a node. This is the Archive made readable , filter by what kind of note you're after.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="nt-filters" id="ntFilters">
+      {FILTERS.map((f, i) => (<button class={`nt-filter ${i === 0 ? 'active' : ''}`} data-filter={f.id}>{f.label}</button>))}
+    </div>
+    <div class="nt-count" id="ntCount"></div>
+
+    <div class="nt-feed" id="ntFeed">
+      {NOTES.map((n) => (
+        <article class={`note type-${n.type}`} data-type={n.type}>
+          <div class="nt-rail"><span class="nt-v">{n.v}</span><span class="nt-date">{n.date}</span></div>
+          <div class="nt-body">
+            <div class="nt-tophead"><span class={`nt-type ${n.type}`}>{n.type}</span><span class="nt-node">◇ {n.node}</span></div>
+            <p>{n.text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="nt-empty" id="ntEmpty" hidden>No notes of that kind yet.</p>
+  </section>
+
+  <style>
+    .nt-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .nt-filter { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--hair); padding: 10px 16px; border-radius: 100px; transition: all 0.25s; }
+    .nt-filter:hover { color: var(--ink); border-color: var(--line); }
+    .nt-filter.active { background: var(--a1); color: #07080d; border-color: var(--a1); }
+    .nt-count { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-bottom: 22px; }
+
+    .nt-feed { display: flex; flex-direction: column; }
+    .note { display: grid; grid-template-columns: 150px 1fr; gap: 28px; padding: 26px 8px; border-top: 1px solid var(--hair); align-items: start; }
+    .note:last-child { border-bottom: 1px solid var(--hair); }
+    .note.hide { display: none; }
+    .nt-rail { display: flex; flex-direction: column; gap: 5px; }
+    .nt-v { font-family: var(--mono); font-size: 0.95rem; color: #fff; }
+    .nt-date { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+    .nt-body { min-width: 0; }
+    .nt-tophead { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .nt-type { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; padding: 4px 9px; border-radius: 100px; }
+    .nt-type.added { color: var(--a1); border: 1px solid rgba(110,243,255,0.4); }
+    .nt-type.changed { color: var(--a2); border: 1px solid rgba(181,123,255,0.4); }
+    .nt-type.fixed { color: #6ee7a8; border: 1px solid rgba(110,231,168,0.4); }
+    .nt-type.observed { color: var(--a3); border: 1px solid rgba(255,91,214,0.4); }
+    .nt-node { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+    .nt-body p { color: var(--ink); line-height: 1.65; max-width: 70ch; }
+    .nt-empty { color: var(--muted); font-family: var(--mono); font-size: 0.85rem; padding: 30px 0; }
+
+    @media (max-width: 700px) { .note { grid-template-columns: 1fr; gap: 12px; } .nt-rail { flex-direction: row; gap: 12px; align-items: baseline; } }
+  </style>
+
+  <script>
+    const filters = Array.from(document.querySelectorAll<HTMLElement>('.nt-filter'));
+    const notes = Array.from(document.querySelectorAll<HTMLElement>('.note'));
+    const empty = document.getElementById('ntEmpty');
+    const count = document.getElementById('ntCount')!;
+    function apply(type: string) {
+      let shown = 0;
+      notes.forEach((n) => { const show = type === 'all' || n.dataset.type === type; n.classList.toggle('hide', !show); if (show) shown++; });
+      if (empty) empty.hidden = shown > 0;
+      count.textContent = `${shown} note${shown === 1 ? '' : 's'}${type !== 'all' ? ' · ' + type : ''}`;
+    }
+    filters.forEach((f) => f.addEventListener('click', () => { filters.forEach((x) => x.classList.toggle('active', x === f)); apply(f.dataset.filter || 'all'); }));
+    apply('all');
+  </script>
+</AtlasLayout>

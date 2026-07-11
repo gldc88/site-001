@@ -1,0 +1,199 @@
+---
+/**
+ * LIGNUM ATELIER , Joinery / Craft (website13, round 2). The four-step process + specs + principles.
+ */
+import LignumLayout from '../../layouts/LignumLayout.astro';
+
+const STEPS = [
+  { n: '01', t: 'Select', d: 'Boards are chosen by hand at the mill, read for figure, then air-dried and stickered in the loft until the moisture settles to the room they will live in. A piece that skips this step will move, crack, and betray the maker within a year.' },
+  { n: '02', t: 'Mill', d: 'Faced, thicknessed, and cut oversize. Every component is marked from a single reference face so the grain runs continuous across a finished piece , the difference between furniture and joinery that reads as one object.' },
+  { n: '03', t: 'Joint', d: 'Housings, mortises, and hand-cut dovetails. Metal appears only when it has a job to do , concealed where possible, celebrated where it belongs. A good joint is stronger than the wood around it and needs no glue to prove it.' },
+  { n: '04', t: 'Finish', d: 'Scraped, not sanded smooth, then built up in thin coats of tung oil and hard wax. The surface stays repairable for its whole life: a scratch is sanded local and re-oiled, not stripped and refinished. It deepens instead of wearing out.' },
+];
+const SPECS = [
+  { l: 'Joint tolerance', v: '0.1 mm' },
+  { l: 'Finish system', v: 'Tung oil + hard wax' },
+  { l: 'Target moisture', v: '8 – 10 %' },
+  { l: 'Movement', v: 'Allowed per panel' },
+  { l: 'Fixings', v: 'Concealed, reversible' },
+  { l: 'Guarantee', v: 'Repairable for life' },
+];
+const PILLS = ['Hand-cut dovetails', '0.1 mm joint tolerance', 'Oil & wax, never lacquer', 'No visible end-grain screws', 'Grain matched across faces'];
+---
+
+<LignumLayout title="Joinery | Lignum Atelier" description="How Lignum Atelier works , select, mill, joint, finish. Hand-cut dovetails, 0.1 mm tolerance, oil and wax, never lacquer." active="craft">
+  <div class="page-hero">
+    <span class="overline">Joinery</span>
+    <h1>The joint outlives the <em>glue</em>.</h1>
+    <p class="sub">Four slow steps stand between a standing tree and a piece that lasts a century. None of them can be rushed, and the surface behind this page is the proof of the last one.</p>
+  </div>
+
+  <section class="section">
+    <div class="steps">
+      {STEPS.map((s) => (
+        <div class="step" data-reveal="up">
+          <span class="st-n">{s.n}</span>
+          <div class="st-body"><h2>{s.t}</h2><p>{s.d}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section drying" id="drying">
+    <div class="dr-head">
+      <span class="overline">The Drying Room</span>
+      <h2>Wood is waiting, made visible.</h2>
+      <p>Every board rests in our drying room before it is worked. Lay one to dry and come back ,
+        it dries in <em>real time</em>, whether you watch it or not. That is the tempo this
+        workshop keeps.</p>
+    </div>
+    <div class="dr-room panel brass">
+      <div class="dr-board-wrap">
+        <svg class="dr-board" id="drBoard" viewBox="0 0 320 90" aria-hidden="true">
+          <rect x="8" y="14" width="304" height="62" rx="5" id="drWood" fill="#c9a876" stroke="rgba(90,60,30,0.55)" />
+          <path d="M20 30 C 90 26, 150 36, 300 30 M20 46 C 110 42, 180 52, 300 46 M20 62 C 80 58, 170 66, 300 62" stroke="rgba(90,60,30,0.35)" fill="none" stroke-width="1.4" id="drGrain" />
+        </svg>
+        <div class="dr-moist"><b id="drPct">,</b><span>moisture</span></div>
+      </div>
+      <div class="dr-side">
+        <div class="dr-species" role="radiogroup" aria-label="Choose a species to dry">
+          <button type="button" class="dr-sp" data-sp="cherry" data-hours="2" role="radio" aria-checked="false">Cherry · ~2h</button>
+          <button type="button" class="dr-sp" data-sp="walnut" data-hours="8" role="radio" aria-checked="false">Walnut · ~8h</button>
+          <button type="button" class="dr-sp" data-sp="oak" data-hours="24" role="radio" aria-checked="false">Oak · ~24h</button>
+        </div>
+        <button type="button" class="btn-cta dr-lay" id="drLay">Lay a board to dry</button>
+        <p class="dr-status" id="drStatus" aria-live="polite">The racks are empty. Choose a species.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="craft-foot">
+      <div class="cf-specs panel brass">
+        <span class="overline">Bench standards</span>
+        <div class="specs-rows">
+          {SPECS.map((s) => (<div class="spec-row"><span>{s.l}</span><b>{s.v}</b></div>))}
+        </div>
+      </div>
+      <div class="cf-principles">
+        <span class="overline">Held to</span>
+        <ul class="principles">
+          {PILLS.map((p) => <li>{p}</li>)}
+        </ul>
+        <div class="cf-cta">
+          <a href="/website13/works" class="btn-ghost">See the works →</a>
+          <a href="/website13/commission" class="btn-cta">Commission a piece</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* ===== R3: "The Drying Room" (echte-tijd verloop) ===== */
+    .drying .dr-head { max-width: 700px; margin-bottom: 30px; }
+    .drying h2 { font-size: clamp(2rem,3.6vw,2.9rem); color: var(--cream, #f0e6d6); margin: 12px 0 14px; }
+    .drying p { color: var(--muted); line-height: 1.75; }
+    .drying p em { font-style: italic; color: var(--brass, #c9a876); }
+    .dr-room { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: clamp(24px,4vw,48px); padding: clamp(24px,3.5vw,40px); align-items: center; }
+    .dr-board-wrap { position: relative; }
+    .dr-board { width: 100%; height: auto; display: block; filter: drop-shadow(0 8px 18px rgba(0,0,0,0.4)); }
+    .dr-moist { position: absolute; right: 12px; bottom: 10px; display: flex; align-items: baseline; gap: 6px; background: rgba(24, 16, 10, 0.8); border: 1px solid rgba(201, 168, 118, 0.35); border-radius: 4px; padding: 5px 10px; }
+    .dr-moist b { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #f0e6d6; font-variant-numeric: tabular-nums; }
+    .dr-moist span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .dr-side { display: flex; flex-direction: column; gap: 14px; }
+    .dr-species { display: flex; flex-direction: column; gap: 8px; }
+    .dr-sp { text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); background: rgba(201, 168, 118, 0.06); border: 1px solid rgba(201, 168, 118, 0.25); border-radius: 4px; padding: 9px 13px; cursor: pointer; transition: color .3s, border-color .3s; }
+    .dr-sp:hover { color: #f0e6d6; }
+    .dr-sp[aria-checked='true'] { color: #2a1c10; background: #c9a876; border-color: #c9a876; }
+    .dr-sp:focus-visible { outline: 1px solid #c9a876; outline-offset: 2px; }
+    .dr-lay { align-self: flex-start; }
+    .dr-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.6; color: var(--muted); min-height: 30px; }
+    html.board-ready .dr-status { color: #b8e6b8; }
+    @media (max-width: 860px) { .dr-room { grid-template-columns: 1fr; } }
+
+    .steps { display: flex; flex-direction: column; }
+    .step { display: grid; grid-template-columns: 120px 1fr; gap: clamp(20px,4vw,48px); padding: 40px 0; border-top: 1px solid var(--hair-soft); align-items: start; }
+    .step:last-child { border-bottom: 1px solid var(--hair-soft); }
+    .st-n { font-family: var(--serif); font-size: clamp(2.6rem,5vw,4rem); color: var(--brass-deep); line-height: 1; }
+    .st-body h2 { font-size: clamp(1.8rem,3.4vw,2.8rem); color: #fff; }
+    .st-body p { color: var(--muted); margin-top: 16px; line-height: 1.8; max-width: 66ch; font-size: 1.05rem; }
+
+    .craft-foot { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px,3vw,36px); align-items: start; }
+    .cf-specs { padding: clamp(24px,3vw,32px); }
+    .cf-specs > .overline { margin-bottom: 18px; }
+    .specs-rows { display: flex; flex-direction: column; }
+    .spec-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--hair-soft); }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-row span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .spec-row b { font-family: var(--serif); font-size: 1.3rem; font-weight: 400; color: #fff; }
+    .cf-principles > .overline { margin-bottom: 18px; }
+    .principles { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .principles li { font-family: var(--serif); font-size: 1.5rem; color: var(--ink); padding-left: 28px; position: relative; }
+    .principles li::before { content: '✕'; position: absolute; left: 0; color: var(--brass); font-size: 0.8em; top: 4px; }
+    .cf-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    @media (max-width: 860px) { .step { grid-template-columns: 1fr; gap: 8px; } .craft-foot { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 "The Drying Room" , echte-tijd verloop: de site verandert door je afwezigheid. */
+    (() => {
+      const KEY = 'lignum-drying';
+      const START_M = 65, END_M = 12;
+      const btns = Array.from(document.querySelectorAll<HTMLButtonElement>('.dr-sp'));
+      const lay = document.getElementById('drLay');
+      const pct = document.getElementById('drPct');
+      const status = document.getElementById('drStatus');
+      const wood = document.getElementById('drWood');
+      if (!lay || !pct || !status || !wood) return;
+      let chosen: HTMLButtonElement | null = null;
+
+      const read = (): { sp: string; hours: number; start: number } | null => {
+        try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; }
+      };
+      const fmtLeft = (ms: number) => {
+        const h = Math.floor(ms / 3600e3), m = Math.round((ms % 3600e3) / 60e3);
+        return h > 0 ? `~${h}h ${m}m` : `~${m}m`;
+      };
+      // hout kleurt donkerder/rijper naarmate het droogt
+      const woodColor = (t: number) => {
+        const mix = (a: number, b: number) => Math.round(a + (b - a) * t);
+        return `rgb(${mix(201, 138)}, ${mix(168, 96)}, ${mix(118, 58)})`;
+      };
+      const sync = () => {
+        const d = read();
+        if (!d) {
+          pct.textContent = ',';
+          status.textContent = 'The racks are empty. Choose a species.';
+          document.documentElement.classList.remove('board-ready');
+          return;
+        }
+        const elapsed = Date.now() - d.start;
+        const t = Math.max(0, Math.min(1, elapsed / (d.hours * 3600e3)));
+        const m = START_M - (START_M - END_M) * t;
+        pct.textContent = `${m.toFixed(1)}%`;
+        wood.setAttribute('fill', woodColor(t));
+        btns.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.sp === d.sp)));
+        if (t >= 1) {
+          status.textContent = `Your ${d.sp} board is dry and ready to work. Mention it at commission.`;
+          document.documentElement.classList.add('board-ready');
+        } else {
+          status.textContent = `${d.sp[0].toUpperCase() + d.sp.slice(1)} drying since you laid it , ready in ${fmtLeft(d.hours * 3600e3 - elapsed)}. Come back later; it dries without you.`;
+          document.documentElement.classList.remove('board-ready');
+        }
+      };
+      btns.forEach((b) => b.addEventListener('click', () => {
+        chosen = b;
+        btns.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+      }));
+      lay.addEventListener('click', () => {
+        const sel = chosen || btns.find((b) => b.getAttribute('aria-checked') === 'true');
+        if (!sel) { status.textContent = 'Choose a species first , each dries at its own pace.'; return; }
+        try { localStorage.setItem(KEY, JSON.stringify({ sp: sel.dataset.sp, hours: Number(sel.dataset.hours), start: Date.now() })); } catch { /* private mode */ }
+        sync();
+      });
+      sync();
+      setInterval(sync, 30_000);
+    })();
+  </script>
+</LignumLayout>

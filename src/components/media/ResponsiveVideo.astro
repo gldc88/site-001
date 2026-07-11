@@ -1,0 +1,71 @@
+---
+interface Props {
+  src: string;
+  label: string;
+  poster?: string;
+  class?: string;
+  autoplay?: boolean;
+  controls?: boolean;
+  loop?: boolean;
+}
+
+const {
+  src,
+  label,
+  poster,
+  class: className = '',
+  autoplay = false,
+  controls = false,
+  loop = true,
+} = Astro.props;
+---
+
+<video
+  data-factory-video
+  data-autoplay={autoplay ? 'true' : undefined}
+  aria-label={label}
+  class={className}
+  poster={poster}
+  preload="none"
+  muted={autoplay}
+  playsinline
+  loop={loop}
+  controls={controls}
+>
+  <source src={src} />
+</video>
+
+{
+  autoplay && (
+    <script>
+      const factoryWindow = window as Window & { __factoryVideoObserver?: boolean };
+
+      if (!factoryWindow.__factoryVideoObserver) {
+        factoryWindow.__factoryVideoObserver = true;
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (!reduce) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                const video = entry.target;
+                if (!(video instanceof HTMLVideoElement)) return;
+
+                if (entry.isIntersecting) {
+                  video.play().catch(() => {});
+                } else {
+                  video.pause();
+                }
+              });
+            },
+            { threshold: 0.35 },
+          );
+
+          document
+            .querySelectorAll('video[data-factory-video][data-autoplay="true"]')
+            .forEach((video) => observer.observe(video));
+        }
+      }
+    </script>
+  )
+}

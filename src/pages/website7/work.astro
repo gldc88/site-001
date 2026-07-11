@@ -1,0 +1,93 @@
+---
+/**
+ * GREENLINE TREE SURGERY , Our Work (website7, round 2). Signature: a filterable job gallery.
+ */
+import GreenlineLayout from '../../layouts/GreenlineLayout.astro';
+
+const FILTERS = [
+  { id: 'all', label: 'All work' },
+  { id: 'reductions', label: 'Reductions & Lifts' },
+  { id: 'removals', label: 'Removals' },
+  { id: 'emergency', label: 'Emergency' },
+];
+const JOBS = [
+  { img: 'canopy', cat: 'reductions', t: 'Crown Reduction', where: 'Mature garden tree', what: 'Reduced height and reshaped to take weight off and let light back into the garden.' },
+  { img: 'arborA', cat: 'removals', t: 'Sectional Dismantle', where: 'Over a driveway', what: 'Roped, lowered, and dismantled in sections with a fully protected drop zone.' },
+  { img: 'arborB', cat: 'emergency', t: 'Storm Make-Safe', where: 'Roadside oak', what: 'Removed a split, hanging limb after high winds and cleared the road of debris.' },
+  { img: 'canopy', cat: 'reductions', t: 'Crown Lift', where: 'Overshadowed garden', what: 'Raised the canopy for clearance and thinned density to open up the space.' },
+  { img: 'arborA', cat: 'removals', t: 'Conifer Removal', where: 'Boundary line', what: 'Took down a row of overgrown conifers and ground the stumps out below ground.' },
+  { img: 'arborB', cat: 'emergency', t: 'Hung Limb Make-Safe', where: 'After high winds', what: 'Priority call-out to bring down a hung-up branch left unstable by a storm.' },
+];
+---
+
+<GreenlineLayout title="Our Work | Greenline Tree Surgery" description="Recent tree surgery jobs from around the area , reductions, removals, and emergency call-outs." active="work">
+  <section class="page-hero" style="min-height:56svh;">
+    <div class="page-hero-media"><img src="/website7/arborA.jpg" alt="A climber dismantling a limb over a property" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="eyebrow">Our Work</span>
+      <h1>Jobs from around <em>the area</em>.</h1>
+      <p class="sub">A look at recent work , the kind of trees, hedges, and make-safe jobs we handle week to week. Filter by the type of job below.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="filters" id="filters">
+      {FILTERS.map((f, i) => (<button class={`filter ${i === 0 ? 'active' : ''}`} data-filter={f.id}>{f.label}</button>))}
+    </div>
+    <div class="gallery" id="gallery">
+      {JOBS.map((j) => (
+        <article class="job" data-cat={j.cat}>
+          <div class="job-media"><img src={`/website7/${j.img}.jpg`} alt={`${j.t} , ${j.where}`} loading="lazy" /><span class="job-tag">{j.cat}</span></div>
+          <div class="job-body"><h3>{j.t}</h3><span class="job-where">{j.where}</span><p>{j.what}</p></div>
+        </article>
+      ))}
+    </div>
+    <p class="gallery-empty" id="galleryEmpty" hidden>No jobs in that category yet.</p>
+
+    <div class="work-cta">
+      <span class="eyebrow rope c">Your tree next?</span>
+      <a href="/website7/contact" class="btn-cta" style="margin-top:18px;">Get a free quote</a>
+    </div>
+  </section>
+
+  <style>
+    .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .filter { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--hair); padding: 11px 18px; border-radius: 100px; transition: all 0.3s; }
+    .filter:hover { color: var(--ink); border-color: var(--hair-leaf); }
+    .filter.active { background: var(--leaf); color: #0a1410; border-color: var(--leaf); font-weight: 500; }
+
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .job { border: 1px solid var(--hair); border-radius: 16px; overflow: hidden; background: rgba(12,24,18,0.4); transition: border-color 0.35s, transform 0.35s; }
+    .job:hover { border-color: var(--hair-leaf); transform: translateY(-4px); }
+    .job.hide { display: none; }
+    .job-media { position: relative; aspect-ratio: 4/3; overflow: hidden; }
+    .job-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+    .job:hover .job-media img { transform: scale(1.05); }
+    .job-tag { position: absolute; top: 12px; left: 12px; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: #0a1410; background: var(--leaf); padding: 5px 9px; border-radius: 100px; }
+    .job-body { padding: 22px 22px 26px; }
+    .job-body h3 { font-size: 1.35rem; color: #fff; }
+    .job-where { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rope); }
+    .job-body p { color: var(--muted); margin-top: 12px; font-size: 0.88rem; line-height: 1.6; }
+    .gallery-empty { color: var(--muted); font-family: var(--mono); font-size: 0.85rem; padding: 30px 0; }
+
+    .work-cta { text-align: center; margin-top: 60px; display: flex; flex-direction: column; align-items: center; }
+    .work-cta .eyebrow { justify-content: center; }
+
+    @media (max-width: 900px) { .gallery { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .gallery { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const filters = Array.from(document.querySelectorAll<HTMLElement>('.filter'));
+    const jobs = Array.from(document.querySelectorAll<HTMLElement>('.job'));
+    const empty = document.getElementById('galleryEmpty');
+    filters.forEach((f) => f.addEventListener('click', () => {
+      filters.forEach((x) => x.classList.toggle('active', x === f));
+      const cat = f.dataset.filter;
+      let shown = 0;
+      jobs.forEach((j) => { const show = cat === 'all' || j.dataset.cat === cat; j.classList.toggle('hide', !show); if (show) shown++; });
+      if (empty) empty.hidden = shown > 0;
+    }));
+  </script>
+</GreenlineLayout>

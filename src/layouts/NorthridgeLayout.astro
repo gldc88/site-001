@@ -1,0 +1,114 @@
+---
+/**
+ * NorthridgeLayout , shared shell for NORTHRIDGE (website20, round 2).
+ * Tailwind-based (keeps the original's utility-class styling + islands). Persistent blueprint WebGL
+ * backdrop + glass-pill nav + footer. Props: title, description, active.
+ */
+import '../styles/global.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const BRAND = 'NORTHRIDGE.';
+const NAV = [
+  { key: 'materials', label: 'Materials', href: '/website20/materials' },
+  { key: 'process', label: 'Process', href: '/website20/process' },
+  { key: 'projects', label: 'Projects', href: '/website20/projects' },
+];
+const YEAR = new Date().getFullYear();
+const Icon = {
+  arrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
+  back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-4 h-4"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
+};
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth bg-[#030303]">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body class="bg-[#030303] text-neutral-300 antialiased selection:bg-white selection:text-black font-sans overflow-x-hidden">
+    <canvas id="bp-gl" class="fixed inset-0 z-0 w-full h-full pointer-events-none" aria-hidden="true"></canvas>
+    <div id="bpFallback" class="fixed inset-0 z-0 pointer-events-none" aria-hidden="true"
+      style="background: radial-gradient(900px 600px at 50% 16%, rgba(79,214,160,0.07), transparent 60%), radial-gradient(800px 700px at 80% 80%, rgba(174,202,223,0.05), transparent 64%), linear-gradient(180deg,#05080c,#030303 72%);"></div>
+    <div class="fixed inset-0 z-[1] pointer-events-none bg-gradient-to-b from-[#030303]/70 via-transparent to-[#030303]/90"></div>
+
+    <header class="fixed top-8 inset-x-0 z-50 px-8">
+      <div class="max-w-[1400px] mx-auto">
+        <div class="relative bg-[#0A0A0A]/60 backdrop-blur-2xl border-[0.5px] border-white/[0.08] rounded-full px-8 h-16 flex items-center justify-between shadow-[0_20px_40px_-20px_rgba(0,0,0,0.8)] transition-all duration-500 hover:border-white/20">
+          <div class="flex items-center gap-8">
+            <a href="/" class="group flex items-center gap-3 text-xs font-medium text-neutral-500 hover:text-white transition-colors">
+              <div class="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.1] flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-300">
+                <span class="group-hover:-translate-x-0.5 transition-transform"><Fragment set:html={Icon.back} /></span>
+              </div>
+              <span class="tracking-widest uppercase">Index</span>
+            </a>
+            <div class="w-px h-4 bg-white/[0.08]"></div>
+            <a href="/website20" class="text-white font-bold tracking-tighter text-lg">{BRAND}</a>
+          </div>
+          <nav class="hidden lg:flex items-center gap-10 text-[11px] font-semibold uppercase tracking-[0.15em]">
+            {NAV.map((item) => (
+              <a href={item.href} class={`transition-colors ${active === item.key ? 'text-white' : 'text-neutral-400 hover:text-white'}`}>{item.label}</a>
+            ))}
+          </nav>
+          <a href="/website20/contact" class="hidden md:flex items-center gap-3 pl-6 pr-2 py-2 bg-white text-black text-xs font-bold uppercase tracking-wide rounded-full hover:bg-neutral-200 transition-all duration-300 group">
+            <span>Get a quote</span>
+            <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white group-hover:rotate-45 transition-transform duration-500"><Fragment set:html={Icon.arrow} /></div>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative z-10" id="top">
+      <slot />
+    </main>
+
+    <footer class="relative z-10 border-t border-white/[0.05] bg-[#030303]/90 py-20 px-8">
+      <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+        <div class="flex flex-col gap-4">
+          <a href="/website20" class="text-white font-bold tracking-tighter text-2xl">{BRAND}</a>
+          <span class="text-neutral-600 text-xs uppercase tracking-widest">© {YEAR} · Northridge Renovations · licensed and insured · <a href="/" class="hover:text-white transition-colors">Return to index</a></span>
+        </div>
+        <div class="flex gap-12 text-xs font-bold text-neutral-500 uppercase tracking-widest">
+          <a href="/website20/materials" class="hover:text-white transition-colors">Materials</a>
+          <a href="/website20/process" class="hover:text-white transition-colors">Process</a>
+          <a href="/website20/contact" class="hover:text-white transition-colors">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const canvas = document.getElementById('bp-gl');
+      const fallback = document.getElementById('bpFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/blueprint-scene')
+          .then(({ initBlueprintScene }) => {
+            const scene = initBlueprintScene(canvas);
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

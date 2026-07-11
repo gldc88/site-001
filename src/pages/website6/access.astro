@@ -1,0 +1,103 @@
+---
+/**
+ * ORBITAL CRYPTO , Get Access (website6, round 2). Signature: a verified-institution access
+ * request with a generated reference + toast.
+ */
+import OrbitalLayout from '../../layouts/OrbitalLayout.astro';
+
+const TYPES = ['Hedge fund', 'Trading desk / OTC', 'Corporate treasury', 'Exchange / venue', 'Family office', 'Other'];
+const AUM = ['Under $10M', '$10M – $100M', '$100M – $1B', 'Over $1B'];
+---
+
+<OrbitalLayout title="Get Access | ORBITAL CRYPTO" description="Request access to Orbital Crypto. Access is granted to verified institutions after a controlled walkthrough.">
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <span class="eyebrow">Get Access</span>
+      <h1>Built for verified <em>institutions</em>.</h1>
+      <p class="sub">Orbital is not a retail app. Access is granted after verification and a controlled walkthrough. Tell us about your desk and we route you to the right team.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="acc-grid">
+      <form id="accForm" class="acc-form panel glow" novalidate>
+        <div class="af-row">
+          <div class="fld"><label for="org">Institution</label><input id="org" name="org" type="text" autocomplete="organization" /><span class="err" data-err="org"></span></div>
+          <div class="fld"><label for="type">Type</label><select id="type" name="type">{TYPES.map((t) => <option>{t}</option>)}</select></div>
+        </div>
+        <div class="af-row">
+          <div class="fld"><label for="aum">AUM / book size</label><select id="aum" name="aum">{AUM.map((a) => <option>{a}</option>)}</select></div>
+          <div class="fld"><label for="region">Region (optional)</label><input id="region" name="region" type="text" placeholder="e.g. EU, US, APAC" /></div>
+        </div>
+        <div class="af-row">
+          <div class="fld"><label for="aname">Name</label><input id="aname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="aemail">Work email</label><input id="aemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="anote">What are you trying to do? (optional)</label><textarea id="anote" name="note" rows="3" placeholder="OTC execution, custody migration, treasury controls…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request access</button>
+        <p class="af-fine">Verification required. We never trade or move funds on signup.</p>
+      </form>
+
+      <aside class="acc-side">
+        <div class="acc-card panel" id="acc-ticket">
+          <div class="at-top"><span class="eyebrow">Request</span><span id="atRef" class="at-ref">, , , ,</span></div>
+          <p class="at-copy">Submit and you receive a reference immediately. A person on the coverage desk reviews it and replies , usually within one business day.</p>
+          <ol class="at-steps">
+            <li><span>01</span> Verification & KYB</li>
+            <li><span>02</span> Controlled walkthrough</li>
+            <li><span>03</span> Limits & roles set</li>
+            <li><span>04</span> Desk goes live</li>
+          </ol>
+          <div class="at-status" id="atStatus">Awaiting request</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .acc-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .acc-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .af-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .acc-form textarea { resize: vertical; font-family: var(--body); }
+    .af-fine { font-family: var(--mono); font-size: 0.72rem; color: var(--faint); text-align: center; }
+    .acc-side { position: sticky; top: 96px; }
+    .acc-card { padding: clamp(24px,3vw,32px); }
+    .at-top { display: flex; justify-content: space-between; align-items: center; }
+    .at-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--cyan); }
+    .at-copy { color: var(--muted); font-size: 0.86rem; line-height: 1.7; margin-top: 16px; }
+    .at-steps { list-style: none; margin: 22px 0 0; display: flex; flex-direction: column; gap: 12px; }
+    .at-steps li { font-family: var(--mono); font-size: 0.8rem; color: #cdd4de; display: flex; gap: 12px; align-items: baseline; }
+    .at-steps li span { color: var(--cyan); }
+    .at-status { margin-top: 22px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair); border-radius: 4px; }
+    .acc-card.filed { border-color: var(--hair-cyan); }
+    .acc-card.filed .at-status { color: #040610; background: var(--cyan); border-style: solid; border-color: var(--cyan); }
+    @media (max-width: 900px) { .acc-grid { grid-template-columns: 1fr; } .acc-side { position: static; } }
+    @media (max-width: 560px) { .af-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('accForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    const ref = document.getElementById('atRef')!, statusEl = document.getElementById('atStatus')!, card = document.getElementById('acc-ticket');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6500); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#ff7a9c' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const org = String(d.get('org') || '').trim();
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (org.length < 2) { setErr('org', 'Institution name.'); ok = false; } else setErr('org', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid work email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const r = 'ORB-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      ref.textContent = r; statusEl.textContent = 'Logged · ' + r; card?.classList.add('filed');
+      showToast(`Received, ${name.split(' ')[0]}. ${org} is in the queue, ref ${r}. Coverage replies within one business day.`);
+    });
+  </script>
+</OrbitalLayout>

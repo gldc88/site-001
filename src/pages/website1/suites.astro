@@ -1,0 +1,172 @@
+---
+/**
+ * THE OBSIDIAN , Suites & Residences (website1, round 2).
+ * Signature: a tabbed suite selector with a live detail panel (image, rate, amenities).
+ */
+import ObsidianLayout from '../../layouts/ObsidianLayout.astro';
+
+const SUITES = [
+  {
+    id: 'royal', n: '01', name: 'The Royal Penthouse', meta: '240 SQM · Skyline & Old Town',
+    rate: '4,800', img: '/website1/suite2.jpg',
+    desc: 'The top of the house. A private lift opens into a panelled salon, a stone fireplace, and a wall of glass over the Old Town rooftops. Two bedrooms, a study, and a terrace held in silence above the city.',
+    amen: ['Private lift & entrance', 'Stone fireplace lounge', '24h personal butler', 'Terrace over the Old Town', 'Steinway & spirits library', 'Dressing room with safe'],
+  },
+  {
+    id: 'onyx', n: '02', name: 'The Onyx Suite', meta: '110 SQM · Private Garden Terrace',
+    rate: '2,400', img: '/website1/suite1.jpg',
+    desc: 'Warm and low-lit, wrapped in walnut and brushed brass. A king bed faces a quiet courtyard garden; the bath is carved from a single block of dark stone. The room people ask to stay in one more night.',
+    amen: ['Garden terrace', 'Walnut & brass joinery', 'Soaking tub in dark stone', 'Pillow & scent menu', 'Nespresso & curated minibar', 'Heated floors'],
+  },
+  {
+    id: 'hammam', n: '03', name: 'The Hammam Suite', meta: '140 SQM · Private Wet Room',
+    rate: '3,200', img: '/website1/bath.jpg',
+    desc: 'A suite built around water. Black marble, a backlit oval mirror, and a private steam and rain room two steps from the bed. Designed with the spa team for guests who treat stillness as the point of the trip.',
+    amen: ['Private steam & rain room', 'Black marble wet room', 'Backlit vanity', 'In-suite treatment on request', 'Aromatherapy console', 'Bathrobe & slipper service'],
+  },
+  {
+    id: 'lounge', n: '04', name: 'The Obsidian Lounge', meta: 'Members Only · Cigar & Spirits Library',
+    rate: 'On Request', img: '/website1/lounge.jpg',
+    desc: 'Not a room , a residence membership. A private library of aged spirits and rare cigars, a humidor with your name on a drawer, and a corner that is yours whenever the city gets loud. Quiet introductions only.',
+    amen: ['Named humidor drawer', 'Aged spirits library', 'Private host & sommelier', 'After-hours access', 'Tasting events', 'Discreet guest list'],
+  },
+];
+---
+
+<ObsidianLayout title="Suites & Residences | THE OBSIDIAN" description="Private, quiet, controlled suites and residences at The Obsidian, Zürich , from the Onyx Suite to the Royal Penthouse." active="suites">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website1/suite2.jpg" alt="A suite at The Obsidian" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Accommodations</span>
+      <h1>Suites &amp; <em>Residences</em></h1>
+      <p class="sub">Heavy drapery, soft leather, black stone, and the kind of calm you can taste. Four ways to disappear, each released quietly and held for one guest at a time.</p>
+    </div>
+  </section>
+
+  <section class="section tight" id="select">
+    <div class="suite-picker">
+      <div class="picker-list" role="tablist" aria-label="Choose a suite">
+        {SUITES.map((s, i) => (
+          <button class={`picker-tab hover-target${i === 0 ? ' active' : ''}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-target={s.id}>
+            <span class="pt-n">{s.n}</span>
+            <span class="pt-body"><span class="pt-name">{s.name}</span><span class="pt-meta">{s.meta}</span></span>
+            <span class="pt-rate">{s.rate === 'On Request' ? 'Enquire' : `from €${s.rate}`}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="picker-stage">
+        {SUITES.map((s, i) => (
+          <article class={`suite-panel${i === 0 ? ' active' : ''}`} id={s.id} aria-hidden={i === 0 ? 'false' : 'true'}>
+            <div class="sp-figure"><img src={s.img} alt={s.name} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" /><span class="sp-tag">{s.meta}</span></div>
+            <div class="sp-info">
+              <span class="overline">Suite {s.n}</span>
+              <h2>{s.name}</h2>
+              <p class="sp-desc">{s.desc}</p>
+              <div class="sp-amen">
+                {s.amen.map((a) => <span class="amen-chip">{a}</span>)}
+              </div>
+              <div class="sp-foot">
+                <div class="sp-rate"><span class="rl">Per night</span><span class="rv">{s.rate === 'On Request' ? 'On Request' : `€${s.rate}`}</span></div>
+                <span class="magnetic"><a href="/website1/reserve" class="btn-gold hover-target">Reserve this suite</a></span>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight" id="included">
+    <div class="inc-head" data-reveal="up">
+      <span class="overline">In Every Stay</span>
+      <h2 class="section-title" style="margin-top:16px;">Included, unspoken</h2>
+    </div>
+    <div class="inc-grid" data-stagger="0.08">
+      {[
+        ['Arrival', 'Private car from the station or airport, and a check-in that happens in your room, not a queue.'],
+        ['The Bed', 'House linen, a pillow menu, blackout to true dark, and a turn-down you never see happen.'],
+        ['The Bath', 'Dark stone, deep water, and house oils blended two streets away. Heated floors as standard.'],
+        ['The Air', 'Filtered, quiet, and scented faintly with cedar and smoke. Windows that actually open.'],
+        ['The Hour', 'No checkout clock-watching. We hold the room late whenever the day asks for it.'],
+        ['The People', 'One contact for everything, who remembers how you take your coffee by day two.'],
+      ].map(([t, d]) => (
+        <div class="inc-card"><h4>{t}</h4><p>{d}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section reserve-cta center">
+    <span class="overline center" style="display:flex;justify-content:center;" data-reveal="fade">Reservations</span>
+    <h2 data-reveal="up">Hold a <em>room</em> for the quiet.</h2>
+    <p data-reveal="up">A limited number released each week. Tell us when, and we keep the line open.</p>
+    <span class="magnetic" data-reveal="up"><a href="/website1/reserve" class="btn-gold hover-target">Request Availability</a></span>
+  </section>
+
+  <style>
+    .suite-picker { display: grid; grid-template-columns: 0.85fr 1.4fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
+    .picker-list, .picker-stage { min-width: 0; }
+    .picker-list { display: flex; flex-direction: column; border-top: 1px solid var(--hair-soft); }
+    .picker-tab { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 16px; width: 100%; text-align: left; padding: 26px 14px; border-bottom: 1px solid var(--hair-soft); transition: background .4s var(--ease-lux), padding .4s var(--ease-lux); position: relative; }
+    .picker-tab::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--c-gold); transform: scaleY(0); transform-origin: top; transition: transform .45s var(--ease-lux); }
+    .picker-tab:hover { background: rgba(255,255,255,0.02); }
+    .picker-tab.active { background: rgba(212,175,55,0.04); padding-left: 22px; }
+    .picker-tab.active::before { transform: scaleY(1); }
+    .pt-n { font-family: var(--f-head); font-size: 18px; color: var(--c-faint); }
+    .picker-tab.active .pt-n { color: var(--c-gold); }
+    .pt-body { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+    .pt-name { font-family: var(--f-head); font-size: clamp(1.2rem, 1.7vw, 1.55rem); color: #fff; }
+    .pt-meta { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--c-muted); }
+    .pt-rate { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-gold); white-space: nowrap; }
+
+    .picker-stage { position: relative; }
+    .suite-panel { display: none; grid-template-columns: 1fr; gap: 30px; min-width: 0; }
+    .suite-panel.active { display: grid; animation: fadeup .6s var(--ease-lux); }
+    @media (min-width: 900px) { .suite-panel { grid-template-columns: 1.15fr 1fr; gap: 40px; align-items: stretch; } }
+    .sp-figure { position: relative; overflow: hidden; border-radius: 2px; min-height: 360px; min-width: 0; }
+    .sp-info { min-width: 0; }
+    @media (max-width: 899px) { .sp-figure { aspect-ratio: 16/10; min-height: 0; } }
+    .sp-figure img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9) grayscale(8%); }
+    .sp-tag { position: absolute; left: 16px; bottom: 16px; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-gold); background: rgba(5,5,4,0.6); backdrop-filter: blur(6px); padding: 7px 12px; }
+    .sp-info { display: flex; flex-direction: column; }
+    .sp-info h2 { font-size: clamp(2rem, 3.4vw, 3.2rem); color: #fff; margin-top: 14px; }
+    .sp-desc { color: var(--c-muted); line-height: 1.8; margin-top: 22px; font-size: 0.95rem; }
+    .sp-amen { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 28px; }
+    .amen-chip { font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #cfc8bb; border: 1px solid var(--hair-soft); padding: 8px 12px; border-radius: 999px; transition: border-color .3s ease, color .3s ease; }
+    .amen-chip:hover { border-color: var(--hair); color: var(--c-gold); }
+    .sp-foot { margin-top: auto; padding-top: 34px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .sp-rate { display: flex; flex-direction: column; gap: 4px; }
+    .sp-rate .rl { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .sp-rate .rv { font-family: var(--f-head); font-size: 2rem; color: var(--c-gold); }
+
+    .inc-head { margin-bottom: 56px; }
+    .inc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hair-soft); border: 1px solid var(--hair-soft); }
+    .inc-card { background: var(--c-bg); padding: clamp(28px, 3vw, 44px); }
+    .inc-card h4 { font-family: var(--f-head); font-size: 1.5rem; color: var(--c-gold); }
+    .inc-card p { color: var(--c-muted); margin-top: 14px; font-size: 0.9rem; line-height: 1.75; }
+
+    .reserve-cta { border-top: 1px solid var(--hair-soft); }
+    .reserve-cta h2 { font-size: clamp(2.2rem, 4.4vw, 4.4rem); color: #fff; margin-top: 20px; }
+    .reserve-cta h2 em { color: var(--c-gold); font-style: italic; }
+    .reserve-cta p { color: var(--c-muted); margin-top: 22px; }
+    .reserve-cta .btn-gold { margin-top: 40px; padding: 18px 50px; }
+
+    @media (max-width: 900px) {
+      .suite-picker { grid-template-columns: 1fr; }
+      .inc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.picker-tab'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.suite-panel'));
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.target;
+        tabs.forEach((t) => { const on = t === tab; t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); });
+        panels.forEach((p) => { const on = p.id === id; p.classList.toggle('active', on); p.setAttribute('aria-hidden', String(!on)); });
+      });
+    });
+  </script>
+</ObsidianLayout>

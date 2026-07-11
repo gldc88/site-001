@@ -1,0 +1,111 @@
+---
+/**
+ * EMBERLINE , Tools (website26, round 2). The interactive trio: BTU estimator, boiler guide, fault triage.
+ */
+import EmberlineLayout from '../../layouts/EmberlineLayout.astro';
+import HeatTools from '../../components/emberline/HeatTools.astro';
+---
+
+<EmberlineLayout title="Tools | Emberline Gas & Heating" description="A heat-output estimator, a boiler-type guide, and a fault-triage tool that walks you from symptom to next step." active="tools">
+  <section class="mx-auto max-w-6xl px-5 pt-16 pb-10">
+    <div class="text-[11px] font-black uppercase tracking-[0.3em] text-[#f6a11a] mb-3">Interactive tools</div>
+    <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9]">Size it. <br />Diagnose it.</h1>
+    <p class="mt-6 max-w-xl text-zinc-300 text-lg font-light leading-relaxed">Estimate the heat output a room needs, see which boiler type suits your home, and triage a fault to its likely cause , including when to stop and call.</p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 pb-16"><HeatTools /></section>
+
+  <section class="mx-auto max-w-6xl px-5 pb-24">
+    <div class="rounded-xl border border-[#f6a11a]/20 bg-gradient-to-br from-[#f6a11a]/8 to-transparent p-8 md:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <p class="text-zinc-300 max-w-md">These tools give you a head start. For a firm answer, book a visit , your estimate travels with the request.</p>
+      <a href="/website26/book" class="shrink-0 bg-[#f6a11a] text-black px-8 py-4 text-sm font-black uppercase tracking-widest hover:bg-amber-400 transition-colors">Book a visit</a>
+    </div>
+  </section>
+
+  <section class="section" id="listener">
+    <div class="bl-head">
+      <span class="kicker">The Boiler Listener</span>
+      <h2>What does yours sound like?</h2>
+      <p>You cannot upload a noise , but you can point at one. Pick the shape that matches
+        the sound and we will tell you what the boiler is trying to say.</p>
+    </div>
+    <div class="bl-cards" role="radiogroup" aria-label="Choose the sound your boiler makes">
+      <button type="button" class="bl-card" data-sound="kettling" role="radio" aria-checked="false">
+        <svg viewBox="0 0 80 30" aria-hidden="true"><path class="bl-wave" d="M2 22 Q6 6 10 22 T18 22 Q21 12 24 22 T32 22 Q37 2 42 22 T50 22 Q53 14 56 22 T64 22 Q69 5 74 22" fill="none" /></svg>
+        <span>Rumbling &amp; bubbling</span>
+      </button>
+      <button type="button" class="bl-card" data-sound="ticking" role="radio" aria-checked="false">
+        <svg viewBox="0 0 80 30" aria-hidden="true"><path class="bl-wave" d="M4 15 h6 v-8 h2 v8 h10 v-8 h2 v8 h12 v-8 h2 v8 h10 v-8 h2 v8 h10 v-8 h2 v8 h8" fill="none" /></svg>
+        <span>Ticking &amp; clicking</span>
+      </button>
+      <button type="button" class="bl-card" data-sound="humming" role="radio" aria-checked="false">
+        <svg viewBox="0 0 80 30" aria-hidden="true"><path class="bl-wave" d="M2 15 Q12 8 22 15 T42 15 T62 15 T78 15" fill="none" /></svg>
+        <span>Low steady hum</span>
+      </button>
+      <button type="button" class="bl-card" data-sound="whistling" role="radio" aria-checked="false">
+        <svg viewBox="0 0 80 30" aria-hidden="true"><path class="bl-wave" d="M2 20 Q10 18 18 12 Q30 4 44 5 Q60 6 78 4" fill="none" /></svg>
+        <span>High thin whistle</span>
+      </button>
+      <button type="button" class="bl-card" data-sound="banging" role="radio" aria-checked="false">
+        <svg viewBox="0 0 80 30" aria-hidden="true"><path class="bl-wave" d="M4 26 h8 v-20 h6 v20 h14 v-14 h6 v14 h16 v-22 h6 v22 h14" fill="none" /></svg>
+        <span>Banging &amp; knocking</span>
+      </button>
+    </div>
+    <div class="bl-verdict" id="blVerdict" aria-live="polite" hidden>
+      <span class="bl-urgency" id="blUrgency"></span>
+      <p id="blDiag"></p>
+      <a href="/website26/book" class="bl-book" id="blBook">Book it in , the note travels with you →</a>
+    </div>
+  </section>
+
+  <style>
+    #listener .bl-head { max-width: 640px; margin-bottom: 24px; }
+    #listener h2 { margin: 10px 0 12px; }
+    .bl-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .bl-card { display: flex; flex-direction: column; gap: 10px; align-items: stretch; padding: 14px; border: 1px solid rgba(246, 161, 26, 0.25); border-radius: 6px; background: rgba(20, 14, 8, 0.6); cursor: pointer; transition: border-color .3s, background .3s; }
+    .bl-card span { font-family: ui-monospace, monospace; font-size: 10.5px; letter-spacing: 0.06em; color: rgba(240, 220, 190, 0.85); }
+    .bl-card[aria-checked='true'] { border-color: rgba(246, 161, 26, 0.8); background: rgba(246, 161, 26, 0.1); }
+    .bl-card:focus-visible { outline: 1px solid #f6a11a; outline-offset: 2px; }
+    .bl-wave { stroke: rgba(246, 161, 26, 0.85); stroke-width: 1.6; stroke-dasharray: 220; stroke-dashoffset: 0; }
+    .bl-card:hover .bl-wave { animation: bl-draw 1.6s linear infinite; }
+    @keyframes bl-draw { from { stroke-dashoffset: 220; } to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) { .bl-card:hover .bl-wave { animation: none; } }
+    .bl-verdict { margin-top: 20px; border: 1px solid rgba(246, 161, 26, 0.3); border-radius: 6px; padding: 18px 20px; background: rgba(20, 14, 8, 0.7); }
+    .bl-urgency { font-family: ui-monospace, monospace; font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+    .bl-urgency.plan { background: rgba(86, 201, 146, 0.15); color: #56c992; border: 1px solid rgba(86, 201, 146, 0.4); }
+    .bl-urgency.soon { background: rgba(246, 161, 26, 0.15); color: #f6a11a; border: 1px solid rgba(246, 161, 26, 0.4); }
+    .bl-urgency.today { background: rgba(224, 90, 60, 0.18); color: #e05a3c; border: 1px solid rgba(224, 90, 60, 0.5); }
+    .bl-verdict p { margin: 12px 0; line-height: 1.65; font-size: 13.5px; }
+    .bl-book { font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #f6a11a; text-decoration: none; }
+  </style>
+
+  <script>
+    /* R3 "The Boiler Listener" , geluid kiezen via vorm; diagnose + urgentie. */
+    (() => {
+      type Diag = { urgency: 'plan' | 'soon' | 'today'; label: string; text: string };
+      const DIAGS: Record<string, Diag> = {
+        kettling: { urgency: 'soon', label: 'Book soon', text: 'Rumbling like a kettle is usually limescale on the heat exchanger. It gets less efficient every week , book a descale before it books itself.' },
+        ticking: { urgency: 'plan', label: 'Plan it in', text: 'Ticking on warm-up and cool-down is mostly expansion in the pipework. Harmless if it fades , worth mentioning at the next service.' },
+        humming: { urgency: 'plan', label: 'Plan it in', text: 'A steady hum points at the pump running fast or a valve ajar. Efficiency leak, not an emergency , we tune it in one visit.' },
+        whistling: { urgency: 'soon', label: 'Book soon', text: 'A thin whistle is air or restricted flow. It will not fix itself, and it strains the pump , book it in this month.' },
+        banging: { urgency: 'today', label: 'Call today', text: 'Banging or knocking can be water hammer or overheating. Turn the system down and call us today , this one does not wait.' },
+      };
+      const cards = Array.from(document.querySelectorAll<HTMLButtonElement>('.bl-card'));
+      const verdict = document.getElementById('blVerdict');
+      const urgency = document.getElementById('blUrgency');
+      const diag = document.getElementById('blDiag');
+      if (!cards.length || !verdict || !urgency || !diag) return;
+      cards.forEach((c) => c.addEventListener('click', () => {
+        const k = c.dataset.sound || '';
+        const d = DIAGS[k];
+        if (!d) return;
+        cards.forEach((x) => x.setAttribute('aria-checked', String(x === c)));
+        verdict.hidden = false;
+        urgency.textContent = d.label;
+        urgency.className = `bl-urgency ${d.urgency}`;
+        diag.textContent = d.text;
+        try { localStorage.setItem('emberline-sound', JSON.stringify({ sound: k, urgency: d.urgency })); } catch { /* private mode */ }
+      }));
+    })();
+  </script>
+</EmberlineLayout>

@@ -1,0 +1,128 @@
+---
+/**
+ * NEON DISTRICT , Connect / Open Channel (website14, round 2). Signature: a secure-channel request
+ * whose channel select re-tints the city; generates a reference + toast + summary.
+ */
+import NeonLayout from '../../layouts/NeonLayout.astro';
+import { CHANNELS, ACCESS } from '../../data/neon';
+
+const SIZES = ['Just me', '2 – 10', '11 – 50', '50+'];
+---
+
+<NeonLayout title="Open a Channel | Neon District" description="Request access to the Neon District control surface. Pick a primary channel, tell us your shift, and we'll spin up a sandbox district.">
+  <div class="page-hero">
+    <span class="kicker">Open Channel</span>
+    <h1>Take it for a <em>shift</em>.</h1>
+    <p class="sub">Three steps from request to live. Pick a primary channel below , the city re-tints to it as you choose , and we'll spin up a sandbox district with it running.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="access-steps">
+      {ACCESS.map((a, i) => (
+        <div class="astep panel" data-reveal="up"><span class="as-n">{String(i + 1).padStart(2, '0')}</span><div><h3>{a.t}</h3><p>{a.d}</p></div></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="con-grid">
+      <form id="conForm" class="con-form panel lit ticked" novalidate>
+        <div class="cf-row">
+          <div class="fld"><label for="channel">Primary channel</label><select id="channel" name="channel">{CHANNELS.map((c) => <option value={c.key}>{c.name}</option>)}</select></div>
+          <div class="fld"><label for="size">Team size</label><select id="size" name="size">{SIZES.map((s) => <option>{s}</option>)}</select></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="cname">Name / handle</label><input id="cname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="cemail">Email</label><input id="cemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="cmsg">What are you running? (optional)</label><textarea id="cmsg" name="msg" rows="3" placeholder="The system you operate, your shift, what after-dark looks like…"></textarea></div>
+        <button type="submit" class="btn" style="width:100%; text-align:center;">▸ Request access</button>
+        <p class="cf-fine">Sandbox district · no card · we burn the keys when you're done.</p>
+        <p class="bc-ref" id="bcRef" hidden></p>
+      </form>
+
+      <aside class="con-summary panel" id="summary">
+        <div class="cs-top"><span class="kicker" style="font-size:9px;">Request</span><span id="csRef" class="cs-ref">, , , ,</span></div>
+        <div class="cs-line"><span>Channel</span><b id="csChannel">Identity</b></div>
+        <div class="cs-line"><span>Team</span><b id="csSize">Just me</b></div>
+        <div class="cs-line"><span>District</span><b>Sandbox</b></div>
+        <div class="cs-status" id="csStatus">Awaiting handshake</div>
+        <p class="cs-hint">The city is previewing your chosen channel.</p>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .access-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .astep { display: grid; grid-template-columns: 54px 1fr; gap: 16px; padding: 26px 24px; }
+    .as-n { font-family: var(--disp); font-size: 1.8rem; color: var(--accent); }
+    .astep h3 { font-size: 1.3rem; color: #fff; }
+    .astep p { color: var(--muted); font-size: 0.9rem; margin-top: 6px; line-height: 1.55; }
+
+    .con-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .con-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .con-form textarea { resize: vertical; font-family: var(--body); }
+    .cf-fine { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em; color: var(--faint); text-align: center; }
+    .con-summary { position: sticky; top: 76px; padding: clamp(24px,3vw,32px); }
+    .cs-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .cs-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--accent); }
+    .cs-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line2); }
+    .cs-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .cs-line b { font-family: var(--disp); font-size: 1.05rem; color: #fff; text-align: right; }
+    .cs-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); border-radius: 4px; }
+    .con-summary.filed { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+    .con-summary.filed .cs-status { color: #05060b; background: var(--accent); border-style: solid; }
+    .cs-hint { font-family: var(--mono); font-size: 9px; color: var(--faint); margin-top: 14px; text-align: center; }
+    @media (max-width: 900px) { .access-steps { grid-template-columns: 1fr; } .con-grid { grid-template-columns: 1fr; } .con-summary { position: static; } }
+    @media (max-width: 560px) { .cf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 Broadcast: laatste uitzending reist mee naar het secure channel. */
+    try {
+      const msg = localStorage.getItem('neon-broadcast');
+      if (msg) {
+        const el = document.getElementById('bcRef');
+        if (el) { el.textContent = `On air now: "${msg}" , the district heard you first.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    import { CHANNELS } from '../../data/neon';
+    const byKey = Object.fromEntries(CHANNELS.map((c) => [c.key, c]));
+    const form = document.getElementById('conForm') as HTMLFormElement;
+    const channel = document.getElementById('channel') as HTMLSelectElement;
+    const size = document.getElementById('size') as HTMLSelectElement;
+    const cs = { channel: document.getElementById('csChannel')!, size: document.getElementById('csSize')!, ref: document.getElementById('csRef')!, status: document.getElementById('csStatus')! };
+    const card = document.getElementById('summary');
+    const toast = document.getElementById('toast');
+    let tT = 0;
+
+    const saved = localStorage.getItem('neon-channel') || 'identity';
+    if (byKey[saved]) channel.value = saved;
+    const update = () => { cs.channel.textContent = byKey[channel.value]?.name || channel.value; cs.size.textContent = size.value; };
+    channel.addEventListener('change', () => { (window as any).__neonApply?.(channel.value); update(); });
+    size.addEventListener('input', update);
+    update();
+    document.addEventListener('neon:channel', (e) => { const k = (e as CustomEvent).detail; if (byKey[k]) { channel.value = k; update(); } });
+
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#ff2bd6' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('cname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('cemail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'A name or handle.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'ND-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      cs.ref.textContent = ref; cs.status.textContent = 'Handshake · ' + ref; card?.classList.add('filed');
+      if (toast) { toast.textContent = `Channel open, ${name.split(' ')[0]} , request ${ref} on ${byKey[channel.value]?.name}. Sandbox district spinning up.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6600); }
+    });
+  </script>
+<style>
+  .bc-ref { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #19e6ff; border-top: 1px solid rgba(25, 230, 255, 0.25); padding-top: 12px; }
+</style>
+</NeonLayout>

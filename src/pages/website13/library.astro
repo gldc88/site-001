@@ -1,0 +1,132 @@
+---
+/**
+ * LIGNUM ATELIER , Grain Library (website13, round 2). Signature: the full species library , select a
+ * timber (re-tints the persistent wood surface) + patina slider + a comparison table.
+ */
+import LignumLayout from '../../layouts/LignumLayout.astro';
+import { SPECIES, MAX_JANKA, grad } from '../../data/lignum';
+---
+
+<LignumLayout title="Grain Library | Lignum Atelier" description="The Lignum Atelier grain library , European oak, walnut, ebony, cherry, and olive ash. Switch the surface by species and age it with patina." active="library">
+  <div class="page-hero">
+    <span class="overline">Grain Library</span>
+    <h1>Five timbers, one <em>living</em> surface.</h1>
+    <p class="sub">Choose a species , the whole surface behind the page re-tints to it, and your choice follows you to every other page. Age it with the patina slider to see decades pass.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="lib-grid">
+      <div class="lib-select">
+        <span class="overline">Choose a timber</span>
+        <div class="sp-list">
+          {SPECIES.map((s) => (
+            <button class="sp-btn" data-species data-key={s.key} aria-pressed="false">
+              <span class="sb-chip" style={`background:${grad(s)}; background-blend-mode:multiply,normal,normal;`}></span>
+              <span class="sb-text"><b>{s.name}</b><span>{s.origin}</span></span>
+            </button>
+          ))}
+        </div>
+        <div class="patina-block panel">
+          <div class="pt-label"><span>Patina</span><b id="ageYears">Fresh-cut</b></div>
+          <input id="ageSlider" type="range" min="0" max="100" value="0" aria-label="Patina age" />
+          <span class="pt-caption" id="patinaCaption">Freshly cut & oiled</span>
+        </div>
+      </div>
+
+      <div class="lib-readout panel brass">
+        <div class="lr-head">
+          <div><span class="lr-name" id="roName">,</span><span class="lr-origin" id="roOrigin">,</span></div>
+          <span class="lr-swatch" id="roSwatch" aria-hidden="true"></span>
+        </div>
+        <p class="lr-note" id="roNote">,</p>
+        <div class="lr-metrics">
+          <div class="metric"><span class="m-k">Janka hardness</span><div class="m-track"><span class="m-bar" id="barJanka"></span></div><b id="valJanka">,</b></div>
+          <div class="metric"><span class="m-k">Grain frequency</span><div class="m-track"><span class="m-bar" id="barFreq"></span></div><b id="valFreq">,</b></div>
+          <div class="metric"><span class="m-k">Figure contrast</span><div class="m-track"><span class="m-bar" id="barContrast"></span></div><b id="valContrast">,</b></div>
+        </div>
+        <a href="/website13/commission" class="btn-ghost" style="margin-top:6px;">Commission in this timber →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="overline">Compared</span><h2>Hardness, side by side.</h2></div><p>Janka hardness in lbf , higher is denser. Macassar ebony sets the ceiling.</p></div>
+    <div class="compare">
+      {SPECIES.map((s) => (
+        <button class="cmp-row" data-species data-key={s.key}>
+          <span class="cmp-name">{s.name}</span>
+          <span class="cmp-track"><span class="cmp-bar" style={`width:${Math.round((s.janka / MAX_JANKA) * 100)}%`}></span></span>
+          <span class="cmp-val">{s.janka}</span>
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .lib-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: clamp(20px,3vw,40px); align-items: start; }
+    .lib-select > .overline { margin-bottom: 16px; }
+    .sp-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+    .sp-btn { display: flex; align-items: center; gap: 14px; text-align: left; padding: 12px 14px; border: 1px solid var(--hair-soft); border-radius: 5px; transition: all 0.3s; background: var(--panel); }
+    .sp-btn:hover { border-color: var(--hair); }
+    .sp-btn[aria-pressed='true'] { border-color: var(--brass); background: rgba(201,162,75,0.08); }
+    .sb-chip { width: 48px; height: 32px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.4); }
+    .sb-text { display: flex; flex-direction: column; }
+    .sb-text b { font-family: var(--serif); font-weight: 500; font-size: 1.25rem; color: #fff; }
+    .sb-text span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .patina-block { padding: 20px 22px; }
+    .pt-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .pt-label b { color: var(--brass); }
+    .patina-block input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 100px; background: rgba(236,227,211,0.12); outline: none; margin: 4px 0 10px; }
+    .patina-block input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--brass); cursor: pointer; box-shadow: 0 0 0 4px rgba(201,162,75,0.2); }
+    .patina-block input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border: none; border-radius: 50%; background: var(--brass); cursor: pointer; }
+    .pt-caption { font-family: var(--serif); font-style: italic; font-size: 1.05rem; color: var(--brass-soft); }
+
+    .lib-readout { padding: clamp(24px,3vw,34px); position: sticky; top: 90px; }
+    .lr-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+    .lr-name { font-family: var(--serif); font-size: 2rem; color: #fff; display: block; }
+    .lr-origin { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); }
+    .lr-swatch { width: 72px; height: 50px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.4); flex-shrink: 0; }
+    .lr-note { color: var(--muted); line-height: 1.7; font-size: 1rem; margin-bottom: 24px; }
+    .lr-metrics { display: flex; flex-direction: column; gap: 16px; margin-bottom: 26px; }
+    .metric { display: grid; grid-template-columns: 130px 1fr 60px; gap: 12px; align-items: center; }
+    .m-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .m-track { height: 4px; background: rgba(236,227,211,0.1); border-radius: 100px; overflow: hidden; }
+    .m-bar { display: block; height: 100%; background: linear-gradient(90deg, var(--brass-deep), var(--brass)); border-radius: 100px; transition: width 0.5s var(--ease); }
+    .metric b { font-family: var(--mono); font-size: 12px; color: var(--brass); text-align: right; }
+
+    .compare { display: flex; flex-direction: column; gap: 2px; }
+    .cmp-row { display: grid; grid-template-columns: 200px 1fr 60px; gap: 18px; align-items: center; padding: 16px 8px; border-top: 1px solid var(--hair-soft); text-align: left; transition: background 0.3s; }
+    .cmp-row:last-child { border-bottom: 1px solid var(--hair-soft); }
+    .cmp-row:hover { background: rgba(201,162,75,0.05); }
+    .cmp-name { font-family: var(--serif); font-size: 1.3rem; color: #fff; }
+    .cmp-track { height: 6px; background: rgba(236,227,211,0.08); border-radius: 100px; overflow: hidden; }
+    .cmp-bar { display: block; height: 100%; background: linear-gradient(90deg, var(--brass-deep), var(--brass)); border-radius: 100px; }
+    .cmp-val { font-family: var(--mono); font-size: 12px; color: var(--brass); text-align: right; }
+
+    @media (max-width: 900px) { .lib-grid { grid-template-columns: 1fr; } .lib-readout { position: static; } }
+    @media (max-width: 620px) { .metric { grid-template-columns: 100px 1fr 48px; } .cmp-row { grid-template-columns: 130px 1fr 44px; } .cmp-name { font-size: 1.1rem; } }
+  </style>
+
+  <script>
+    import { SPECIES, MAX_JANKA } from '../../data/lignum';
+    const byKey = Object.fromEntries(SPECIES.map((s) => [s.key, s]));
+    const ro = { name: document.getElementById('roName')!, origin: document.getElementById('roOrigin')!, note: document.getElementById('roNote')!, swatch: document.getElementById('roSwatch')! };
+    const bars = { janka: document.getElementById('barJanka')!, freq: document.getElementById('barFreq')!, contrast: document.getElementById('barContrast')! };
+    const vals = { janka: document.getElementById('valJanka')!, freq: document.getElementById('valFreq')!, contrast: document.getElementById('valContrast')! };
+    function render(key: string) {
+      const s = byKey[key]; if (!s) return;
+      ro.name.textContent = s.name; ro.origin.textContent = s.origin; ro.note.textContent = s.note;
+      ro.swatch.style.background = `linear-gradient(95deg, ${s.deep}, ${s.mid} 35%, ${s.light} 50%, ${s.mid} 65%, ${s.deep})`;
+      bars.janka.style.width = `${Math.round((s.janka / MAX_JANKA) * 100)}%`; vals.janka.textContent = `${s.janka}`;
+      bars.freq.style.width = `${Math.round((s.grainFreq / 8) * 100)}%`; vals.freq.textContent = s.grainFreq.toFixed(1);
+      bars.contrast.style.width = `${Math.round(s.contrast * 100)}%`; vals.contrast.textContent = s.contrast.toFixed(2);
+    }
+    render(localStorage.getItem('lignum-species') || 'walnut');
+    document.addEventListener('lignum:species', (e) => render((e as CustomEvent).detail));
+
+    const slider = document.getElementById('ageSlider') as HTMLInputElement;
+    const years = document.getElementById('ageYears')!, cap = document.getElementById('patinaCaption')!;
+    const CAPS = [{ at: 0, t: 'Freshly cut & oiled', y: 'Fresh-cut' }, { at: 25, t: 'A season of light', y: '~1 year' }, { at: 55, t: 'Hands, daily', y: '~10 years' }, { at: 80, t: 'A deepening russet', y: '~30 years' }, { at: 100, t: 'Heirloom patina', y: 'A lifetime' }];
+    slider?.addEventListener('input', () => { const v = Number(slider.value); const c = [...CAPS].reverse().find((x) => v >= x.at) || CAPS[0]; cap.textContent = c.t; years.textContent = c.y; });
+  </script>
+</LignumLayout>

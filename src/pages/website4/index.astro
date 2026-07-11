@@ -1,0 +1,138 @@
+---
+/**
+ * AURELIA SKYPORT , Home (website4, round 2 multi-page).
+ * Dawn-runway WebGL hero, HUD stats, feature teasers to Arrival / Terminal / Program / Dispatch.
+ */
+import AureliaLayout from '../../layouts/AureliaLayout.astro';
+
+const META = [
+  { b: '24/7', t: 'flight desk' },
+  { b: '12 min', t: 'gate to cabin, target' },
+  { b: '00', t: 'public terminals' },
+];
+const FEATURES = [
+  { fig: 'FIG_01', tag: 'CLEARED', kicker: 'Arrival Protocol', title: 'Gate to cabin in minutes.', copy: 'A private gate, covered parking, a quiet identity check, and luggage handled before you reach the lounge. Your car never meets a crowd.', img: '/website4/jet.jpg', href: '/website4/arrival', cta: 'The protocol' },
+  { fig: 'FIG_02', tag: 'READY', kicker: 'The Terminal', title: 'Your aircraft, staged like a suite.', copy: 'Temperature set, lighting dialed, linens turned, crew briefed before you arrive. A door that closes the world out, every time.', img: '/website4/cabin.jpg', href: '/website4/terminal', cta: 'Inside the terminal' },
+  { fig: 'FIG_03', tag: 'TEMP LOCK', kicker: 'The Program', title: 'Membership, not a booking line.', copy: 'Preferred aircraft profiles, secure baggage vault, and a desk that knows your name and your schedule. Quiet by design.', img: '/website4/dining.jpg', href: '/website4/membership', cta: 'See the program' },
+];
+---
+
+<AureliaLayout title="AURELIA SKYPORT | Private Runway" description="Aurelia Skyport , a members-only private airport layer. Private runway, private terminal, gate to cabin in minutes.">
+  <header class="hero" id="hero">
+    <span class="overline c" id="heroOver">Aurelia Skyport · Members Only</span>
+    <h1 class="hero-title" id="heroTitle">The runway<br />is yours.</h1>
+    <p class="hero-tag" id="heroTag">Private terminal. Private runway. Gate to cabin in minutes , no public terminals, no crowds, no waiting.</p>
+    <div class="hero-scroll" id="heroScroll" aria-hidden="true"><div class="rail"></div><span>Descend</span></div>
+  </header>
+
+  <section class="section" style="padding-top:0;">
+    <div class="meta-bar panel ticked" data-reveal="up">
+      {META.map((m) => (
+        <div class="meta-cell"><div class="meta-b">{m.b}</div><div class="meta-t">{m.t}</div></div>
+      ))}
+      <div class="meta-cell meta-live"><span class="dot"></span><div class="meta-t">flight desk online</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="sec-head">
+      <div><span class="overline" data-reveal="fade">Operations</span><h2 data-reveal="up">From curb to cleared.</h2></div>
+      <p data-reveal="up">Three layers, one clean line. Each one is its own quiet operation , tap through to see how it runs.</p>
+    </div>
+    <div class="feat-stack">
+      {FEATURES.map((f, i) => (
+        <a href={f.href} class={`feat${i % 2 ? ' flip' : ''}`}>
+          <div class="feat-media"><img src={f.img} alt={f.title} loading="lazy" decoding="async" data-parallax="0.14" />
+            <span class="feat-fig">{f.fig} // {f.kicker}</span><span class="feat-stat">{f.tag}</span>
+          </div>
+          <div class="feat-body">
+            <span class="overline" data-reveal="fade">{f.kicker}</span>
+            <h3 data-reveal="up">{f.title}</h3>
+            <p data-reveal="up">{f.copy}</p>
+            <span class="feat-cta" data-reveal="up">{f.cta} <span class="arw">→</span></span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section dispatch-cta" id="dispatch">
+    <span class="overline c" data-reveal="fade" style="display:flex;justify-content:center;">Dispatch</span>
+    <h2 data-reveal="up">Tell us where, and when.</h2>
+    <p data-reveal="up">A single message to the flight desk. We file the rest , slot, crew, catering, and a car at both ends.</p>
+    <a href="/website4/dispatch" class="btn-cta" data-reveal="up" style="margin-top:34px;">Request a flight</a>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; }
+    .hero .overline { opacity: 0; transform: translateY(8px); }
+    .hero-title { font-size: clamp(3rem, 10vw, 9rem); letter-spacing: -0.01em; line-height: 0.96; color: #f3ecdc; text-shadow: 0 0 80px rgba(200,168,107,0.3); margin: 22px 0; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-tag { font-family: var(--head); font-style: italic; font-size: clamp(1rem, 2vw, 1.5rem); color: var(--champagne); max-width: 40ch; opacity: 0; }
+    .hero-scroll { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; }
+    .hero-scroll .rail { width: 1px; height: 46px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+    .hero-scroll .rail::after { content: ''; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: var(--gold); animation: drop 2.4s var(--ease) infinite; }
+    .hero-scroll span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+
+    .meta-bar { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .meta-cell { padding: 32px 24px; text-align: center; border-right: 1px solid var(--hair-soft); }
+    .meta-cell:last-child { border-right: none; }
+    .meta-b { font-family: var(--head); font-size: clamp(2.2rem, 4vw, 3.4rem); color: #fff; line-height: 1; }
+    .meta-t { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
+    .meta-live { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    .meta-live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 12px var(--gold); animation: pulse 2.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+    .feat-stack { display: flex; flex-direction: column; gap: 22px; }
+    .feat { display: grid; grid-template-columns: 1.1fr 1fr; align-items: stretch; border: 1px solid var(--hair-soft); overflow: hidden; transition: border-color 0.4s; min-width: 0; }
+    .feat:hover { border-color: var(--hair); }
+    .feat.flip { direction: rtl; }
+    .feat.flip > * { direction: ltr; }
+    .feat-media { position: relative; overflow: hidden; min-height: 320px; min-width: 0; }
+    .feat-media img { position: absolute; inset: -8% 0; width: 100%; height: 116%; object-fit: cover; filter: brightness(0.74) saturate(1.05); transition: transform 1.2s var(--ease); will-change: transform; }
+    .feat:hover .feat-media img { transform: scale(1.05); }
+    .feat-fig { position: absolute; top: 16px; left: 16px; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--champagne); background: rgba(4,4,6,0.55); backdrop-filter: blur(5px); padding: 6px 10px; }
+    .feat-stat { position: absolute; bottom: 16px; right: 16px; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.2em; color: #040406; background: var(--gold); padding: 6px 10px; }
+    .feat-body { padding: clamp(34px, 5vw, 70px); display: flex; flex-direction: column; justify-content: center; background: var(--panel); backdrop-filter: blur(14px); min-width: 0; }
+    .feat-body h3 { font-size: clamp(1.8rem, 3.2vw, 3rem); color: #fff; margin-top: 14px; }
+    .feat-body p { color: var(--muted); margin-top: 18px; max-width: 46ch; line-height: 1.7; }
+    .feat-cta { margin-top: 30px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); display: inline-flex; align-items: center; gap: 10px; }
+    .feat-cta .arw { transition: transform 0.4s var(--ease); }
+    .feat:hover .feat-cta .arw { transform: translateX(6px); }
+
+    .dispatch-cta { text-align: center; }
+    .dispatch-cta h2 { font-size: clamp(2.2rem, 5vw, 4.4rem); color: #fff; margin-top: 20px; }
+    .dispatch-cta p { color: var(--muted); margin-top: 18px; max-width: 52ch; margin-inline: auto; }
+
+    @media (max-width: 900px) {
+      .meta-bar { grid-template-columns: 1fr 1fr; }
+      .meta-cell:nth-child(2) { border-right: none; }
+      .meta-cell:nth-child(1), .meta-cell:nth-child(2) { border-bottom: 1px solid var(--hair-soft); }
+      .feat { grid-template-columns: 1fr; }
+      .feat.flip { direction: ltr; }
+      .feat-media { min-height: 240px; }
+    }
+    @media (max-width: 560px) { .meta-bar { grid-template-columns: 1fr; } .meta-cell { border-right: none; border-bottom: 1px solid var(--hair-soft); } }
+    @media (prefers-reduced-motion: reduce) { .hero .overline, .hero-tag, .hero-scroll { opacity: 1 !important; transform: none !important; } .hero-scroll .rail::after, .meta-live .dot { animation: none; } }
+  </style>
+
+  <script>
+    import { gsap } from '../../lib/motion/gsap';
+    import { SplitText } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroTitle = document.getElementById('heroTitle');
+    const heroOver = document.getElementById('heroOver');
+    const heroTag = document.getElementById('heroTag');
+    const heroScroll = document.getElementById('heroScroll');
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'words,chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (heroOver) tl.to(heroOver, { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 130, opacity: 0, stagger: 0.04, duration: 1 }, 0.1);
+      if (heroTag) tl.to(heroTag, { opacity: 1, duration: 0.8 }, 0.7);
+      if (heroScroll) tl.to(heroScroll, { opacity: 1, duration: 0.8 }, 0.9);
+    } else {
+      [heroOver, heroTag, heroScroll].forEach((el) => el && (el.style.opacity = '1'));
+    }
+  </script>
+</AureliaLayout>

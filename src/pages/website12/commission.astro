@@ -1,0 +1,119 @@
+---
+/**
+ * AETHER CRYSTALWORKS , Commission (website12, round 2). Signature: a commission request with a
+ * live summary + generated reference + toast.
+ */
+import AetherLayout from '../../layouts/AetherLayout.astro';
+
+const PIECES = ['Glacial Monolith', 'Prism Alpha', 'Ice Stone', 'Bespoke (describe below)'];
+const FINISHES = ['Fully polished', 'Polished with frosted accent', 'Hand-finished freeform'];
+const BASES = ['No base', 'Blackened-steel plinth', 'Oak plinth'];
+---
+
+<AetherLayout title="Commission | Aether Crystalworks" description="Commission or acquire an Aether optical crystal object. Made to order, finished by hand. Price on request.">
+  <section class="page-hero" style="min-height:52svh;">
+    <div class="page-hero-media"><img src="/website12/prism.jpg" alt="An optical glass monolith" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Commission</span>
+      <h1>Made to <em>order</em>.</h1>
+      <p class="sub">Choose a piece from the collection or commission something bespoke. Each object is finished by hand; price is on request and confirmed before any work begins.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="com-grid">
+      <form id="comForm" class="com-form panel lit" novalidate>
+        <div class="cf-row">
+          <div class="fld"><label for="piece">Piece</label><select id="piece" name="piece">{PIECES.map((p) => <option>{p}</option>)}</select></div>
+          <div class="fld"><label for="finish">Finish</label><select id="finish" name="finish">{FINISHES.map((f) => <option>{f}</option>)}</select></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="base">Base</label><select id="base" name="base">{BASES.map((b) => <option>{b}</option>)}</select></div>
+          <div class="fld"><label for="qty">Quantity</label><select id="qty" name="qty"><option>1 piece</option><option>2 pieces</option><option>3 pieces</option><option>Set / installation</option></select></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="cname">Name</label><input id="cname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="cemail">Email</label><input id="cemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="cnote">Notes (optional)</label><textarea id="cnote" name="note" rows="3" placeholder="Intended setting, light source, dimensions, a deadline…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request this commission</button>
+        <p class="cf-fine">Price on request · confirmed before any work begins.</p>
+        <p class="benched" id="benchedNote" hidden>Calibrated bench on file , your commission ships with its own light report.</p>
+      </form>
+
+      <aside class="com-summary panel" id="summary">
+        <div class="cs-top"><span class="overline" style="font-size:9px;">Commission</span><span id="csRef" class="cs-ref">, , , ,</span></div>
+        <div class="cs-line"><span>Piece</span><b id="csPiece">Glacial Monolith</b></div>
+        <div class="cs-line"><span>Finish</span><b id="csFinish">Fully polished</b></div>
+        <div class="cs-line"><span>Base</span><b id="csBase">No base</b></div>
+        <div class="cs-line"><span>Quantity</span><b id="csQty">1 piece</b></div>
+        <div class="cs-price"><span>Estimate</span><b>Price on request</b></div>
+        <div class="cs-status" id="csStatus">Awaiting request</div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .com-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .com-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .com-form textarea { resize: vertical; font-family: var(--sans); }
+    .cf-fine { font-family: var(--mono); font-size: 0.7rem; color: var(--faint); text-align: center; }
+    .com-summary { position: sticky; top: 90px; padding: clamp(24px,3vw,32px); }
+    .cs-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .cs-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--ice); }
+    .cs-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--hair-soft); }
+    .cs-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .cs-line b { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: #fff; text-align: right; }
+    .cs-price { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0 4px; }
+    .cs-price span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .cs-price b { font-family: var(--serif); font-size: 1.3rem; color: var(--ice-soft); }
+    .cs-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair-soft); border-radius: 5px; }
+    .com-summary.filed { border-color: var(--hair); }
+    .com-summary.filed .cs-status { color: #05060a; background: var(--ice); border-style: solid; border-color: var(--ice); }
+    @media (max-width: 900px) { .com-grid { grid-template-columns: 1fr; } .com-summary { position: static; } }
+    @media (max-width: 560px) { .cf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3: bench-calibratie reist mee naar de commissie. */
+    try {
+      if (localStorage.getItem('aether-bench') === '1') {
+        const el = document.getElementById('benchedNote');
+        if (el) el.hidden = false;
+      }
+    } catch { /* private mode */ }
+
+    const form = document.getElementById('comForm') as HTMLFormElement;
+    const piece = document.getElementById('piece') as HTMLSelectElement;
+    const finish = document.getElementById('finish') as HTMLSelectElement;
+    const base = document.getElementById('base') as HTMLSelectElement;
+    const qty = document.getElementById('qty') as HTMLSelectElement;
+    const cs = { piece: document.getElementById('csPiece')!, finish: document.getElementById('csFinish')!, base: document.getElementById('csBase')!, qty: document.getElementById('csQty')!, ref: document.getElementById('csRef')!, status: document.getElementById('csStatus')! };
+    const card = document.getElementById('summary');
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const update = () => { cs.piece.textContent = piece.value; cs.finish.textContent = finish.value; cs.base.textContent = base.value; cs.qty.textContent = qty.value; };
+    [piece, finish, base, qty].forEach((el) => el.addEventListener('input', update));
+    update();
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#f3a0a0' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('cname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('cemail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'AE-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      cs.ref.textContent = ref; cs.status.textContent = 'Logged · ' + ref; card?.classList.add('filed');
+      if (toast) { toast.textContent = `Thank you ${name.split(' ')[0]} , commission ${ref} for ${piece.value} received. We'll reply with a price and timeline.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+<style>
+  .benched { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #b8ffd9; border-top: 1px solid var(--hair-soft); padding-top: 12px; }
+</style>
+</AetherLayout>

@@ -1,0 +1,136 @@
+---
+/**
+ * ATELIER PRIVATE CATERING , Home (website17, round 2 multi-page).
+ * Menu directions warm the candle room + reveal their courses in sequence; philosophy + sourcing
+ * teasers; compose CTA. The chosen menu warmth persists across pages.
+ */
+import AtelierLayout from '../../layouts/AtelierLayout.astro';
+import { MENUS, PHILOSOPHY, SOURCING } from '../../data/atelier';
+---
+
+<AtelierLayout title="Atelier Private Catering , Discreet Chef-Led Private Dining" description="Chef-led private dining delivered with discretion. Compose your evening: a menu direction, courses in sequence, a pairing, and a clean closeout.">
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow" id="heroKicker">Discreet · chef-led · private dining</span>
+      <h1 class="hero-title" id="heroTitle">An evening, composed.</h1>
+      <p class="hero-copy" id="heroCopy">A kitchen that arrives early, reads the room, and leaves no trace. Choose a direction below , the candlelight warms to it, and its courses lay themselves out.</p>
+
+      <div class="compose" id="heroActions">
+        <div class="menu-row" role="group" aria-label="Menu direction">
+          {MENUS.map((m) => (
+            <button class="menu-btn" data-menu data-key={m.key} data-warmth={String(m.warmth)} aria-pressed="false">
+              <span class="mb-title">{m.title}</span>
+              <span class="mb-line">{m.line}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="tasting panel copper">
+          <div class="ta-head"><span class="eyebrow">Tasting · <span id="taTitle">Coastal</span></span><span id="taWarmth" class="ta-warmth">warmth 56</span></div>
+          <ol class="courses" id="courses"></ol>
+          <a href="/website17/reserve" class="btn-cta" style="margin-top:6px;">Compose this evening →</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow">Philosophy</span><h2>The service you never notice.</h2></div><p>Four standards we hold every night. <a class="inline-link" href="/website17/philosophy">Our philosophy →</a></p></div>
+    <div class="phil-grid">
+      {PHILOSOPHY.map((p) => (<div class="phil panel" data-reveal="up"><h3>{p.k}</h3><p>{p.v}</p></div>))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow">Sourcing</span><h2>What's best that week.</h2></div><p><a class="inline-link" href="/website17/sourcing">The sourcing →</a></p></div>
+    <div class="src-teaser">
+      {SOURCING.map((s) => (
+        <a href="/website17/sourcing" class="src-row" data-reveal="up"><span class="sr-id">{s.id}</span><div class="sr-main"><h3>{s.item}</h3><span>{s.origin}</span></div><span class="sr-type">{s.type}</span></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight compose-cta">
+    <div class="cc-inner panel copper" data-reveal="up">
+      <span class="eyebrow c">Compose</span>
+      <h2>Tell us the room. We'll bring the kitchen.</h2>
+      <p>A short composition , menu, length, pairing, and party , and we take it from there.</p>
+      <a href="/website17/reserve" class="btn-cta" style="margin-top:26px;">Compose an evening</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 90px clamp(20px,5vw,56px) 40px; }
+    .hero-inner { position: relative; z-index: 10; max-width: 1300px; margin: 0 auto; width: 100%; }
+    .hero-title { font-size: clamp(3rem, 9vw, 7.5rem); line-height: 0.98; color: #fff; margin: 16px 0 18px; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-copy { color: var(--muted); max-width: 50ch; font-size: 1.1rem; }
+    .compose { margin-top: 34px; display: grid; grid-template-columns: 1fr 1.1fr; gap: 16px; align-items: stretch; }
+    .menu-row { display: flex; flex-direction: column; gap: 8px; }
+    .menu-btn { text-align: left; padding: 18px 20px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); transition: all 0.3s; }
+    .menu-btn:hover { border-color: var(--line-copper); }
+    .menu-btn[aria-pressed='true'] { border-color: var(--copper); box-shadow: inset 0 0 40px -24px var(--copper); }
+    .mb-title { font-family: var(--head); font-size: 1.7rem; color: #fff; display: block; }
+    .mb-line { color: var(--muted); font-size: 0.88rem; font-style: italic; }
+
+    .tasting { padding: 26px; display: flex; flex-direction: column; }
+    .ta-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .ta-warmth { font-family: var(--body); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--copper); }
+    .courses { list-style: none; display: flex; flex-direction: column; gap: 2px; margin-bottom: 22px; }
+    .courses li { display: flex; align-items: baseline; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); font-family: var(--head); font-size: 1.4rem; color: #fff; opacity: 0; transform: translateY(8px); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+    .courses li.in { opacity: 1; transform: none; }
+    .courses li::before { content: attr(data-n); font-family: var(--body); font-size: 10px; letter-spacing: 0.1em; color: var(--copper); width: 24px; flex-shrink: 0; }
+
+    .phil-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .phil { padding: 28px 24px; }
+    .phil h3 { font-size: 1.6rem; color: var(--copper-bright); }
+    .phil p { color: var(--muted); margin-top: 12px; font-size: 0.9rem; line-height: 1.6; }
+
+    .src-teaser { display: flex; flex-direction: column; }
+    .src-row { display: grid; grid-template-columns: 48px 1fr auto; gap: 22px; align-items: center; padding: 22px 8px; border-top: 1px solid var(--line); transition: background 0.3s, padding-left 0.3s; }
+    .src-row:last-child { border-bottom: 1px solid var(--line); }
+    .src-row:hover { background: rgba(194,142,91,0.05); padding-left: 14px; }
+    .sr-id { font-family: var(--body); font-size: 12px; color: var(--copper); }
+    .sr-main h3 { font-size: 1.5rem; color: #fff; }
+    .sr-main span { font-family: var(--body); font-size: 11px; letter-spacing: 0.06em; color: var(--muted); }
+    .sr-type { font-family: var(--body); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--copper); }
+
+    .compose-cta { display: flex; justify-content: center; }
+    .cc-inner { text-align: center; padding: clamp(40px,6vw,72px) clamp(24px,4vw,56px); max-width: 720px; }
+    .cc-inner .eyebrow { justify-content: center; }
+    .cc-inner h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; margin-top: 14px; }
+    .cc-inner p { color: var(--muted); margin-top: 14px; }
+
+    @media (max-width: 900px) { .compose { grid-template-columns: 1fr; } .phil-grid { grid-template-columns: 1fr 1fr; } .src-row { grid-template-columns: 40px 1fr; } .sr-type { display: none; } }
+    @media (max-width: 540px) { .phil-grid { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    import { gsap, SplitText, ScrollTrigger } from '../../lib/motion/gsap-plus';
+    import { MENUS } from '../../data/atelier';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const byKey = Object.fromEntries(MENUS.map((m) => [m.key, m]));
+
+    const heroTitle = document.getElementById('heroTitle');
+    const fades = ['heroKicker', 'heroCopy', 'heroActions'].map((id) => document.getElementById(id));
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (fades[0]) tl.to(fades[0], { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 120, opacity: 0, stagger: 0.035, duration: 0.9 }, 0.1);
+      tl.to(fades[1], { opacity: 1, duration: 0.8 }, 0.5).to(fades[2], { opacity: 1, duration: 0.8 }, 0.7);
+    }
+    ScrollTrigger.refresh();
+
+    const taTitle = document.getElementById('taTitle')!, taWarmth = document.getElementById('taWarmth')!, courses = document.getElementById('courses')!;
+    function renderMenu(k: string) {
+      const m = byKey[k]; if (!m) return;
+      taTitle.textContent = m.title; taWarmth.textContent = `warmth ${Math.round(m.warmth * 100)}`;
+      courses.innerHTML = m.courses.map((c, i) => `<li data-n="${String(i + 1).padStart(2, '0')}">${c}</li>`).join('');
+      const lis = Array.from(courses.querySelectorAll('li'));
+      lis.forEach((li, i) => { if (reduce) li.classList.add('in'); else setTimeout(() => li.classList.add('in'), 60 + i * 110); });
+    }
+    renderMenu(localStorage.getItem('atelier-menu') || 'coastal');
+    document.addEventListener('atelier:menu', (e) => renderMenu((e as CustomEvent).detail));
+  </script>
+</AtelierLayout>

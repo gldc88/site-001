@@ -1,0 +1,114 @@
+---
+/**
+ * VELLUM WEDDING BUREAU , Inquiry (website27, round 2). A brief that drafts the inquiry email live;
+ * prefilled from the save-the-date composer (localStorage). Submit opens the mail client + toast.
+ */
+import VellumBureauLayout from '../../layouts/VellumBureauLayout.astro';
+import { SCOPES, EMAIL } from '../../data/vellum-bureau';
+---
+
+<VellumBureauLayout title="Inquiry | Vellum Wedding Bureau" description="Fill the brief and we draft your inquiry email automatically , service scope, date, city, guest count, and notes.">
+  <section class="mx-auto max-w-6xl px-6 pt-20 pb-12">
+    <span class="text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--champ-d)]">Inquiry brief</span>
+    <h1 class="font-display text-6xl md:text-8xl font-semibold leading-[0.95] mt-4">Tell us the shape <br />of your day.</h1>
+    <p class="mt-7 max-w-xl text-[var(--mut)] text-lg leading-relaxed">Fill the brief. We draft your inquiry email automatically, live, on the right. Send when ready.</p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-24 grid lg:grid-cols-2 gap-10 items-start">
+    <form id="brief" class="rounded-2xl border border-[var(--line)] bg-[#fbf8f3]/70 p-8" novalidate>
+      <span class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Service scope</span>
+      <div class="flex flex-wrap gap-2.5 mt-3 mb-6">
+        {SCOPES.map((s) => (<button type="button" class="scope-btn rounded-full border border-[var(--ink)]/20 bg-white/50 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition-all" data-val={s}>{s}</button>))}
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Event date<input id="date" name="date" type="date" class="mt-2 w-full bg-white/60 border border-[var(--line)] rounded-lg px-4 py-3 text-sm outline-none focus:border-[var(--champ)] transition-colors" /></label>
+        <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">City / region<input id="city" name="city" type="text" class="mt-2 w-full bg-white/60 border border-[var(--line)] rounded-lg px-4 py-3 text-sm outline-none focus:border-[var(--champ)] transition-colors normal-case tracking-normal" /></label>
+      </div>
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] mt-4">Estimated guest count<input id="guests" name="guests" type="number" min="1" step="1" class="mt-2 w-full bg-white/60 border border-[var(--line)] rounded-lg px-4 py-3 text-sm outline-none focus:border-[var(--champ)] transition-colors" /></label>
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] mt-4">Notes (venue, style, priorities)<textarea id="notes" name="notes" rows="3" class="mt-2 w-full bg-white/60 border border-[var(--line)] rounded-lg px-4 py-3 text-sm outline-none focus:border-[var(--champ)] transition-colors resize-y normal-case tracking-normal"></textarea></label>
+      <div class="mt-6 flex items-center gap-5">
+        <button type="submit" class="bg-[var(--ink)] text-white px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] rounded-full hover:bg-[var(--champ-d)] transition-colors">Generate inquiry email</button>
+        <a class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mut)] v-link hover:text-[var(--ink)]" href={`mailto:${EMAIL}`}>or email us directly</a>
+      </div>
+      <p class="font-sans text-xs tracking-wide text-[#b48d3e] border-t border-[#e4d7b8] pt-3 mt-2" id="wgRef" hidden></p>
+      </form>
+
+    <aside class="rounded-2xl border border-[var(--champ)]/30 bg-gradient-to-br from-[#fffdf8] to-[#f3ead8]/50 p-8">
+      <h2 class="font-display text-2xl font-semibold">Draft preview</h2>
+      <p class="text-sm text-[var(--mut)] mt-2">If your mail client does not open automatically, copy the draft below and send it to <strong class="text-[var(--ink)]">{EMAIL}</strong>.</p>
+      <div class="mt-5 rounded-xl border border-[var(--line)] bg-white/70 overflow-hidden">
+        <div class="px-4 py-3 border-b border-[var(--line)] text-[11px] text-[var(--mut)] flex flex-col gap-1">
+          <span>To: <strong class="text-[var(--ink)]">{EMAIL}</strong></span>
+          <span id="subj">Subject: Wedding inquiry , (date) , (city)</span>
+        </div>
+        <pre id="body" class="px-4 py-4 text-[13px] leading-relaxed text-[var(--ink)] whitespace-pre-wrap font-sans">Hello Vellum Studio,
+
+I'd like to inquire about wedding planning support.
+
+Event date:
+City / region:
+Estimated guest count:
+Notes:
+
+Warm regards,</pre>
+      </div>
+    </aside>
+  </section>
+
+  <script define:vars={{ EMAIL }}>
+    const form = document.getElementById('brief');
+    const date = document.getElementById('date'), city = document.getElementById('city');
+    const guests = document.getElementById('guests'), notes = document.getElementById('notes');
+    const subj = document.getElementById('subj'), body = document.getElementById('body');
+    const scopeBtns = Array.from(document.querySelectorAll('.scope-btn'));
+
+    // prefill from the save-the-date composer
+    try {
+      const inv = JSON.parse(localStorage.getItem('vellum-invite') || '{}');
+      if (inv.date && date) date.value = inv.date;
+      if (inv.city && city) city.value = inv.city;
+    } catch (e) {}
+
+    const safe = (v) => String(v || '').trim();
+    function build() {
+      const d = safe(date.value) || '(date)', c = safe(city.value) || '(city)';
+      const g = safe(guests.value) || '(guest count)', n = safe(notes.value) || '(notes)';
+      const scopes = scopeBtns.filter((b) => b.classList.contains('selected')).map((b) => b.getAttribute('data-val'));
+      const scopeStr = scopes.length ? scopes.join(', ') : '(scope not selected)';
+      const subject = `Wedding inquiry , ${d} , ${c}`;
+      const text = `Hello Vellum Studio,\n\nI'd like to inquire about the following service scope:\n${scopeStr}\n\nEvent date: ${d}\nCity / region: ${c}\nEstimated guest count: ${g}\n\nNotes:\n${n}\n\nWarm regards,`;
+      subj.textContent = `Subject: ${subject}`;
+      body.textContent = text;
+      return { subject, text };
+    }
+    scopeBtns.forEach((b) => b.addEventListener('click', () => {
+      b.classList.toggle('selected');
+      const on = b.classList.contains('selected');
+      b.style.background = on ? 'var(--ink)' : ''; b.style.color = on ? '#fff' : ''; b.style.borderColor = on ? 'var(--ink)' : '';
+      build();
+    }));
+    ['input', 'change'].forEach((evt) => form.addEventListener(evt, build, { passive: true }));
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const out = build();
+      const c = safe(city.value), d = safe(date.value);
+      if (!c || !d) { (window).showToast?.("Add at least your date and city, and we'll draft the rest."); (!d ? date : city).focus(); return; }
+      const mailto = `mailto:${encodeURIComponent(EMAIL)}?subject=${encodeURIComponent(out.subject)}&body=${encodeURIComponent(out.text)}`;
+      (window).showToast?.(`Draft ready for <b>${c}</b>. Opening your mail app , or copy it from the preview.`);
+      try { window.location.href = mailto; } catch (_) {}
+    });
+    build();
+  </script>
+  <script>
+    /* R3 The Day, Weighed: de verdeling reist mee naar de aanvraag. */
+    try {
+      const w = JSON.parse(localStorage.getItem('vellum-weights') || '{}');
+      const total = Object.values(w).reduce((a: number, b) => a + Number(b), 0);
+      if (total > 0) {
+        const el = document.getElementById('wgRef');
+        const top = Object.entries(w).sort((a, b) => Number(b[1]) - Number(a[1]))[0];
+        if (el) { el.textContent = `Your day, weighed: ${total}/10 stones placed, leaning to ${top[0]} , the plan will follow the weight.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+  </script>
+</VellumBureauLayout>

@@ -1,0 +1,108 @@
+---
+/**
+ * NEON DISTRICT , Pulse (website14, round 2). Signature: a live telemetry feed , faux-realtime metric
+ * tiles + an event/anomaly stream.
+ */
+import NeonLayout from '../../layouts/NeonLayout.astro';
+
+const METRICS = [
+  { id: 'rps', k: 'Requests / s', base: 12400, fmt: 'int' },
+  { id: 'p99', k: 'p99 latency', base: 42, fmt: 'ms' },
+  { id: 'err', k: 'Error rate', base: 0.04, fmt: 'pct' },
+  { id: 'thru', k: 'Throughput', base: 88, fmt: 'pctw' },
+];
+---
+
+<NeonLayout title="Pulse | Neon District" description="The Neon District live pulse , requests, latency, error rate, throughput, and an event stream you can act on." active="pulse">
+  <div class="page-hero">
+    <span class="kicker">Pulse</span>
+    <h1>Watch the <em>pulse</em>.</h1>
+    <p class="sub">Not a wall of green lights. Four numbers that matter and a stream of events you can act on , the surface tells you what changed, not just that everything is "up".</p>
+  </div>
+
+  <section class="section tight">
+    <div class="metrics">
+      {METRICS.map((m) => (
+        <div class="metric panel ticked" data-id={m.id} data-base={String(m.base)} data-fmt={m.fmt}>
+          <span class="m-k">{m.k}</span>
+          <span class="m-v" id={`mv-${m.id}`}>,</span>
+          <span class="m-delta" id={`md-${m.id}`}>,</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="stream panel">
+      <div class="stream-head"><span class="kicker">Event stream</span><span class="stream-live"><span class="sl-dot"></span>live</span></div>
+      <ul id="streamLog" class="stream-log"></ul>
+    </div>
+  </section>
+
+  <style>
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+    .metric { padding: 26px 24px; display: flex; flex-direction: column; gap: 8px; }
+    .m-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .m-v { font-family: var(--disp); font-size: clamp(1.8rem,3vw,2.6rem); color: #fff; font-variant-numeric: tabular-nums; }
+    .m-delta { font-family: var(--mono); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .m-delta.up { color: var(--lime); } .m-delta.down { color: var(--mag); }
+
+    .stream { padding: clamp(22px,3vw,30px); }
+    .stream-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .stream-live { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
+    .sl-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+    .stream-log { list-style: none; display: flex; flex-direction: column; gap: 2px; min-height: 320px; font-family: var(--mono); font-size: 0.84rem; }
+    .stream-log li { display: grid; grid-template-columns: 84px 70px 1fr; gap: 14px; padding: 11px 4px; border-bottom: 1px solid var(--line2); align-items: baseline; animation: slidein 0.4s var(--ease); }
+    @keyframes slidein { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    .sl-time { color: var(--accent); }
+    .sl-tag { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 7px; border-radius: 3px; width: fit-content; }
+    .sl-tag.info { color: var(--cyan); border: 1px solid rgba(47,252,255,0.3); }
+    .sl-tag.ops { color: var(--lime); border: 1px solid rgba(183,255,60,0.3); }
+    .sl-tag.sec { color: var(--mag); border: 1px solid rgba(255,43,214,0.3); }
+    .sl-msg { color: var(--ink); }
+
+    @media (max-width: 860px) { .metrics { grid-template-columns: 1fr 1fr; } .stream-log li { grid-template-columns: 70px 1fr; } .stream-log li .sl-tag { display: none; } }
+  </style>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const metrics = Array.from(document.querySelectorAll<HTMLElement>('.metric'));
+    const state = metrics.map((el) => ({ el, base: Number(el.dataset.base), fmt: el.dataset.fmt!, v: Number(el.dataset.base), id: el.dataset.id! }));
+    const fmt = (v: number, f: string) => f === 'int' ? Math.round(v).toLocaleString('en-US') : f === 'ms' ? v.toFixed(0) + 'ms' : f === 'pct' ? v.toFixed(3) + '%' : Math.round(v) + '%';
+    function tickMetrics() {
+      state.forEach((s) => {
+        const drift = (Math.random() - 0.5) * 0.06;
+        s.v = Math.max(0, s.v * (1 + drift));
+        const vEl = document.getElementById('mv-' + s.id)!; const dEl = document.getElementById('md-' + s.id)!;
+        vEl.textContent = fmt(s.v, s.fmt);
+        const dp = ((s.v - s.base) / s.base) * 100;
+        dEl.textContent = (dp >= 0 ? '▲ ' : '▼ ') + Math.abs(dp).toFixed(1) + '%';
+        dEl.className = 'm-delta ' + (dp >= 0 ? 'up' : 'down');
+      });
+    }
+    tickMetrics();
+    if (!reduce) setInterval(tickMetrics, 1600);
+
+    const EVENTS = [
+      { tag: 'ops', msg: 'CORE scaled +2 replicas , load 71% → 58%' },
+      { tag: 'sec', msg: 'SEC burned 3 stale session tokens' },
+      { tag: 'info', msg: 'RELAY rerouted around DOCK-09 (latency dip)' },
+      { tag: 'ops', msg: 'VAULT key rotated , 0 downtime' },
+      { tag: 'info', msg: 'GATE egress spike contained, throttle engaged' },
+      { tag: 'sec', msg: 'Anomaly cleared on TELEMETRY channel' },
+      { tag: 'ops', msg: 'Rollback armed for the 23:40 deploy' },
+      { tag: 'info', msg: 'CORE p99 settled to 42ms after warm-up' },
+      { tag: 'sec', msg: 'New shadow ID issued, scoped to OPS' },
+    ];
+    const log = document.getElementById('streamLog')!;
+    let ei = 0;
+    function pushEvent() {
+      const e = EVENTS[ei % EVENTS.length]; ei++;
+      const t = new Date().toLocaleTimeString('en-GB');
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="sl-time">${t}</span><span class="sl-tag ${e.tag}">${e.tag}</span><span class="sl-msg">${e.msg}</span>`;
+      log.prepend(li);
+      while (log.children.length > 9) log.removeChild(log.lastChild!);
+    }
+    for (let i = 0; i < 5; i++) pushEvent();
+    if (!reduce) setInterval(pushEvent, 3200);
+  </script>
+</NeonLayout>

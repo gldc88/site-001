@@ -1,0 +1,103 @@
+---
+/**
+ * NightwatchLayout , shared shell for NIGHTWATCH (website24, round 2). Dark, surveillance/locksmith
+ * aesthetic (near-black + yellow). Scanline backdrop, nav, footer, a global #toast (window.showToast).
+ * Props: title, description, active.
+ */
+import '../styles/global.css';
+import { BRAND, PHONE, TEL, EMAIL, SERVICE_AREA } from '../data/nightwatch';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'services', label: 'Services', href: '/website24/services' },
+  { key: 'scenarios', label: 'Scenarios', href: '/website24/scenarios' },
+  { key: 'loadout', label: 'Loadout', href: '/website24/loadout' },
+];
+const YEAR = new Date().getFullYear();
+const back = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+      .scanline { animation: scan 9s linear infinite; }
+      @media (prefers-reduced-motion: reduce) { .scanline { animation: none; opacity: 0; } }
+    </style>
+  </head>
+
+  <body class="bg-[#050505] text-zinc-300 font-sans antialiased selection:bg-yellow-500/30 selection:text-white overflow-x-hidden">
+    <!-- ambient backdrop -->
+    <div class="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute inset-0 opacity-[0.04]" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 46px 46px;"></div>
+      <div class="scanline absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-transparent via-yellow-500/[0.05] to-transparent"></div>
+      <div class="absolute inset-0" style="background: radial-gradient(120% 80% at 50% -10%, rgba(234,179,8,0.07), transparent 60%);"></div>
+    </div>
+
+    <header class="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#050505]/85 backdrop-blur-md">
+      <div class="mx-auto max-w-[1800px] flex items-center justify-between px-6 lg:px-10 py-4">
+        <div class="flex items-center gap-5">
+          <a href="/" class="group hidden sm:flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-zinc-500 hover:text-yellow-500 transition-colors"><span class="group-hover:-translate-x-0.5 transition-transform"><Fragment set:html={back} /></span> Index</a>
+          <div class="hidden sm:block h-4 w-px bg-white/10"></div>
+          <a href="/website24" class="flex items-center gap-2.5">
+            <span class="grid h-7 w-7 place-items-center rounded bg-yellow-500 text-black text-xs font-black">N</span>
+            <span class="font-black tracking-[0.2em] text-white text-sm">{BRAND}</span>
+          </a>
+        </div>
+        <nav class="hidden lg:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-zinc-500">
+          {NAV.map((i) => <a href={i.href} class={`hover:text-yellow-500 transition-colors ${active === i.key ? 'text-yellow-500' : ''}`}>{i.label}</a>)}
+          <span class="flex items-center gap-2 text-emerald-500"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 24/7</span>
+        </nav>
+        <a href={`tel:${TEL}`} class="rounded bg-yellow-500 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors">{PHONE}</a>
+      </div>
+    </header>
+
+    <main class="relative z-10 pt-16" id="top"><slot /></main>
+
+    <footer class="relative z-10 border-t border-white/5 bg-[#080808]">
+      <div class="mx-auto max-w-[1800px] px-6 lg:px-10 py-14 grid md:grid-cols-[2fr_1fr_1fr] gap-10">
+        <div>
+          <div class="flex items-center gap-2.5 mb-4"><span class="grid h-7 w-7 place-items-center rounded bg-yellow-500 text-black text-xs font-black">N</span><span class="font-black tracking-[0.2em] text-white text-sm">{BRAND}</span></div>
+          <p class="text-sm text-zinc-500 max-w-xs">24/7 emergency locksmith dispatch. Non-destructive entry by default. {SERVICE_AREA}. Fictional brand, demonstration only.</p>
+        </div>
+        <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-500 flex flex-col gap-3">
+          <a href="/website24/services" class="hover:text-yellow-500">Services</a>
+          <a href="/website24/scenarios" class="hover:text-yellow-500">Scenarios</a>
+          <a href="/website24/loadout" class="hover:text-yellow-500">Loadout</a>
+          <a href="/website24/callback" class="hover:text-yellow-500">Request callback</a>
+        </div>
+        <div class="text-[11px] font-bold uppercase tracking-widest text-zinc-500 flex flex-col gap-3">
+          <a href={`tel:${TEL}`} class="hover:text-yellow-500">{PHONE}</a>
+          <a href={`mailto:${EMAIL}`} class="hover:text-yellow-500 normal-case tracking-normal">{EMAIL}</a>
+          <a href="/" class="hover:text-yellow-500">Return to index</a>
+        </div>
+      </div>
+      <div class="border-t border-white/5 py-5 text-center text-[10px] font-mono uppercase tracking-widest text-zinc-600">© {YEAR} {BRAND} · non-destructive entry · demonstration only</div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[90] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none rounded-lg bg-zinc-900 border border-yellow-500/40 text-zinc-100 px-6 py-4 text-sm font-medium shadow-[0_0_40px_rgba(234,179,8,0.2)] transition-all duration-500" style="max-width:min(92vw,460px)"></div>
+
+    <script>
+      const toastEl = document.getElementById('toast');
+      let tT = 0;
+      (window as any).showToast = (html: string) => {
+        if (!toastEl) return;
+        toastEl.innerHTML = html; toastEl.style.opacity = '1'; toastEl.style.transform = 'translate(-50%,0)';
+        window.clearTimeout(tT); tT = window.setTimeout(() => { toastEl.style.opacity = '0'; toastEl.style.transform = 'translate(-50%,24px)'; }, 5200);
+      };
+      const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => obs.observe(el));
+    </script>
+    <style is:global>
+      .reveal-on-scroll { opacity: 0; transform: translateY(18px); transition: all 0.7s cubic-bezier(0.2,0.8,0.2,1); }
+      .reveal-visible { opacity: 1; transform: translateY(0); }
+    </style>
+  </body>
+</html>

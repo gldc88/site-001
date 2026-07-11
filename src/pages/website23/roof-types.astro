@@ -1,0 +1,150 @@
+---
+/**
+ * RIDGELINE ROOFING , Roof Types (website23, round 2). Each roof type fails differently.
+ */
+import RidgelineLayout from '../../layouts/RidgelineLayout.astro';
+import { ROOF_TYPES } from '../../data/ridgeline';
+
+const DETAIL: Record<string, { fails: string; we: string }> = {
+  'Tile & Slate': { fails: 'Slipped or cracked units, perished underlayment, and bad flashing at hips and abutments.', we: 'Match the unit, refit correctly, and rebuild the flashing detail in lead so it stops recurring.' },
+  'Asphalt Shingles': { fails: 'Lifting tabs, nail pops, and trapped heat from poor ventilation shortening the deck life.', we: 'Re-lay with correct nailing and laps, restore ventilation, and renew the affected underlayment.' },
+  'Metal Roofing': { fails: 'Backed-out fasteners, failed laps, and movement cracking at penetrations.', we: 'Re-fix with the right gaskets, re-seal laps, and detail penetrations so thermal movement is handled.' },
+  'Flat Membrane': { fails: 'Open seams, ponding, blocked drains, and lifting upstands at edges and penetrations.', we: 'Reinforce seams, correct falls where possible, clear drainage, and re-terminate edges and upstands.' },
+};
+---
+
+<RidgelineLayout title="Roof Types | Ridgeline Roofing" description="Tile and slate, asphalt shingles, metal roofing, and flat membrane , how each fails and how we repair it." active="roof-types">
+  <section class="mx-auto max-w-7xl px-6 pt-16 pb-12">
+    <span class="text-amber-600 font-bold uppercase tracking-widest text-xs block mb-3">Every roof, its own rules</span>
+    <h1 class="text-5xl lg:text-7xl font-black tracking-tighter leading-[0.92]">Roof types.</h1>
+    <p class="mt-6 max-w-lg text-base text-slate-600">Tile, shingle, metal, or flat membrane , each has its own failure points, so each gets its own repair approach.</p>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 pb-20 grid gap-6 md:grid-cols-2">
+    {ROOF_TYPES.map((r, i) => (
+      <div class="hover-lift reveal-on-scroll rounded-xl border border-stone-200 bg-white p-8">
+        <div class="flex items-center gap-3 mb-4"><span class="grid h-9 w-9 place-items-center rounded bg-slate-900 text-amber-400 font-black">{String(i + 1).padStart(2, '0')}</span><h2 class="text-2xl font-black tracking-tight">{r.name}</h2></div>
+        <p class="text-sm text-slate-600 mb-5">{r.note}</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="rounded-lg bg-stone-50 border border-stone-200 p-4"><div class="text-[10px] font-mono uppercase tracking-widest text-rose-500 mb-1.5">Where it fails</div><p class="text-sm text-slate-600">{DETAIL[r.name]?.fails}</p></div>
+          <div class="rounded-lg bg-stone-50 border border-stone-200 p-4"><div class="text-[10px] font-mono uppercase tracking-widest text-emerald-600 mb-1.5">How we fix it</div><p class="text-sm text-slate-600">{DETAIL[r.name]?.we}</p></div>
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 pb-20"><div class="flex justify-center"><a href="/website23/contact" class="rounded-sm bg-slate-900 px-10 py-5 text-xs font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors">Request an estimate for your roof</a></div></section>
+
+  <section class="section" id="yearwheel">
+    <div class="yw-head">
+      <span class="kicker">The Roof Year</span>
+      <h2>Twelve months, one roof.</h2>
+      <p>Pick your roof and read its year. The ring lights the months that matter ,
+        and the pin shows where we are right now.</p>
+    </div>
+    <div class="yw-stage">
+      <div class="yw-ring-wrap">
+        <svg viewBox="0 0 300 300" class="yw-svg" aria-hidden="true">
+          <circle cx="150" cy="150" r="118" fill="none" stroke="rgba(120, 100, 70, 0.25)" stroke-width="26" />
+          <g id="ywArcs"></g>
+          <line id="ywPin" x1="150" y1="150" x2="150" y2="26" stroke="rgba(60, 45, 25, 0.85)" stroke-width="2.5" style="transform-origin: 150px 150px;" />
+          <circle cx="150" cy="150" r="5" fill="rgba(60, 45, 25, 0.85)" />
+        </svg>
+        <span class="yw-month" data-m="0" style="left:50.0%; top:10.7%;">Jan</span>
+        <span class="yw-month" data-m="1" style="left:69.6%; top:16.0%;">Feb</span>
+        <span class="yw-month" data-m="2" style="left:84.0%; top:30.4%;">Mar</span>
+        <span class="yw-month" data-m="3" style="left:89.3%; top:50.0%;">Apr</span>
+        <span class="yw-month" data-m="4" style="left:84.0%; top:69.6%;">May</span>
+        <span class="yw-month" data-m="5" style="left:69.6%; top:84.0%;">Jun</span>
+        <span class="yw-month" data-m="6" style="left:50.0%; top:89.3%;">Jul</span>
+        <span class="yw-month" data-m="7" style="left:30.3%; top:84.0%;">Aug</span>
+        <span class="yw-month" data-m="8" style="left:16.0%; top:69.7%;">Sep</span>
+        <span class="yw-month" data-m="9" style="left:10.7%; top:50.0%;">Oct</span>
+        <span class="yw-month" data-m="10" style="left:16.0%; top:30.3%;">Nov</span>
+        <span class="yw-month" data-m="11" style="left:30.3%; top:16.0%;">Dec</span>
+      </div>
+      <div class="yw-side">
+        <div class="yw-types" role="radiogroup" aria-label="Choose your roof type">
+          <button type="button" class="yw-type" data-roof="slate" role="radio" aria-checked="false">Slate</button>
+          <button type="button" class="yw-type" data-roof="tile" role="radio" aria-checked="false">Clay tile</button>
+          <button type="button" class="yw-type" data-roof="flat" role="radio" aria-checked="false">Flat / EPDM</button>
+          <button type="button" class="yw-type" data-roof="thatch" role="radio" aria-checked="false">Thatch</button>
+        </div>
+        <p class="yw-now" id="ywNow" aria-live="polite">Pick a roof to read its year.</p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #yearwheel .yw-head { max-width: 620px; margin-bottom: 26px; }
+    #yearwheel h2 { margin: 10px 0 12px; }
+    .yw-stage { display: grid; grid-template-columns: auto 1fr; gap: clamp(24px,5vw,60px); align-items: center; }
+    .yw-ring-wrap { position: relative; width: min(340px, 80vw); }
+    .yw-svg { width: 100%; height: auto; display: block; }
+    .yw-month { position: absolute; transform: translate(-50%, -50%); font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; color: rgba(90, 75, 50, 0.75); pointer-events: none; }
+    .yw-month.hot { color: #7a4a12; font-weight: 700; }
+    .yw-types { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 340px; }
+    .yw-type { font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; padding: 10px 12px; border: 1px solid rgba(120, 100, 70, 0.35); border-radius: 4px; background: rgba(255, 252, 246, 0.7); cursor: pointer; transition: background .3s, border-color .3s; }
+    .yw-type[aria-checked='true'] { background: rgba(200, 150, 60, 0.2); border-color: rgba(160, 110, 30, 0.7); }
+    .yw-type:focus-visible { outline: 2px solid rgba(160, 110, 30, 0.8); outline-offset: 2px; }
+    .yw-now { margin-top: 18px; font-size: 14px; line-height: 1.65; max-width: 380px; min-height: 66px; }
+    @media (max-width: 760px) { .yw-stage { grid-template-columns: 1fr; } .yw-ring-wrap { margin: 0 auto; } }
+  </style>
+
+  <script>
+    /* R3 "The Roof Year" , cyclische onderhoudsplanning op de echte kalender. */
+    (() => {
+      type Task = { months: number[]; label: string };
+      const PLANS: Record<string, Task[]> = {
+        slate: [
+          { months: [2], label: 'March: walk the ridge after the storm season , slipped slates show themselves now.' },
+          { months: [9], label: 'October: clear the valleys and check flashings before the frost gets under them.' },
+        ],
+        tile: [
+          { months: [2, 3], label: 'Spring: moss treatment before the growth season locks in.' },
+          { months: [8, 9], label: 'Early autumn: re-bed loose ridge tiles while the mortar still cures warm.' },
+        ],
+        flat: [
+          { months: [4], label: 'May: inspect seams and outlets , summer heat will open what winter loosened.' },
+          { months: [10], label: 'November: clear outlets before the leaves dam the drainage.' },
+        ],
+        thatch: [
+          { months: [3, 4], label: 'Spring: check the ridge wrap and netting after the wet months.' },
+          { months: [8], label: 'September: dress the surface before the damp sets in , thatch forgives nothing late.' },
+        ],
+      };
+      const arcs = document.getElementById('ywArcs');
+      const pin = document.getElementById('ywPin');
+      const now = document.getElementById('ywNow');
+      const types = Array.from(document.querySelectorAll<HTMLButtonElement>('.yw-type'));
+      const monthEls = Array.from(document.querySelectorAll<HTMLElement>('.yw-month'));
+      if (!arcs || !now || !types.length) return;
+      const KEY = 'ridgeline-roof';
+      const thisMonth = new Date().getMonth();
+      if (pin) pin.style.transform = `rotate(${(thisMonth / 12) * 360 + 15}deg)`;
+
+      const arcPath = (m: number) => {
+        const a0 = (m / 12) * 2 * Math.PI - Math.PI / 2;
+        const a1 = ((m + 1) / 12) * 2 * Math.PI - Math.PI / 2;
+        const r = 118;
+        const x0 = 150 + r * Math.cos(a0), y0 = 150 + r * Math.sin(a0);
+        const x1 = 150 + r * Math.cos(a1), y1 = 150 + r * Math.sin(a1);
+        return `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${r} ${r} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+      };
+      const apply = (roof: string) => {
+        const plan = PLANS[roof] || [];
+        const hot = new Set(plan.flatMap((t) => t.months));
+        arcs.innerHTML = [...hot].map((m) => `<path d="${arcPath(m)}" fill="none" stroke="rgba(200, 130, 30, 0.75)" stroke-width="26" stroke-linecap="butt" />`).join('');
+        monthEls.forEach((el) => el.classList.toggle('hot', hot.has(Number(el.dataset.m))));
+        types.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.roof === roof)));
+        const current = plan.find((t) => t.months.includes(thisMonth));
+        now.textContent = current
+          ? `This month on your roof , ${current.label}`
+          : `Nothing urgent this month for a ${roof} roof. The ring shows when we should meet.`;
+        try { localStorage.setItem(KEY, roof); } catch { /* private mode */ }
+      };
+      types.forEach((b) => b.addEventListener('click', () => apply(b.dataset.roof || 'tile')));
+      try { const saved = localStorage.getItem(KEY); if (saved) apply(saved); } catch { /* private mode */ }
+    })();
+  </script>
+</RidgelineLayout>

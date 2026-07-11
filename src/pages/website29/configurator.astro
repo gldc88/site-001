@@ -1,0 +1,17 @@
+---
+/**
+ * CALIBER STUDIO , Configurator (website29, round 2). The live watch builder.
+ */
+import CaliberLayout from '../../layouts/CaliberLayout.astro';
+import Configurator from '../../components/caliber/Configurator.astro';
+---
+
+<CaliberLayout title="Configurator | Caliber Studio" description="Configure your bespoke watch , case, dial, hands, strap , with a live preview, estimate, and build ticket." active="configurator">
+  <section class="mx-auto max-w-[1100px] px-6 pt-14 pb-8">
+    <div class="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] mb-2"><span>Commission specification</span><span>Ref. generator</span></div>
+    <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.02]">Configure <span class="accent">yours.</span></h1>
+    <p class="mt-5 max-w-xl text-[var(--mut)] text-sm leading-relaxed">Pick each element and watch the piece update live. The estimate and reference code build as you go , then take the ticket to commission.</p>
+  </section>
+
+  <section class="mx-auto max-w-[1100px] px-6 pb-20"><Configurator /></section>
+</CaliberLayout>

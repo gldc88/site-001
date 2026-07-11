@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local publication/support files
+.visual-qa/
+_originals/
+_r3-plans/
+OPEN SITE (Claude).bat
+SECURITY-SCAN-*.md

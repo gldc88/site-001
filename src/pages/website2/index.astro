@@ -1,0 +1,248 @@
+---
+/**
+ * NOCTURNE , Home (website2, round 2 multi-page).
+ * SplitText hero over the persistent WebGL night scene, booking teaser, ethos,
+ * teasers that link to Suites / Kitchen / Bathhouse / Rituals, pinned neon gallery.
+ */
+import NocturneLayout from '../../layouts/NocturneLayout.astro';
+
+const CITYLINE = 'Tokyo · Minato · After-Dark Address';
+const SUITES = [
+  { n: '01', title: 'Atrium Suite', line: 'Stone warmth, soft shadow, a room that lowers your pulse.', img: '/website2/room-night.jpg' },
+  { n: '02', title: 'Neon Corner', line: 'Glass edge, city glow, blackout calm when you want it.', img: '/website2/neon2.jpg' },
+  { n: '03', title: 'Lantern Room', line: 'Warm hall, low light, a long quiet at the end of it.', img: '/website2/room-corner.jpg' },
+];
+const GALLERY = ['/website2/neon1.jpg', '/website2/neon3.jpg', '/website2/room-corner.jpg', '/website2/neon2.jpg', '/website2/room-night.jpg'];
+const RITUALS = [
+  { title: 'Lantern Tea, Late', line: 'Warm cup, quiet hands, slow breathing.' },
+  { title: 'Rooftop Rain Walk', line: 'Umbrella, skyline, your thoughts finally turning down.' },
+  { title: 'Private Listening Room', line: 'Vinyl, velvet, and a drink that arrives before you ask.' },
+];
+const ROOM_TYPES = ['Atrium Suite', 'Neon Corner', 'Lantern Room', 'Signature Penthouse'];
+---
+
+<NocturneLayout title="Nocturne Hotel | Tokyo After Dark" description="Nocturne , a Tokyo after-dark hotel. Neon outside, hush within. Suites, kitchen, bathhouse and quiet rituals in Minato." active="">
+  <section class="hero" id="hero">
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <span class="overline c" id="heroOver">{CITYLINE}</span>
+    <h1 class="hero-title" id="heroTitle">Nocturne</h1>
+    <p class="hero-tag" id="heroTag">Neon outside, hush within.</p>
+    <div class="hero-scroll" id="heroScroll" aria-hidden="true"><div class="rail"></div><span>Scroll</span></div>
+  </section>
+
+  <div class="booking-wrap" id="booking">
+    <form class="booking" data-reveal="up" id="bookingForm" action="/website2/reserve" method="get">
+      <div class="bg-grp"><label for="ci">Check-in</label><input type="date" id="ci" name="ci" /></div>
+      <div class="bg-grp"><label for="co">Check-out</label><input type="date" id="co" name="co" /></div>
+      <div class="bg-grp"><label for="rt">Room</label><select id="rt" name="room">{ROOM_TYPES.map((r) => <option>{r}</option>)}</select></div>
+      <div class="bg-grp"><label for="gs">Guests</label><select id="gs" name="guests"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+      <button class="cta" type="submit">Check Availability</button>
+    </form>
+  </div>
+
+  <section class="section">
+    <p class="lede" id="ethos" data-reveal="up">
+      Step in from the glow. The city keeps flashing behind the glass while the room goes quiet
+      around you , <em>warm stone, low light, and the kind of calm you can taste</em>.
+    </p>
+  </section>
+
+  <section class="section" id="suites">
+    <div class="sec-head">
+      <div><span class="overline" data-reveal="fade">Accommodations</span><h2 data-reveal="up">Suites &amp; Residences</h2></div>
+      <p data-reveal="up">Four ways to disappear above Minato. <a class="inline-link" href="/website2/suites">All suites →</a></p>
+    </div>
+    <div class="suites">
+      {SUITES.map((s) => (
+        <a href="/website2/suites" class="suite panel">
+          <div class="n" data-reveal="fade">{s.n}</div>
+          <div class="info">
+            <h3 data-reveal="up">{s.title}</h3>
+            <p data-reveal="up">{s.line}</p>
+            <span class="more" data-reveal="up"><span class="arw"></span> View suite</span>
+          </div>
+          <div class="fig" data-reveal="scale"><img src={s.img} alt={s.title} loading="lazy" decoding="async" /></div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="dining">
+    <div class="feature">
+      <div class="feature-media"><img src="/website2/kitchen.jpg" alt="Charcoal at the counter" loading="lazy" decoding="async" data-parallax="0.16" /></div>
+      <div class="feature-body">
+        <span class="overline" data-reveal="fade">The Kitchen</span>
+        <h2 data-reveal="up">Counter, Fire, Silence</h2>
+        <p data-reveal="up">An eight-seat counter where the chef works in front of you. Charcoal, citrus, sea, and a pour chosen the moment you sit. Conversations stay low; the food does the talking.</p>
+        <a href="/website2/kitchen" class="btn-ghost" data-reveal="up" style="margin-top:32px;">Enter the Kitchen</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="spa">
+    <div class="feature flip">
+      <div class="feature-media"><img src="/website2/onsen.jpg" alt="Bathhouse water in low light" loading="lazy" decoding="async" data-parallax="0.16" /></div>
+      <div class="feature-body">
+        <span class="overline" data-reveal="fade">The Bathhouse</span>
+        <h2 data-reveal="up">Heat, Water, Hush</h2>
+        <p data-reveal="up">Descend below the street into steam and shadow. A thermal circuit, cold plunge, and a quiet room where the only schedule is your own breathing.</p>
+        <a href="/website2/bathhouse" class="btn-ghost" data-reveal="up" style="margin-top:32px;">Descend to the Bathhouse</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="experiences">
+    <div class="sec-head">
+      <div><span class="overline" data-reveal="fade">Rituals</span><h2 data-reveal="up">Small, Deliberate Nights</h2></div>
+      <p data-reveal="up">Booked quietly at the desk. <a class="inline-link" href="/website2/rituals">Compose a night →</a></p>
+    </div>
+    <div class="exp-grid">
+      {RITUALS.map((e, i) => (
+        <div class="exp panel">
+          <span class="idx" data-reveal="fade">{String(i + 1).padStart(2, '0')}</span>
+          <div><h3 data-reveal="up">{e.title}</h3><p data-reveal="up">{e.line}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="gallery" id="gallery">
+    <div class="gal-track">
+      <div class="gal-intro">
+        <span class="overline cyan">Frames</span>
+        <h2>The city,<br />after midnight.</h2>
+      </div>
+      {GALLERY.map((src, i) => (
+        <div class="gal-fig"><img src={src} alt={`Nocturne frame ${i + 1}`} loading="lazy" decoding="async" /></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section location" id="location">
+    <span class="overline c" data-reveal="fade" style="display:flex; justify-content:center;">Find Us</span>
+    <p class="addr" data-reveal="up">Nocturne stands quietly in <span>Minato, Tokyo</span> ,<br />a black door, a warm lobby, the city humming outside.</p>
+    <a href="/website2/reserve" class="btn-cta" data-reveal="up" style="margin-top:36px;">Reserve a Night</a>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; }
+    .hero-scrim { position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 50% at 50% 52%, rgba(6,6,10,0.55), transparent 72%); }
+    .hero .overline { opacity: 0; transform: translateY(8px); }
+    .hero-title { font-size: clamp(2.8rem, 11.5vw, 9.5rem); letter-spacing: 0.04em; color: #fff; text-shadow: 0 0 60px rgba(25,230,255,0.25), 0 0 120px rgba(255,61,240,0.15); margin: 22px 0; white-space: nowrap; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-tag { font-family: var(--head); font-style: italic; font-size: clamp(1.1rem, 2.4vw, 1.9rem); color: var(--ember-soft); opacity: 0; }
+    .hero-scroll { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0; }
+    .hero-scroll .rail { width: 1px; height: 46px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+    .hero-scroll .rail::after { content: ''; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: var(--cyan); animation: drop 2.4s var(--ease) infinite; }
+    .hero-scroll span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+
+    .booking-wrap { display: flex; justify-content: center; padding: 0 18px; margin-top: -36px; position: relative; z-index: 20; }
+    .booking { width: 100%; max-width: 1120px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px; padding: 24px clamp(20px, 3vw, 40px); background: var(--panel-solid); border: 1px solid var(--hair); border-radius: 14px; backdrop-filter: blur(20px); box-shadow: 0 30px 90px -30px rgba(0,0,0,0.8); }
+    .bg-grp { display: flex; flex-direction: column; gap: 7px; flex: 1; min-width: 150px; }
+    .bg-grp label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .bg-grp input, .bg-grp select { background: transparent; border: none; border-bottom: 1px solid var(--hair); color: #fff; font-family: var(--head); font-size: 18px; padding: 5px 0; outline: none; transition: border-color 0.3s; cursor: pointer; }
+    .bg-grp input:focus, .bg-grp select:focus { border-bottom-color: var(--ember); }
+    .bg-grp select option { background: #0c0b10; }
+    .bg-grp input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(2) hue-rotate(5deg); opacity: 0.5; }
+    .booking .cta { padding: 15px 34px; border-radius: 4px; }
+
+    .suites { display: grid; gap: 22px; }
+    .suite { display: grid; grid-template-columns: 80px 1fr 1.1fr; align-items: center; gap: clamp(20px, 4vw, 60px); padding: 30px; border-radius: 18px; min-width: 0; }
+    .suite .n { font-family: var(--head); font-size: 20px; color: var(--faint); }
+    .suite .info { min-width: 0; }
+    .suite .fig { overflow: hidden; border-radius: 12px; aspect-ratio: 16 / 10; min-width: 0; }
+    .suite .fig img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.84) saturate(1.05); transition: transform 1.3s var(--ease), filter 1.3s var(--ease); }
+    .suite:hover .fig img { transform: scale(1.06); filter: brightness(1) saturate(1.15); }
+    .suite h3 { font-size: clamp(1.7rem, 2.6vw, 2.4rem); color: #fff; transition: color 0.4s; }
+    .suite:hover h3 { color: var(--ember); }
+    .suite p { color: var(--muted); margin-top: 10px; max-width: 36ch; }
+    .suite .more { display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ember); }
+    .suite .more .arw { width: 24px; height: 1px; background: var(--ember); transition: width 0.4s var(--ease); }
+    .suite:hover .more .arw { width: 42px; }
+
+    .feature { position: relative; min-height: 80vh; display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; overflow: hidden; border-radius: 24px; border: 1px solid var(--hair); }
+    .feature.flip { direction: rtl; }
+    .feature.flip > * { direction: ltr; }
+    .feature-media { position: relative; overflow: hidden; min-width: 0; }
+    .feature-media img { position: absolute; inset: -12% 0; width: 100%; height: 124%; object-fit: cover; filter: brightness(0.72) saturate(1.1); will-change: transform; }
+    .feature-body { display: flex; flex-direction: column; justify-content: center; padding: clamp(40px, 6vw, 90px); background: var(--panel); backdrop-filter: blur(14px); }
+    .feature-body h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); color: #fff; margin-top: 16px; }
+    .feature-body p { color: var(--muted); margin-top: 22px; max-width: 44ch; line-height: 1.7; }
+
+    .exp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .exp { padding: 38px 32px; border-radius: 18px; min-height: 240px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.5s var(--ease), border-color 0.5s; }
+    .exp:hover { transform: translateY(-6px); border-color: var(--hair-gold); }
+    .exp .idx { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--cyan); }
+    .exp h3 { font-size: 1.7rem; color: #fff; }
+    .exp p { color: var(--muted); margin-top: 12px; }
+
+    .gallery { position: relative; overflow: hidden; }
+    .gal-track { display: flex; gap: 22px; padding: 0 clamp(20px, 5vw, 56px); width: max-content; align-items: center; height: 100svh; }
+    .gal-intro { flex: 0 0 auto; width: min(70vw, 460px); }
+    .gal-intro h2 { font-size: clamp(2.2rem, 5vw, 4rem); color: #fff; margin-top: 14px; }
+    .gal-fig { flex: 0 0 auto; width: clamp(280px, 38vw, 520px); height: 64vh; overflow: hidden; border-radius: 16px; border: 1px solid var(--hair); }
+    .gal-fig img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.82) saturate(1.1); transition: transform 1s var(--ease); }
+    .gal-fig:hover img { transform: scale(1.05); }
+
+    .location { text-align: center; }
+    .location .addr { font-family: var(--head); font-size: clamp(1.6rem, 3vw, 2.6rem); color: #efe9dd; margin-top: 18px; line-height: 1.5; }
+    .location .addr span { color: var(--ember); }
+
+    @media (max-width: 1024px) {
+      .suite { grid-template-columns: 50px 1fr; }
+      .suite .fig { grid-column: 1 / -1; margin-top: 16px; }
+      .feature { grid-template-columns: 1fr; }
+      .feature.flip { direction: ltr; }
+      .feature-media { min-height: 48vh; }
+      .exp-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) { .suite { grid-template-columns: 1fr; } .suite .n { display: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .hero .overline, .hero-tag, .hero-scroll { opacity: 1 !important; transform: none !important; }
+      .hero-scroll .rail::after { animation: none; }
+    }
+  </style>
+
+  <script>
+    import { gsap, ScrollTrigger, SplitText } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const ci = document.getElementById('ci');
+    const co = document.getElementById('co');
+    if (ci instanceof HTMLInputElement && co instanceof HTMLInputElement) {
+      const t = new Date(); const n = new Date(); n.setDate(n.getDate() + 2);
+      ci.valueAsDate = t; co.valueAsDate = n;
+    }
+
+    const heroTitle = document.getElementById('heroTitle');
+    const heroOver = document.getElementById('heroOver');
+    const heroTag = document.getElementById('heroTag');
+    const heroScroll = document.getElementById('heroScroll');
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'words,chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (heroOver) tl.to(heroOver, { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 130, opacity: 0, stagger: 0.045, duration: 1 }, 0.1);
+      if (heroTag) tl.to(heroTag, { opacity: 1, duration: 0.8 }, 0.7);
+      if (heroScroll) tl.to(heroScroll, { opacity: 1, duration: 0.8 }, 0.9);
+    } else {
+      [heroOver, heroTag, heroScroll].forEach((el) => el && (el.style.opacity = '1'));
+    }
+
+    if (!reduce) {
+      const ethos = document.getElementById('ethos');
+      if (ethos) {
+        const s = new SplitText(ethos, { type: 'words', wordsClass: 'word' });
+        gsap.set(s.words, { opacity: 0.16 });
+        gsap.to(s.words, { opacity: 1, stagger: 0.05, ease: 'none', scrollTrigger: { trigger: ethos, start: 'top 80%', end: 'top 32%', scrub: true } });
+      }
+      const track = document.querySelector<HTMLElement>('.gal-track');
+      const gal = document.querySelector<HTMLElement>('.gallery');
+      if (track && gal) {
+        const dist = () => track.scrollWidth - window.innerWidth;
+        gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: gal, start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true } });
+      }
+      ScrollTrigger.refresh();
+    }
+  </script>
+</NocturneLayout>

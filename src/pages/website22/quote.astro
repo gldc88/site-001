@@ -1,0 +1,86 @@
+---
+/**
+ * CLEARSTREAM , Quote / Dispatch (website22, round 2). The dispatch request -> reference + toast.
+ */
+import ClearstreamLayout from '../../layouts/ClearstreamLayout.astro';
+
+const SERVICES = ['Driveway Deep Clean', 'Soft Wash Facade', 'Roof Moss Treatment', 'Commercial / Fleet', 'Graffiti Removal'];
+const SURFACES = ['Concrete', 'Block paving', 'Brick / masonry', 'Render', 'Tiled roof', 'Other'];
+const URGENCY = ['Standard (within 48h)', 'This week', 'Urgent (commercial, 4h)'];
+---
+
+<ClearstreamLayout title="Request Dispatch | Clearstream" description="Request a Clearstream dispatch. Tell us the surface and the problem; we confirm pressure, chemistry, and a slot.">
+  <section class="pt-36 pb-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-20 items-start">
+      <div>
+        <span class="text-[10px] font-mono uppercase tracking-widest text-blue-600">// Dispatch</span>
+        <h1 class="text-6xl lg:text-8xl font-black tracking-tighter leading-[0.85] mt-4">Request <br />dispatch.</h1>
+        <p class="max-w-md text-sm font-medium leading-relaxed mt-8">Tell us the surface and the problem. We confirm the pressure, the chemistry, and a slot , fast, with a fixed price before we roll.</p>
+        <div class="mt-12 grid grid-cols-3 gap-px bg-black/10 border-2 border-black max-w-md">
+          <div class="bg-[#F0F2F5] p-5"><div class="text-3xl font-black tracking-tighter">4h</div><span class="text-[9px] font-mono uppercase tracking-widest text-gray-500">urgent</span></div>
+          <div class="bg-[#F0F2F5] p-5"><div class="text-3xl font-black tracking-tighter">Free</div><span class="text-[9px] font-mono uppercase tracking-widest text-gray-500">quote</span></div>
+          <div class="bg-[#F0F2F5] p-5"><div class="text-3xl font-black tracking-tighter">Fixed</div><span class="text-[9px] font-mono uppercase tracking-widest text-gray-500">price</span></div>
+        </div>
+      </div>
+
+      <form id="quoteForm" class="bg-white border-2 border-black p-8 lg:p-10 shadow-[12px_12px_0_0_#000]" novalidate>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <label class="flex flex-col gap-2"><span class="text-[10px] font-mono uppercase tracking-widest">Service</span>
+            <select name="service" class="border-2 border-black px-4 py-3 text-sm font-medium bg-white outline-none focus:border-blue-600">{SERVICES.map((s) => <option>{s}</option>)}</select></label>
+          <label class="flex flex-col gap-2"><span class="text-[10px] font-mono uppercase tracking-widest">Surface</span>
+            <select name="surface" class="border-2 border-black px-4 py-3 text-sm font-medium bg-white outline-none focus:border-blue-600">{SURFACES.map((s) => <option>{s}</option>)}</select></label>
+        </div>
+        <label class="flex flex-col gap-2 mt-5"><span class="text-[10px] font-mono uppercase tracking-widest">Urgency</span>
+          <select name="urgency" class="border-2 border-black px-4 py-3 text-sm font-medium bg-white outline-none focus:border-blue-600">{URGENCY.map((u) => <option>{u}</option>)}</select></label>
+        <div class="grid sm:grid-cols-2 gap-5 mt-5">
+          <label class="flex flex-col gap-2"><span class="text-[10px] font-mono uppercase tracking-widest">Name</span>
+            <input name="name" type="text" class="border-2 border-black px-4 py-3 text-sm font-medium outline-none focus:border-blue-600" /><span data-err="name" class="text-[11px] text-red-600 font-mono"></span></label>
+          <label class="flex flex-col gap-2"><span class="text-[10px] font-mono uppercase tracking-widest">Phone or email</span>
+            <input name="contact" type="text" class="border-2 border-black px-4 py-3 text-sm font-medium outline-none focus:border-blue-600" /><span data-err="contact" class="text-[11px] text-red-600 font-mono"></span></label>
+        </div>
+        <label class="flex flex-col gap-2 mt-5"><span class="text-[10px] font-mono uppercase tracking-widest">Postcode / address</span>
+          <input name="address" type="text" class="border-2 border-black px-4 py-3 text-sm font-medium outline-none focus:border-blue-600" placeholder="e.g. 1011 AB" /><span data-err="address" class="text-[11px] text-red-600 font-mono"></span></label>
+        <button type="submit" class="w-full mt-7 bg-blue-600 hover:bg-black text-white py-5 font-black uppercase tracking-[0.2em] text-xs transition-colors clip-button">Send request</button>
+        <p id="qStatus" class="mt-4 text-[11px] font-mono uppercase tracking-widest text-gray-500 text-center">Fixed price before we roll · no obligation</p>
+        <p class="nb-ref" id="nbRef" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    /* R3 Nozzle Bench: de gekozen combinatie reist mee naar de offerte. */
+    try {
+      const b = JSON.parse(localStorage.getItem('clearstream-bench') || 'null');
+      if (b && b.surf) {
+        const el = document.getElementById('nbRef');
+        if (el) { el.textContent = `From the bench: ${b.psi} PSI on ${b.surf} , ${b.safe ? 'a safe setting; we would quote exactly this.' : 'too hot; we will quote the setting that saves the surface.'}`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    const form = document.getElementById('quoteForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    const status = document.getElementById('qStatus')!;
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#dc2626' : '#000'; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const contact = String(d.get('contact') || '').trim();
+      const address = String(d.get('address') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      const validContact = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact) || contact.replace(/\D/g, '').length >= 7;
+      if (!validContact) { setErr('contact', 'Phone or email.'); ok = false; } else setErr('contact', '');
+      if (address.length < 3) { setErr('address', 'Where is it?'); ok = false; } else setErr('address', '');
+      if (!ok) return;
+      const ref = 'CS-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      status.textContent = `Dispatch ${ref} logged , we'll confirm a slot shortly.`;
+      if (toast) { toast.textContent = `Request ${ref} received, ${name.split(' ')[0]} , ${String(d.get('service'))}. We'll confirm pressure, price, and a slot.`; toast.style.opacity = '1'; toast.style.transform = 'translate(-50%, 0)'; clearTimeout(tT); tT = window.setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translate(-50%, 24px)'; }, 6000); }
+      form.reset();
+    });
+  </script>
+<style>
+  .nb-ref { font-family: ui-monospace, monospace; font-size: 11px; color: #17694a; border-top: 1px solid rgba(30, 45, 55, 0.2); padding-top: 12px; }
+</style>
+</ClearstreamLayout>

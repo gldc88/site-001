@@ -1,0 +1,63 @@
+---
+/**
+ * VULCANIC ATELIER , Arrival (website15, round 2). The experience: how a night unfolds + the principles.
+ */
+import VulcanLayout from '../../layouts/VulcanLayout.astro';
+import { PILLS } from '../../data/vulcan';
+
+const PHASES = [
+  { n: '01', t: 'Arrival', d: 'You are met off the floor, not at a desk. Preferences are already loaded, the room already set to your heat , there is nothing to check in, nothing to explain twice.' },
+  { n: '02', t: 'The Circuit', d: 'The thermal circuit runs on a schedule that is yours alone for the slot. Hot, cold, rest, repeat , towels rotated on the minute, quiet hours kept, no one waiting behind you.' },
+  { n: '03', t: 'The Table', d: 'A single seating at Obsidian Dining. The room is dark enough that the food is the brightest thing in it; the plates land hot and the pacing is kept deliberate.' },
+  { n: '04', t: 'Afterglow', d: 'The night cools slowly. The concierge stays on-call and invisible until the last guest chooses to leave , no closing-time, no turning of the room.' },
+];
+---
+
+<VulcanLayout title="Arrival | Vulcanic Atelier" description="How a night at Vulcanic Atelier unfolds , arrival, the circuit, the table, afterglow. Reservation-only, capped, quiet by design." active="arrival">
+  <div class="page-hero">
+    <span class="kicker">Arrival</span>
+    <h1>A night, in four <em>movements</em>.</h1>
+    <p class="sub">There is no front desk and no queue. The night is choreographed so you only ever move forward through it , from the moment you arrive to the moment you decide, on your own time, to leave.</p>
+  </div>
+
+  <section class="section">
+    <div class="phases">
+      {PHASES.map((p) => (
+        <div class="phase" data-reveal="up">
+          <span class="ph-n">{p.n}</span>
+          <div class="ph-body"><h2>{p.t}</h2><p>{p.d}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="principles panel ember">
+      <span class="kicker">Held to</span>
+      <div class="pr-grid">
+        {PILLS.map((p) => (<div class="principle"><span class="pr-mark">◢</span><b>{p}</b></div>))}
+      </div>
+      <p class="pr-note">Twenty-four guests, five strata, one night at a time. We would rather turn a booking away than turn the room over.</p>
+      <a href="/website15/reserve" class="btn-cta" style="margin-top:8px;">Request a night</a>
+    </div>
+  </section>
+
+  <style>
+    .phases { display: flex; flex-direction: column; }
+    .phase { display: grid; grid-template-columns: 120px 1fr; gap: clamp(20px,4vw,48px); padding: 40px 0; border-top: 1px solid var(--line2); align-items: start; }
+    .phase:last-child { border-bottom: 1px solid var(--line2); }
+    .ph-n { font-family: var(--disp); font-size: clamp(2.6rem,5vw,4rem); color: var(--magma1); line-height: 1; }
+    .ph-body h2 { font-size: clamp(1.8rem,3.4vw,2.8rem); color: #fff; }
+    .ph-body p { color: var(--muted); margin-top: 16px; line-height: 1.8; max-width: 64ch; font-size: 1.05rem; }
+
+    .principles { padding: clamp(30px,4vw,46px); }
+    .principles > .kicker { margin-bottom: 24px; }
+    .pr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .principle { display: flex; align-items: center; gap: 12px; }
+    .pr-mark { color: var(--magma1); font-size: 0.8em; }
+    .principle b { font-family: var(--disp); font-weight: 500; font-size: 1.5rem; color: #fff; }
+    .pr-note { color: var(--muted); line-height: 1.7; max-width: 60ch; margin-bottom: 24px; }
+
+    @media (max-width: 860px) { .phase { grid-template-columns: 1fr; gap: 8px; } .pr-grid { grid-template-columns: 1fr; gap: 12px; } }
+  </style>
+</VulcanLayout>

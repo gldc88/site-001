@@ -1,0 +1,42 @@
+---
+/**
+ * CLEARSTREAM , Services (website22, round 2). The five cleaning protocols.
+ */
+import ClearstreamLayout from '../../layouts/ClearstreamLayout.astro';
+
+const SERVICES = [
+  { id: '01', title: 'Driveway Deep Clean', price: 'HIGH PSI', desc: 'Hot-water pre-treat, oil lift, algae removal, crisp edges restored.', long: 'A full hot-water deep clean: surfactant pre-treat, targeted oil and tyre-mark lifting, algae and black-spot removal, then a clean rinse with edges cut sharp. Optional sand re-fill and seal on block paving.' },
+  { id: '02', title: 'Soft Wash Facades', price: 'LOW PSI', desc: 'Biodegradable wash to break down organics , no paint strip, no damage.', long: 'Low-pressure soft wash with a biodegradable solution that breaks down the organic growth itself, so we never blast render, paint, or pointing. Safe on delicate facades where high PSI would do harm.' },
+  { id: '03', title: 'Roof Moss Treatment', price: 'BIO-CHEM', desc: 'Moss and lichen neutralised, gentle rinse, longer roof life.', long: 'Moss and lichen are neutralised with a bio-chemical treatment, scraped where heavy, then gently rinsed. No walking damage, no aggressive blasting , just a roof that drains properly and lasts longer.' },
+  { id: '04', title: 'Commercial + Fleets', price: 'CONTRACT', desc: 'Loading bays, forecourts, machinery, vehicles , scheduled, consistent.', long: 'Scheduled contract cleaning for loading bays, forecourts, plant, and vehicle fleets. Out-of-hours slots, consistent crews, and a documented record of every visit for facilities and compliance.' },
+  { id: '05', title: 'Graffiti Removal', price: 'URGENT', desc: 'Targeted chemical lift, controlled rinse, minimal ghosting on masonry.', long: 'A targeted chemical lift matched to the paint and the substrate, with a controlled rinse to minimise ghosting on porous masonry. Urgent call-outs prioritised , tagging is best removed fast.' },
+];
+---
+
+<ClearstreamLayout title="Services | Clearstream" description="Driveway deep clean, soft wash facades, roof moss treatment, commercial contracts, and graffiti removal." active="services">
+  <section class="pt-36 pb-16 px-6 lg:px-12 border-b border-black/5">
+    <div class="max-w-7xl mx-auto">
+      <span class="text-[10px] font-mono uppercase tracking-widest text-blue-600">// Services</span>
+      <h1 class="text-6xl lg:text-8xl font-black tracking-tighter leading-[0.85] mt-4">The protocols.</h1>
+      <p class="max-w-md text-sm font-medium leading-relaxed mt-8">Five jobs, each with its own pressure and chemistry. We never use one setting for everything , the surface decides.</p>
+    </div>
+  </section>
+
+  <section class="px-6 lg:px-12 py-20">
+    <div class="max-w-7xl mx-auto flex flex-col gap-px bg-black/10 border-2 border-black">
+      {SERVICES.map((s) => (
+        <div class="bg-[#F0F2F5] p-8 lg:p-12 grid lg:grid-cols-[80px_1fr_auto] gap-6 lg:gap-12 items-start group hover:bg-blue-600 hover:text-white transition-colors">
+          <span class="text-3xl font-black tracking-tighter">{s.id}</span>
+          <div>
+            <div class="flex items-center gap-4 mb-3"><h3 class="text-3xl font-black tracking-tighter">{s.title}</h3><span class="text-[10px] font-mono border border-current px-2 py-1">{s.price}</span></div>
+            <p class="text-sm font-medium leading-relaxed max-w-2xl opacity-80">{s.long}</p>
+          </div>
+          <a href="/website22/quote" class="text-[10px] font-black uppercase tracking-[0.2em] border-b-2 border-current pb-1 whitespace-nowrap">Book →</a>
+        </div>
+      ))}
+    </div>
+    <div class="max-w-7xl mx-auto mt-12 flex justify-center">
+      <a href="/website22/quote" class="bg-blue-600 hover:bg-black text-white px-10 py-5 text-xs font-black uppercase tracking-[0.2em] transition-colors clip-button">Request dispatch</a>
+    </div>
+  </section>
+</ClearstreamLayout>

@@ -1,0 +1,66 @@
+---
+/**
+ * OBSIDIAN MOTORS , Home (website30, round 2). Hero featured vehicle (SVG) + thesis + featured grid.
+ */
+import ObsidianMotorsLayout from '../../layouts/ObsidianMotorsLayout.astro';
+import { PRODUCTS, TAGLINE, AREA, PHONE, TEL, carSvg } from '../../data/obsidian-motors';
+const featured = [PRODUCTS[2], PRODUCTS[0], PRODUCTS[6]];
+const hero = PRODUCTS[2];
+---
+
+<ObsidianMotorsLayout title="Obsidian Motors , Private Showroom" description="A private digital showroom for curated performance, touring, and executive vehicles. Acquire by intent, not by pressure.">
+  <section class="mx-auto max-w-[1320px] px-6 pt-14 pb-12">
+    <div class="grid lg:grid-cols-[1fr_1.1fr] gap-10 items-center border-b border-[var(--line)] pb-12">
+      <div>
+        <span class="text-[11px] font-semibold uppercase tracking-[0.3em] accent">{AREA}</span>
+        <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.92] mt-5">Acquire by <span class="accent">intent.</span></h1>
+        <p class="mt-6 max-w-md text-[var(--mut)] text-lg leading-relaxed">Not by pressure. A private showroom of curated performance, touring, and executive vehicles , every car inspected and documented before it reaches the floor.</p>
+        <div class="mt-9 flex flex-wrap gap-4">
+          <a href="/website30/showroom" class="bg-[var(--accent)] text-white px-7 py-4 text-[11px] font-bold uppercase tracking-[0.2em] rounded hover:bg-[#3d63d8] transition-colors">Enter the showroom</a>
+          <a href="/website30/acquisition" class="border border-[var(--line)] px-7 py-4 text-[11px] font-bold uppercase tracking-[0.2em] rounded hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">How it works</a>
+        </div>
+      </div>
+      <figure class="rounded-2xl border border-[var(--line)] bg-black/40 p-4 m-0 overflow-hidden">
+        <div set:html={carSvg(hero.shape, hero.paint, 'hero')} />
+        <figcaption class="mt-3 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-[var(--mut)] px-1"><span>{hero.name}</span><span class="accent">€{(hero.price / 1000).toFixed(0)}k</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- thesis -->
+  <section class="mx-auto max-w-[1320px] px-6 py-14">
+    <div class="grid md:grid-cols-3 gap-6">
+      {[['Curated', 'A small floor of vehicles worth your time , not an endless lot. Each one chosen, not just listed.'], ['Documented', 'Inspection summary, service posture, and an honest condition note travel with every car.'], ['Unhurried', 'View by appointment. Shortlist what interests you and we prepare exactly those cars for your slot.']].map(([t, d]) => (
+        <div class="reveal-on-scroll rounded-xl border border-[var(--line)] bg-white/[0.02] p-6">
+          <div class="text-[11px] font-semibold uppercase tracking-[0.2em] accent">{t}</div>
+          <p class="mt-3 text-sm text-[var(--mut)] leading-relaxed">{d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- featured -->
+  <section class="mx-auto max-w-[1320px] px-6 py-14 border-t border-[var(--line)]">
+    <div class="flex items-end justify-between mb-10"><h2 class="text-3xl md:text-5xl font-black tracking-tight">On the floor.</h2><a href="/website30/showroom" class="hidden sm:inline text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] o-link hover:text-[var(--ink)]">Full showroom →</a></div>
+    <div class="grid md:grid-cols-3 gap-6">
+      {featured.map((p) => (
+        <a href="/website30/showroom" class="reveal-on-scroll rounded-2xl border border-[var(--line)] bg-white/[0.02] overflow-hidden hover:border-[var(--accent)]/50 transition-colors block group">
+          <div set:html={carSvg(p.shape, p.paint, p.id)} />
+          <div class="p-5">
+            <div class="flex items-baseline justify-between"><h3 class="font-bold group-hover:text-[var(--accent)] transition-colors">{p.name}</h3><span class="accent font-bold">€{(p.price / 1000).toFixed(0)}k</span></div>
+            <p class="text-[11px] text-[var(--mut)] uppercase tracking-[0.1em] mt-1">{p.body} · {p.power} · {p.stock}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-[1320px] px-6 py-20 text-center">
+    <h2 class="text-4xl md:text-6xl font-black tracking-tighter">{TAGLINE}</h2>
+    <p class="mt-4 text-[var(--mut)] max-w-lg mx-auto">Shortlist the cars worth your time and reserve a private viewing , we prepare exactly those.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <a href="/website30/showroom" class="bg-[var(--accent)] text-white px-9 py-4 text-[11px] font-bold uppercase tracking-[0.2em] rounded hover:bg-[#3d63d8] transition-colors">Browse the floor</a>
+      <a href={`tel:${TEL}`} class="border border-[var(--line)] px-9 py-4 text-[11px] font-bold uppercase tracking-[0.2em] rounded hover:border-[var(--accent)] transition-all">Call {PHONE}</a>
+    </div>
+  </section>
+</ObsidianMotorsLayout>

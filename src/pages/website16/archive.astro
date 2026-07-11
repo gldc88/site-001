@@ -1,0 +1,133 @@
+---
+/**
+ * FIELD STUDIO , Archive (website16, round 2). Signature: the specimen archive , select a figure to
+ * read its field notes.
+ */
+import FieldLayout from '../../layouts/FieldLayout.astro';
+import { SPECIMENS } from '../../data/field';
+---
+
+<FieldLayout title="Archive | Field Studio" description="The Field Studio specimen archive , resin, glass, pollen, roots, frost, spores. Each a record of what was moving." active="archive">
+  <section class="intro">
+    <span class="eyebrow">Archive</span>
+    <h1>A record of what was <em>moving</em>.</h1>
+    <p>Each figure is a living system caught at the moment it stopped. Select one to read its field notes , where it was logged, and what it taught us about reading the rest.</p>
+  </section>
+
+  <section class="sec tight">
+    <div class="arc-grid">
+      <div class="arc-list" id="arcList">
+        {SPECIMENS.map((s, i) => (
+          <button class={`arc-item ${i === 0 ? 'active' : ''}`} data-id={s.id}>
+            <span class="ai-id">{s.id}</span>
+            <span class="ai-main"><span class="ai-title">{s.title}</span><span class="ai-kind">{s.kind}</span></span>
+          </button>
+        ))}
+      </div>
+      <div class="arc-stage">
+        {SPECIMENS.map((s, i) => (
+          <article class={`arc-detail ${i === 0 ? 'active' : ''}`} id={`arc-${s.id.replace('.', '')}`}>
+            <div class="ad-head"><span class="ad-id">{s.id}</span><span class="ad-kind">{s.kind}</span></div>
+            <h2>{s.title}</h2>
+            <p class="ad-long">{s.long}</p>
+            <div class="ad-meta"><span>Logged</span><b>{s.logged}</b></div>
+            <a href="/website16/intake" class="btn-line" style="margin-top:6px;">Commission a survey →</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .arc-grid { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(18px,3vw,48px); align-items: start; }
+    .arc-list { display: flex; flex-direction: column; position: sticky; top: 24px; }
+    .arc-item { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; text-align: left; padding: 18px 6px; border-top: 1px solid var(--line); transition: padding-left 0.3s, border-color 0.3s; }
+    .arc-item:last-child { border-bottom: 1px solid var(--line); }
+    .arc-item:hover { padding-left: 10px; }
+    .arc-item.active { border-color: var(--accent); }
+    .ai-id { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--accent); transition: color 0.6s ease; }
+    .arc-item:not(.active) .ai-id { color: var(--faint); }
+    .ai-main { display: flex; flex-direction: column; gap: 2px; }
+    .ai-title { font-family: var(--serif); font-size: 1.35rem; color: #fff; }
+    .ai-kind { font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+    .arc-stage { min-width: 0; }
+    .arc-detail { display: none; }
+    .arc-detail.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .ad-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .ad-id { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--accent); transition: color 0.6s ease; }
+    .ad-kind { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 4px 9px; border-radius: 999px; }
+    .arc-detail h2 { font-size: clamp(2.4rem,5vw,4rem); color: #fff; }
+    .ad-long { color: var(--ink); font-size: 1.12rem; line-height: 1.8; margin: 22px 0 26px; max-width: 60ch; }
+    .ad-meta { display: flex; align-items: baseline; gap: 14px; padding: 16px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+    .ad-meta span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .ad-meta b { font-family: var(--serif); font-size: 1.3rem; font-weight: 400; color: #fff; }
+
+    @media (max-width: 860px) { .arc-grid { grid-template-columns: 1fr; } .arc-list { position: static; } }
+  </style>
+
+  <script>
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.arc-item'));
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.arc-detail'));
+    items.forEach((it) => it.addEventListener('click', () => {
+      const id = (it.dataset.id || '').replace('.', '');
+      items.forEach((x) => x.classList.toggle('active', x === it));
+      details.forEach((d) => d.classList.toggle('active', d.id === `arc-${id}`));
+    }));
+  </script>
+  <section class="section yours" id="yours" hidden>
+    <span class="kicker">Your pressings</span>
+    <h2>From your own field time.</h2>
+    <div class="pr-cards" id="yourCards"></div>
+  </section>
+
+  <style>
+    .yours h2 { font-size: clamp(1.7rem,3vw,2.4rem); margin: 10px 0 20px; }
+    .pr-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+    .pr-card { border: 1px solid rgba(60, 70, 55, 0.25); border-radius: 6px; background: rgba(250, 248, 242, 0.65); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .pr-card svg { width: 100%; height: auto; display: block; background: rgba(255, 255, 255, 0.5); border-radius: 4px; }
+    .pr-meta { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; display: flex; justify-content: space-between; gap: 8px; }
+  </style>
+
+  <script>
+
+    /* R3 gedeelde specimen-renderer: seeded PRNG -> geperst lijnwerk (deterministisch). */
+    function specimenSvg(seed: number, hue: string): string {
+      let s = seed >>> 0;
+      const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+      let paths = '';
+      const n = 3 + Math.floor(rnd() * 3);
+      for (let i = 0; i < n; i++) {
+        const x0 = 12 + rnd() * 30, y0 = 14 + rnd() * 60;
+        let d = `M ${x0.toFixed(1)} ${y0.toFixed(1)}`;
+        let x = x0, y = y0;
+        const segs = 3 + Math.floor(rnd() * 3);
+        for (let j = 0; j < segs; j++) {
+          const cx = x + 10 + rnd() * 22, cy = y + (rnd() - 0.5) * 34;
+          x = cx + 8 + rnd() * 18; y = cy + (rnd() - 0.5) * 26;
+          d += ` Q ${cx.toFixed(1)} ${cy.toFixed(1)}, ${x.toFixed(1)} ${y.toFixed(1)}`;
+        }
+        const w = (0.7 + rnd() * 1.2).toFixed(2);
+        const op = (0.45 + rnd() * 0.5).toFixed(2);
+        paths += `<path d="${d}" fill="none" stroke="${hue}" stroke-width="${w}" opacity="${op}" stroke-linecap="round" />`;
+      }
+      return `<svg viewBox="0 0 120 88" xmlns="http://www.w3.org/2000/svg">${paths}</svg>`;
+    }
+    const SEASON_HUE: Record<string, string> = { dawn: '#c98a5a', canopy: '#5a8a5f', dusk: '#7a6a9a' };
+
+    try {
+      const specs = JSON.parse(localStorage.getItem('field-specimens') || '[]');
+      const sect = document.getElementById('yours');
+      const wrap = document.getElementById('yourCards');
+      if (specs.length && sect && wrap) {
+        sect.hidden = false;
+        wrap.innerHTML = specs.map((sp: { seed: number; season: string; flow: string; ts: number }) => {
+          const when = new Date(sp.ts).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+          return `<div class="pr-card">${specimenSvg(sp.seed, SEASON_HUE[sp.season] || '#5a8a5f')}
+            <div class="pr-meta"><span>${sp.season} · ${sp.flow}</span><span>${when}</span></div></div>`;
+        }).join('');
+      }
+    } catch { /* private mode */ }
+  </script>
+</FieldLayout>

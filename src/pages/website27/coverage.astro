@@ -1,0 +1,122 @@
+---
+/**
+ * VELLUM WEDDING BUREAU , Coverage (website27, round 2). The full "what we handle" ledger.
+ */
+import VellumBureauLayout from '../../layouts/VellumBureauLayout.astro';
+import { LEDGER } from '../../data/vellum-bureau';
+---
+
+<VellumBureauLayout title="Coverage | Vellum Wedding Bureau" description="What Vellum carries end-to-end: venue and contracting, vendor direction, guest flow, design, budget control, and on-site execution." active="coverage">
+  <section class="mx-auto max-w-6xl px-6 pt-20 pb-12">
+    <span class="text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--champ-d)]">Coverage</span>
+    <h1 class="font-display text-6xl md:text-8xl font-semibold leading-[0.95] mt-4">What we handle.</h1>
+    <p class="mt-7 max-w-xl text-[var(--mut)] text-lg leading-relaxed">When it is done properly, it feels simple. Here is what we carry , without the noise.</p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-20">
+    <dl class="border-t border-[var(--line)]">
+      {LEDGER.map((r, i) => (
+        <div class="reveal-on-scroll py-7 grid md:grid-cols-[280px_1fr] gap-3 md:gap-10 border-b border-[var(--line)] group hover:bg-[#fbf8f3]/50 transition-colors -mx-4 px-4 rounded-lg">
+          <dt class="font-display text-2xl font-semibold flex items-baseline gap-4"><span class="text-[var(--champ)] text-base">{String(i + 1).padStart(2, '0')}</span>{r.dt}</dt>
+          <dd class="text-[var(--mut)] leading-relaxed max-w-2xl">{r.dd}</dd>
+        </div>
+      ))}
+    </dl>
+    <div class="mt-14 text-center">
+      <p class="font-display italic text-2xl text-[var(--ink)]">Effortless is engineered.</p>
+      <a href="/website27/inquiry" class="mt-6 inline-block bg-[var(--ink)] text-white px-9 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] rounded-full hover:bg-[var(--champ-d)] transition-colors">Begin an inquiry</a>
+    </div>
+  </section>
+
+  <section class="py-16 px-6" id="weighed">
+    <div class="max-w-4xl mx-auto">
+      <span class="text-[10px] uppercase tracking-[0.25em] text-[#b48d3e] font-sans">The Day, Weighed</span>
+      <h2 class="font-serif text-3xl md:text-4xl mt-3 text-[#3d3428]">Where should the attention fall?</h2>
+      <p class="text-[#6b5f4d] mt-4 max-w-xl leading-relaxed">You have ten stones of attention. Place them ,
+        the beam will show where your day leans, and we will plan the light around it.</p>
+
+      <div class="mt-10 grid md:grid-cols-[1fr_auto] gap-10 items-center">
+        <div>
+          <div class="flex flex-col gap-3" id="wgRows">
+            <div class="wg-row" data-cat="ceremony"><span class="wg-name">Ceremony</span><div class="wg-stones" aria-hidden="true"></div><div class="wg-btns"><button type="button" class="wg-minus" aria-label="Remove a stone from ceremony">−</button><button type="button" class="wg-plus" aria-label="Add a stone to ceremony">+</button></div></div>
+            <div class="wg-row" data-cat="dinner"><span class="wg-name">Dinner</span><div class="wg-stones" aria-hidden="true"></div><div class="wg-btns"><button type="button" class="wg-minus" aria-label="Remove a stone from dinner">−</button><button type="button" class="wg-plus" aria-label="Add a stone to dinner">+</button></div></div>
+            <div class="wg-row" data-cat="party"><span class="wg-name">The party</span><div class="wg-stones" aria-hidden="true"></div><div class="wg-btns"><button type="button" class="wg-minus" aria-label="Remove a stone from the party">−</button><button type="button" class="wg-plus" aria-label="Add a stone to the party">+</button></div></div>
+            <div class="wg-row" data-cat="portraits"><span class="wg-name">Portraits</span><div class="wg-stones" aria-hidden="true"></div><div class="wg-btns"><button type="button" class="wg-minus" aria-label="Remove a stone from portraits">−</button><button type="button" class="wg-plus" aria-label="Add a stone to portraits">+</button></div></div>
+            <div class="wg-row" data-cat="guests"><span class="wg-name">Guests</span><div class="wg-stones" aria-hidden="true"></div><div class="wg-btns"><button type="button" class="wg-minus" aria-label="Remove a stone from guests">−</button><button type="button" class="wg-plus" aria-label="Add a stone to guests">+</button></div></div>
+          </div>
+          <p class="font-sans text-xs tracking-widest uppercase mt-5 text-[#8a7a5e]"><b id="wgLeft">10</b> stones left</p>
+        </div>
+        <div class="text-center">
+          <svg viewBox="0 0 200 130" class="w-52 mx-auto" aria-hidden="true">
+            <line x1="100" y1="118" x2="100" y2="55" stroke="#8a7a5e" stroke-width="3" />
+            <polygon points="88,118 112,118 100,100" fill="#8a7a5e" />
+            <g id="wgBeam" style="transform-origin: 100px 55px; transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);">
+              <line x1="20" y1="55" x2="180" y2="55" stroke="#b48d3e" stroke-width="3" stroke-linecap="round" />
+              <circle cx="20" cy="55" r="7" fill="#b48d3e" />
+              <circle cx="180" cy="55" r="7" fill="#b48d3e" />
+            </g>
+          </svg>
+          <p class="font-serif italic text-[#6b5f4d] mt-4 text-sm leading-relaxed max-w-[220px] mx-auto" id="wgRead" aria-live="polite">The beam rests level.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .wg-row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: 12px; }
+    .wg-name { font-family: serif; font-style: italic; font-size: 15px; color: #3d3428; }
+    .wg-stones { display: flex; gap: 4px; min-height: 12px; }
+    .wg-stones i { width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d9bd7e, #b48d3e); box-shadow: 0 1px 2px rgba(60,45,20,0.4); }
+    .wg-btns { display: flex; gap: 6px; }
+    .wg-minus, .wg-plus { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #c9b68a; background: #f7f1e4; color: #6b5f4d; font-size: 14px; cursor: pointer; line-height: 1; }
+    .wg-minus:hover, .wg-plus:hover { background: #efe4cc; }
+    .wg-minus:focus-visible, .wg-plus:focus-visible { outline: 2px solid #b48d3e; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { #wgBeam { transition: none !important; } }
+  </style>
+
+  <script>
+    /* R3 "The Day, Weighed" , verdeel tien stenen; de balk leest je dag. */
+    (() => {
+      const TOTAL = 10;
+      const KEY = 'vellum-weights';
+      const READS: Record<string, string> = {
+        ceremony: 'Your day leans into the ceremony , we will guard that hour like glass.',
+        dinner: 'The table is your centre , golden-hour portraits move before the first course.',
+        party: 'Your day tilts toward the party , we will front-load the formal light.',
+        portraits: 'The portraits carry the weight , we will build the timeline around the best light.',
+        guests: 'Your people are the point , candids first, formalities kept short.',
+      };
+      const rows = Array.from(document.querySelectorAll<HTMLElement>('.wg-row'));
+      const left = document.getElementById('wgLeft');
+      const beam = document.getElementById('wgBeam');
+      const read = document.getElementById('wgRead');
+      if (!rows.length || !left || !beam || !read) return;
+      const state: Record<string, number> = { ceremony: 0, dinner: 0, party: 0, portraits: 0, guests: 0 };
+      try { Object.assign(state, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch { /* private mode */ }
+
+      const used = () => Object.values(state).reduce((a, b) => a + b, 0);
+      const sync = () => {
+        rows.forEach((r) => {
+          const k = r.dataset.cat || '';
+          const st = r.querySelector('.wg-stones');
+          if (st) st.innerHTML = '<i></i>'.repeat(state[k] || 0);
+        });
+        left.textContent = String(TOTAL - used());
+        // balk-kanteling: ceremonie/portretten links, party/gasten rechts, diner midden
+        const lean = (state.party + state.guests) - (state.ceremony + state.portraits);
+        beam.style.transform = `rotate(${Math.max(-18, Math.min(18, lean * 3))}deg)`;
+        const max = Object.entries(state).sort((a, b) => b[1] - a[1])[0];
+        read.textContent = used() === 0 ? 'The beam rests level.'
+          : max[1] === 0 ? 'The beam rests level.'
+          : READS[max[0]] || 'The beam rests level.';
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+      };
+      rows.forEach((r) => {
+        const k = r.dataset.cat || '';
+        r.querySelector('.wg-plus')?.addEventListener('click', () => { if (used() < TOTAL) { state[k]++; sync(); } });
+        r.querySelector('.wg-minus')?.addEventListener('click', () => { if (state[k] > 0) { state[k]--; sync(); } });
+      });
+      sync();
+    })();
+  </script>
+</VellumBureauLayout>

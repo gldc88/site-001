@@ -1,0 +1,149 @@
+---
+/**
+ * ATELIER PRIVATE CATERING , Reserve / Compose (website17, round 2). Signature: the full compose
+ * builder , menu (warms the room) + duration + pairing + guests + date -> a live tasting card +
+ * generated reference + toast.
+ */
+import AtelierLayout from '../../layouts/AtelierLayout.astro';
+import { MENUS, DURATIONS, PAIRINGS, GUESTS } from '../../data/atelier';
+---
+
+<AtelierLayout title="Compose an Evening | Atelier Private Catering" description="Compose your evening , a menu direction, a length, a pairing, and a party. We confirm the final menu with you around the date.">
+  <div class="page-hero">
+    <span class="eyebrow">Compose</span>
+    <h1>Compose the <em>evening</em>.</h1>
+    <p class="sub">Set the shape of the night and watch the card fill in , the candlelight warms to your menu as you choose it. We confirm the final menu and the price with you, close to the date.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="compose-grid">
+      <form id="composeForm" class="compose-form panel copper" novalidate>
+        <div class="cf-field">
+          <span class="lbl">Menu direction</span>
+          <div class="menu-pick" role="group" aria-label="Menu">
+            {MENUS.map((m) => (<button type="button" class="mp-btn" data-menu data-key={m.key} data-warmth={String(m.warmth)} aria-pressed="false">{m.title}</button>))}
+          </div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="duration">Length</label><select id="duration" name="duration">{DURATIONS.map((d) => <option value={d.key}>{d.label} · {d.sub}</option>)}</select></div>
+          <div class="fld"><label for="pairing">Pairing</label><select id="pairing" name="pairing">{PAIRINGS.map((p) => <option value={p.key}>{p.label}</option>)}</select></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="guests">Party</label><select id="guests" name="guests">{GUESTS.map((g) => <option value={g.key}>{g.label}</option>)}</select></div>
+          <div class="fld"><label for="date">Date</label><input id="date" name="date" type="date" /><span class="err" data-err="date"></span></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="rf-name">Name</label><input id="rf-name" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="note">Notes (optional)</label><textarea id="note" name="note" rows="3" placeholder="The occasion, the room, allergies, anything we should know…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Send this composition</button>
+        <p class="cf-fine">No payment now · final menu &amp; price confirmed with you.</p>
+    <p class="tp-ref" id="tpRef" hidden></p>
+      </form>
+
+      <aside class="tasting-card panel" id="card">
+        <div class="tc-top"><span class="eyebrow">The card</span><span id="tcRef" class="tc-ref">, , , ,</span></div>
+        <h3 id="tcMenu">Coastal</h3>
+        <ol class="tc-courses" id="tcCourses"></ol>
+        <div class="tc-meta">
+          <div class="tcm"><span>Length</span><b id="tcDuration">3 hours</b></div>
+          <div class="tcm"><span>Pairing</span><b id="tcPairing">Food only</b></div>
+          <div class="tcm"><span>Party</span><b id="tcGuests">2 · Intimate</b></div>
+          <div class="tcm"><span>Date</span><b id="tcDate">,</b></div>
+        </div>
+        <div class="tc-status" id="tcStatus">Composing…</div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .compose-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .compose-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .cf-field { display: flex; flex-direction: column; gap: 9px; }
+    .menu-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .mp-btn { font-family: var(--head); font-size: 1.2rem; color: var(--ink); border: 1px solid var(--line); padding: 14px 10px; border-radius: 3px; transition: all 0.3s; background: rgba(255,255,255,0.02); }
+    .mp-btn:hover { border-color: var(--line-copper); }
+    .mp-btn[aria-pressed='true'] { border-color: var(--copper); background: rgba(194,142,91,0.1); color: #fff; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .compose-form textarea { resize: vertical; font-family: var(--body); }
+    .cf-fine { font-family: var(--body); font-size: 0.74rem; color: var(--faint); text-align: center; }
+
+    .tasting-card { position: sticky; top: 90px; padding: clamp(24px,3vw,32px); }
+    .tc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .tc-ref { font-family: var(--body); font-size: 12px; letter-spacing: 0.12em; color: var(--copper); }
+    .tasting-card h3 { font-size: 2rem; color: #fff; margin-bottom: 12px; }
+    .tc-courses { list-style: none; display: flex; flex-direction: column; margin-bottom: 18px; }
+    .tc-courses li { display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); font-family: var(--head); font-size: 1.15rem; color: var(--ink); }
+    .tc-courses li::before { content: attr(data-n); font-family: var(--body); font-size: 9px; color: var(--copper); }
+    .tc-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .tcm { display: flex; flex-direction: column; gap: 3px; }
+    .tcm span { font-family: var(--body); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .tcm b { font-family: var(--head); font-size: 1.05rem; font-weight: 500; color: #fff; }
+    .tc-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--body); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); border-radius: 3px; }
+    .tasting-card.filed { border-color: var(--line-copper); }
+    .tasting-card.filed .tc-status { color: #08070a; background: var(--copper); border-style: solid; border-color: var(--copper); }
+    @media (max-width: 900px) { .compose-grid { grid-template-columns: 1fr; } .tasting-card { position: static; } }
+    @media (max-width: 560px) { .cf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 Table Plan: de schikking reist mee naar de reservering. */
+    try {
+      const plan = JSON.parse(localStorage.getItem('atelier-table') || '{}');
+      const n = Object.keys(plan).length;
+      if (n) {
+        const el = document.getElementById('tpRef');
+        const host = Object.values(plan).includes('host') ? ', host seated' : '';
+        if (el) { el.textContent = `Your table plan is on file , ${n} of 6 chairs${host}. The kitchen has read it.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    import { MENUS, DURATIONS, PAIRINGS, GUESTS } from '../../data/atelier';
+    const byMenu = Object.fromEntries(MENUS.map((m) => [m.key, m]));
+    const labelOf = (arr: any[], k: string) => arr.find((x) => x.key === k)?.label || k;
+    const form = document.getElementById('composeForm') as HTMLFormElement;
+    const duration = document.getElementById('duration') as HTMLSelectElement;
+    const pairing = document.getElementById('pairing') as HTMLSelectElement;
+    const guests = document.getElementById('guests') as HTMLSelectElement;
+    const date = document.getElementById('date') as HTMLInputElement;
+    const tc = { menu: document.getElementById('tcMenu')!, courses: document.getElementById('tcCourses')!, duration: document.getElementById('tcDuration')!, pairing: document.getElementById('tcPairing')!, guests: document.getElementById('tcGuests')!, date: document.getElementById('tcDate')!, ref: document.getElementById('tcRef')!, status: document.getElementById('tcStatus')! };
+    const card = document.getElementById('card');
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    date.min = new Date().toISOString().split('T')[0];
+
+    let menuKey = localStorage.getItem('atelier-menu') || 'coastal';
+    function renderCard() {
+      const m = byMenu[menuKey]; if (m) { tc.menu.textContent = m.title; tc.courses.innerHTML = m.courses.map((c, i) => `<li data-n="${String(i + 1).padStart(2, '0')}">${c}</li>`).join(''); }
+      tc.duration.textContent = duration.selectedOptions[0].text.split(' · ')[0];
+      tc.pairing.textContent = labelOf(PAIRINGS, pairing.value);
+      tc.guests.textContent = labelOf(GUESTS, guests.value);
+      tc.date.textContent = date.value ? new Date(date.value + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : ',';
+    }
+    document.querySelectorAll<HTMLElement>('.mp-btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === menuKey)));
+    document.addEventListener('atelier:menu', (e) => { menuKey = (e as CustomEvent).detail; renderCard(); });
+    [duration, pairing, guests, date].forEach((el) => el.addEventListener('input', renderCard));
+    renderCard();
+
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#e8a07a' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('rf-name') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (!date.value) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'AT-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      tc.ref.textContent = ref; tc.status.textContent = 'Sent · ' + ref; card?.classList.add('filed');
+      if (toast) { toast.textContent = `Received, ${name.split(' ')[0]} , ${byMenu[menuKey]?.title} composition ${ref}. We'll confirm the menu and price with you.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+<style>
+  .tp-ref { font-size: 12px; font-style: italic; color: rgba(255, 210, 160, 0.9); border-top: 1px solid rgba(200, 140, 80, 0.25); padding-top: 12px; }
+</style>
+</AtelierLayout>

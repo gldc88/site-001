@@ -1,0 +1,129 @@
+---
+/**
+ * AtelierLayout , shared shell for ATELIER PRIVATE CATERING (website17, round 2).
+ * Persistent INTERACTIVE candlelight-bokeh WebGL backdrop: any page's [data-menu] selectors set the
+ * warmth that feeds the candle scene (event-delegated here). The chosen menu/warmth is saved to
+ * localStorage and restored on every page. Props: title, description, active.
+ */
+import '../styles/atelier-fonts.css';
+import '../styles/atelier.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+import { MENUS, DEFAULT_KEY } from '../data/atelier';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'menus', label: 'Menus', href: '/website17/menus' },
+  { key: 'sourcing', label: 'Sourcing', href: '/website17/sourcing' },
+  { key: 'philosophy', label: 'Philosophy', href: '/website17/philosophy' },
+];
+const WARMTH = Object.fromEntries(MENUS.map((m) => [m.key, m.warmth]));
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script type="application/json" id="atelier-warmth" set:html={JSON.stringify(WARMTH)}></script>
+  </head>
+
+  <body data-default-menu={DEFAULT_KEY}>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website17" class="brand">Atelier</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website17/reserve" class="cta">Compose an Evening</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Atelier Private Catering</h3>
+          <p>Discreet, chef-led private dining , composed around your room, your season, and your table. Early load-in, a clean closeout, and an evening you never have to run. Fictional brand, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Atelier</h4><a href="/website17/menus">Menus</a><a href="/website17/sourcing">Sourcing</a><a href="/website17/philosophy">Philosophy</a><a href="/website17/reserve">Compose an Evening</a></div>
+        <div class="f-col"><h4>Reach</h4><a href="mailto:chef@atelier.example">chef@atelier.example</a><a href="/website17/reserve">Begin a composition</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Atelier Private Catering. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · discreet · season-led</span>
+      </div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const WARMTH: Record<string, number> = JSON.parse(document.getElementById('atelier-warmth')?.textContent || '{}');
+      const DEFAULT = document.body.dataset.defaultMenu || Object.keys(WARMTH)[0];
+      let menu = localStorage.getItem('atelier-menu') || DEFAULT;
+      if (!(menu in WARMTH)) menu = DEFAULT;
+      let warmth = Number(localStorage.getItem('atelier-warmth') || WARMTH[menu] || 0.56);
+      document.body.dataset.menu = menu;
+      document.body.dataset.warmth = String(warmth);
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      let scene: any = null;
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/candle-scene')
+          .then(({ initCandleScene }) => {
+            scene = initCandleScene(canvas);
+            if (fallback) fallback.style.display = 'none';
+            scene.setWarmth(warmth);
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene?.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene?.dispose(), { once: true });
+            (window as any).__candle = scene;
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+
+      function applyMenu(k: string) {
+        if (!(k in WARMTH)) return;
+        menu = k; warmth = WARMTH[k];
+        document.body.dataset.menu = k;
+        document.body.dataset.warmth = String(warmth);
+        localStorage.setItem('atelier-menu', k);
+        localStorage.setItem('atelier-warmth', String(warmth));
+        scene?.setWarmth(warmth);
+        document.querySelectorAll<HTMLElement>('[data-menu]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === k)));
+        document.dispatchEvent(new CustomEvent('atelier:menu', { detail: k }));
+      }
+      (window as any).__atelierMenu = applyMenu;
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-menu]');
+        if (btn && btn.dataset.key) applyMenu(btn.dataset.key);
+      });
+      document.querySelectorAll<HTMLElement>('[data-menu]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === menu)));
+    </script>
+  </body>
+</html>

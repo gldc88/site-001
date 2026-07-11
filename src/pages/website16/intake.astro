@@ -1,0 +1,107 @@
+---
+/**
+ * FIELD STUDIO , Intake (website16, round 2). Signature: an intake request whose season-of-interest
+ * retunes the live field; generates a reference + toast + summary.
+ */
+import FieldLayout from '../../layouts/FieldLayout.astro';
+import { SEASONS } from '../../data/field';
+
+const KINDS = ['Field survey', 'Interface build', 'Archive / documentation', 'Research collaboration', 'Not sure yet'];
+---
+
+<FieldLayout title="Intake | Field Studio" description="Start an intake with Field Studio. Tell us the system you're trying to read; we take a small number of field projects a year.">
+  <section class="intro">
+    <span class="eyebrow">Intake</span>
+    <h1>Bring us a system to <em>read</em>.</h1>
+    <p>We take a small number of field projects a year. Tell us what you're trying to understand and the air you'd read it in , the field retunes to your season as you choose it.</p>
+  </section>
+
+  <section class="sec tight">
+    <div class="intake-grid">
+      <form id="intakeForm" class="intake-form card" novalidate>
+        <div class="if-row">
+          <div class="fld"><label for="kind">Project</label><select id="kind" name="kind">{KINDS.map((k) => <option>{k}</option>)}</select></div>
+          <div class="fld"><label for="season">Season of interest</label><select id="season" name="season">{SEASONS.map((s) => <option value={s.key}>{s.label}</option>)}</select></div>
+        </div>
+        <div class="if-row">
+          <div class="fld"><label for="iname">Name</label><input id="iname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="iemail">Email</label><input id="iemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="brief">What are you trying to read?</label><textarea id="brief" name="brief" rows="4" placeholder="The system, the question behind it, and roughly when…"></textarea><span class="err" data-err="brief"></span></div>
+        <button type="submit" class="btn" style="width:100%; text-align:center;">Send intake</button>
+        <p class="if-fine" id="ifStatus">A small number of projects a year · we reply within the week.</p>
+      </form>
+
+      <aside class="intake-side">
+        <div class="is-card card" id="isCard">
+          <div class="is-top"><span class="eyebrow">Intake</span><span id="isRef" class="is-ref">, , , ,</span></div>
+          <div class="is-line"><span>Project</span><b id="isKind">Field survey</b></div>
+          <div class="is-line"><span>Season</span><b id="isSeason">Canopy</b></div>
+          <div class="is-status" id="isStatus">Awaiting intake</div>
+          <p class="is-hint">The field is reading in your chosen season.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .intake-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .intake-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .if-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .intake-form textarea { resize: vertical; font-family: var(--sans); }
+    .if-fine { font-family: var(--mono); font-size: 0.7rem; color: var(--faint); text-align: center; }
+    .intake-side { position: sticky; top: 24px; }
+    .is-card { padding: clamp(24px,3vw,32px); }
+    .is-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .is-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--accent); }
+    .is-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .is-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .is-line b { font-family: var(--serif); font-size: 1.1rem; color: #fff; text-align: right; }
+    .is-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); border-radius: 999px; }
+    .is-card.filed { border-color: var(--accent); }
+    .is-card.filed .is-status { color: var(--bg0); background: var(--accent); border-style: solid; border-color: var(--accent); }
+    .is-hint { font-family: var(--mono); font-size: 9px; color: var(--faint); margin-top: 14px; text-align: center; }
+    @media (max-width: 900px) { .intake-grid { grid-template-columns: 1fr; } .intake-side { position: static; } }
+    @media (max-width: 560px) { .if-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    import { SEASONS } from '../../data/field';
+    const byKey = Object.fromEntries(SEASONS.map((s) => [s.key, s]));
+    const form = document.getElementById('intakeForm') as HTMLFormElement;
+    const kind = document.getElementById('kind') as HTMLSelectElement;
+    const season = document.getElementById('season') as HTMLSelectElement;
+    const is = { kind: document.getElementById('isKind')!, season: document.getElementById('isSeason')!, ref: document.getElementById('isRef')!, status: document.getElementById('isStatus')! };
+    const card = document.getElementById('isCard');
+    const fine = document.getElementById('ifStatus')!;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+
+    const saved = localStorage.getItem('field-season') || 'canopy';
+    if (byKey[saved]) season.value = saved;
+    const update = () => { is.kind.textContent = kind.value; is.season.textContent = byKey[season.value]?.label || season.value; };
+    season.addEventListener('change', () => { (window as any).__fieldSeason?.(season.value); update(); });
+    kind.addEventListener('input', update);
+    document.addEventListener('field:season', (e) => { const k = (e as CustomEvent).detail; if (byKey[k]) { season.value = k; update(); } });
+    update();
+
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#f0a890' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('iname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('iemail') as HTMLInputElement).value.trim();
+      const brief = (document.getElementById('brief') as HTMLTextAreaElement).value.trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (brief.length < 10) { setErr('brief', 'A sentence on what you\'d read.'); ok = false; } else setErr('brief', '');
+      if (!ok) return;
+      const ref = 'FS-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      is.ref.textContent = ref; is.status.textContent = 'Logged · ' + ref; card?.classList.add('filed');
+      fine.textContent = `Intake ${ref} received , we reply within the week.`; fine.style.color = 'var(--accent)';
+      if (toast) { toast.textContent = `Received, ${name.split(' ')[0]} , intake ${ref}, reading in ${byKey[season.value]?.label}. We reply within the week.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6600); }
+    });
+  </script>
+</FieldLayout>

@@ -1,0 +1,77 @@
+---
+/**
+ * OfferSim , CIVIL HOUSE's offer-signal dashboard (website28, round 2). Price vs asking + certainty of
+ * funds + conditions produce a weighted offer-strength score, risk band, overbid amount, and advice.
+ */
+---
+<div class="grid lg:grid-cols-2 gap-6 items-stretch">
+  <div class="spotlight rounded-2xl border border-[var(--line)] bg-white/[0.03] p-7">
+    <div class="mb-7">
+      <div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] mb-3"><span>Price vs asking</span><span id="priceVal" class="brass-text font-mono text-base">0%</span></div>
+      <input type="range" id="simPrice" min="-10" max="25" value="0" step="1" aria-label="Price versus asking, percent" class="w-full accent-[var(--brass)]" />
+    </div>
+    <div class="flex flex-col gap-5">
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Certainty of funds
+        <select id="simFinance" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors">
+          <option value="1.0">Cash (proof ready)</option>
+          <option value="0.9">High equity / bridge</option>
+          <option value="0.7" selected>Standard mortgage</option>
+          <option value="0.5">High LTV / unverified</option>
+        </select></label>
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Conditions & timing
+        <select id="simCond" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors">
+          <option value="1.0">No conditions / flexible</option>
+          <option value="0.9">Inspection only</option>
+          <option value="0.7" selected>Standard conditions</option>
+          <option value="0.4">Sale of own home required</option>
+        </select></label>
+    </div>
+  </div>
+
+  <div class="spotlight rounded-2xl border border-[var(--line)] bg-black/30 p-8 flex flex-col items-center text-center">
+    <div id="scoreOut" class="text-7xl font-black tracking-tighter brass-text">--</div>
+    <div class="text-[11px] font-semibold uppercase tracking-[0.25em] text-[var(--mut)] mt-1">Offer strength score</div>
+    <div class="mt-6 w-full h-2 rounded-full bg-white/10 overflow-hidden"><div id="meterFill" class="h-full bg-[var(--brass)] transition-all duration-500" style="width:0%"></div></div>
+    <div class="mt-5 w-full flex items-center justify-between text-sm text-[var(--mut)]"><span>Overbid: <span id="overbidAmt" class="text-[var(--ink)]">€0</span></span><span>Risk: <span id="riskLabel" class="text-[var(--ink)]">Medium</span></span></div>
+    <div id="scoreAdvice" class="mt-6 text-sm text-[var(--mut)] leading-relaxed border-t border-[var(--line)] pt-5 w-full">Configure variables to analyze offer signal.</div>
+  </div>
+</div>
+
+<script>
+  const $ = (id: string) => document.getElementById(id);
+  const simPrice = $('simPrice') as HTMLInputElement | null, simFinance = $('simFinance') as HTMLSelectElement | null, simCond = $('simCond') as HTMLSelectElement | null;
+  const priceVal = $('priceVal'), scoreOut = $('scoreOut'), meterFill = $('meterFill'), overbidAmt = $('overbidAmt'), riskLabel = $('riskLabel'), scoreAdvice = $('scoreAdvice');
+  const BASE_PRICE = 500000;
+  const animate = (el: HTMLElement, start: number, end: number, dur: number) => {
+    let t0: number | null = null;
+    const step = (ts: number) => { if (!t0) t0 = ts; const p = Math.min((ts - t0) / dur, 1); el.textContent = String(Math.floor(p * (end - start) + start)); if (p < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  };
+  if (simPrice && simFinance && simCond && scoreOut && priceVal && meterFill) {
+    const update = () => {
+      const p = parseInt(simPrice.value);
+      priceVal.textContent = (p > 0 ? '+' : '') + p + '%';
+      if (overbidAmt) { const v = BASE_PRICE * (p / 100); overbidAmt.textContent = (v >= 0 ? '€+' : '€') + Math.abs(v).toLocaleString('nl-NL'); }
+      let priceScore = Math.max(0, Math.min(100, 60 + p * 2));
+      const fF = parseFloat(simFinance.value), cF = parseFloat(simCond.value), risk = fF * cF;
+      let score = priceScore * risk;
+      if (p >= 0 && risk >= 0.9) score += 15;
+      score = Math.max(1, Math.min(99, score));
+      const si = Math.round(score);
+      const cur = parseInt(scoreOut.textContent === '--' ? '0' : scoreOut.textContent || '0');
+      animate(scoreOut, cur, si, 500);
+      meterFill.style.width = si + '%';
+      meterFill.style.backgroundColor = si > 80 ? '#caa86d' : si > 50 ? '#f4f6fb' : '#718096';
+      if (riskLabel) { if (risk > 0.85) { riskLabel.textContent = 'Low'; riskLabel.style.color = '#caa86d'; } else if (risk > 0.5) { riskLabel.textContent = 'Medium'; riskLabel.style.color = '#fff'; } else { riskLabel.textContent = 'High'; riskLabel.style.color = '#ff6b6b'; } }
+      if (scoreAdvice) {
+        scoreAdvice.textContent = si > 90 ? 'Dominant signal. High probability of acceptance.'
+          : si > 75 ? 'Strong contender. A small term tweak could seal it.'
+          : si > 50 ? 'Competitive range. Needs cleaner terms or better timing.'
+          : risk < 0.5 ? 'Risk warning. Conditions are weighing down the offer.'
+          : 'Below-market signal. Increase price or remove conditions.';
+      }
+    };
+    [simPrice, simFinance, simCond].forEach((el) => el.addEventListener('input', update));
+    update();
+  }
+</script>

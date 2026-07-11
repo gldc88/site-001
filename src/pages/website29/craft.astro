@@ -1,0 +1,117 @@
+---
+/**
+ * CALIBER STUDIO , Craft (website29, round 2). Design, movement, assembly , the three disciplines.
+ */
+import CaliberLayout from '../../layouts/CaliberLayout.astro';
+import { CRAFT } from '../../data/caliber';
+---
+
+<CaliberLayout title="Craft | Caliber Studio" description="How Caliber builds: a coherent design system, movements regulated in-house, and assembly that is sealed and pressure-tested." active="craft">
+  <section class="mx-auto max-w-[1100px] px-6 pt-14 pb-10">
+    <span class="text-[10px] font-semibold uppercase tracking-[0.3em] accent">Craft</span>
+    <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.02] mt-4">From movement <br />to <span class="accent">finish.</span></h1>
+    <p class="mt-6 max-w-xl text-[var(--mut)] text-sm leading-relaxed">Three disciplines, one bench. Nothing is outsourced that decides how the watch keeps time or how it lasts.</p>
+  </section>
+
+  <section class="mx-auto max-w-[1100px] px-6 pb-20 flex flex-col gap-6">
+    {CRAFT.map((c, i) => (
+      <div class="reveal-on-scroll rounded-2xl border border-[var(--line)] bg-white/[0.02] p-8 grid md:grid-cols-[140px_1fr] gap-6 items-start">
+        <div><span class="text-3xl font-bold accent font-mono">{String(i + 1).padStart(2, '0')}</span><div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] mt-2">{c.k}</div></div>
+        <div><h2 class="text-2xl font-bold tracking-tight">{c.t}</h2><p class="mt-3 text-[var(--mut)] leading-relaxed">{c.body}</p></div>
+      </div>
+    ))}
+    <div class="mt-6 flex flex-wrap gap-3 justify-center">
+      <a href="/website29/configurator" class="bg-[var(--accent)] text-black px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:bg-white transition-colors">Configure a watch</a>
+      <a href="/website29/platforms" class="border border-[var(--line)] px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:border-[var(--accent)] transition-all">See platforms</a>
+    </div>
+  </section>
+
+  <section class="section" id="regulator">
+    <div class="rg-head">
+      <span class="kicker">The Regulator</span>
+      <h2>How steady is your second?</h2>
+      <p>Tap the plate eight times , one tap per second, by feel alone. The bench will read
+        your hand the way it reads an escapement. Then remember: our calibre holds ±2ms, all day, for decades.</p>
+    </div>
+    <div class="rg-bench">
+      <button type="button" class="rg-plate" id="rgPlate" aria-label="Tap plate , tap eight times, one per second. Space bar works too.">
+        <span class="rg-count" id="rgCount">TAP</span>
+      </button>
+      <div class="rg-readout" aria-live="polite">
+        <div class="rg-line"><span>Mean beat</span><b id="rgMean">,</b></div>
+        <div class="rg-line"><span>Rate</span><b id="rgRate">,</b></div>
+        <div class="rg-line"><span>Spread</span><b id="rgSpread">,</b></div>
+        <p class="rg-verdict" id="rgVerdict">The bench is listening.</p>
+        <button type="button" class="rg-again" id="rgAgain" hidden>Measure again</button>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #regulator .rg-head { max-width: 660px; margin-bottom: 24px; }
+    #regulator h2 { margin: 10px 0 12px; }
+    .rg-bench { display: grid; grid-template-columns: auto 1fr; gap: clamp(24px,4vw,52px); align-items: center; border: 1px solid rgba(90, 140, 200, 0.25); border-radius: 6px; padding: clamp(22px,3vw,38px); background: rgba(8, 12, 18, 0.7); }
+    .rg-plate { width: 130px; height: 130px; border-radius: 50%; border: 2px solid rgba(90, 140, 200, 0.5); background: radial-gradient(circle at 35% 30%, rgba(90, 140, 200, 0.15), rgba(8, 12, 18, 0.9) 70%); cursor: pointer; display: grid; place-items: center; transition: box-shadow 0.15s ease; }
+    .rg-plate:active { box-shadow: 0 0 26px rgba(90, 140, 200, 0.45); }
+    .rg-plate:focus-visible { outline: 2px solid #5a8cc8; outline-offset: 4px; }
+    .rg-count { font-family: ui-monospace, monospace; font-size: 18px; letter-spacing: 0.14em; color: #9cc2ea; font-variant-numeric: tabular-nums; }
+    .rg-line { display: flex; justify-content: space-between; gap: 16px; font-family: ui-monospace, monospace; font-size: 12px; padding: 7px 0; border-bottom: 1px solid rgba(90, 140, 200, 0.15); }
+    .rg-line span { color: rgba(160, 185, 215, 0.6); letter-spacing: 0.12em; text-transform: uppercase; font-size: 10px; }
+    .rg-line b { color: #cfe2f5; font-variant-numeric: tabular-nums; }
+    .rg-verdict { font-size: 13.5px; line-height: 1.65; margin: 14px 0 10px; color: rgba(200, 220, 240, 0.9); min-height: 44px; }
+    .rg-again { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #9cc2ea; background: none; border: 1px solid rgba(90, 140, 200, 0.4); border-radius: 3px; padding: 8px 14px; cursor: pointer; }
+    @media (max-width: 700px) { .rg-bench { grid-template-columns: 1fr; justify-items: center; } .rg-readout { width: 100%; } }
+  </style>
+
+  <script>
+    /* R3 "The Regulator" , jouw ritme, gemeten als een uurwerk. */
+    (() => {
+      const NEED = 8;
+      const plate = document.getElementById('rgPlate');
+      const count = document.getElementById('rgCount');
+      const mean = document.getElementById('rgMean');
+      const rate = document.getElementById('rgRate');
+      const spread = document.getElementById('rgSpread');
+      const verdict = document.getElementById('rgVerdict');
+      const again = document.getElementById('rgAgain');
+      if (!plate || !count || !verdict) return;
+      let taps: number[] = [];
+      let done = false;
+
+      const reset = () => {
+        taps = []; done = false;
+        count.textContent = 'TAP';
+        if (mean) mean.textContent = ',';
+        if (rate) rate.textContent = ',';
+        if (spread) spread.textContent = ',';
+        verdict.textContent = 'The bench is listening.';
+        again?.setAttribute('hidden', '');
+      };
+      const finish = () => {
+        done = true;
+        const gaps: number[] = [];
+        for (let i = 1; i < taps.length; i++) gaps.push(taps[i] - taps[i - 1]);
+        const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+        const dev = Math.round(avg - 1000);
+        const sd = Math.sqrt(gaps.reduce((a, g) => a + (g - avg) ** 2, 0) / gaps.length);
+        if (mean) mean.textContent = `${Math.round(avg)} ms`;
+        if (rate) rate.textContent = `${dev >= 0 ? '+' : ''}${dev} ms/beat`;
+        if (spread) spread.textContent = `±${Math.round(sd)} ms`;
+        const steady = sd < 60;
+        verdict.textContent = `${dev > 30 ? 'Your hand runs slow' : dev < -30 ? 'Your hand runs fast' : 'Your hand keeps honest time'} , ${steady ? 'and remarkably steady' : `with ±${Math.round(sd)}ms of wander`}. Our calibre holds ±2ms without ever thinking about it. That is the whole point of the escapement.`;
+        count.textContent = 'DONE';
+        again?.removeAttribute('hidden');
+        try { localStorage.setItem('caliber-regulator', JSON.stringify({ dev, sd: Math.round(sd) })); } catch { /* private mode */ }
+      };
+      const tap = () => {
+        if (done) return;
+        taps.push(performance.now());
+        count.textContent = `${taps.length}/${NEED}`;
+        if (taps.length >= NEED) finish();
+      };
+      plate.addEventListener('click', tap);
+      plate.addEventListener('keydown', (e) => { if (e.key === ' ' && !e.repeat) { e.preventDefault(); tap(); } });
+      again?.addEventListener('click', reset);
+    })();
+  </script>
+</CaliberLayout>

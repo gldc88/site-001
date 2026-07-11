@@ -1,0 +1,122 @@
+---
+/**
+ * MonarchLayout , shared shell for MONARCH PRIVATE CHAUFFEUR (website19, round 2).
+ * Persistent WebGL night-drive light-streak backdrop: idles at a cruise; pages surge it on dispatch
+ * (or a small rev on fleet select) via window.__drive.setSpeed(>1). Props: title, description, active.
+ */
+import '../styles/monarch-fonts.css';
+import '../styles/monarch.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'service', label: 'Service', href: '/website19/service' },
+  { key: 'fleet', label: 'Fleet', href: '/website19/fleet' },
+  { key: 'account', label: 'Account', href: '/website19/account' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // R3 Ghost Mode: pre-paint restore , discretie flitst niet.
+      try { if (localStorage.getItem('monarch-ghost') === '1') document.documentElement.classList.add('ghost'); } catch (e) {}
+    </script>
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website19" class="brand">Monarch</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website19/dispatch" class="cta">Dispatch a Car</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Monarch Private Chauffeur</h3>
+          <p>A discreet dispatch, not a taxi line , quiet cabins, timed arrivals, and the same chauffeur once we know you. Pick a window, a class, a car, and the rest is handled. Fictional brand, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Monarch</h4><a href="/website19/service">Service</a><a href="/website19/fleet">Fleet</a><a href="/website19/dispatch">Dispatch</a><a href="/website19/account">Account</a></div>
+        <div class="f-col"><h4>Dispatch</h4><a href="tel:+10000000000">24h dispatch line</a><a href="mailto:dispatch@monarch.example">dispatch@monarch.example</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Monarch Private Chauffeur. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · discreet · 24h dispatch</span>
+      </div>
+    </footer>
+
+    <button type="button" class="ghostmode" id="ghostBtn" aria-pressed="false">
+      <span class="gm-dot" aria-hidden="true"></span>
+      <span class="gm-label">Ghost mode</span>
+    </button>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "Ghost Mode": discretie als schakelaar ---- */
+      const ghostBtn = document.getElementById('ghostBtn');
+      const syncGhost = () => {
+        const on = document.documentElement.classList.contains('ghost');
+        ghostBtn?.setAttribute('aria-pressed', String(on));
+        const label = ghostBtn?.querySelector('.gm-label');
+        if (label) label.textContent = on ? 'Ghost mode on' : 'Ghost mode';
+      };
+      syncGhost();
+      ghostBtn?.addEventListener('click', () => {
+        const on = document.documentElement.classList.toggle('ghost');
+        try { localStorage.setItem('monarch-ghost', on ? '1' : '0'); } catch { /* private mode */ }
+        syncGhost();
+      });
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/drive-scene')
+          .then(({ initDriveScene }) => {
+            const scene = initDriveScene(canvas);
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+            (window as any).__drive = scene;
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

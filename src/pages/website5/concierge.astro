@@ -1,0 +1,113 @@
+---
+/**
+ * OVERSEAS LINE , Concierge (website5, round 2). Signature: a crossing-request builder with a
+ * live booking summary, a generated reference, and a toast.
+ */
+import OverseasLayout from '../../layouts/OverseasLayout.astro';
+
+const CROSSINGS = ['New York → Southampton', 'Riviera Circuit', 'Pacific Drift'];
+const SUITES = ['Horizon Suite', 'Garden Terrace', "Owner's Suite", 'Grand Duplex'];
+---
+
+<OverseasLayout title="Concierge | OVERSEAS LINE" description="Request a crossing aboard Overseas Line. No booking line , one message and the concierge arranges everything from the pier to the car." active="">
+  <section class="page-hero" style="min-height:52svh;">
+    <div class="page-hero-media"><img src="/website5/ship.jpg" alt="A liner at the gold hour" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="eyebrow">Concierge</span>
+      <h1>Hold a suite for the <em>quiet</em>.</h1>
+      <p class="sub">No booking line and no card online. Tell us the crossing and the suite; the concierge confirms by message and arranges the pier, the transfers, and the car at both ends.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="con-grid">
+      <form id="conForm" class="con-form panel" novalidate>
+        <div class="cf-row">
+          <div class="fld"><label for="crossing">Crossing</label><select id="crossing" name="crossing">{CROSSINGS.map((c) => <option>{c}</option>)}</select></div>
+          <div class="fld"><label for="suite">Suite</label><select id="suite" name="suite">{SUITES.map((s) => <option>{s}</option>)}</select></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="guests">Guests</label><select id="guests" name="guests"><option value="2">02 guests</option><option value="1">01 guest</option><option value="3">03 guests</option><option value="4">04 guests</option></select></div>
+          <div class="fld"><label for="when">Preferred</label><input id="when" name="when" type="month" /></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="cname">Name</label><input id="cname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="cemail">Email</label><input id="cemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="cnote">Notes for the concierge (optional)</label><textarea id="cnote" name="note" rows="3" placeholder="Occasion, dietary notes, the kind of quiet you need…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request this crossing</button>
+        <p class="cf-fine">No card required. The concierge replies within the day.</p>
+      </form>
+
+      <aside class="manifest panel" id="manifest">
+        <div class="mf-top"><span class="eyebrow">Manifest</span><span id="mfRef" class="mf-ref">, , , ,</span></div>
+        <div class="mf-line"><span>Crossing</span><b id="mfCrossing">New York → Southampton</b></div>
+        <div class="mf-line"><span>Suite</span><b id="mfSuite">Horizon Suite</b></div>
+        <div class="mf-line"><span>Guests</span><b id="mfGuests">2</b></div>
+        <div class="mf-line"><span>Preferred</span><b id="mfWhen">,</b></div>
+        <div class="mf-status" id="mfStatus">Awaiting request</div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .con-grid { display: grid; grid-template-columns: 1.35fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .con-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .con-form textarea { resize: vertical; font-family: var(--sans); }
+    .cf-fine { font-family: var(--serif); font-style: italic; font-size: 0.82rem; color: var(--faint); text-align: center; }
+    .manifest { position: sticky; top: 96px; padding: clamp(24px,3vw,34px); }
+    .mf-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .mf-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; color: var(--gold); }
+    .mf-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 15px 0; border-bottom: 1px solid var(--hair-soft); }
+    .mf-line span { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .mf-line b { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: #fff; text-align: right; }
+    .mf-status { margin-top: 20px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair-soft); }
+    .manifest.filed { border-color: var(--gold); }
+    .manifest.filed .mf-status { color: #020305; background: var(--gold); border-style: solid; border-color: var(--gold); }
+    @media (max-width: 900px) { .con-grid { grid-template-columns: 1fr; } .manifest { position: static; } }
+    @media (max-width: 560px) { .cf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('conForm') as HTMLFormElement;
+    const crossing = document.getElementById('crossing') as HTMLSelectElement;
+    const suite = document.getElementById('suite') as HTMLSelectElement;
+    const guests = document.getElementById('guests') as HTMLSelectElement;
+    const when = document.getElementById('when') as HTMLInputElement;
+    const mf = { crossing: document.getElementById('mfCrossing')!, suite: document.getElementById('mfSuite')!, guests: document.getElementById('mfGuests')!, when: document.getElementById('mfWhen')!, status: document.getElementById('mfStatus')!, ref: document.getElementById('mfRef')! };
+    const card = document.querySelector<HTMLElement>('.manifest');
+
+    function update() {
+      mf.crossing.textContent = crossing.value;
+      mf.suite.textContent = suite.value;
+      mf.guests.textContent = guests.value;
+      mf.when.textContent = when.value ? new Date(when.value + '-01T00:00:00').toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : ',';
+    }
+    [crossing, suite, guests, when].forEach((el) => el.addEventListener('input', update));
+    update();
+
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6500); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#e0a07a' : ''; };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('cname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('cemail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'OL-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      mf.ref.textContent = ref;
+      mf.status.textContent = 'Held · ' + ref;
+      card?.classList.add('filed');
+      showToast(`Held for you, ${name.split(' ')[0]} , ${suite.value}, ${crossing.value}, ref ${ref}. The concierge confirms within the day.`);
+    });
+  </script>
+</OverseasLayout>

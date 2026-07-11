@@ -1,0 +1,130 @@
+---
+/**
+ * MONARCH PRIVATE CHAUFFEUR , Dispatch (website19, round 2). Signature: the working dispatch console ,
+ * pick a window (busy ones blocked), a service, a fleet, route + passenger; Confirm surges the
+ * streaks (setSpeed > 1) and writes a manifest + reference.
+ */
+import MonarchLayout from '../../layouts/MonarchLayout.astro';
+import { WINDOWS, BUSY, SERVICES, FLEET } from '../../data/monarch';
+---
+
+<MonarchLayout title="Dispatch | Monarch Private Chauffeur" description="The Monarch dispatch console. Pick an arrival window, a service class, a fleet, and a route; confirm and the car departs.">
+  <div class="page-hero">
+    <span class="kicker">Dispatch</span>
+    <h1>Confirm, and it <em>departs</em>.</h1>
+    <p class="sub">A working console, not a contact form. Pick an arrival window , the busy ones are blocked , set the class, the car, and the route, then confirm. The streaks surge as the car pulls away.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="dispatch-grid">
+      <form id="dispatchForm" class="dispatch-form panel ch" novalidate>
+        <div class="df-field">
+          <span class="lbl">Arrival window</span>
+          <div class="window-grid" id="windowGrid">
+            {WINDOWS.map((w) => (<button type="button" class={`win ${BUSY.includes(w) ? 'busy' : ''}`} data-win={w} disabled={BUSY.includes(w)} aria-pressed="false">{w}{BUSY.includes(w) ? <span class="win-x">full</span> : null}</button>))}
+          </div>
+          <span class="err" data-err="window"></span>
+        </div>
+        <div class="df-row">
+          <div class="fld"><label for="service">Service</label><select id="service" name="service">{SERVICES.map((s) => <option value={s.key}>{s.name}</option>)}</select></div>
+          <div class="fld"><label for="fleet">Fleet</label><select id="fleet" name="fleet">{FLEET.map((f) => <option value={f.key}>{f.name}</option>)}</select></div>
+        </div>
+        <div class="df-row">
+          <div class="fld"><label for="pickup">Pickup</label><input id="pickup" name="pickup" type="text" placeholder="Address or terminal" /><span class="err" data-err="pickup"></span></div>
+          <div class="fld"><label for="dropoff">Drop-off</label><input id="dropoff" name="dropoff" type="text" placeholder="Destination" /></div>
+        </div>
+        <div class="df-row">
+          <div class="fld"><label for="dname">Passenger</label><input id="dname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="demail">Email</label><input id="demail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Confirm dispatch ▸</button>
+        <p class="df-fine" id="dfStatus">Free wait on delays · same chauffeur once we know you.</p>
+      </form>
+
+      <aside class="manifest panel" id="manifest">
+        <div class="mf-top"><span class="kicker" style="font-size:9px;">Manifest</span><span id="mfRef" class="redact mf-ref">, , , ,</span></div>
+        <div class="mf-line"><span>Window</span><b id="mfWindow" class="redact">,</b></div>
+        <div class="mf-line"><span>Service</span><b id="mfService" class="redact">Private City Transfer</b></div>
+        <div class="mf-line"><span>Fleet</span><b id="mfFleet" class="redact">Shadow Class</b></div>
+        <div class="mf-line"><span>Route</span><b id="mfRoute" class="redact">,</b></div>
+        <div class="mf-status" id="mfStatus">Awaiting confirmation</div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .dispatch-grid { display: grid; grid-template-columns: 1.5fr 0.8fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .dispatch-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .df-field { display: flex; flex-direction: column; gap: 9px; }
+    .window-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .win { position: relative; font-family: var(--mono); font-size: 12px; color: var(--ink); border: 1px solid var(--line); padding: 13px 6px; border-radius: 3px; transition: all 0.25s; background: rgba(255,255,255,0.02); }
+    .win:not(.busy):hover { border-color: var(--line-ch); }
+    .win[aria-pressed='true'] { background: var(--champagne); color: #06070b; border-color: var(--champagne); }
+    .win.busy { color: var(--champ-deep); cursor: not-allowed; opacity: 0.5; }
+    .win-x { display: block; font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+    .df-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .df-fine { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em; color: var(--faint); text-align: center; }
+
+    .manifest { position: sticky; top: 90px; padding: clamp(24px,3vw,32px); }
+    .mf-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .mf-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--champagne); }
+    .mf-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .mf-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .mf-line b { font-family: var(--serif); font-size: 1.05rem; color: #fff; text-align: right; }
+    .mf-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); border-radius: 3px; }
+    .manifest.confirmed { border-color: var(--line-ch); }
+    .manifest.confirmed .mf-status { color: #06070b; background: var(--champagne); border-style: solid; border-color: var(--champagne); }
+    @media (max-width: 900px) { .dispatch-grid { grid-template-columns: 1fr; } .manifest { position: static; } }
+    @media (max-width: 560px) { .df-row { grid-template-columns: 1fr; } .window-grid { grid-template-columns: repeat(3, 1fr); } }
+  </style>
+
+  <script>
+    import { SERVICES, FLEET } from '../../data/monarch';
+    const svcName = Object.fromEntries(SERVICES.map((s) => [s.key, s.name]));
+    const fltName = Object.fromEntries(FLEET.map((f) => [f.key, f.name]));
+    const form = document.getElementById('dispatchForm') as HTMLFormElement;
+    const wins = Array.from(document.querySelectorAll<HTMLElement>('.win'));
+    const service = document.getElementById('service') as HTMLSelectElement;
+    const fleet = document.getElementById('fleet') as HTMLSelectElement;
+    const pickup = document.getElementById('pickup') as HTMLInputElement;
+    const dropoff = document.getElementById('dropoff') as HTMLInputElement;
+    const mf = { window: document.getElementById('mfWindow')!, service: document.getElementById('mfService')!, fleet: document.getElementById('mfFleet')!, route: document.getElementById('mfRoute')!, ref: document.getElementById('mfRef')!, status: document.getElementById('mfStatus')! };
+    const card = document.getElementById('manifest');
+    const toast = document.getElementById('toast');
+    let tT = 0; let chosenWin = '';
+
+    // restore draft
+    const sv = localStorage.getItem('monarch-service'); if (sv && svcName[sv]) service.value = sv;
+    const fl = localStorage.getItem('monarch-fleet'); if (fl && fltName[fl]) fleet.value = fl;
+
+    function update() {
+      mf.window.textContent = chosenWin || ',';
+      mf.service.textContent = svcName[service.value]; mf.fleet.textContent = fltName[fleet.value];
+      mf.route.textContent = pickup.value.trim() ? `${pickup.value.trim()} → ${dropoff.value.trim() || '…'}` : ',';
+    }
+    wins.forEach((w) => { if (!w.classList.contains('busy')) w.addEventListener('click', () => { wins.forEach((x) => x.setAttribute('aria-pressed', String(x === w))); chosenWin = w.dataset.win!; update(); }); });
+    service.addEventListener('change', () => { localStorage.setItem('monarch-service', service.value); update(); });
+    fleet.addEventListener('change', () => { localStorage.setItem('monarch-fleet', fleet.value); update(); });
+    [pickup, dropoff].forEach((el) => el.addEventListener('input', update));
+    update();
+
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#e6a3a0' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('dname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('demail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (!chosenWin) { setErr('window', 'Pick an arrival window.'); ok = false; } else setErr('window', '');
+      if (pickup.value.trim().length < 2) { setErr('pickup', 'Where from?'); ok = false; } else setErr('pickup', '');
+      if (name.length < 2) { setErr('name', 'Passenger name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'MN-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      mf.ref.textContent = ref; mf.status.textContent = 'Dispatched · ' + ref; card?.classList.add('confirmed');
+      (window as any).__drive?.setSpeed(2); // surge , the car departs
+      if (toast) { toast.textContent = `Dispatched, ${name.split(' ')[0]} , ${fltName[fleet.value]}, ${chosenWin} window, ref ${ref}. The car is on its way.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+</MonarchLayout>

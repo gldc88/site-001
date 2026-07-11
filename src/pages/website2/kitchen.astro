@@ -1,0 +1,97 @@
+---
+/**
+ * NOCTURNE , Kitchen (website2, round 2). Signature: omakase course list + counter-seat booking.
+ */
+import NocturneLayout from '../../layouts/NocturneLayout.astro';
+
+const COURSES = [
+  { n: 'I', name: 'First Snow', desc: 'Chilled dashi, citrus ice, a single shaving of cured trout.' },
+  { n: 'II', name: 'Charcoal', desc: 'Binchotan-grilled hassun , sea, smoke, and a green note.' },
+  { n: 'III', name: 'The Catch', desc: 'Tonight’s fish, aged on the bone, finished over fire.' },
+  { n: 'IV', name: 'Steam', desc: 'Chawanmushi, uni, dashi poured at the counter.' },
+  { n: 'V', name: 'Rice & Coal', desc: 'Donabe rice, charred scallion, soy cured the long way.' },
+  { n: 'VI', name: 'Last Light', desc: 'Hojicha custard, black sesame, burnt-sugar glass.' },
+];
+---
+
+<NocturneLayout title="The Kitchen | NOCTURNE" description="An eight-seat counter at Nocturne, Tokyo. Charcoal, citrus, sea , omakase nightly, the food does the talking." active="kitchen">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website2/kitchen.jpg" alt="Charcoal at the counter" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">The Kitchen</span>
+      <h1>Counter, Fire, <em>Silence</em></h1>
+      <p class="sub">Eight seats. One chef, working in front of you over white-hot charcoal. Citrus, sea, smoke, and a pour chosen the moment you sit. Conversations stay low; the food does the talking.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="k-grid">
+      <div class="k-menu">
+        <div class="sec-head" style="margin-bottom:38px;"><div><span class="overline cyan">Tonight · Omakase</span><h2 style="font-size:clamp(2rem,3.6vw,3rem);">Six over fire</h2></div></div>
+        <ol class="courses">
+          {COURSES.map((c) => (
+            <li class="course"><span class="c-n">{c.n}</span><div><h3>{c.name}</h3><p>{c.desc}</p></div></li>
+          ))}
+        </ol>
+        <p class="k-note">¥28,000 per guest, with an optional sake or wine flight. The menu turns with the season and the market; tell us of allergies when you book and the counter adapts, quietly.</p>
+      </div>
+
+      <aside class="k-book panel">
+        <span class="overline cyan">Reserve the Counter</span>
+        <p class="kb-line">One sitting a night. House guests are seated first; the listening bar stays open later, for everyone.</p>
+        <form id="seatForm" novalidate>
+          <div class="fld"><label for="kdate">Date</label><input id="kdate" name="date" type="date" /><span class="err" data-err="date"></span></div>
+          <div class="fld"><label for="kseats">Seats</label><select id="kseats" name="seats"><option value="2">02 seats</option><option value="1">01 seat</option><option value="3">03 seats</option><option value="4">04 seats</option></select></div>
+          <div class="fld"><label for="ktime">Sitting</label><select id="ktime" name="time"><option>19:00</option><option selected>20:00</option><option>21:00</option></select></div>
+          <div class="fld"><label for="kname">Name</label><input id="kname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="kemail">Email</label><input id="kemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+          <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request a seat</button>
+        </form>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .k-grid { display: grid; grid-template-columns: 1.5fr 0.9fr; gap: clamp(24px,4vw,50px); align-items: start; }
+    .k-menu { min-width: 0; }
+    .courses { list-style: none; }
+    .course { display: grid; grid-template-columns: 56px 1fr; gap: 20px; align-items: baseline; padding: 26px 0; border-top: 1px solid var(--hair); }
+    .course:last-child { border-bottom: 1px solid var(--hair); }
+    .c-n { font-family: var(--head); font-size: 1.4rem; color: var(--faint); letter-spacing: 0.08em; }
+    .course h3 { font-size: clamp(1.4rem,2.4vw,2rem); color: #fff; transition: color 0.3s; }
+    .course:hover h3 { color: var(--ember); }
+    .course p { color: var(--muted); margin-top: 8px; line-height: 1.6; }
+    .k-note { margin-top: 34px; color: var(--faint); font-family: var(--head); font-style: italic; font-size: 0.95rem; line-height: 1.8; max-width: 58ch; }
+
+    .k-book { position: sticky; top: 96px; padding: clamp(24px,3vw,34px); }
+    .kb-line { color: var(--muted); font-size: 0.85rem; line-height: 1.7; margin: 16px 0 6px; }
+    #seatForm { margin-top: 18px; display: flex; flex-direction: column; gap: 15px; }
+    @media (max-width: 900px) { .k-grid { grid-template-columns: 1fr; } .k-book { position: static; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('seatForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5600); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--magenta)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const seats = String(d.get('seats') || '2');
+      const time = String(d.get('time') || '20:00');
+      let ok = true;
+      if (!String(d.get('date') || '')) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      form.reset();
+      showToast(`Thank you, ${name.split(' ')[0]}. We hold ${seats} seat${Number(seats) > 1 ? 's' : ''} at the ${time} counter and confirm by hand.`);
+    });
+  </script>
+</NocturneLayout>

@@ -1,0 +1,100 @@
+---
+/**
+ * UNFORM / 010 , Work / Artifacts (website10, round 2). Signature: a windowed file-browser
+ * (artifact list -> viewer pane).
+ */
+import UnformLayout from '../../layouts/UnformLayout.astro';
+
+const ARTIFACTS = [
+  { id: 'aeon', name: 'Aeon Tower', type: 'Architecture', year: '2024', status: 'Delivered', blurb: 'A vertical study in light discipline and circulation , how a tall building can feel quiet.', bullets: ['Concept massing + detailing', 'Material palette + renders', 'Site constraints mapped', 'Daylight + shadow study'] },
+  { id: 'monobrand', name: 'Monobrand', type: 'Identity', year: '2023', status: 'Shipped', blurb: 'A brand system that survives being stripped down to type , no logo crutch, no gradient hiding.', bullets: ['Identity kit + usage rules', 'Tone + copy system', 'Print + digital templates', 'One typeface, used well'] },
+  { id: 'flux', name: 'Flux Interface', type: 'UI / UX', year: '2024', status: 'In progress', blurb: 'A calm UI for high-pressure operator decisions , less to look at, more to rely on.', bullets: ['Information architecture', 'Component library', 'Reduced-motion mode', 'Error states designed first'] },
+  { id: 'vellum', name: 'Vellum', type: 'Print', year: '2022', status: 'Archived', blurb: 'Printed matter with a digital spine: indexing, restraint, and paper chosen to last.', bullets: ['Grid + editorial system', 'Paper + finish spec', 'Production-ready files', 'A book that indexes itself'] },
+];
+---
+
+<UnformLayout title="Work , Artifacts | UNFORM / 010" description="Selected artifacts from UNFORM / 010 , architecture, identity, UI/UX, and print. A small, deliberate body of work." active="work">
+  <div class="page-hero">
+    <span class="overline">Artifacts</span>
+    <h1>A small, <em>deliberate</em> archive.</h1>
+    <p class="sub">Four projects we'll stand behind. Select a file on the left to open it. Everything here was designed by removing things until only the necessary stayed.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="browser">
+      <div class="win file-list">
+        <div class="win-bar"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-title">~/artifacts</span></div>
+        <div class="win-body fl-body" id="fileList">
+          {ARTIFACTS.map((a, i) => (
+            <button class={`file ${i === 0 ? 'active' : ''}`} data-id={a.id}>
+              <span class="file-ic">▸</span>
+              <span class="file-name">{a.name}</span>
+              <span class="file-meta">{a.type}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="win viewer">
+        <div class="win-bar"><span class="win-dots"><i></i><i></i><i></i></span><span class="win-title" id="viewerTitle">aeon.project</span></div>
+        <div class="win-body">
+          {ARTIFACTS.map((a, i) => (
+            <article class={`art-view ${i === 0 ? 'active' : ''}`} id={`view-${a.id}`}>
+              <div class="av-head">
+                <div><span class="av-type">{a.type}</span><h2>{a.name}</h2></div>
+                <span class={`av-status s-${a.status.toLowerCase().replace(/\s/g, '')}`}>{a.status}</span>
+              </div>
+              <p class="av-blurb">{a.blurb}</p>
+              <div class="av-meta"><span>Year</span><b>{a.year}</b><span>Type</span><b>{a.type}</b></div>
+              <ul class="av-bullets">{a.bullets.map((b) => <li>{b}</li>)}</ul>
+              <a href="/website10/contact" class="btn-ghost" style="margin-top:8px;">Discuss a project like this →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .browser { display: grid; grid-template-columns: 0.7fr 1.3fr; gap: 16px; align-items: start; }
+    .file-list { position: sticky; top: 70px; }
+    .fl-body { padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .file { display: grid; grid-template-columns: 18px 1fr auto; gap: 10px; align-items: center; text-align: left; padding: 12px 12px; border-radius: 10px; transition: background 0.2s; }
+    .file:hover { background: rgba(255,255,255,0.04); }
+    .file.active { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+    .file-ic { font-family: var(--mono); color: var(--accent); font-size: 11px; }
+    .file-name { font-weight: 600; color: #fff; }
+    .file-meta { font-family: var(--mono); font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .viewer { min-width: 0; }
+    .art-view { display: none; }
+    .art-view.active { display: block; animation: fade 0.4s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .av-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+    .av-type { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+    .av-head h2 { font-size: clamp(1.9rem, 3.6vw, 3rem); color: #fff; margin-top: 6px; }
+    .av-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 11px; border-radius: 100px; border: 1px solid var(--hair); color: var(--muted); white-space: nowrap; }
+    .av-status.s-delivered, .av-status.s-shipped { color: #28c840; border-color: rgba(40,200,64,0.4); }
+    .av-status.s-inprogress { color: #febc2e; border-color: rgba(254,188,46,0.4); }
+    .av-blurb { color: var(--ink); font-size: 1.15rem; line-height: 1.6; margin: 22px 0; max-width: 56ch; }
+    .av-meta { display: flex; gap: 12px 22px; flex-wrap: wrap; align-items: baseline; padding: 16px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); margin-bottom: 22px; }
+    .av-meta span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+    .av-meta b { font-weight: 600; color: #fff; margin-right: 12px; }
+    .av-bullets { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+    .av-bullets li { font-size: 0.95rem; color: var(--muted); padding-left: 20px; position: relative; }
+    .av-bullets li::before { content: '▹'; position: absolute; left: 0; color: var(--accent); }
+
+    @media (max-width: 820px) { .browser { grid-template-columns: 1fr; } .file-list { position: static; } .fl-body { flex-direction: row; overflow-x: auto; } .file { min-width: 190px; } .av-bullets { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const files = Array.from(document.querySelectorAll<HTMLElement>('.file'));
+    const views = Array.from(document.querySelectorAll<HTMLElement>('.art-view'));
+    const vTitle = document.getElementById('viewerTitle');
+    files.forEach((f) => f.addEventListener('click', () => {
+      files.forEach((x) => x.classList.toggle('active', x === f));
+      views.forEach((v) => v.classList.toggle('active', v.id === `view-${f.dataset.id}`));
+      if (vTitle) vTitle.textContent = `${f.dataset.id}.project`;
+    }));
+  </script>
+</UnformLayout>

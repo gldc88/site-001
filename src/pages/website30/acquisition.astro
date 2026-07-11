@@ -1,0 +1,34 @@
+---
+/**
+ * OBSIDIAN MOTORS , Acquisition (website30, round 2). The four-step process, intent to handover.
+ */
+import ObsidianMotorsLayout from '../../layouts/ObsidianMotorsLayout.astro';
+import { ACQUISITION, PHONE, TEL } from '../../data/obsidian-motors';
+---
+
+<ObsidianMotorsLayout title="Acquisition | Obsidian Motors" description="Four steps from intent to handover: brief, inspection, private viewing, and documented handover." active="acquisition">
+  <section class="mx-auto max-w-[1320px] px-6 pt-14 pb-12">
+    <span class="text-[11px] font-semibold uppercase tracking-[0.3em] accent">Acquisition</span>
+    <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.92] mt-4">Intent to <span class="accent">handover.</span></h1>
+    <p class="mt-7 max-w-2xl text-[var(--mut)] text-lg leading-relaxed">Four steps, no theatre. You always know what happens next and what it costs before it happens.</p>
+  </section>
+
+  <section class="mx-auto max-w-[1320px] px-6 pb-16">
+    <ol class="relative border-l border-[var(--line)] ml-3">
+      {ACQUISITION.map((s) => (
+        <li class="relative pl-10 pb-12 last:pb-0 reveal-on-scroll">
+          <span class="absolute -left-[15px] grid place-items-center w-7 h-7 rounded-full bg-[var(--accent)]/15 border border-[var(--accent)]/50 text-[10px] font-bold accent">{s.n}</span>
+          <h2 class="text-2xl font-black tracking-tight">{s.t}</h2>
+          <p class="mt-2 text-[var(--mut)] leading-relaxed max-w-2xl">{s.d}</p>
+        </li>
+      ))}
+    </ol>
+    <div class="mt-8 rounded-2xl border border-[var(--line)] bg-white/[0.02] p-8 flex flex-col sm:flex-row items-center justify-between gap-5">
+      <p class="text-[var(--mut)] max-w-md">Start with intent. Tell us what the car needs to do, or shortlist from the floor , we prepare exactly those for a private viewing.</p>
+      <div class="flex gap-4 shrink-0">
+        <a href="/website30/showroom" class="bg-[var(--accent)] text-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] rounded hover:bg-[#3d63d8] transition-colors">Browse the floor</a>
+        <a href={`tel:${TEL}`} class="border border-[var(--line)] px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] rounded hover:border-[var(--accent)] transition-all">Call {PHONE}</a>
+      </div>
+    </div>
+  </section>
+</ObsidianMotorsLayout>

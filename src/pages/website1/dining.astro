@@ -1,0 +1,191 @@
+---
+/**
+ * THE OBSIDIAN , Restaurant & Bar (website1, round 2).
+ * Signature: a tasting menu with a wine-pairing toggle (live price + pairing notes) and a
+ * validated table-booking form + toast.
+ */
+import ObsidianLayout from '../../layouts/ObsidianLayout.astro';
+
+const COURSES = [
+  { n: 'I', name: 'Snow & Smoke', desc: 'Frozen consommé, burnt leek ash, trout roe.', pair: 'Riesling, Mosel , bone-dry, 2019' },
+  { n: 'II', name: 'Stone Bread', desc: 'House sourdough, cultured butter, Maldon, beef-fat crumble.', pair: 'Fino Sherry, en rama' },
+  { n: 'III', name: 'Lake & Citrus', desc: 'Raw char, finger lime, fermented gooseberry, dill oil.', pair: 'Grüner Veltliner, Wachau' },
+  { n: 'IV', name: 'The Garden, Burnt', desc: 'Charred alliums, aged parmesan, toasted hazelnut.', pair: 'Jura Savagnin, oxidative' },
+  { n: 'V', name: 'Beneath the Floe', desc: 'Langoustine, brown butter, sea herbs, koji.', pair: 'Blanc de Blancs Champagne' },
+  { n: 'VI', name: 'Eight Hours', desc: 'Slow short rib, bone marrow, black garlic, jus.', pair: 'Barolo, Serralunga, 2016' },
+  { n: 'VII', name: 'Obsidian', desc: 'Dark chocolate, smoked salt, single-malt caramel.', pair: 'Tawny Port, 20 year' },
+];
+const PRICE_BASE = 195;
+const PRICE_PAIR = 320;
+---
+
+<ObsidianLayout title="Restaurant & Bar | THE OBSIDIAN" description="Alchemy of Taste , a seasonal tasting menu and a low-lit bar led by Chef Marco Venturi at The Obsidian, Zürich." active="dining">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website1/dining.jpg" alt="A cocktail in candlelight at the bar" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Restaurant &amp; Bar</span>
+      <h1>Alchemy of <em>Taste</em></h1>
+      <p class="sub">A kitchen led by Chef Marco Venturi. Clean heat, sharp technique, ingredients pulled from the season , not a calendar. Expect smoke, salt, citrus, butter, and silence between courses.</p>
+    </div>
+  </section>
+
+  <section class="section tight chef" id="chef">
+    <div class="chef-grid">
+      <div class="chef-quote" data-reveal="up">
+        <span class="overline">The Kitchen</span>
+        <p class="lede" style="margin-top:24px;">“I cook for the room, not the camera. If a dish needs a paragraph to explain it, it isn’t finished.”</p>
+        <div class="sig">, Marco Venturi, Chef</div>
+      </div>
+      <div class="chef-facts" data-stagger="0.1">
+        {[['Seats', '24 only'], ['Service', 'One sitting, 19:30'], ['Format', '7 courses, set'], ['Sourcing', 'Within 200 km']].map(([k, v]) => (
+          <div class="fact"><span class="fk">{k}</span><span class="fv">{v}</span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight" id="menu">
+    <div class="menu-head">
+      <div data-reveal="up">
+        <span class="overline">Tonight</span>
+        <h2 class="section-title" style="margin-top:16px;">The Tasting Menu</h2>
+      </div>
+      <div class="pair-toggle" role="group" aria-label="Wine pairing">
+        <button class="pt-opt active hover-target" data-pair="off">Menu only</button>
+        <button class="pt-opt hover-target" data-pair="on">With pairing</button>
+        <div class="pt-price"><span id="menuPrice">€195</span><small>per guest</small></div>
+      </div>
+    </div>
+
+    <ol class="courses">
+      {COURSES.map((c) => (
+        <li class="course" data-reveal="up">
+          <span class="course-n">{c.n}</span>
+          <div class="course-body">
+            <h3>{c.name}</h3>
+            <p>{c.desc}</p>
+            <p class="course-pair" hidden>◦ {c.pair}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+    <p class="menu-note">A vegetarian menu of equal length is offered with notice. Please tell us of any allergies when you book , the kitchen adapts, quietly.</p>
+  </section>
+
+  <section class="section tight book" id="book">
+    <div class="book-grid">
+      <div class="book-copy" data-reveal="up">
+        <span class="overline">Reserve a Table</span>
+        <h2 class="section-title" style="margin-top:16px;">Sit with us</h2>
+        <p>One sitting a night, twenty-four seats. We confirm by hand within the day. House guests are seated first; the bar stays open later, for everyone.</p>
+        <div class="book-hours">
+          <div><span class="bh-k">Dinner</span><span class="bh-v">Tue , Sat · 19:30</span></div>
+          <div><span class="bh-k">The Bar</span><span class="bh-v">Tue , Sat · until late</span></div>
+        </div>
+      </div>
+
+      <form id="tableForm" class="book-form" novalidate>
+        <div class="bf-row">
+          <label class="fld"><span>Date</span><input name="date" type="date" /><i class="err" data-err="date"></i></label>
+          <label class="fld"><span>Guests</span>
+            <select name="guests"><option value="2">02 guests</option><option value="1">01 guest</option><option value="3">03 guests</option><option value="4">04 guests</option><option value="5">05 guests</option><option value="6">06 guests</option></select>
+            <i class="err" data-err="guests"></i></label>
+        </div>
+        <label class="fld"><span>Name</span><input name="name" type="text" autocomplete="name" /><i class="err" data-err="name"></i></label>
+        <label class="fld"><span>Email</span><input name="email" type="email" autocomplete="email" /><i class="err" data-err="email"></i></label>
+        <label class="fld"><span>Notes / allergies (optional)</span><input name="notes" type="text" /></label>
+        <button type="submit" class="btn-gold hover-target" style="width:100%;justify-content:center;text-align:center;">Request the table</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .chef-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: clamp(30px,5vw,70px); align-items: center; }
+    .chef-quote .sig { font-family: var(--f-head); font-style: italic; font-size: 22px; color: var(--c-gold); margin-top: 30px; }
+    .chef-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--hair-soft); border: 1px solid var(--hair-soft); }
+    .fact { background: var(--c-bg); padding: 28px; display: flex; flex-direction: column; gap: 8px; }
+    .fact .fk { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .fact .fv { font-family: var(--f-head); font-size: 1.5rem; color: #fff; }
+
+    .menu-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-bottom: 50px; }
+    .pair-toggle { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .pt-opt { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-muted); border: 1px solid var(--hair-soft); padding: 12px 20px; transition: all .25s ease; }
+    .pt-opt:hover { color: #fff; border-color: var(--hair); }
+    .pt-opt.active { background: var(--c-gold); color: #050504; border-color: var(--c-gold); font-weight: 500; }
+    .pt-price { display: flex; flex-direction: column; align-items: flex-end; margin-left: 6px; }
+    .pt-price span { font-family: var(--f-head); font-size: 1.9rem; color: var(--c-gold); }
+    .pt-price small { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+
+    .courses { list-style: none; counter-reset: none; }
+    .course { display: grid; grid-template-columns: 70px 1fr; gap: 24px; align-items: baseline; padding: 30px 0; border-top: 1px solid var(--hair-soft); }
+    .course:last-child { border-bottom: 1px solid var(--hair-soft); }
+    .course-n { font-family: var(--f-head); font-size: 1.5rem; color: var(--c-faint); letter-spacing: 0.1em; }
+    .course-body h3 { font-size: clamp(1.5rem,2.6vw,2.2rem); color: #fff; transition: color .3s ease; }
+    .course:hover .course-body h3 { color: var(--c-gold); }
+    .course-body p { color: var(--c-muted); margin-top: 10px; line-height: 1.6; }
+    .course-pair { color: var(--c-gold) !important; font-style: italic; font-family: var(--f-head); font-size: 1rem; margin-top: 12px !important; }
+    .menu-note { margin-top: 40px; color: var(--c-faint); font-size: 0.82rem; line-height: 1.8; max-width: 60ch; font-style: italic; font-family: var(--f-head); }
+
+    .book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(30px,5vw,70px); align-items: start; }
+    .book-copy p { color: var(--c-muted); line-height: 1.8; margin-top: 22px; max-width: 46ch; }
+    .book-hours { margin-top: 34px; display: flex; gap: 40px; flex-wrap: wrap; }
+    .book-hours .bh-k { display: block; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .book-hours .bh-v { display: block; font-family: var(--f-head); font-size: 1.3rem; color: #fff; margin-top: 6px; }
+    .book-form { border: 1px solid var(--hair); background: linear-gradient(180deg, rgba(20,18,16,0.5), rgba(8,7,6,0.5)); padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .bf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .fld { display: flex; flex-direction: column; gap: 7px; }
+    .fld span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .fld input, .fld select { background: rgba(255,255,255,0.03); border: 1px solid var(--hair-soft); color: #fff; padding: 13px 12px; font: inherit; font-size: 0.9rem; transition: border-color .25s ease; }
+    .fld input:focus, .fld select:focus { outline: none; border-color: var(--c-gold); }
+    .fld select option { background: #0c0b0a; }
+    .fld input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(3) hue-rotate(5deg); opacity: 0.4; }
+    .err { font-size: 10px; color: var(--c-gold); min-height: 1em; font-style: normal; }
+
+    #toast { position: fixed; left: 50%; bottom: 28px; z-index: 9000; transform: translate(-50%, 24px); opacity: 0; pointer-events: none; max-width: min(92vw, 460px); background: var(--c-gold); color: #050504; padding: 15px 22px; font-size: 0.82rem; font-weight: 500; box-shadow: 0 30px 70px -20px rgba(0,0,0,0.8); transition: opacity .5s var(--ease-lux), transform .5s var(--ease-lux); }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 900px) {
+      .chef-grid, .book-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) { .bf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* pairing toggle */
+    const opts = Array.from(document.querySelectorAll<HTMLElement>('.pt-opt'));
+    const priceEl = document.getElementById('menuPrice');
+    const pairs = Array.from(document.querySelectorAll<HTMLElement>('.course-pair'));
+    const BASE = 195, PAIR = 320;
+    opts.forEach((o) => o.addEventListener('click', () => {
+      opts.forEach((x) => x.classList.toggle('active', x === o));
+      const on = o.dataset.pair === 'on';
+      if (priceEl) priceEl.textContent = '€' + (on ? PAIR : BASE);
+      pairs.forEach((p) => { p.hidden = !on; });
+    }));
+
+    /* table booking form */
+    const form = document.getElementById('tableForm') as HTMLFormElement | null;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5400); };
+    const setErr = (n: string, m: string) => { const e = form?.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form?.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--c-gold)' : ''; };
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const date = String(d.get('date') || '').trim();
+      const guests = String(d.get('guests') || '2');
+      let ok = true;
+      if (!date) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name, please.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      form.reset(); ['date', 'name', 'email'].forEach((x) => setErr(x, ''));
+      showToast(`Thank you, ${name.split(' ')[0]}. We confirm a table for ${guests} by hand within the day.`);
+    });
+  </script>
+</ObsidianLayout>

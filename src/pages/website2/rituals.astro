@@ -1,0 +1,131 @@
+---
+/**
+ * NOCTURNE , Rituals (website2, round 2). Signature: compose-a-night multi-select builder + request.
+ */
+import NocturneLayout from '../../layouts/NocturneLayout.astro';
+
+const RITUALS = [
+  { id: 'tea', name: 'Lantern Tea, Late', when: '22:00', line: 'Warm cup, quiet hands, slow breathing in the lantern hall.' },
+  { id: 'rain', name: 'Rooftop Rain Walk', when: '23:30', line: 'Umbrella, skyline, your thoughts finally turning down.' },
+  { id: 'vinyl', name: 'Private Listening Room', when: '00:30', line: 'Vinyl, velvet, and a drink that arrives before you ask.' },
+  { id: 'ramen', name: 'Midnight Ramen Run', when: '01:00', line: 'A guided walk to a six-seat counter that only locals know.' },
+  { id: 'ink', name: 'Calligraphy Hour', when: '07:00', line: 'Ink, breath, a single character to begin the day slowly.' },
+  { id: 'soak', name: 'Sunrise Soak', when: '06:00', line: 'The bathhouse to yourself as the city goes pale gold.' },
+];
+---
+
+<NocturneLayout title="Rituals | NOCTURNE" description="Small, deliberate nights at Nocturne, Tokyo. Compose an itinerary of quiet rituals and the desk arranges the rest." active="rituals">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website2/neon3.jpg" alt="Tokyo neon at night" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Rituals</span>
+      <h1>Compose a <em>Night</em></h1>
+      <p class="sub">Nothing loud, nothing rushed. Tap the rituals that sound like your kind of evening; the desk threads them into one quiet itinerary and handles every detail.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="r-grid">
+      <div class="r-cards">
+        {RITUALS.map((r) => (
+          <button class="ritual" data-id={r.id} data-name={r.name} data-when={r.when}>
+            <span class="r-when">{r.when}</span>
+            <span class="r-mark" aria-hidden="true"></span>
+            <span class="r-name">{r.name}</span>
+            <span class="r-line">{r.line}</span>
+          </button>
+        ))}
+      </div>
+
+      <aside class="r-panel panel">
+        <span class="overline cyan">Your Night</span>
+        <div class="r-count"><span id="rCount">0</span><small>rituals</small></div>
+        <ol id="rList" class="r-list"><li class="r-empty">Tap a ritual to begin your itinerary.</li></ol>
+        <form id="ritForm" novalidate>
+          <div class="fld"><label for="rname">Name</label><input id="rname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="remail">Email</label><input id="remail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+          <div class="fld"><label for="rdate">Night of</label><input id="rdate" name="date" type="date" /><span class="err" data-err="date"></span></div>
+          <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Send to the desk</button>
+        </form>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .r-grid { display: grid; grid-template-columns: 1.5fr 0.9fr; gap: clamp(24px,4vw,50px); align-items: start; }
+    .r-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .ritual { position: relative; text-align: left; padding: 26px 24px; border: 1px solid var(--hair); border-radius: 16px; display: flex; flex-direction: column; gap: 6px; transition: all 0.3s var(--ease); overflow: hidden; }
+    .ritual::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(25,230,255,0.06), transparent 60%); opacity: 0; transition: opacity 0.3s; }
+    .ritual:hover { border-color: rgba(255,255,255,0.18); transform: translateY(-3px); }
+    .ritual.on { border-color: var(--cyan); }
+    .ritual.on::after { opacity: 1; }
+    .r-when { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; color: var(--ember); }
+    .r-mark { position: absolute; top: 22px; right: 22px; width: 15px; height: 15px; border: 1px solid var(--faint); border-radius: 50%; transition: all 0.3s; }
+    .ritual.on .r-mark { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 12px rgba(25,230,255,0.6); }
+    .r-name { font-family: var(--head); font-size: 1.4rem; color: #fff; margin-top: 4px; position: relative; }
+    .r-line { color: var(--muted); font-size: 0.85rem; line-height: 1.6; position: relative; }
+
+    .r-panel { position: sticky; top: 96px; padding: clamp(24px,3vw,34px); }
+    .r-count { display: flex; align-items: baseline; gap: 8px; margin-top: 14px; }
+    .r-count #rCount { font-family: var(--head); font-size: 2.6rem; color: var(--cyan); line-height: 1; }
+    .r-count small { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .r-list { list-style: none; margin: 20px 0 0; display: flex; flex-direction: column; gap: 10px; min-height: 50px; }
+    .r-empty { color: var(--faint); font-family: var(--head); font-style: italic; font-size: 0.9rem; }
+    .r-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.8rem; color: #cfc8bb; padding-bottom: 10px; border-bottom: 1px solid var(--hair); }
+    .r-item .ri-when { font-family: var(--mono); font-size: 0.66rem; color: var(--ember); }
+    .r-item .ri-rm { color: var(--faint); font-size: 15px; line-height: 1; transition: color 0.2s; }
+    .r-item .ri-rm:hover { color: var(--magenta); }
+    #ritForm { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+    @media (max-width: 900px) { .r-grid { grid-template-columns: 1fr; } .r-panel { position: static; } }
+    @media (max-width: 520px) { .r-cards { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    type Sel = { id: string; name: string; when: string };
+    const sel: Sel[] = [];
+    const countEl = document.getElementById('rCount')!, listEl = document.getElementById('rList')!;
+    const cards = Array.from(document.querySelectorAll<HTMLButtonElement>('.ritual'));
+
+    function render() {
+      countEl.textContent = String(sel.length);
+      if (!sel.length) { listEl.innerHTML = '<li class="r-empty">Tap a ritual to begin your itinerary.</li>'; return; }
+      const ordered = [...sel].sort((a, b) => a.when.localeCompare(b.when));
+      listEl.innerHTML = ordered.map((s) => `<li class="r-item"><span><span class="ri-when">${s.when}</span> &nbsp;${s.name}</span><button class="ri-rm" data-rm="${s.id}" aria-label="Remove">×</button></li>`).join('');
+      listEl.querySelectorAll<HTMLElement>('[data-rm]').forEach((b) => b.addEventListener('click', () => {
+        const id = b.dataset.rm; const i = sel.findIndex((x) => x.id === id);
+        if (i >= 0) { sel.splice(i, 1); cards.find((c) => c.dataset.id === id)?.classList.remove('on'); render(); }
+      }));
+    }
+    cards.forEach((c) => c.addEventListener('click', () => {
+      const id = c.dataset.id!, name = c.dataset.name!, when = c.dataset.when!;
+      const i = sel.findIndex((x) => x.id === id);
+      if (i >= 0) { sel.splice(i, 1); c.classList.remove('on'); } else { sel.push({ id, name, when }); c.classList.add('on'); }
+      render();
+    }));
+
+    const form = document.getElementById('ritForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5800); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--magenta)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!String(d.get('date') || '')) { setErr('date', 'Which night?'); ok = false; } else setErr('date', '');
+      if (!sel.length) { showToast('Tap at least one ritual to compose your night.'); return; }
+      if (!ok) return;
+      const n = sel.length;
+      sel.length = 0; cards.forEach((c) => c.classList.remove('on'));
+      form.reset(); ['name', 'email', 'date'].forEach((x) => setErr(x, '')); render();
+      showToast(`Composed, ${name.split(' ')[0]}. The desk threads your ${n} ritual${n > 1 ? 's' : ''} into one quiet night and confirms the timings.`);
+    });
+  </script>
+</NocturneLayout>

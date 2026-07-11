@@ -1,0 +1,52 @@
+---
+/**
+ * NORTHRIDGE , Contact (website20, round 2). The site-visit booking (ConsultationScheduler React island).
+ */
+import NorthridgeLayout from '../../layouts/NorthridgeLayout.astro';
+import ConsultationScheduler from '../../components/ConsultationScheduler.tsx';
+
+const PHONE = '+31 6 1234 5678';
+---
+
+<NorthridgeLayout title="Book a Site Visit | Northridge" description="Book a Northridge site visit. Tell us what you're renovating; we confirm timing, budget range, and next steps within one business day.">
+  <section class="px-8 pt-40 pb-24">
+    <div class="max-w-[1400px] mx-auto">
+      <div class="relative bg-[#080808]/85 backdrop-blur-md border-[0.5px] border-white/[0.08] rounded-[3rem] p-12 md:p-24 overflow-hidden shadow-2xl">
+        <div class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-bl from-emerald-500/[0.06] to-transparent rounded-full blur-[150px] pointer-events-none"></div>
+        <div class="grid lg:grid-cols-2 gap-24 relative z-10 items-center">
+          <div data-reveal="up">
+            <div class="inline-block px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-mono text-emerald-400 mb-12 uppercase tracking-widest">Bookings: open</div>
+            <h1 class="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-8 leading-none">Book <br />a site visit.</h1>
+            <p class="text-neutral-400 text-lg max-w-md mb-16 font-light">Tell us what you're renovating; we'll confirm timing, budget range, and next steps within one business day.</p>
+            <div class="space-y-4 border-l-2 border-white/10 pl-6">
+              <p class="text-xs text-neutral-500 uppercase tracking-widest">Direct line</p>
+              <p class="text-3xl text-white font-light tracking-tight">{PHONE}</p>
+            </div>
+            <div class="mt-12 grid grid-cols-3 gap-4 max-w-md">
+              <div><div class="text-3xl font-bold text-white">1 day</div><span class="text-[10px] uppercase tracking-widest text-neutral-500">to reply</span></div>
+              <div><div class="text-3xl font-bold text-white">Free</div><span class="text-[10px] uppercase tracking-widest text-neutral-500">first survey</span></div>
+              <div><div class="text-3xl font-bold text-white">Fixed</div><span class="text-[10px] uppercase tracking-widest text-neutral-500">scope quote</span></div>
+            </div>
+          </div>
+          <div class="w-full relative" data-reveal="up">
+            <div class="bg-[#050505]/80 border-[0.5px] border-white/[0.1] rounded-[2.5rem] p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,1)]">
+              <ConsultationScheduler client:visible />
+              <p class="font-mono text-xs text-emerald-400 mt-6 border-t border-white/10 pt-4" id="phaseRef" hidden></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+    /* R3 scrub: verst-bekeken fase reist mee. */
+    try {
+      const NAMES = ['demolition', 'shell', 'systems', 'finish', 'handover'];
+      const max = Number(localStorage.getItem('northridge-phase-max') || '-1');
+      if (max >= 0) {
+        const el = document.getElementById('phaseRef');
+        if (el) { el.textContent = `You scrubbed the build to ${NAMES[max]} , we can talk real numbers from there.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+  </script>
+</NorthridgeLayout>

@@ -1,0 +1,94 @@
+---
+/**
+ * RidgelineLayout , shared shell for RIDGELINE ROOFING (website23, round 2). Tailwind, LIGHT theme
+ * (stone/slate + amber). Nav, footer, a global #toast (window.showToast), and a reveal-on-scroll
+ * observer used by every page. Props: title, description, active.
+ */
+import '../styles/global.css';
+import { BRAND, TAGLINE, EMAIL, PHONE, TEL, SERVICE_AREA } from '../data/ridgeline';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'services', label: 'Services', href: '/website23/services' },
+  { key: 'roof-types', label: 'Roof Types', href: '/website23/roof-types' },
+  { key: 'process', label: 'Process', href: '/website23/process' },
+];
+const YEAR = new Date().getFullYear();
+const back = `<svg viewBox="0 0 24 24" fill="none" class="h-4 w-4"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      .reveal-on-scroll { opacity: 0; transform: translateY(20px); transition: all 0.7s cubic-bezier(0.2,0.8,0.2,1); }
+      .reveal-visible { opacity: 1; transform: translateY(0); }
+      .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+      .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -28px rgba(0,0,0,0.4); }
+    </style>
+  </head>
+
+  <body class="min-h-screen text-slate-900 antialiased selection:bg-amber-500 selection:text-white overflow-x-hidden bg-stone-50">
+    <header class="fixed top-0 inset-x-0 z-50 border-b border-stone-200/70 bg-stone-50/85 backdrop-blur-md">
+      <div class="mx-auto max-w-7xl flex items-center justify-between px-6 py-4">
+        <div class="flex items-center gap-5">
+          <a href="/" class="group hidden sm:flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-slate-500 hover:text-amber-600 transition-colors"><span class="group-hover:-translate-x-0.5 transition-transform"><Fragment set:html={back} /></span> Index</a>
+          <div class="hidden sm:block h-4 w-px bg-stone-300"></div>
+          <a href="/website23" class="flex items-center gap-2.5">
+            <span class="grid h-7 w-7 place-items-center rounded bg-slate-900 text-amber-400 text-xs font-black">R</span>
+            <span class="font-black tracking-tight text-slate-900">{BRAND}</span>
+          </a>
+        </div>
+        <nav class="hidden lg:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-slate-600">
+          {NAV.map((i) => <a href={i.href} class={`hover:text-amber-600 transition-colors ${active === i.key ? 'text-amber-600' : ''}`}>{i.label}</a>)}
+        </nav>
+        <a href="/website23/contact" class="rounded-sm bg-slate-900 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors">Request estimate</a>
+      </div>
+    </header>
+
+    <main class="pt-16" id="top"><slot /></main>
+
+    <footer class="border-t border-stone-200 bg-white">
+      <div class="mx-auto max-w-7xl px-6 py-14 grid md:grid-cols-[2fr_1fr_1fr] gap-10">
+        <div>
+          <div class="flex items-center gap-2.5 mb-4"><span class="grid h-7 w-7 place-items-center rounded bg-slate-900 text-amber-400 text-xs font-black">R</span><span class="font-black tracking-tight">{BRAND}</span></div>
+          <p class="text-sm text-slate-500 max-w-xs">{TAGLINE} Leak diagnostics and full-system roofing across {SERVICE_AREA}. Fictional brand, demonstration only.</p>
+        </div>
+        <div class="text-xs font-bold uppercase tracking-widest text-slate-500 flex flex-col gap-3">
+          <a href="/website23/services" class="hover:text-amber-600">Services</a>
+          <a href="/website23/roof-types" class="hover:text-amber-600">Roof Types</a>
+          <a href="/website23/process" class="hover:text-amber-600">Process</a>
+          <a href="/website23/contact" class="hover:text-amber-600">Request estimate</a>
+        </div>
+        <div class="text-xs font-bold uppercase tracking-widest text-slate-500 flex flex-col gap-3">
+          <a href={`mailto:${EMAIL}`} class="hover:text-amber-600 normal-case tracking-normal">{EMAIL}</a>
+          <a href={`tel:${TEL}`} class="hover:text-amber-600">{PHONE}</a>
+          <a href="/" class="hover:text-amber-600">Return to index</a>
+        </div>
+      </div>
+      <div class="border-t border-stone-200 py-5 text-center text-[10px] font-mono uppercase tracking-widest text-slate-400">© {YEAR} {BRAND} · {TAGLINE} · demonstration only</div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[90] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none rounded-lg bg-slate-900 text-white px-6 py-4 text-sm font-medium shadow-2xl transition-all duration-500" style="max-width:min(92vw,460px)"></div>
+
+    <script>
+      // global toast
+      const toastEl = document.getElementById('toast');
+      let tT = 0;
+      (window as any).showToast = (html: string) => {
+        if (!toastEl) return;
+        toastEl.innerHTML = html; toastEl.style.opacity = '1'; toastEl.style.transform = 'translate(-50%,0)';
+        window.clearTimeout(tT); tT = window.setTimeout(() => { toastEl.style.opacity = '0'; toastEl.style.transform = 'translate(-50%,24px)'; }, 5400);
+      };
+      // reveal-on-scroll
+      const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>

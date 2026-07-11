@@ -1,0 +1,28 @@
+---
+/**
+ * CALIBER STUDIO , Platforms (website29, round 2). The four specification platforms.
+ */
+import CaliberLayout from '../../layouts/CaliberLayout.astro';
+import { PLATFORMS } from '../../data/caliber';
+---
+
+<CaliberLayout title="Platforms | Caliber Studio" description="Four specification platforms: Field Command, Deep Gauge, Aero Navigator, and Grand Caliber , the base each commission is built on." active="platforms">
+  <section class="mx-auto max-w-[1100px] px-6 pt-14 pb-10">
+    <span class="text-[10px] font-semibold uppercase tracking-[0.3em] accent">Platforms</span>
+    <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.02] mt-4">Start from a <span class="accent">platform.</span></h1>
+    <p class="mt-6 max-w-xl text-[var(--mut)] text-sm leading-relaxed">Every commission is built on a proven platform. Movements are regulated in-house; seals and functions are verified before delivery.</p>
+  </section>
+
+  <section class="mx-auto max-w-[1100px] px-6 pb-20 grid sm:grid-cols-2 gap-6">
+    {PLATFORMS.map((p) => (
+      <div class="reveal-on-scroll rounded-2xl border border-[var(--line)] bg-white/[0.02] p-7 hover:border-[var(--accent)]/50 transition-colors">
+        <div class="flex items-baseline justify-between"><h2 class="text-2xl font-bold tracking-tight">{p.title}</h2><span class="text-[10px] font-mono accent">{p.id}</span></div>
+        <p class="text-[11px] uppercase tracking-[0.15em] text-[var(--mut)] mt-1">{p.sub}</p>
+        <dl class="mt-5 flex flex-col gap-2.5 text-sm">
+          {Object.entries(p.specs).map(([k, v]) => (<div class="flex justify-between border-b border-dashed border-[var(--line)] pb-2"><dt class="text-[var(--mut)] font-mono text-[12px] uppercase tracking-wide">{k}</dt><dd class="font-mono">{v}</dd></div>))}
+        </dl>
+        <a href="/website29/configurator" class="mt-6 inline-block text-[10px] font-bold uppercase tracking-[0.2em] border-b border-[var(--accent)] pb-1 hover:text-[var(--accent)] transition-colors">Configure on this platform →</a>
+      </div>
+    ))}
+  </section>
+</CaliberLayout>

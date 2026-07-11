@@ -1,0 +1,511 @@
+---
+/**
+ * THE OBSIDIAN , Home (website1, round 2 multi-page).
+ * WebGL obsidian-crystal hero + masked headline, booking teaser, ethos, marquee,
+ * and rich teasers that link out to Suites / Spa / Restaurant / Concierge / Reserve.
+ */
+import ObsidianLayout from '../../layouts/ObsidianLayout.astro';
+
+const SUITES = [
+  { n: '01', name: 'The Royal Penthouse', meta: '240 SQM · Skyline & Old Town', img: '/website1/suite2.jpg', alt: 'The Royal Penthouse' },
+  { n: '02', name: 'The Onyx Suite', meta: '110 SQM · Private Garden Terrace', img: '/website1/suite1.jpg', alt: 'The Onyx Suite' },
+  { n: '03', name: 'The Obsidian Lounge', meta: 'Members Only · Cigar & Spirits Library', img: '/website1/lounge.jpg', alt: 'The Obsidian Lounge' },
+];
+const THERMAL = [
+  { label: 'Thermal Circuit', meta: '07:00 , 23:00' },
+  { label: 'Deep Tissue Therapy', meta: 'On Request' },
+  { label: 'Sensory Float Suite', meta: 'Book 24h Ahead' },
+];
+const SERVICES = [
+  { title: 'Logistics', items: ['Private Airport Transfers', 'Chauffeur Fleet, Discreet', 'Helipad Coordination', 'Luggage Forwarding'] },
+  { title: 'In-Room', items: ['Chef on Call Dining', 'Sommelier Pairings', 'Private Network Setup', 'Pressing & Tailoring'] },
+  { title: 'Experiences', items: ['After-Hours Gallery Access', 'Watchmaking Atelier Visits', 'Lake Zürich Private Charter', 'Alpine Day Escapes'] },
+];
+const MARQUEE = ['Stillness', 'Low Light', 'Warm Stone', 'Discretion', 'Clean Air', 'No Spectacle'];
+---
+
+<ObsidianLayout
+  title="THE OBSIDIAN | Zürich's Quietest Luxury"
+  description="The Obsidian , a private quiet-luxury sanctuary in central Zürich. Low light, warm stone, and silence as the rarest luxury."
+  preload={true}
+>
+  <nav class="descent" id="descent" aria-label="Depth navigation">
+    <div class="d-track" aria-hidden="true"><span class="d-car" id="dCar"></span></div>
+    <ul class="d-stops">
+      <li><a href="#hero" class="d-stop hover-target" data-floor="0"><span class="d-dot"></span><span class="d-label">Street</span></a></li>
+      <li><a href="#philosophy" class="d-stop hover-target" data-floor="1"><span class="d-dot"></span><span class="d-label">Lobby</span></a></li>
+      <li><a href="#suites" class="d-stop hover-target" data-floor="2"><span class="d-dot"></span><span class="d-label">Residences</span></a></li>
+      <li><a href="#wellness" class="d-stop hover-target" data-floor="3"><span class="d-dot"></span><span class="d-label">Basalt −2</span></a></li>
+    </ul>
+    <div class="d-meter" aria-hidden="true">
+      <span class="d-db" id="dDb">55</span><span class="d-unit">dB</span>
+      <span class="d-tag">ambient</span>
+    </div>
+  </nav>
+
+  <header class="hero" id="hero">
+    <div class="hero-media" data-parallax="0.22">
+      <img src="/website1/hero.jpg" alt="The Obsidian lobby in low light" fetchpriority="high" />
+    </div>
+    <canvas id="obsidian-gl" class="hero-gl" aria-hidden="true"></canvas>
+    <div class="hero-godray" aria-hidden="true"></div>
+    <canvas id="dust" aria-hidden="true"></canvas>
+    <div class="hero-scrim" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <span class="overline center" id="heroOverline">Zürich, Switzerland</span>
+      <h1 class="hero-title display">
+        <span class="line"><span class="line-inner">Silence Is</span></span>
+        <span class="line"><span class="line-inner"><em>Your Rarest</em></span></span>
+        <span class="line"><span class="line-inner">Luxury</span></span>
+      </h1>
+    </div>
+
+    <div class="hero-scroll" id="heroScroll" aria-hidden="true">
+      <div class="scroll-rail"></div>
+      <span>Scroll</span>
+    </div>
+  </header>
+
+  <div class="booking-wrap">
+    <div class="booking" data-reveal="up">
+      <div class="b-group">
+        <label for="arrival" class="b-label">Arrival</label>
+        <input type="date" id="arrival" class="b-input" />
+      </div>
+      <div class="b-group">
+        <label for="departure" class="b-label">Departure</label>
+        <input type="date" id="departure" class="b-input" />
+      </div>
+      <div class="b-group">
+        <label for="guests" class="b-label">Guests</label>
+        <select id="guests" class="b-input">
+          <option value="1">01 Guest</option>
+          <option value="2" selected>02 Guests</option>
+          <option value="3">03 Guests</option>
+          <option value="4">04+ Guests</option>
+        </select>
+      </div>
+      <span class="magnetic"><a class="btn-gold hover-target" id="checkRates" href="/website1/reserve">Check Availability</a></span>
+    </div>
+  </div>
+
+  <section class="section philosophy" id="philosophy">
+    <div class="ghost-word" aria-hidden="true">STILLE</div>
+    <div class="inner">
+      <span class="overline center" data-reveal="fade">Our Ethos</span>
+      <p class="lede" data-reveal="up">
+        We stripped away the obvious so you can feel the essential. Outside, Zürich hums and
+        flashes; phones vibrate, footsteps rush. Inside, <em>The Obsidian</em> holds the line.
+        Low light. Warm stone. Air that feels clean on your skin. Time stops acting like a boss,
+        and starts acting like a breath.
+      </p>
+      <div class="sig" data-reveal="up">, The House</div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      {[...MARQUEE, ...MARQUEE].map((m) => <span class="marquee-item">{m}</span>)}
+    </div>
+  </div>
+
+  <section class="section" id="suites">
+    <div class="suites-head">
+      <div>
+        <span class="overline" data-reveal="fade">Accommodations</span>
+        <h2 class="section-title" data-reveal="up" style="margin-top:18px;">Suites &amp; Residences</h2>
+      </div>
+      <p data-reveal="up">Private, quiet, controlled. Heavy drapery, soft leather, black stone, and the kind of calm you can taste. <a class="inline-link hover-target" href="/website1/suites">View all suites →</a></p>
+    </div>
+
+    {SUITES.map((s) => (
+      <a href="/website1/suites" class="suite-row hover-target" aria-label={s.name}>
+        <div class="suite-n" data-reveal="fade">{s.n}</div>
+        <div class="suite-info">
+          <h3 data-reveal="up">{s.name}</h3>
+          <div class="suite-meta" data-reveal="up">{s.meta}</div>
+          <div class="suite-view" data-reveal="up"><span class="arrow"></span> View Suite</div>
+        </div>
+        <div class="suite-figure" data-reveal="scale">
+          <img src={s.img} alt={s.alt} loading="lazy" decoding="async" />
+        </div>
+      </a>
+    ))}
+  </section>
+
+  <section class="wellness" id="wellness">
+    <div class="wellness-figure">
+      <img src="/website1/spa.jpg" alt="Basalt thermal room in low light" loading="lazy" decoding="async" data-parallax="0.16" />
+      <span class="depth">, 2 Levels Below Street</span>
+    </div>
+    <div class="wellness-text">
+      <span class="overline" data-reveal="fade">Below Street Level</span>
+      <h2 class="section-title" data-reveal="up" style="margin-top:18px;">Basalt &amp; Stillness</h2>
+      <p data-reveal="up">
+        Step down into warmth and shadow. Black basalt under your feet, steam in the air, and a
+        single lit crystal to hold your eye. No bright distractions, no noise , just your body
+        finally unclenching.
+      </p>
+      <div class="thermal" data-stagger="0.1">
+        {THERMAL.map((t) => (
+          <div class="t-item"><span class="t-name">{t.label}</span><span class="t-meta">{t.meta}</span></div>
+        ))}
+      </div>
+      <span class="magnetic" data-reveal="up" style="margin-top:38px;"><a href="/website1/spa" class="btn-ghost hover-target">Enter the Spa</a></span>
+    </div>
+  </section>
+
+  <section class="section services" id="access">
+    <div class="wrap">
+      <span class="overline center" data-reveal="fade" style="display:flex; justify-content:center;">Concierge</span>
+      <h2 class="section-title center" data-reveal="up" style="margin-top:18px;">Quietly, Whatever You Need</h2>
+      <div class="service-grid">
+        {SERVICES.map((col) => (
+          <div class="service-col" data-reveal="up">
+            <h4>{col.title}</h4>
+            <ul>{col.items.map((it) => <li class="hover-target">{it}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+      <div class="center" style="margin-top:60px;"><a href="/website1/concierge" class="inline-link hover-target">Compose a request with the concierge →</a></div>
+    </div>
+  </section>
+
+  <section class="dining" id="dining">
+    <div class="dining-media" data-parallax="0.2">
+      <img src="/website1/dining.jpg" alt="Candlelit chef's bar" loading="lazy" decoding="async" />
+    </div>
+    <div class="dining-scrim" aria-hidden="true"></div>
+    <div class="dining-content">
+      <span class="overline center" data-reveal="fade" style="display:flex; justify-content:center;">Restaurant &amp; Bar</span>
+      <h2 class="display" data-reveal="up" style="margin-top:20px;">Alchemy of <em>Taste</em></h2>
+      <p data-reveal="up">
+        A kitchen led by Chef Marco Venturi. Clean heat, sharp technique, ingredients pulled from
+        the season , not a calendar. Expect smoke, salt, citrus, butter, and silence between courses.
+      </p>
+      <a href="/website1/dining" class="menu-btn hover-target" data-reveal="up">View the Restaurant</a>
+    </div>
+  </section>
+
+  <section class="section reserve center" id="reserve">
+    <div class="inner">
+      <span class="overline center" data-reveal="fade" style="display:flex; justify-content:center;">Reservations</span>
+      <h2 data-reveal="up" style="margin-top:22px;">Begin Your <em>Stay</em></h2>
+      <p data-reveal="up">A limited number of rooms, released quietly. Tell us when, and we will hold the line for you.</p>
+      <span class="magnetic" data-reveal="up"><a href="/website1/reserve" class="btn-gold hover-target">Request Availability</a></span>
+    </div>
+  </section>
+
+  <style>
+    /* ===== DESCENT RAIL (R3 signature: the site as a descent into silence) ===== */
+    .descent { position: fixed; left: 24px; top: 50%; transform: translateY(-50%); z-index: 60; display: flex; flex-direction: column; gap: 22px; opacity: 0; transition: opacity 1s var(--ease-lux); padding: 16px 18px 14px 12px; border-radius: 4px; background: linear-gradient(90deg, rgba(5,5,4,0.88) 0%, rgba(5,5,4,0.62) 72%, transparent 100%); backdrop-filter: blur(8px); }
+    body.descent-on .descent { opacity: 1; }
+    .d-track { position: absolute; left: 15px; top: 22px; bottom: 88px; width: 1px; background: rgba(255,255,255,0.10); }
+    .d-car { position: absolute; left: -2.5px; top: 0; width: 6px; height: 18px; border-radius: 2px; background: linear-gradient(180deg, var(--c-gold), rgba(212,175,55,0.25)); box-shadow: 0 0 14px rgba(212,175,55,0.5); will-change: transform; }
+    .d-stops { list-style: none; display: flex; flex-direction: column; gap: 34px; margin: 0; padding: 0; }
+    .d-stop { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .d-dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); background: transparent; transition: background .4s ease, border-color .4s ease, box-shadow .4s ease; }
+    .d-label { font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--c-muted); transition: color .4s ease; }
+    .d-stop.active .d-dot { background: var(--c-gold); border-color: var(--c-gold); box-shadow: 0 0 12px rgba(212,175,55,0.6); }
+    .d-stop.active .d-label { color: var(--c-gold); }
+    .d-meter { display: flex; align-items: baseline; gap: 5px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .d-db { font-family: var(--f-head); font-size: 26px; color: #ddd6c8; font-variant-numeric: tabular-nums; min-width: 34px; }
+    .d-unit { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-gold); }
+    .d-tag { font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--c-faint); margin-left: 4px; }
+    @media (max-width: 1180px) { .descent { display: none; } }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative; height: 100svh; min-height: 640px; width: 100%; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      background: radial-gradient(70% 60% at 50% 42%, rgba(40,30,10,0.5), transparent 70%), radial-gradient(120% 100% at 50% 50%, #0a0807 0%, #050504 70%);
+    }
+    .hero-media { position: absolute; inset: -8% 0; z-index: 0; will-change: transform; transition: opacity 1.2s var(--ease-lux); }
+    .hero-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; transform: scale(1.06); animation: kenburns 26s var(--ease-lux) infinite alternate; }
+    .hero-gl { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 1.4s var(--ease-lux); width: 100%; height: 100%; }
+    .hero.gl-on .hero-gl { opacity: 1; }
+    .hero.gl-on .hero-media { opacity: 0.2; }
+    .hero.gl-on #dust { display: none; }
+    .hero-godray { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0.7; mix-blend-mode: screen; background: radial-gradient(60% 80% at 22% -10%, rgba(212,175,55,0.16), transparent 60%), radial-gradient(50% 70% at 84% 0%, rgba(231,205,134,0.10), transparent 62%); animation: drift 18s ease-in-out infinite alternate; }
+    #dust { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0.6; }
+    .hero-scrim { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(180deg, rgba(5,5,4,0.55) 0%, transparent 26%, transparent 56%, rgba(5,5,4,0.92) 100%); }
+    .hero-content { position: relative; z-index: 10; padding: 0 20px; }
+    .hero-content .overline { opacity: 0; transform: translateY(10px); }
+    .hero-title { margin-top: 26px; }
+    .hero-title .line { display: block; overflow: hidden; padding: 0 0.04em; }
+    .hero-title .line-inner { display: block; }
+    .has-motion-js .hero-title .line-inner { transform: translateY(110%); }
+    .hero-scroll { position: absolute; bottom: 16vh; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 6; opacity: 0; }
+    .scroll-rail { width: 1px; height: 54px; background: rgba(255,255,255,0.12); position: relative; overflow: hidden; }
+    .scroll-rail::after { content: ''; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: var(--c-gold); animation: drop 2.4s var(--ease-lux) infinite; }
+    .hero-scroll span { font-size: 8px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--c-muted); }
+
+    /* ===== BOOKING ===== */
+    .booking-wrap { position: relative; z-index: 50; margin-top: -54px; display: flex; justify-content: center; padding: 0 20px; }
+    .booking { position: relative; width: 100%; max-width: 1180px; background: linear-gradient(180deg, rgba(20,18,16,0.94), rgba(8,7,6,0.96)); border: 1px solid var(--hair-soft); border-radius: 3px; backdrop-filter: blur(22px); padding: 28px clamp(24px, 4vw, 50px); display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; flex-wrap: wrap; box-shadow: 0 40px 100px -30px rgba(0,0,0,0.85); }
+    .booking::before { content: ''; position: absolute; top: 0; left: 12%; right: 12%; height: 1px; background: linear-gradient(90deg, transparent, var(--hair), transparent); }
+    .b-group { display: flex; flex-direction: column; gap: 8px; min-width: 150px; flex: 1; position: relative; }
+    .b-group + .b-group::before { content: ''; position: absolute; left: -10px; top: 6px; bottom: 6px; width: 1px; background: var(--hair-soft); }
+    .b-label { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--c-muted); }
+    .b-input { background: transparent; border: none; color: #fff; font-family: var(--f-head); font-size: 19px; width: 100%; padding: 4px 0; border-bottom: 1px solid transparent; transition: border-color .3s; cursor: pointer; }
+    .b-input:focus { border-bottom-color: var(--c-gold); }
+    .b-input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(3) hue-rotate(5deg); opacity: 0.4; cursor: pointer; }
+    .b-input option { background: #0c0b0a; }
+
+    /* ===== PHILOSOPHY ===== */
+    .philosophy { text-align: center; }
+    .ghost-word { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--f-head); font-weight: 600; font-size: clamp(8rem, 30vw, 30rem); letter-spacing: -0.04em; color: transparent; -webkit-text-stroke: 1px rgba(212,175,55,0.06); pointer-events: none; user-select: none; z-index: 0; white-space: nowrap; }
+    .philosophy .inner { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; }
+    .philosophy .lede { margin-top: 30px; }
+    .sig { font-family: var(--f-head); font-style: italic; font-size: 26px; color: var(--c-gold); opacity: 0.85; margin-top: 42px; }
+
+    .inline-link { color: var(--c-gold); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; transition: opacity .3s ease; }
+    .inline-link:hover { opacity: 0.7; }
+
+    /* ===== SUITES ===== */
+    .suites-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-bottom: 70px; }
+    .suites-head p { color: var(--c-muted); max-width: 460px; line-height: 1.6; }
+    .suite-row { display: grid; grid-template-columns: 96px 1.1fr 1fr; align-items: center; gap: clamp(24px, 4vw, 70px); padding: 40px 0; border-top: 1px solid var(--hair-soft); }
+    .suite-row:last-of-type { border-bottom: 1px solid var(--hair-soft); }
+    .suite-n { font-family: var(--f-head); font-size: 22px; color: var(--c-faint); }
+    .suite-figure { overflow: hidden; border-radius: 2px; aspect-ratio: 16 / 10; }
+    .suite-figure img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.86) grayscale(12%); transition: transform 1.4s var(--ease-lux), filter 1.4s var(--ease-lux); }
+    .suite-row:hover .suite-figure img { transform: scale(1.06); filter: brightness(1) grayscale(0); }
+    .suite-info h3 { font-size: clamp(1.9rem, 3vw, 2.8rem); color: #fff; transition: color .4s ease; }
+    .suite-row:hover .suite-info h3 { color: var(--c-gold); }
+    .suite-meta { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); margin-top: 12px; }
+    .suite-view { display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--c-gold); }
+    .suite-view .arrow { width: 26px; height: 1px; background: var(--c-gold); transition: width .4s var(--ease-lux); }
+    .suite-row:hover .suite-view .arrow { width: 46px; }
+
+    /* ===== WELLNESS ===== */
+    .wellness { display: grid; grid-template-columns: 1fr 1fr; min-height: 90vh; }
+    .wellness-figure { position: relative; overflow: hidden; }
+    .wellness-figure img { position: absolute; inset: -12% 0; width: 100%; height: 124%; object-fit: cover; filter: grayscale(15%) brightness(0.8); will-change: transform; }
+    .wellness-figure .depth { position: absolute; left: 40px; bottom: 40px; z-index: 2; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--c-gold); }
+    .wellness-text { display: flex; flex-direction: column; justify-content: center; padding: clamp(50px, 8vw, 110px); background: var(--c-surface); }
+    .wellness-text p { color: #aaa498; max-width: 440px; line-height: 1.65; margin-top: 24px; }
+    .thermal { margin-top: 44px; display: flex; flex-direction: column; }
+    .t-item { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--hair-soft); }
+    .t-item .t-name { font-family: var(--f-head); font-size: clamp(1.3rem, 2vw, 1.7rem); color: #ddd6c8; }
+    .t-item .t-meta { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+
+    /* ===== SERVICES ===== */
+    .services { background: var(--c-panel); }
+    .services .wrap { max-width: 1400px; margin: 0 auto; }
+    .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(34px, 5vw, 70px); margin-top: 64px; }
+    .service-col h4 { font-size: 18px; color: var(--c-gold); letter-spacing: 0.04em; margin-bottom: 26px; padding-bottom: 16px; border-bottom: 1px solid var(--hair-soft); }
+    .service-col ul { list-style: none; }
+    .service-col li { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); padding: 11px 0; display: flex; align-items: center; gap: 12px; transition: color .3s ease; }
+    .service-col li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--c-gold-deep); transition: background .3s ease, box-shadow .3s ease; }
+    .service-col li:hover { color: var(--c-text); }
+    .service-col li:hover::before { background: var(--c-gold); box-shadow: 0 0 10px var(--c-gold); }
+
+    /* ===== DINING ===== */
+    .dining { position: relative; height: 92vh; min-height: 580px; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .dining-media { position: absolute; inset: -12% 0; z-index: 0; will-change: transform; }
+    .dining-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+    .dining-scrim { position: absolute; inset: 0; z-index: 1; background: radial-gradient(80% 90% at 50% 50%, rgba(5,5,4,0.3), rgba(5,5,4,0.86)); }
+    .dining-content { position: relative; z-index: 10; max-width: 820px; padding: 0 20px; }
+    .dining-content .display { font-size: clamp(2.6rem, 6vw, 5.2rem); }
+    .dining-content p { color: #cfc8bb; margin: 26px auto 0; max-width: 620px; }
+    .menu-btn { display: inline-block; margin-top: 40px; padding: 15px 40px; border: 1px solid var(--c-gold); color: var(--c-gold); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; transition: background .35s ease, color .35s ease; }
+    .menu-btn:hover { background: var(--c-gold); color: #050504; }
+
+    /* ===== RESERVE ===== */
+    .reserve { border-top: 1px solid var(--hair-soft); }
+    .reserve .inner { max-width: 760px; margin: 0 auto; }
+    .reserve h2 { font-size: clamp(2.6rem, 5vw, 5.4rem); color: #fff; }
+    .reserve h2 em { color: var(--c-gold); font-style: italic; }
+    .reserve p { color: var(--c-muted); margin-top: 24px; }
+    .reserve .btn-gold { margin-top: 44px; padding: 18px 52px; }
+
+    @media (max-width: 1024px) {
+      .suite-row { grid-template-columns: 60px 1fr; }
+      .suite-figure { grid-column: 1 / -1; order: 3; margin-top: 20px; }
+      .wellness { grid-template-columns: 1fr; }
+      .wellness-figure { height: 56vh; }
+      .service-grid { grid-template-columns: 1fr; gap: 36px; }
+      .booking { flex-direction: column; align-items: stretch; gap: 22px; }
+      .b-group + .b-group::before { display: none; }
+      .booking .btn-gold { width: 100%; text-align: center; }
+    }
+    @media (max-width: 560px) {
+      .suite-row { grid-template-columns: 1fr; }
+      .suite-n { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-media img, .hero-godray { animation: none; }
+      .scroll-rail::after { animation: none; }
+      .hero-content .overline, .hero-scroll { opacity: 1; transform: none; }
+    }
+  </style>
+
+  <script>
+    import { gsap } from '../../lib/motion/gsap';
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---- Booking dates ---- */
+    const arrival = document.getElementById('arrival');
+    const departure = document.getElementById('departure');
+    if (arrival instanceof HTMLInputElement && departure instanceof HTMLInputElement) {
+      const today = new Date();
+      const tmr = new Date(today); tmr.setDate(tmr.getDate() + 1);
+      arrival.valueAsDate = today;
+      departure.valueAsDate = tmr;
+    }
+
+    /* ---- Hero intro + preloader ---- */
+    const preloader = document.getElementById('preloader');
+    const heroLines = gsap.utils.toArray<HTMLElement>('.hero-title .line-inner');
+    const heroOverline = document.getElementById('heroOverline');
+    const heroScroll = document.getElementById('heroScroll');
+
+    function playHeroIntro() {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      if (heroOverline) tl.to(heroOverline, { opacity: 1, y: 0, duration: 0.8 }, 0);
+      tl.to(heroLines, { y: '0%', duration: 1.1, stagger: 0.12 }, 0.1);
+      if (heroScroll) tl.to(heroScroll, { opacity: 0.7, duration: 0.8 }, 0.8);
+    }
+    function revealStatic() {
+      gsap.set(heroLines, { y: '0%' });
+      if (heroOverline) gsap.set(heroOverline, { opacity: 1, y: 0 });
+      if (heroScroll) gsap.set(heroScroll, { opacity: 0.7 });
+    }
+
+    if (reduce) {
+      if (preloader) preloader.style.display = 'none';
+      revealStatic();
+    } else {
+      const preMark = document.getElementById('preMark');
+      const preLine = document.getElementById('preLine');
+      const preSub = document.getElementById('preSub');
+      const pt = gsap.timeline();
+      pt.to(preMark, { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' })
+        .to(preLine, { width: 220, duration: 0.7, ease: 'power2.inOut' }, 0.2)
+        .to(preSub, { opacity: 1, duration: 0.6 }, 0.5)
+        .to({}, { duration: 0.45 })
+        .add(() => preloader?.classList.add('done'))
+        .add(playHeroIntro, '-=0.5');
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          if (preloader && !preloader.classList.contains('done')) { preloader.classList.add('done'); playHeroIntro(); }
+        }, 2600);
+      });
+    }
+
+    /* ---- Descent rail: floor tracking + falling decibels ---- */
+    (() => {
+      const rail = document.getElementById('descent');
+      if (!rail) return;
+      const stops = Array.from(rail.querySelectorAll<HTMLAnchorElement>('.d-stop'));
+      const car = document.getElementById('dCar');
+      const dbEl = document.getElementById('dDb');
+      const track = rail.querySelector<HTMLElement>('.d-track');
+      const FLOORS = [
+        { id: 'hero', db: 55 },
+        { id: 'philosophy', db: 41 },
+        { id: 'suites', db: 29 },
+        { id: 'wellness', db: 18 },
+      ];
+      const els = FLOORS.map((f) => document.getElementById(f.id));
+      if (els.some((e) => !e)) return;
+      document.body.classList.add('descent-on');
+
+      let db = 55;
+      let tops: number[] = [];
+      let trackH = 0;
+      const measure = () => {
+        tops = els.map((e) => e!.offsetTop);
+        trackH = track ? track.clientHeight : 0;
+      };
+      measure();
+      window.addEventListener('load', measure, { once: true });
+      const update = () => {
+        const mid = window.scrollY + window.innerHeight * 0.45;
+        // progress 0..1 tussen eerste en laatste verdieping
+        const span = Math.max(1, tops[tops.length - 1] - tops[0]);
+        const prog = Math.min(1, Math.max(0, (mid - tops[0]) / span));
+        // actieve verdieping = laatste top boven het midden
+        let active = 0;
+        tops.forEach((t, i) => { if (mid >= t) active = i; });
+        stops.forEach((s, i) => s.classList.toggle('active', i === active));
+        // doel-dB: lineair interpoleren tussen omliggende verdiepingen
+        const seg = Math.min(FLOORS.length - 2, Math.floor(prog * (FLOORS.length - 1)));
+        const segT = prog * (FLOORS.length - 1) - seg;
+        const target = FLOORS[seg].db + (FLOORS[seg + 1].db - FLOORS[seg].db) * segT;
+        db = reduce ? target : db + (target - db) * 0.12;
+        if (dbEl) dbEl.textContent = String(Math.round(db));
+        if (car) car.style.transform = `translateY(${prog * Math.max(0, trackH - 18)}px)`;
+      };
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', () => { measure(); update(); }, { passive: true });
+      if (!reduce) {
+        const tick = () => { update(); requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+      }
+      stops.forEach((s) => s.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(s.getAttribute('href') || '');
+        target?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      }));
+    })();
+
+    /* ---- Obsidian dust (DOM fallback) ---- */
+    function startDust() {
+      if (reduce) return;
+      const canvas = document.getElementById('dust') as HTMLCanvasElement | null;
+      const ctx = canvas?.getContext('2d');
+      if (canvas && ctx) {
+        let w = 0, h = 0;
+        const DPR = Math.min(2, window.devicePixelRatio || 1);
+        const motes: { x: number; y: number; vx: number; vy: number; r: number; a: number }[] = [];
+        const resize = () => {
+          const host = canvas.parentElement!;
+          w = host.clientWidth; h = host.clientHeight;
+          canvas.width = w * DPR; canvas.height = h * DPR;
+          canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        };
+        resize();
+        window.addEventListener('resize', resize, { passive: true });
+        for (let i = 0; i < 46; i++) motes.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.14, vy: -(Math.random() * 0.18 + 0.04), r: Math.random() * 1.6 + 0.3, a: Math.random() * 0.4 + 0.08 });
+        let last = performance.now();
+        const step = (t: number) => {
+          const dt = Math.min(40, t - last); last = t;
+          ctx.clearRect(0, 0, w, h);
+          for (const p of motes) {
+            p.x += p.vx * dt * 0.06; p.y += p.vy * dt * 0.06;
+            if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+            if (p.x < -10) p.x = w + 10; if (p.x > w + 10) p.x = -10;
+            ctx.beginPath(); ctx.fillStyle = `rgba(212,175,55,${p.a})`;
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+          }
+          requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+    }
+
+    /* ---- WebGL obsidian crystal (lazy) ---- */
+    function webglOK(): boolean {
+      try { const c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'))); } catch { return false; }
+    }
+    const heroEl = document.getElementById('hero');
+    const glCanvas = document.getElementById('obsidian-gl');
+    if (!reduce && glCanvas instanceof HTMLCanvasElement && webglOK()) {
+      import('../../scenes/obsidian-hero')
+        .then(({ initObsidianHero }) => {
+          const handle = initObsidianHero(glCanvas);
+          handle.ready.then(() => heroEl?.classList.add('gl-on'));
+          window.addEventListener('pagehide', () => handle.dispose(), { once: true });
+        })
+        .catch((err) => { console.warn('[obsidian] WebGL hero failed, using fallback', err); startDust(); });
+    } else {
+      startDust();
+    }
+  </script>
+</ObsidianLayout>

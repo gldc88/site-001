@@ -1,0 +1,178 @@
+---
+/**
+ * YoyogiLayout , shared shell for YOYOGI urban bathhouse (website3, round 2).
+ * Persistent WebGL heat-haze scene behind all pages; warm Urushi-Noir.
+ * Props: title, description, active.
+ */
+import '../styles/yoyogi-fonts.css';
+import '../styles/yoyogi.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const BRAND = 'YOYOGI';
+const NAV = [
+  { key: 'ritual', label: 'The Ritual', href: '/website3/ritual' },
+  { key: 'rooms', label: 'Rooms', href: '/website3/rooms' },
+  { key: 'membership', label: 'Membership', href: '/website3/membership' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script is:inline>
+      // R3 "Breathe With The House": settled-state pre-paint restore.
+      try { if (localStorage.getItem('yoyogi-settled') === '1') document.documentElement.classList.add('settled'); } catch (e) { /* private mode */ }
+    </script>
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="seal" aria-hidden="true">
+      <span class="dot"></span>
+      <svg viewBox="0 0 100 100">
+        <defs><path id="sealCircle" d="M 50,50 m -37,0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" /></defs>
+        <text font-size="8.5" fill="#bfa890" font-family="Space Mono" letter-spacing="0.18em">
+          <textPath href="#sealCircle">YOYOGI • URBAN BATHHOUSE • TOKYO • </textPath>
+        </text>
+      </svg>
+    </div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website3" class="brand">{BRAND}</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website3/visit" class="book-btn">Book a Session</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-col">
+        <a href="/website3" class="brand">{BRAND}</a>
+        <span class="f-link" style="text-transform:none; letter-spacing:0.05em;">Yoyogi, Tokyo , low light only, open late.</span>
+      </div>
+      <div class="f-col"><a href="/website3/ritual" class="f-link">The Ritual</a><a href="/website3/rooms" class="f-link">Rooms</a><a href="/website3/membership" class="f-link">Membership</a></div>
+      <div class="f-col"><a href="/website3/visit" class="f-link">Book a Session</a><a href="mailto:stay@yoyogi.example" class="f-link">Book by Email</a><a href="/" class="f-link">Index</a></div>
+      <div class="f-col"><span class="f-link" style="color:var(--faint);">© {YEAR} {BRAND} , Fictional</span></div>
+    </footer>
+
+    <button type="button" class="breath" id="breath" aria-pressed="false" aria-label="Begin a guided breath">
+      <span class="br-orb" id="brOrb" aria-hidden="true"></span>
+      <span class="br-label" id="brLabel" aria-live="polite">Breathe</span>
+    </button>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "Breathe With The House" ---- */
+      type BreathScene = { setBreath: (v: number) => void; setSettled: (on: boolean) => void };
+      let breathScene: BreathScene | null = null;
+      const breathBtn = document.getElementById('breath');
+      const brOrb = document.getElementById('brOrb');
+      const brLabel = document.getElementById('brLabel');
+      // cyclus: in 3s → hold 3s → uit 4s; 3 cycli = settled.
+      const IN = 3000, HOLD = 3000, OUT = 4000, CYCLE = IN + HOLD + OUT, CYCLES = 3;
+      let sessionStart = 0;
+      let sessionRaf = 0;
+      let active = false;
+
+      const setSettledState = (on: boolean) => {
+        document.documentElement.classList.toggle('settled', on);
+        try { localStorage.setItem('yoyogi-settled', on ? '1' : '0'); } catch { /* private mode */ }
+        breathScene?.setSettled(on);
+      };
+
+      function breathValue(ms: number): { v: number; label: string; left: number } {
+        const inCycle = ms % CYCLE;
+        if (inCycle < IN) return { v: inCycle / IN, label: 'Breathe in', left: Math.ceil((IN - inCycle) / 1000) };
+        if (inCycle < IN + HOLD) return { v: 1, label: 'Hold', left: Math.ceil((IN + HOLD - inCycle) / 1000) };
+        return { v: 1 - (inCycle - IN - HOLD) / OUT, label: 'Breathe out', left: Math.ceil((CYCLE - inCycle) / 1000) };
+      }
+      // ease voor een organisch gevoel
+      const ease = (x: number) => x * x * (3 - 2 * x);
+
+      function stopSession(completed: boolean) {
+        active = false;
+        cancelAnimationFrame(sessionRaf);
+        breathScene?.setBreath(0);
+        if (brOrb) brOrb.style.transform = '';
+        breathBtn?.setAttribute('aria-pressed', 'false');
+        breathBtn?.classList.remove('active');
+        if (completed) {
+          setSettledState(true);
+          if (brLabel) brLabel.textContent = 'The water is ready.';
+        } else if (brLabel) {
+          brLabel.textContent = document.documentElement.classList.contains('settled') ? 'The water is ready.' : 'Breathe';
+        }
+      }
+
+      function sessionTick() {
+        if (!active) return;
+        const ms = performance.now() - sessionStart;
+        if (ms >= CYCLE * CYCLES) { stopSession(true); return; }
+        const { v, label, left } = breathValue(ms);
+        const ev = ease(v);
+        breathScene?.setBreath(ev);
+        if (!reduce && brOrb) brOrb.style.transform = `scale(${1 + ev * 0.5})`;
+        if (brLabel) brLabel.textContent = `${label} · ${left}`;
+        sessionRaf = requestAnimationFrame(sessionTick);
+      }
+
+      breathBtn?.addEventListener('click', () => {
+        if (active) { stopSession(false); return; }
+        active = true;
+        sessionStart = performance.now();
+        breathBtn.setAttribute('aria-pressed', 'true');
+        breathBtn.classList.add('active');
+        sessionTick();
+      });
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && active) stopSession(false); });
+      if (document.documentElement.classList.contains('settled') && brLabel) brLabel.textContent = 'The water is ready.';
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/yoyogi-scene')
+          .then(({ initYoyogiScene }) => {
+            const scene = initYoyogiScene(canvas);
+            breathScene = scene;
+            scene.setSettled(document.documentElement.classList.contains('settled'));
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

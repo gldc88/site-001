@@ -1,0 +1,24 @@
+---
+/**
+ * CIVIL HOUSE MAKELAARS , Offer Signal (website28, round 2). The bid-impact / offer-strength simulator.
+ */
+import CivilHouseLayout from '../../layouts/CivilHouseLayout.astro';
+import OfferSim from '../../components/civilhouse/OfferSim.astro';
+---
+
+<CivilHouseLayout title="Offer Signal Dashboard | Civil House Makelaars" description="Estimate how an offer reads to a seller , price vs asking, certainty of funds, and conditions produce an offer-strength score." active="offer-signal">
+  <section class="mx-auto max-w-[1480px] px-6 pt-16 pb-10">
+    <span class="text-[11px] font-semibold uppercase tracking-[0.3em] brass-text">Offer signal</span>
+    <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.92] mt-4">Price is not <br />the whole <span class="brass-text">offer.</span></h1>
+    <p class="mt-7 max-w-2xl text-[var(--mut)] text-lg leading-relaxed">Estimate how an offer reads to a seller. Price matters, but certainty of funds and conditions often decide the win. Move the variables and watch the signal change.</p>
+  </section>
+
+  <section class="mx-auto max-w-[1480px] px-6 pb-16"><OfferSim /></section>
+
+  <section class="mx-auto max-w-[1480px] px-6 pb-20">
+    <div class="spotlight rounded-2xl border border-[var(--brass)]/30 bg-white/[0.03] p-8 md:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <p class="text-[var(--mut)] max-w-md">This is a signal model, not a valuation. When you are ready to act on it, we turn the signal into a posture.</p>
+      <a href="/website28/callback" class="shrink-0 bg-[var(--brass)] text-black px-8 py-4 text-[11px] font-bold uppercase tracking-[0.2em] rounded-md hover:bg-[var(--brass2)] transition-colors">Request a call</a>
+    </div>
+  </section>
+</CivilHouseLayout>

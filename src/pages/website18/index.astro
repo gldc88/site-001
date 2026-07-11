@@ -1,0 +1,152 @@
+---
+/**
+ * AURUM THERMAL HOUSE , Home (website18, round 2 multi-page).
+ * The canal-house cross-section navigator: select a floor/room to set its heat (warms the caustics)
+ * and lift its detail. Rituals + membership teasers, reserve CTA. The chosen room persists across pages.
+ */
+import AurumLayout from '../../layouts/AurumLayout.astro';
+import { ROOMS, RITUALS, TIERS } from '../../data/aurum';
+---
+
+<AurumLayout title="Aurum Thermal House , Canal-House Thermal Circuit" description="An Amsterdam canal-house thermal circuit. Navigate the section floor by floor: mineral baths, steam, sauna, contrast cellar, float, and a quiet tea lounge.">
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow" id="heroKicker">Amsterdam · canal-house thermal circuit</span>
+      <h1 class="hero-title" id="heroTitle">Heat, floor by floor.</h1>
+      <p class="hero-copy" id="heroCopy">A whole house stacked into a circuit , baths, steam, sauna, ice. Select a floor in the section below; the water behind it warms to that room, and follows you across the house.</p>
+
+      <div class="section-nav" id="heroActions">
+        <div class="floors" role="group" aria-label="Floors">
+          {ROOMS.map((r) => (
+            <button class="floor" data-room data-key={r.id} data-heat={String(r.heat)} aria-pressed="false">
+              <span class="fl-mark" style={`--h:${r.heat}`}></span>
+              <span class="fl-text"><span class="fl-floor">{r.floor}</span><span class="fl-name">{r.name}</span></span>
+              <span class="fl-temp">{r.temp}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="room-detail panel gold" id="roomDetail">
+          <div class="rd-head"><span class="rd-floor" id="rdFloor">Ground</span><span class="rd-temp" id="rdTemp">38°C</span></div>
+          <h2 id="rdName">Mineral Bath Hall</h2>
+          <p id="rdBlurb">Mineral water held at a constant temperature, low light, quiet acoustics.</p>
+          <div class="rd-heat"><span>Cool</span><div class="rh-track"><span class="rh-bar" id="rdHeatBar"></span></div><span>Sauna</span></div>
+          <ul class="rd-bullets" id="rdBullets"></ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow jade">Rituals</span><h2>Routes through the house.</h2></div><p>Pre-set sequences, or build your own. <a class="inline-link" href="/website18/rituals">All rituals →</a></p></div>
+    <div class="ritual-strip">
+      {RITUALS.slice(0, 4).map((r) => (
+        <a href="/website18/rituals" class="ritual" data-reveal="up"><span class="ri-dur">{r.dur}</span><h3>{r.name}</h3><p>{r.note}</p></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow">Membership</span><h2>Three ways to belong.</h2></div><p><a class="inline-link" href="/website18/membership">All tiers →</a></p></div>
+    <div class="tier-strip">
+      {TIERS.map((t) => (
+        <div class="tier panel" data-reveal="up"><h3>{t.tier}</h3><p>{t.line}</p><ul>{t.bullets.map((b) => <li>{b}</li>)}</ul></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight reserve-cta">
+    <div class="rc-inner panel gold" data-reveal="up">
+      <span class="eyebrow c">Reserve</span>
+      <h2>Timed entry. Capped capacity.</h2>
+      <p>The house stays quiet because we keep it small. Reserve a window and we hold it for you.</p>
+      <a href="/website18/reserve" class="btn-cta" style="margin-top:26px;">Reserve a window</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 90px clamp(20px,5vw,56px) 40px; }
+    .hero-inner { position: relative; z-index: 10; max-width: 1240px; margin: 0 auto; width: 100%; }
+    .hero-title { font-size: clamp(3rem, 9vw, 7.5rem); line-height: 0.98; color: #fff; margin: 16px 0 18px; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-copy { color: var(--muted); max-width: 50ch; font-size: 1.1rem; }
+    .section-nav { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+    .floors { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+    .floor { display: grid; grid-template-columns: 8px 1fr auto; gap: 14px; align-items: center; text-align: left; padding: 14px 16px; transition: background 0.3s; border-bottom: 1px solid var(--line); }
+    .floor:last-child { border-bottom: none; }
+    .floor:hover { background: rgba(245,236,224,0.03); }
+    .floor[aria-pressed='true'] { background: rgba(224,176,121,0.1); }
+    .fl-mark { width: 8px; height: 30px; border-radius: 2px; background: color-mix(in srgb, var(--gold) calc(var(--h) * 100%), var(--jade)); opacity: 0.5; transition: opacity 0.3s; }
+    .floor[aria-pressed='true'] .fl-mark { opacity: 1; box-shadow: 0 0 10px color-mix(in srgb, var(--gold) calc(var(--h) * 100%), var(--jade)); }
+    .fl-text { display: flex; flex-direction: column; gap: 1px; }
+    .fl-floor { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .fl-name { font-family: var(--serif); font-size: 1.3rem; color: #fff; }
+    .fl-temp { font-family: var(--mono); font-size: 11px; color: var(--gold); }
+
+    .room-detail { padding: 26px; display: flex; flex-direction: column; }
+    .rd-head { display: flex; justify-content: space-between; align-items: baseline; }
+    .rd-floor { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--jade); }
+    .rd-temp { font-family: var(--mono); font-size: 12px; color: var(--gold); }
+    .room-detail h2 { font-size: clamp(1.8rem,2.8vw,2.4rem); color: #fff; margin: 6px 0 12px; }
+    .room-detail > p { color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+    .rd-heat { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+    .rd-heat span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+    .rh-track { flex: 1; height: 4px; background: rgba(245,236,224,0.08); border-radius: 100px; overflow: hidden; }
+    .rh-bar { display: block; height: 100%; background: linear-gradient(90deg, var(--jade), var(--gold-bright)); border-radius: 100px; transition: width 0.5s var(--ease); }
+    .rd-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+    .rd-bullets li { font-size: 0.92rem; color: var(--ink); padding-left: 20px; position: relative; }
+    .rd-bullets li::before { content: '◇'; position: absolute; left: 0; color: var(--gold); font-size: 0.7em; top: 4px; }
+
+    .ritual-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .ritual { padding: 26px 22px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); transition: border-color 0.3s, transform 0.3s; }
+    .ritual:hover { border-color: var(--line-gold); transform: translateY(-3px); }
+    .ri-dur { font-family: var(--mono); font-size: 11px; color: var(--gold); }
+    .ritual h3 { font-size: 1.4rem; color: #fff; margin: 10px 0 8px; }
+    .ritual p { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+
+    .tier-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .tier { padding: 30px 26px; }
+    .tier h3 { font-size: 1.8rem; color: var(--gold-bright); }
+    .tier p { color: var(--muted); margin: 8px 0 16px; }
+    .tier ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .tier li { font-size: 0.9rem; color: var(--ink); padding-left: 20px; position: relative; }
+    .tier li::before { content: '◇'; position: absolute; left: 0; color: var(--gold); font-size: 0.7em; top: 4px; }
+
+    .reserve-cta { display: flex; justify-content: center; }
+    .rc-inner { text-align: center; padding: clamp(40px,6vw,72px) clamp(24px,4vw,56px); max-width: 720px; }
+    .rc-inner .eyebrow { justify-content: center; }
+    .rc-inner h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; margin-top: 14px; }
+    .rc-inner p { color: var(--muted); margin-top: 14px; }
+
+    @media (max-width: 900px) { .section-nav { grid-template-columns: 1fr; } .ritual-strip { grid-template-columns: 1fr 1fr; } .tier-strip { grid-template-columns: 1fr; } }
+    @media (max-width: 540px) { .ritual-strip { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    import { gsap, SplitText, ScrollTrigger } from '../../lib/motion/gsap-plus';
+    import { ROOMS } from '../../data/aurum';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const byId = Object.fromEntries(ROOMS.map((r) => [r.id, r]));
+
+    const heroTitle = document.getElementById('heroTitle');
+    const fades = ['heroKicker', 'heroCopy', 'heroActions'].map((id) => document.getElementById(id));
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (fades[0]) tl.to(fades[0], { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 120, opacity: 0, stagger: 0.035, duration: 0.9 }, 0.1);
+      tl.to(fades[1], { opacity: 1, duration: 0.8 }, 0.5).to(fades[2], { opacity: 1, duration: 0.8 }, 0.7);
+    }
+    ScrollTrigger.refresh();
+
+    const rd = { floor: document.getElementById('rdFloor')!, temp: document.getElementById('rdTemp')!, name: document.getElementById('rdName')!, blurb: document.getElementById('rdBlurb')!, bar: document.getElementById('rdHeatBar')!, bullets: document.getElementById('rdBullets')! };
+    function render(k: string) {
+      const r = byId[k]; if (!r) return;
+      rd.floor.textContent = r.floor; rd.temp.textContent = r.temp; rd.name.textContent = r.name; rd.blurb.textContent = r.blurb;
+      rd.bar.style.width = `${Math.round(r.heat * 100)}%`;
+      rd.bullets.innerHTML = r.bullets.map((b) => `<li>${b}</li>`).join('');
+    }
+    render(localStorage.getItem('aurum-room') || 'mineral');
+    document.addEventListener('aurum:room', (e) => render((e as CustomEvent).detail));
+  </script>
+</AurumLayout>

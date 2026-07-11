@@ -1,0 +1,36 @@
+---
+/**
+ * EMBERLINE , Services (website26, round 2). The six service lines in full.
+ */
+import EmberlineLayout from '../../layouts/EmberlineLayout.astro';
+import { SERVICES, PHONE, TEL } from '../../data/emberline';
+---
+
+<EmberlineLayout title="Services | Emberline Gas & Heating" description="Boiler service, breakdown repair, heating balance, controls setup, gas safety inspection, and boiler upgrades." active="services">
+  <section class="mx-auto max-w-6xl px-5 pt-16 pb-12">
+    <div class="text-[11px] font-black uppercase tracking-[0.3em] text-[#f6a11a] mb-3">Core services</div>
+    <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9]">Gas & heating, <br />done calmly.</h1>
+    <p class="mt-6 max-w-xl text-zinc-300 text-lg font-light leading-relaxed">Six service lines, one process: diagnose properly, fix the cause, test under load, and hand over a record of what changed.</p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 pb-20 grid md:grid-cols-2 gap-6">
+    {SERVICES.map((s, i) => (
+      <div class="reveal-on-scroll group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-8 transition-all duration-500 hover:border-[#f6a11a]/60 hover:-translate-y-1">
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#f6a11a]/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+        <div class="relative z-10 flex items-start justify-between mb-4"><h2 class="text-2xl font-black text-white tracking-tight">{s.title}</h2><span class="text-[#f6a11a]/30 font-black text-2xl font-mono">{String(i + 1).padStart(2, '0')}</span></div>
+        <p class="relative z-10 text-zinc-400 leading-relaxed">{s.desc}</p>
+      </div>
+    ))}
+  </section>
+
+  <section class="border-t border-white/10 bg-black/30">
+    <div class="mx-auto max-w-6xl px-5 py-20 text-center">
+      <h2 class="text-3xl md:text-5xl font-black text-white tracking-tighter">Not sure what you need?</h2>
+      <p class="mt-4 text-zinc-400">Run the fault-triage tool , it walks you from symptom to next step , or just call.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="/website26/tools" class="border border-white/15 text-white px-8 py-4 text-sm font-black uppercase tracking-widest hover:border-[#f6a11a] hover:text-[#f6a11a] transition-all">Fault triage</a>
+        <a href={`tel:${TEL}`} class="bg-[#f6a11a] text-black px-8 py-4 text-sm font-black uppercase tracking-widest hover:bg-amber-400 transition-colors">Call {PHONE}</a>
+      </div>
+    </div>
+  </section>
+</EmberlineLayout>

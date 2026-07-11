@@ -1,0 +1,73 @@
+---
+/**
+ * LockPick , NIGHTWATCH's interactive pin-tumbler lock (website24, round 2). Click each chamber to set the
+ * pin to the shear line; set all five and the bolt retracts (lock opens). Calls window.showToast.
+ */
+---
+<div class="w-full max-w-md mx-auto rounded-2xl border border-white/10 bg-[#0a0a0a] p-6 shadow-[0_30px_80px_-40px_rgba(234,179,8,0.4)]">
+  <div class="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-3"><span>Pin-tumbler // set the pins</span><span id="pinCount" class="text-yellow-500">0 / 5 set</span></div>
+  <svg id="lock" class="lock w-full" viewBox="0 0 360 290" fill="none" aria-label="Interactive pin-tumbler lock">
+    <rect id="bolt" x="300" y="150" width="58" height="30" fill="#3f3f46" stroke="#52525b" stroke-width="1.5" />
+    <rect x="30" y="30" width="240" height="240" rx="8" fill="#0f0f12" stroke="#3f3f46" stroke-width="2" />
+    <line x1="40" y1="150" x2="260" y2="150" stroke="#52525b" stroke-width="1" stroke-dasharray="3 3" />
+    {[0,1,2,3,4].map((i) => {
+      const cx = 64 + i * 42;
+      return (
+        <g class="chamber" data-pin={String(i)}>
+          <rect x={cx - 13} y="44" width="26" height="200" fill="rgba(255,255,255,0.015)" />
+          <line x1={cx} y1="54" x2={cx} y2="62" stroke="#71717a" stroke-width="6" stroke-linecap="round" />
+          <rect class="driver" x={cx - 6} y="96" width="12" height="58" rx="3" fill="#a1a1aa" />
+          <rect class="keypin" x={cx - 6} y="150" width="12" height="56" rx="3" fill="#eab308" />
+          <rect x={cx - 14} y="44" width="28" height="200" fill="transparent" />
+        </g>
+      );
+    })}
+    <circle id="plug" cx="268" cy="150" r="0" stroke="transparent" />
+    <g id="keyway"><path d="M250 150 h36 M268 150 v-12 M262 162 h12" stroke="#eab308" stroke-width="2.4" stroke-linecap="round" opacity="0.5" /></g>
+  </svg>
+  <div class="mt-4 flex items-center justify-between">
+    <div id="lockStatus" class="text-sm font-bold text-zinc-400">Set each pin to the shear line.</div>
+    <button id="relock" type="button" class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 border border-white/10 px-3 py-1.5 rounded hover:border-yellow-500/40 hover:text-yellow-500 transition-colors">Re-lock</button>
+  </div>
+</div>
+<p class="mt-4 text-[11px] text-zinc-600 font-mono max-w-md mx-auto text-center">A demonstration , real entry takes a trained hand and the right tension. Never a drill until it is the only way.</p>
+
+<style>
+  .keypin { transition: transform 0.45s cubic-bezier(0.34,1.4,0.5,1), fill 0.4s; }
+  .driver { transition: transform 0.45s cubic-bezier(0.34,1.4,0.5,1); }
+  .chamber { cursor: pointer; }
+  .chamber.set .keypin { transform: translateY(-26px); fill: #22c55e; }
+  .chamber.set .driver { transform: translateY(-34px); }
+  #bolt { transition: transform 0.7s cubic-bezier(0.5,0,0.2,1); }
+  .lock.open #bolt { transform: translateX(-58px); }
+  .lock.open #plug { stroke: #22c55e; }
+  .lock.open #keyway { transform: rotate(38deg); transform-origin: 268px 150px; transform-box: view-box; }
+  #keyway { transition: transform 0.7s cubic-bezier(0.5,0,0.2,1); }
+</style>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lock = document.getElementById('lock');
+  const chambers = Array.from(document.querySelectorAll<HTMLElement>('.chamber'));
+  if (lock && chambers.length) {
+    const pinCount = document.getElementById('pinCount');
+    const lockStatus = document.getElementById('lockStatus');
+    const set = new Set<number>();
+    const refreshLock = () => {
+      if (pinCount) pinCount.textContent = `${set.size} / 5 set`;
+      const open = set.size === 5;
+      lock.classList.toggle('open', open);
+      if (lockStatus) { lockStatus.textContent = open ? '✓ Access restored , bolt retracted.' : `${5 - set.size} pin${5 - set.size > 1 ? 's' : ''} still binding.`; lockStatus.className = `text-sm font-bold ${open ? 'text-emerald-400' : 'text-zinc-400'}`; }
+    };
+    chambers.forEach((c) => c.addEventListener('click', () => {
+      const i = Number(c.dataset.pin);
+      if (set.has(i)) return;
+      set.add(i); c.classList.add('set');
+      refreshLock();
+      if (set.size === 5) (window as any).showToast?.('Access restored , non-destructive entry. This is how a callout should end.');
+    }));
+    document.getElementById('relock')?.addEventListener('click', () => { set.clear(); chambers.forEach((c) => c.classList.remove('set')); refreshLock(); });
+    refreshLock();
+    if (reduce) { chambers.forEach((c) => { c.classList.add('set'); set.add(Number(c.dataset.pin)); }); refreshLock(); }
+  }
+</script>

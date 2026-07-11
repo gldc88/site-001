@@ -1,0 +1,95 @@
+---
+/**
+ * VellumBureauLayout , shared shell for VELLUM WEDDING BUREAU (website27, round 2). Named -Bureau to avoid
+ * colliding with website8's VELLUM & OAK layout. Champagne / gold paper aesthetic, Cormorant Garamond +
+ * DM Sans. Nav, footer, global #toast (window.showToast). Props: title, description, active.
+ */
+import '../styles/vellum-bureau-fonts.css';
+import '../styles/global.css';
+import { BRAND, SHORT, TAGLINE, AREA, EMAIL, PHONE, TEL } from '../data/vellum-bureau';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'commission', label: 'The Commission', href: '/website27/commission' },
+  { key: 'coverage', label: 'Coverage', href: '/website27/coverage' },
+  { key: 'save-the-date', label: 'Save the Date', href: '/website27/save-the-date' },
+];
+const YEAR = new Date().getFullYear();
+const seal = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.2 6.8H21l-5.6 4.1 2.1 6.9L12 16.3 6.5 19.8l2.1-6.9L3 8.8h6.8L12 2z"/></svg>`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      :root { --paper:#f6f2eb; --paper2:#fbf8f3; --ink:#141316; --mut:rgba(20,19,22,.64); --line:rgba(20,19,22,.14); --champ:#c7a166; --champ-d:#a8854f; }
+      body { color: var(--ink); font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+        background: radial-gradient(1200px 700px at 12% 18%, rgba(199,161,102,.15), transparent 60%), radial-gradient(1000px 640px at 86% 62%, rgba(230,210,170,.12), transparent 62%), linear-gradient(180deg, var(--paper2), var(--paper)); background-attachment: fixed; }
+      .font-display { font-family: 'Cormorant Garamond', ui-serif, Georgia, serif; }
+      .gold-text { background: linear-gradient(135deg, #c7a166 0%, #e9d4a6 50%, #c7a166 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .reveal-on-scroll { opacity: 0; transform: translateY(18px); transition: all 0.8s cubic-bezier(0.2,0.8,0.2,1); }
+      .reveal-visible { opacity: 1; transform: translateY(0); }
+      .v-link { position: relative; }
+      .v-link::after { content:''; position:absolute; left:0; bottom:-3px; height:1px; width:0; background: var(--champ); transition: width .3s ease; }
+      .v-link:hover::after, .v-link.active::after { width:100%; }
+    </style>
+  </head>
+
+  <body class="min-h-screen overflow-x-hidden selection:bg-[#c7a166] selection:text-white">
+    <header class="sticky top-0 z-50 border-b border-[var(--line)] bg-[#fbf8f3]/85 backdrop-blur-md">
+      <div class="mx-auto max-w-6xl px-6 h-20 flex items-center justify-between">
+        <a href="/website27" class="flex items-center gap-2.5">
+          <span class="text-[var(--champ)] w-5 h-5"><Fragment set:html={seal} /></span>
+          <span class="font-display text-2xl font-semibold tracking-wide text-[var(--ink)]">{SHORT}</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-8 text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--mut)]">
+          {NAV.map((i) => <a href={i.href} class={`v-link hover:text-[var(--ink)] transition-colors ${active === i.key ? 'active text-[var(--ink)]' : ''}`}>{i.label}</a>)}
+        </nav>
+        <a href="/website27/inquiry" class="text-[11px] font-semibold uppercase tracking-[0.2em] text-white bg-[var(--ink)] hover:bg-[var(--champ-d)] px-5 py-2.5 rounded-full transition-colors">Inquire</a>
+      </div>
+    </header>
+
+    <main id="top"><slot /></main>
+
+    <footer class="border-t border-[var(--line)] mt-8">
+      <div class="mx-auto max-w-6xl px-6 py-14 grid md:grid-cols-[2fr_1fr_1fr] gap-10">
+        <div>
+          <div class="flex items-center gap-2.5 mb-3"><span class="text-[var(--champ)] w-5 h-5"><Fragment set:html={seal} /></span><span class="font-display text-2xl font-semibold">{BRAND}</span></div>
+          <p class="text-sm text-[var(--mut)] max-w-xs leading-relaxed">{TAGLINE} Full-service wedding planning , design, logistics, vendor direction, on-site production. Fictional brand, demonstration only.</p>
+        </div>
+        <div class="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--mut)] flex flex-col gap-3">
+          <a href="/website27/commission" class="hover:text-[var(--ink)]">The Commission</a>
+          <a href="/website27/coverage" class="hover:text-[var(--ink)]">Coverage</a>
+          <a href="/website27/save-the-date" class="hover:text-[var(--ink)]">Save the Date</a>
+          <a href="/website27/inquiry" class="hover:text-[var(--ink)]">Inquiry</a>
+        </div>
+        <div class="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--mut)] flex flex-col gap-3">
+          <a href={`mailto:${EMAIL}`} class="hover:text-[var(--ink)] normal-case tracking-normal">{EMAIL}</a>
+          <a href={`tel:${TEL}`} class="hover:text-[var(--ink)]">{PHONE}</a>
+          <a href="/" class="hover:text-[var(--ink)]">Return to index</a>
+        </div>
+      </div>
+      <div class="border-t border-[var(--line)] py-5 text-center text-[10px] uppercase tracking-[0.25em] text-[var(--mut)]">© {YEAR} {BRAND} · by appointment · demonstration only</div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[80] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none rounded-full bg-[var(--ink)] text-[#f6f2eb] px-7 py-4 text-sm shadow-[0_20px_50px_rgba(20,19,22,0.25)] transition-all duration-500" style="max-width:min(92vw,470px)"></div>
+
+    <script>
+      const toastEl = document.getElementById('toast');
+      let tT = 0;
+      (window as any).showToast = (html: string) => {
+        if (!toastEl) return;
+        toastEl.innerHTML = html; toastEl.style.opacity = '1'; toastEl.style.transform = 'translate(-50%,0)';
+        window.clearTimeout(tT); tT = window.setTimeout(() => { toastEl.style.opacity = '0'; toastEl.style.transform = 'translate(-50%,24px)'; }, 5200);
+      };
+      const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,146 @@
+---
+/**
+ * NOCTURNE , Reserve (website2, round 2). Signature: booking flow with night-logic,
+ * live ¥ estimate, confirmation; prefilled from the home booking form (query params).
+ */
+import NocturneLayout from '../../layouts/NocturneLayout.astro';
+
+const ROOMS = [
+  { id: 'lantern', name: 'Lantern Room', rate: 54000 },
+  { id: 'atrium', name: 'Atrium Suite', rate: 62000 },
+  { id: 'corner', name: 'Neon Corner', rate: 88000 },
+];
+---
+
+<NocturneLayout title="Reserve | NOCTURNE" description="Reserve a night at Nocturne, Tokyo. Choose your dates and room; we hold the line and confirm by hand." active="reserve">
+  <section class="page-hero" style="min-height:54svh;">
+    <div class="page-hero-media"><img src="/website2/neon1.jpg" alt="Tokyo street at night" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline cyan">Reservations</span>
+      <h1>Reserve a <em>Night</em></h1>
+      <p class="sub">A handful of rooms, released quietly. Tell us when and which; we hold the line and confirm by a person, not a machine.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="res-grid">
+      <form id="resForm" class="res-form panel" novalidate>
+        <div class="rf-row">
+          <div class="fld"><label for="arrival">Check-in</label><input id="arrival" name="arrival" type="date" /><span class="err" data-err="arrival"></span></div>
+          <div class="fld"><label for="departure">Check-out</label><input id="departure" name="departure" type="date" /><span class="err" data-err="departure"></span></div>
+        </div>
+        <div class="rf-row">
+          <div class="fld"><label for="room">Room</label><select id="room" name="room">{ROOMS.map((r) => <option value={r.id} data-rate={String(r.rate)}>{r.name} , ¥{r.rate.toLocaleString()}</option>)}</select></div>
+          <div class="fld"><label for="guests">Guests</label><select id="guests" name="guests"><option value="2">02 guests</option><option value="1">01 guest</option><option value="3">03 guests</option><option value="4">04 guests</option></select></div>
+        </div>
+        <div class="rf-row">
+          <div class="fld"><label for="name">Name</label><input id="name" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="notes">Notes for the desk (optional)</label><textarea id="notes" name="notes" rows="3" placeholder="Arrival time, the kind of quiet you need…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request availability</button>
+        <p class="res-fine">No card required. We reply within the day to confirm.</p>
+      </form>
+
+      <aside class="res-sum panel">
+        <span class="overline cyan">Your Night</span>
+        <div class="rs-line"><span>Room</span><b id="sumRoom">Lantern Room</b></div>
+        <div class="rs-line"><span>Dates</span><b id="sumDates">,</b></div>
+        <div class="rs-line"><span>Nights</span><b id="sumNights">,</b></div>
+        <div class="rs-line"><span>Rate</span><b id="sumRate">¥54,000 / night</b></div>
+        <div class="rs-total"><span>Estimate</span><b id="sumTotal">,</b></div>
+        <p class="rs-note" id="sumNote">Choose your dates to see an estimate. Final pricing is confirmed with the desk.</p>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .res-grid { display: grid; grid-template-columns: 1.4fr 0.9fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .res-form { display: flex; flex-direction: column; gap: 18px; padding: clamp(26px,3vw,40px); }
+    .rf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .res-form textarea { resize: vertical; font-family: var(--body); }
+    .res-fine { font-family: var(--head); font-style: italic; font-size: 0.82rem; color: var(--faint); text-align: center; }
+    .res-sum { position: sticky; top: 96px; padding: clamp(24px,3vw,36px); }
+    .rs-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 15px 0; border-bottom: 1px solid var(--hair); }
+    .rs-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .rs-line b { font-family: var(--head); font-size: 1.1rem; font-weight: 400; color: #fff; text-align: right; }
+    .rs-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hair); }
+    .rs-total span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .rs-total b { font-family: var(--head); font-size: 2rem; color: var(--cyan); }
+    .rs-note { color: var(--faint); font-size: 0.78rem; line-height: 1.7; margin-top: 16px; }
+    .res-sum.confirmed { border-color: rgba(25,230,255,0.5); box-shadow: 0 0 50px -16px rgba(25,230,255,0.4); }
+    @media (max-width: 900px) { .res-grid { grid-template-columns: 1fr; } .res-sum { position: static; } }
+    @media (max-width: 560px) { .rf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('resForm') as HTMLFormElement;
+    const arrival = document.getElementById('arrival') as HTMLInputElement;
+    const departure = document.getElementById('departure') as HTMLInputElement;
+    const room = document.getElementById('room') as HTMLSelectElement;
+    const guests = document.getElementById('guests') as HTMLSelectElement;
+    const sumRoom = document.getElementById('sumRoom')!, sumDates = document.getElementById('sumDates')!;
+    const sumNights = document.getElementById('sumNights')!, sumRate = document.getElementById('sumRate')!;
+    const sumTotal = document.getElementById('sumTotal')!, card = document.querySelector<HTMLElement>('.res-sum');
+
+    const yen = (n: number) => '¥' + n.toLocaleString('en-US');
+    const fmtDate = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    const today = new Date(); const tmr = new Date(today); tmr.setDate(tmr.getDate() + 1);
+    arrival.min = iso(today); departure.min = iso(tmr);
+
+    /* prefill from home booking form query params */
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('ci')) arrival.value = qs.get('ci')!;
+    if (qs.get('co')) departure.value = qs.get('co')!;
+    if (qs.get('guests')) guests.value = qs.get('guests')!;
+    const qRoom = qs.get('room');
+    if (qRoom) { const o = Array.from(room.options).find((x) => x.textContent!.startsWith(qRoom)); if (o) room.value = o.value; }
+
+    const nights = () => {
+      const a = arrival.value ? new Date(arrival.value + 'T00:00:00') : null;
+      const d = departure.value ? new Date(departure.value + 'T00:00:00') : null;
+      if (!a || !d) return 0;
+      const n = Math.round((d.getTime() - a.getTime()) / 86400000);
+      return n > 0 ? n : 0;
+    };
+    const rate = () => Number(room.selectedOptions[0].dataset.rate || '0');
+
+    function update() {
+      if (arrival.value) { const a = new Date(arrival.value + 'T00:00:00'); a.setDate(a.getDate() + 1); departure.min = iso(a); if (departure.value && departure.value < departure.min) departure.value = departure.min; }
+      sumRoom.textContent = room.selectedOptions[0].textContent!.split(' , ')[0];
+      sumRate.textContent = yen(rate()) + ' / night';
+      const n = nights();
+      if (n > 0 && arrival.value && departure.value) {
+        sumDates.textContent = `${fmtDate(new Date(arrival.value + 'T00:00:00'))} – ${fmtDate(new Date(departure.value + 'T00:00:00'))}`;
+        sumNights.textContent = `${n} night${n > 1 ? 's' : ''}`;
+        sumTotal.textContent = yen(rate() * n);
+      } else { sumDates.textContent = ','; sumNights.textContent = ','; sumTotal.textContent = ','; }
+    }
+    [arrival, departure, room].forEach((el) => el.addEventListener('input', update));
+    update();
+
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6000); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--magenta)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (!arrival.value) { setErr('arrival', 'Check-in date.'); ok = false; } else setErr('arrival', '');
+      if (!departure.value || nights() <= 0) { setErr('departure', 'Must be after check-in.'); ok = false; } else setErr('departure', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const n = nights();
+      card?.classList.add('confirmed');
+      showToast(`Held for you, ${name.split(' ')[0]} , ${sumRoom.textContent}, ${n} night${n > 1 ? 's' : ''}, est. ${sumTotal.textContent}. We confirm within the day.`);
+    });
+  </script>
+</NocturneLayout>

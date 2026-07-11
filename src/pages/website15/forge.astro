@@ -1,0 +1,154 @@
+---
+/**
+ * VULCANIC ATELIER , The Forge (website15, round 2). The engineering behind the quiet + a live heat
+ * slider that feeds the magma.
+ */
+import VulcanLayout from '../../layouts/VulcanLayout.astro';
+
+const SPECS = [
+  { k: 'Heat profile', v: 'Room-tuned', d: 'Every stratum runs its own curve. The Thermal Deck roars; the Basalt Suites barely murmur. You set where on that range your night sits.' },
+  { k: 'Sound floor', v: '≤ 28 dBA', d: 'Below a whisper. The plant is buried, the routing is baffled, and quiet hours are enforced , so the heat is the only thing in the room that moves.' },
+  { k: 'Guest load', v: '24 / night', d: 'A hard cap, never exceeded. Twenty-four guests across five strata means a room is never more than half-full, and the staff outnumber the noise.' },
+  { k: 'Routing', v: 'Split paths', d: 'Arrival, circuit, table, and exit run on separate paths that rarely cross. You move through the night without ever queuing behind it.' },
+];
+---
+
+<VulcanLayout title="The Forge | Vulcanic Atelier" description="The engineering behind the quiet , heat profile, sound floor, guest load, and routing. Feed the forge and feel the magma respond." active="forge">
+  <div class="page-hero">
+    <span class="kicker">The Forge</span>
+    <h1>Heat you feel, noise you <em>don't</em>.</h1>
+    <p class="sub">The forge is the part you never see , the plant, the baffling, the routing. It exists so the warmth can be loud while everything around it stays silent. Feed it below and watch the surface answer.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="feel panel ember">
+      <div class="feel-head"><span class="kicker">Feel the forge</span><b id="feelVal">,°</b></div>
+      <input id="heatSlider" class="heat" type="range" min="0" max="100" value="84" aria-label="Heat" />
+      <div class="feel-foot"><span>cooled basalt · 0°</span><span>open magma · 100°</span></div>
+      <p class="feel-cap" id="feelCap">The whole surface is reading from this single dial.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="specs">
+      {SPECS.map((s, i) => (
+        <div class="spec-card panel" data-reveal="up">
+          <div class="sc-top"><span class="sc-k">{s.k}</span><span class="sc-v">{s.v}</span></div>
+          <p>{s.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight offering" id="offering">
+    <div class="of-head">
+      <span class="kicker">The Offering</span>
+      <h2>Leave something behind.</h2>
+      <p>The mountain takes no luggage. Choose what you will surrender for the night ,
+        feed it to the forge and feel the floor answer.</p>
+    </div>
+    <div class="of-stage panel">
+      <div class="of-tokens" id="ofTokens">
+        <button type="button" class="of-token" data-of="phone">Your phone</button>
+        <button type="button" class="of-token" data-of="calendar">Your calendar</button>
+        <button type="button" class="of-token" data-of="inbox">Your inbox</button>
+        <button type="button" class="of-token" data-of="noise">The noise</button>
+      </div>
+      <div class="of-crater" id="ofCrater" aria-hidden="true"><span class="of-glow"></span></div>
+      <p class="of-status" id="ofStatus" aria-live="polite">Nothing surrendered yet.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="quiet-band">
+      <span class="kicker" data-reveal="fade">Quiet by design</span>
+      <h2 data-reveal="up">Loud heat is easy. Quiet heat is engineered.</h2>
+      <p data-reveal="up">Anyone can make a room hot. Making it hot and silent , no roar of plant, no hum of pumps, no clatter from the next stratum , is the whole craft. The forge runs below the floor so the night above it can stay still.</p>
+      <a href="/website15/reserve" class="btn-cta" data-reveal="up" style="margin-top:24px;">Request a night</a>
+    </div>
+  </section>
+
+  <style>
+    /* ===== R3: "The Offering" ===== */
+    .offering .of-head { max-width: 640px; margin-bottom: 26px; }
+    .offering h2 { font-size: clamp(1.9rem,3.4vw,2.7rem); color: var(--cream, #f2e6da); margin: 10px 0 12px; }
+    .offering p { color: var(--muted); line-height: 1.75; }
+    .of-stage { padding: clamp(24px,3.5vw,40px); display: grid; grid-template-columns: 1fr auto; gap: clamp(20px,4vw,44px); align-items: center; }
+    .of-tokens { display: flex; flex-direction: column; gap: 10px; }
+    .of-token { text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.1em; color: var(--muted); background: rgba(255, 120, 50, 0.05); border: 1px solid rgba(255, 120, 50, 0.25); border-radius: 4px; padding: 11px 15px; cursor: pointer; transition: color .3s, border-color .3s, transform .5s ease, opacity .5s ease, filter .5s ease; }
+    .of-token:hover { color: #ffd9c2; border-color: rgba(255, 120, 50, 0.55); }
+    .of-token:focus-visible { outline: 1px solid #ff7832; outline-offset: 2px; }
+    .of-token.burned { transform: scale(0.86); opacity: 0.28; filter: saturate(0.4) brightness(1.6); pointer-events: none; text-decoration: line-through; }
+    @media (prefers-reduced-motion: reduce) { .of-token { transition: none; } }
+    .of-crater { position: relative; width: clamp(120px, 16vw, 180px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 50% 58%, #2a0f06 30%, #12060a 68%); border: 1px solid rgba(255, 120, 50, 0.3); display: grid; place-items: center; overflow: hidden; }
+    .of-glow { width: 55%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 60, 0.85), rgba(200, 60, 20, 0.4) 60%, transparent 75%); filter: blur(4px); transition: transform 1s ease, filter 1s ease; }
+    .of-crater.fed .of-glow { transform: scale(1.55); filter: blur(2px) brightness(1.3); }
+    .of-status { grid-column: 1 / -1; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin: 0; min-height: 14px; }
+    html.mountain-ready .of-status { color: #ffc79b; }
+    @media (max-width: 720px) { .of-stage { grid-template-columns: 1fr; } .of-crater { margin: 0 auto; } }
+
+    .feel { padding: clamp(26px,3vw,38px); }
+    .feel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .feel-head b { font-family: var(--mono); font-size: 1.6rem; color: var(--magma2); }
+    .feel-foot { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+    .feel-cap { font-family: var(--disp); font-style: italic; font-size: 1.1rem; color: var(--magma2); margin-top: 18px; }
+
+    .specs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .spec-card { padding: 30px 28px; }
+    .sc-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+    .sc-k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--magma2); }
+    .sc-v { font-family: var(--disp); font-size: 1.7rem; color: #fff; }
+    .spec-card p { color: var(--muted); line-height: 1.7; }
+
+    .quiet-band { max-width: 760px; }
+    .quiet-band h2 { font-size: clamp(2rem,3.8vw,3rem); color: #fff; margin: 14px 0 18px; }
+    .quiet-band p { color: var(--muted); line-height: 1.8; font-size: 1.08rem; }
+
+    @media (max-width: 860px) { .specs { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const feelVal = document.getElementById('feelVal')!, feelCap = document.getElementById('feelCap')!;
+    const slider = document.getElementById('heatSlider') as HTMLInputElement;
+    const CAPS = [{ at: 0, t: 'Cooled basalt , barely a glow.' }, { at: 30, t: 'A low, even warmth.' }, { at: 55, t: 'The circuit is open and moving.' }, { at: 78, t: 'The forge is roaring, the room still silent.' }, { at: 92, t: 'Open magma. As hot as the night gets.' }];
+    function paint(v: number) { feelVal.textContent = v + '°'; const c = [...CAPS].reverse().find((x) => v >= x.at) || CAPS[0]; feelCap.textContent = c.t; }
+    const saved = Number(localStorage.getItem('vulcan-heat') || '84');
+    if (slider) slider.value = String(saved);
+    paint(saved);
+    document.addEventListener('vulcan:heat', (e) => { const v = (e as CustomEvent).detail; if (slider && document.activeElement !== slider) slider.value = String(v); paint(v); });
+  </script>
+
+  <script>
+    /* R3 "The Offering" , geef dingen op; de forge antwoordt. */
+    (() => {
+      const KEY = 'vulcan-offers';
+      const tokens = Array.from(document.querySelectorAll<HTMLButtonElement>('.of-token'));
+      const crater = document.getElementById('ofCrater');
+      const status = document.getElementById('ofStatus');
+      if (!tokens.length || !status) return;
+      const NAMES: Record<string, string> = { phone: 'your phone', calendar: 'your calendar', inbox: 'your inbox', noise: 'the noise' };
+      const read = (): string[] => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+      const sync = (announce?: string) => {
+        const offered = read();
+        tokens.forEach((t) => t.classList.toggle('burned', offered.includes(t.dataset.of || '')));
+        const ready = offered.length >= 3;
+        document.documentElement.classList.toggle('mountain-ready', ready);
+        if (ready) status.textContent = announce ? `${announce} The mountain will have you.` : 'The mountain will have you.';
+        else if (offered.length) status.textContent = `${announce ? announce + ' ' : ''}${offered.length} of 3 surrendered. The forge is listening.`;
+        else status.textContent = 'Nothing surrendered yet.';
+      };
+      tokens.forEach((t) => t.addEventListener('click', () => {
+        const id = t.dataset.of || '';
+        const offered = read();
+        if (offered.includes(id)) return;
+        offered.push(id);
+        try { localStorage.setItem(KEY, JSON.stringify(offered)); } catch { /* private mode */ }
+        crater?.classList.add('fed');
+        setTimeout(() => crater?.classList.remove('fed'), 1400);
+        document.dispatchEvent(new CustomEvent('vulcan:offer', { detail: id }));
+        sync(`The forge took ${NAMES[id] || id}.`);
+      }));
+      sync();
+    })();
+  </script>
+</VulcanLayout>

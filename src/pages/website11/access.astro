@@ -1,0 +1,109 @@
+---
+/**
+ * ATLAS INTERFACE , Request Access (website11, round 2). Signature: a request -> ref + toast.
+ */
+import AtlasLayout from '../../layouts/AtlasLayout.astro';
+
+const USES = ['Research', 'Operations', 'Product', 'Strategy', 'Personal / curious'];
+const SPECS = [
+  { k: 'Onboarding', v: 'A guided first pass across the surface, live.' },
+  { k: 'Sessions', v: 'Self-serve after that, with the map as your home.' },
+  { k: 'Export', v: 'Snapshots and field notes are yours to keep.' },
+  { k: 'Channel', v: 'One contact, no ticket queue.' },
+];
+---
+
+<AtlasLayout title="Request Access | Atlas Interface" description="Request access to Atlas Interface. A short application, then a guided first pass across the surface.">
+  <div class="page-hero">
+    <span class="tag">Request Access</span>
+    <h1>Get on the <em>surface</em>.</h1>
+    <p class="sub">Atlas is opening gradually. Tell us how you'd use the map and we'll set up a guided first pass , no commitment, and you keep anything you make.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="acc-grid">
+      <form id="accForm" class="acc-form panel lit" novalidate>
+        <div class="af-row">
+          <div class="fld"><label for="aname">Name</label><input id="aname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="aemail">Email</label><input id="aemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="af-row">
+          <div class="fld"><label for="use">Primary use</label><select id="use" name="use">{USES.map((u) => <option>{u}</option>)}</select></div>
+          <div class="fld"><label for="org">Team / org (optional)</label><input id="org" name="org" type="text" placeholder="optional" /></div>
+        </div>
+        <div class="fld"><label for="intent">What would you map first?</label><textarea id="intent" name="intent" rows="4" placeholder="A system you're trying to see whole , and the decision behind it…"></textarea><span class="err" data-err="intent"></span></div>
+        <button type="submit" class="btn" style="width:100%; text-align:center;">Request access</button>
+        <p class="af-fine" id="afStatus">Guided onboarding · export anything you make · no ticket queue</p>
+        <p class="acc-marks" id="marksRef" hidden></p>
+      </form>
+
+      <aside class="acc-side">
+        <div class="acc-ticket panel" id="acc-ticket">
+          <div class="at-top"><span class="tag" style="font-size:9px;">Request</span><span id="atRef" class="at-ref">, , , ,</span></div>
+          <div class="at-specs">
+            {SPECS.map((s) => (<div class="at-spec"><span class="ats-k">{s.k}</span><p>{s.v}</p></div>))}
+          </div>
+          <div class="at-status" id="atStatus">Awaiting submission</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .acc-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .acc-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .af-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .acc-form textarea { resize: vertical; font-family: var(--sans); }
+    .acc-marks { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(150, 220, 255, 0.85); border-top: 1px solid rgba(150, 220, 255, 0.2); padding-top: 12px; }
+    .af-fine { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.04em; color: var(--faint); text-align: center; }
+    .acc-side { position: sticky; top: 80px; }
+    .acc-ticket { padding: clamp(24px,3vw,32px); }
+    .at-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .at-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--a1); }
+    .at-specs { margin-top: 14px; }
+    .at-spec { padding: 16px 0; border-bottom: 1px solid var(--hair); }
+    .at-spec:last-child { border-bottom: none; }
+    .ats-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--a3); }
+    .at-spec p { color: var(--muted); font-size: 0.88rem; margin-top: 7px; line-height: 1.5; }
+    .at-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair); border-radius: 6px; }
+    .acc-ticket.filed { border-color: rgba(110,243,255,0.3); }
+    .acc-ticket.filed .at-status { color: #07080d; background: var(--a1); border-style: solid; border-color: var(--a1); }
+    @media (max-width: 900px) { .acc-grid { grid-template-columns: 1fr; } .acc-side { position: static; } }
+    @media (max-width: 560px) { .af-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 Field Marks: toon je cartografie bij de aanvraag. */
+    try {
+      const marks = JSON.parse(localStorage.getItem('atlas-marks') || '[]');
+      if (marks.length) {
+        const el = document.getElementById('marksRef');
+        if (el) { el.textContent = `${marks.length} field mark${marks.length === 1 ? '' : 's'} charted on the atlas , your survey travels with this request.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    const form = document.getElementById('accForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    const ref = document.getElementById('atRef')!, statusEl = document.getElementById('atStatus')!, fine = document.getElementById('afStatus')!, card = document.getElementById('acc-ticket');
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#ff5bd6' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const intent = String(d.get('intent') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (intent.length < 10) { setErr('intent', 'A sentence on what you\'d map.'); ok = false; } else setErr('intent', '');
+      if (!ok) return;
+      const r = 'AX-' + Math.floor(1000 + Math.random() * 9000);
+      ref.textContent = r; statusEl.textContent = 'Logged · ' + r; fine.textContent = `Request ${r} received , we'll set up your first pass.`; fine.style.color = 'var(--a1)';
+      card?.classList.add('filed');
+      if (toast) { toast.textContent = `Received, ${name.split(' ')[0]} , request ${r} logged. We'll be in touch to schedule your guided first pass.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6600); }
+    });
+  </script>
+</AtlasLayout>

@@ -1,0 +1,278 @@
+---
+/**
+ * ATLAS INTERFACE , Home / The Map (website11, round 2). Signature: a pan + zoom + select
+ * node-graph over a fixed world. Drag to pan, wheel/buttons to zoom, click a node for field notes.
+ */
+import AtlasLayout from '../../layouts/AtlasLayout.astro';
+
+const WORLD = { w: 2400, h: 1400 };
+const NODES = [
+  { id: 'N01', name: 'Observatory', x: 360, y: 420, c: 'a1', note: 'Ingests signals, watches patterns, and flags anomalies without the noise.', tags: ['signal', 'analysis'] },
+  { id: 'N02', name: 'Archive', x: 760, y: 250, c: 'a2', note: 'Versioned memory: snapshots you can trust, trace, and return to later.', tags: ['history', 'integrity'] },
+  { id: 'N03', name: 'Engine', x: 1180, y: 520, c: 'a1', note: 'Turns intent into deterministic runs , routing tasks to clean outputs.', tags: ['compute', 'runtime'] },
+  { id: 'N04', name: 'Sanctum', x: 1620, y: 350, c: 'a3', note: 'A restricted space for high-trust work: fewer sessions, higher signal.', tags: ['private', 'access'] },
+  { id: 'N05', name: 'Relay', x: 1920, y: 760, c: 'a2', note: 'Dispatch and delivery: multi-channel output with throttled bursts.', tags: ['delivery', 'routing'] },
+  { id: 'N06', name: 'Forge', x: 1360, y: 980, c: 'a1', note: 'Prototype lab: iterate quickly, contain risk, promote only what holds up.', tags: ['build', 'iterate'] },
+  { id: 'N07', name: 'Lighthouse', x: 540, y: 1060, c: 'a3', note: 'Orientation layer: heuristics, wayfinding, and clarity when it gets messy.', tags: ['guidance', 'clarity'] },
+];
+const EDGES = [['N01', 'N02'], ['N02', 'N03'], ['N03', 'N04'], ['N04', 'N05'], ['N03', 'N06'], ['N06', 'N07'], ['N07', 'N01'], ['N01', 'N03']];
+const pos = Object.fromEntries(NODES.map((n) => [n.id, n]));
+---
+
+<AtlasLayout title="Atlas Interface , A Living Map for Systems" description="An experimental atlas interface: drag to pan, wheel to zoom, select nodes to reveal field notes and connected flows." active="map">
+  <header class="map-intro">
+    <span class="tag">Experimental · A living map for systems</span>
+    <h1>Pan. Zoom. <em class="iri">Select.</em></h1>
+    <p>This is the whole product in one surface. Drag the field to move, scroll to zoom, and click any node to read its notes and trace what it connects to.</p>
+  </header>
+
+  <section class="map-section">
+    <div class="viewport panel" id="viewport">
+      <div class="world" id="world">
+        <svg class="edges" viewBox={`0 0 ${WORLD.w} ${WORLD.h}`} width={WORLD.w} height={WORLD.h} preserveAspectRatio="none">
+          {EDGES.map(([a, b]) => (
+            <line class="edge" data-a={a} data-b={b} x1={pos[a].x} y1={pos[a].y} x2={pos[b].x} y2={pos[b].y} />
+          ))}
+        </svg>
+        {NODES.map((n) => (
+          <button class={`mnode ${n.c}`} data-id={n.id} style={`left:${n.x}px; top:${n.y}px`} aria-label={n.name}>
+            <span class="mn-dot"></span>
+            <span class="mn-name">{n.name}</span>
+            <span class="mn-id">{n.id}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="hud">
+        <button class="hud-btn hud-mark" id="markMode" aria-pressed="false" aria-label="Toggle field-mark mode" title="Drop field marks">◈</button>
+        <span class="hud-marks" id="markCount" aria-live="polite">0 marks</span>
+        <button class="hud-btn" id="zoomIn" aria-label="Zoom in">+</button>
+        <button class="hud-btn" id="zoomOut" aria-label="Zoom out">−</button>
+        <button class="hud-btn wide" id="recenter">recenter</button>
+      </div>
+      <div class="readout"><span id="roZoom">100%</span> · <span class="hint" id="roHint">drag to pan · scroll to zoom</span></div>
+
+      <aside class="notes" id="notes" aria-live="polite">
+        <button class="notes-close" id="notesClose" aria-label="Close">×</button>
+        <span class="tag" id="nTag">Node</span>
+        <h3 id="nName">,</h3>
+        <p id="nNote">Select a node on the map to read its field notes.</p>
+        <div class="n-tags" id="nTags"></div>
+        <div class="n-links" id="nLinks"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section tight map-foot">
+    <div class="mf-grid">
+      <a href="/website11/system" class="mf-card panel" data-reveal="up"><span class="tag">01</span><h3>How the surface works</h3><p>Surfaces, nodes, edges, and flows , the model behind the map.</p><span class="mf-arw">→</span></a>
+      <a href="/website11/modules" class="mf-card panel" data-reveal="up"><span class="tag v">02</span><h3>The seven modules</h3><p>Observatory to Lighthouse, each node read as a capability.</p><span class="mf-arw">→</span></a>
+      <a href="/website11/notes" class="mf-card panel" data-reveal="up"><span class="tag m">03</span><h3>Field notes</h3><p>A versioned log of what changed and what we observed.</p><span class="mf-arw">→</span></a>
+    </div>
+  </section>
+
+  <style>
+    .hud-mark[aria-pressed='true'] { background: rgba(150, 220, 255, 0.22); box-shadow: 0 0 12px rgba(150, 220, 255, 0.35); }
+    .hud-marks { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: rgba(190, 215, 240, 0.75); align-self: center; padding: 0 6px; }
+    .viewport.marking { cursor: crosshair; }
+    :global(.fieldmark) { position: absolute; transform: translate(-50%, -50%); background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 5; padding: 4px; }
+    :global(.fieldmark i) { width: 11px; height: 11px; transform: rotate(45deg); background: linear-gradient(135deg, #96dcff, #c79bff); box-shadow: 0 0 12px rgba(150, 220, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.5); }
+    :global(.fieldmark span) { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #cfe7ff; letter-spacing: 0.1em; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+
+    .map-intro { max-width: 1200px; margin: 0 auto; padding: clamp(110px,15vh,160px) clamp(20px,5vw,52px) 28px; }
+    .map-intro h1 { font-size: clamp(2.6rem, 7vw, 5.6rem); color: #fff; margin: 14px 0; }
+    .map-intro em { font-style: italic; }
+    .map-intro p { color: var(--muted); max-width: 60ch; }
+
+    .map-section { max-width: 1280px; margin: 0 auto; padding: 0 clamp(14px,3vw,40px) 20px; }
+    .viewport { position: relative; height: clamp(440px, 74svh, 760px); overflow: hidden; touch-action: none; cursor: grab; background: rgba(7,8,13,0.4); }
+    .viewport.panning { cursor: grabbing; }
+    .world { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+    .edges { position: absolute; top: 0; left: 0; overflow: visible; }
+    .edge { stroke: var(--hair); stroke-width: 2; transition: stroke 0.4s, stroke-width 0.4s; }
+    .edge.lit { stroke: var(--a1); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(110,243,255,0.7)); }
+
+    .mnode { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px; border-radius: 12px; transition: transform 0.2s; }
+    .mnode:hover { transform: translate(-50%, -50%) scale(1.06); }
+    .mn-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--bg1); position: relative; transition: box-shadow 0.3s, transform 0.3s; }
+    .mnode.a1 .mn-dot { border: 2px solid var(--a1); } .mnode.a2 .mn-dot { border: 2px solid var(--a2); } .mnode.a3 .mn-dot { border: 2px solid var(--a3); }
+    .mn-name { font-family: var(--serif); font-size: 19px; color: #fff; white-space: nowrap; }
+    .mn-id { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; color: var(--faint); }
+    .mnode.active .mn-dot { transform: scale(1.3); }
+    .mnode.a1.active .mn-dot { background: var(--a1); box-shadow: 0 0 24px var(--a1); }
+    .mnode.a2.active .mn-dot { background: var(--a2); box-shadow: 0 0 24px var(--a2); }
+    .mnode.a3.active .mn-dot { background: var(--a3); box-shadow: 0 0 24px var(--a3); }
+    .mnode.dim { opacity: 0.4; transition: opacity 0.4s; }
+
+    .hud { position: absolute; left: 16px; bottom: 16px; z-index: 5; display: flex; gap: 8px; }
+    .hud-btn { font-family: var(--mono); font-size: 14px; color: var(--ink); width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 8px; background: rgba(7,8,13,0.7); backdrop-filter: blur(10px); transition: all 0.2s; }
+    .hud-btn.wide { width: auto; padding: 0 14px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .hud-btn:hover { border-color: var(--a1); color: var(--a1); }
+    .readout { position: absolute; right: 16px; bottom: 18px; z-index: 5; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); }
+    .readout .hint { color: var(--faint); }
+
+    .notes { position: absolute; top: 16px; right: 16px; width: min(320px, calc(100% - 32px)); z-index: 6; background: rgba(11,15,26,0.86); border: 1px solid rgba(110,243,255,0.22); border-radius: 12px; padding: 22px 22px 24px; backdrop-filter: blur(18px); box-shadow: 0 24px 60px -20px rgba(0,0,0,0.8); transform: translateY(-8px); opacity: 0; pointer-events: none; transition: opacity 0.35s var(--ease), transform 0.35s var(--ease); }
+    .notes.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .notes-close { position: absolute; top: 14px; right: 16px; font-size: 20px; color: var(--muted); line-height: 1; transition: color 0.2s; }
+    .notes-close:hover { color: #fff; }
+    .notes h3 { font-size: 1.7rem; color: #fff; margin: 10px 0 12px; }
+    .notes p { color: var(--ink); font-size: 0.95rem; line-height: 1.6; }
+    .n-tags { display: flex; gap: 7px; flex-wrap: wrap; margin: 18px 0; }
+    .n-tags span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--a1); border: 1px solid rgba(110,243,255,0.3); padding: 5px 9px; border-radius: 100px; }
+    .n-links { display: flex; flex-direction: column; gap: 6px; padding-top: 16px; border-top: 1px solid var(--hair); }
+    .n-links a { font-family: var(--mono); font-size: 11px; color: var(--muted); cursor: pointer; transition: color 0.2s; display: flex; gap: 8px; }
+    .n-links a:hover { color: var(--a1); }
+    .n-links a span { color: var(--faint); }
+
+    .map-foot .mf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .mf-card { position: relative; padding: 28px 26px; overflow: hidden; transition: border-color 0.35s, transform 0.35s; }
+    .mf-card:hover { border-color: rgba(110,243,255,0.3); transform: translateY(-4px); }
+    .mf-card h3 { font-size: 1.4rem; color: #fff; margin: 12px 0 10px; }
+    .mf-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+    .mf-arw { position: absolute; bottom: 22px; right: 24px; color: var(--a1); opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+    .mf-card:hover .mf-arw { opacity: 1; transform: translateX(4px); }
+
+    @media (max-width: 720px) { .map-foot .mf-grid { grid-template-columns: 1fr; } .notes { width: calc(100% - 32px); } }
+  </style>
+
+  <script>
+    const WORLD = { w: 2400, h: 1400 };
+    const NOTES: Record<string, { name: string; note: string; tags: string[]; c: string }> = {
+      N01: { name: 'Observatory', note: 'Ingests signals, watches patterns, and flags anomalies without the noise.', tags: ['signal', 'analysis'], c: 'a1' },
+      N02: { name: 'Archive', note: 'Versioned memory: snapshots you can trust, trace, and return to later.', tags: ['history', 'integrity'], c: 'a2' },
+      N03: { name: 'Engine', note: 'Turns intent into deterministic runs , routing tasks to clean outputs.', tags: ['compute', 'runtime'], c: 'a1' },
+      N04: { name: 'Sanctum', note: 'A restricted space for high-trust work: fewer sessions, higher signal.', tags: ['private', 'access'], c: 'a3' },
+      N05: { name: 'Relay', note: 'Dispatch and delivery: multi-channel output with throttled bursts.', tags: ['delivery', 'routing'], c: 'a2' },
+      N06: { name: 'Forge', note: 'Prototype lab: iterate quickly, contain risk, promote only what holds up.', tags: ['build', 'iterate'], c: 'a1' },
+      N07: { name: 'Lighthouse', note: 'Orientation layer: heuristics, wayfinding, and clarity when it gets messy.', tags: ['guidance', 'clarity'], c: 'a3' },
+    };
+    const viewport = document.getElementById('viewport')!;
+    const world = document.getElementById('world')!;
+    const edges = Array.from(document.querySelectorAll<SVGLineElement>('.edge'));
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.mnode'));
+    const roZoom = document.getElementById('roZoom')!;
+    const notes = document.getElementById('notes')!;
+    const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+
+    let zoom = 0.5, panX = 0, panY = 0;
+    function fit() {
+      const vw = viewport.clientWidth, vh = viewport.clientHeight;
+      zoom = clamp(Math.min(vw / WORLD.w, vh / WORLD.h) * 1.15, 0.3, 1.4);
+      panX = (vw - WORLD.w * zoom) / 2;
+      panY = (vh - WORLD.h * zoom) / 2;
+      apply();
+    }
+    function apply() {
+      world.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+      (window as any).__atlasView = { panX, panY, zoom };
+      roZoom.textContent = Math.round(zoom * 100) + '%';
+    }
+    function zoomAt(cx: number, cy: number, factor: number) {
+      const nz = clamp(zoom * factor, 0.3, 2.2);
+      const wx = (cx - panX) / zoom, wy = (cy - panY) / zoom;
+      zoom = nz; panX = cx - wx * zoom; panY = cy - wy * zoom; apply();
+    }
+
+    // pan (window-scoped listeners during the gesture , robust across pointer capture quirks)
+    let down = false, moved = false, sx = 0, sy = 0, px0 = 0, py0 = 0;
+    const onMove = (e: PointerEvent) => {
+      if (!down) return;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) + Math.abs(dy) > 4) moved = true; viewport.classList.add('dragged'); setTimeout(() => viewport.classList.remove('dragged'), 80);
+      panX = px0 + dx; panY = py0 + dy; apply();
+    };
+    const onUp = () => { down = false; viewport.classList.remove('panning'); window.removeEventListener('pointermove', onMove); };
+    viewport.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('.hud, .notes')) return;
+      down = true; moved = false; sx = e.clientX; sy = e.clientY; px0 = panX; py0 = panY;
+      viewport.classList.add('panning');
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp, { once: true });
+    });
+    viewport.addEventListener('wheel', (e) => { e.preventDefault(); const r = viewport.getBoundingClientRect(); zoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.12 : 0.89); }, { passive: false });
+
+    // select
+    function select(id: string) {
+      const neighbours = new Set<string>([id]);
+      edges.forEach((ed) => { const a = ed.dataset.a!, b = ed.dataset.b!; const lit = a === id || b === id; ed.classList.toggle('lit', lit); if (lit) { neighbours.add(a); neighbours.add(b); } });
+      nodes.forEach((n) => { const nid = n.dataset.id!; n.classList.toggle('active', nid === id); n.classList.toggle('dim', !neighbours.has(nid)); });
+      const d = NOTES[id];
+      document.getElementById('nTag')!.textContent = id;
+      document.getElementById('nName')!.textContent = d.name;
+      document.getElementById('nNote')!.textContent = d.note;
+      document.getElementById('nTags')!.innerHTML = d.tags.map((t) => `<span>${t}</span>`).join('');
+      const others = [...neighbours].filter((x) => x !== id);
+      document.getElementById('nLinks')!.innerHTML = others.map((o) => `<a data-jump="${o}"><span>connects ◇</span> ${NOTES[o].name}</a>`).join('');
+      document.querySelectorAll<HTMLElement>('#nLinks a[data-jump]').forEach((a) => a.addEventListener('click', () => select(a.dataset.jump!)));
+      notes.classList.add('open');
+    }
+    nodes.forEach((n) => n.addEventListener('click', (e) => { if (moved) return; e.stopPropagation(); select(n.dataset.id!); }));
+    document.getElementById('notesClose')?.addEventListener('click', () => { notes.classList.remove('open'); nodes.forEach((n) => n.classList.remove('active', 'dim')); edges.forEach((ed) => ed.classList.remove('lit')); });
+
+    document.getElementById('zoomIn')?.addEventListener('click', () => zoomAt(viewport.clientWidth / 2, viewport.clientHeight / 2, 1.2));
+    document.getElementById('zoomOut')?.addEventListener('click', () => zoomAt(viewport.clientWidth / 2, viewport.clientHeight / 2, 0.83));
+    document.getElementById('recenter')?.addEventListener('click', fit);
+    window.addEventListener('resize', fit);
+    fit();
+
+    /* ---- R3 "Field Marks": spatieel annoteren in world-space ---- */
+    (() => {
+      const markBtn = document.getElementById('markMode');
+      const markCount = document.getElementById('markCount');
+      const viewport = document.getElementById('viewport');
+      const worldEl = document.getElementById('world');
+      if (!markBtn || !viewport || !worldEl) return;
+      type Mark = { x: number; y: number; n: number };
+      const readMarks = (): Mark[] => { try { return JSON.parse(localStorage.getItem('atlas-marks') || '[]'); } catch { return []; } };
+      const writeMarks = (m: Mark[]) => { try { localStorage.setItem('atlas-marks', JSON.stringify(m)); } catch { /* private mode */ } };
+      let marking = false;
+
+      const renderMarks = () => {
+        worldEl.querySelectorAll('.fieldmark').forEach((el) => el.remove());
+        const marks = readMarks();
+        marks.forEach((m) => {
+          const el = document.createElement('button');
+          el.type = 'button';
+          el.className = 'fieldmark';
+          el.style.left = `${m.x}px`;
+          el.style.top = `${m.y}px`;
+          el.setAttribute('aria-label', `Field mark ${m.n} , click to remove`);
+          el.title = `M${m.n} · click to remove`;
+          el.innerHTML = `<i></i><span>M${m.n}</span>`;
+          el.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            writeMarks(readMarks().filter((x) => x.n !== m.n));
+            renderMarks();
+          });
+          worldEl.appendChild(el);
+        });
+        if (markCount) markCount.textContent = `${marks.length} mark${marks.length === 1 ? '' : 's'}`;
+      };
+      renderMarks();
+
+      markBtn.addEventListener('click', () => {
+        marking = !marking;
+        markBtn.setAttribute('aria-pressed', String(marking));
+        viewport.classList.toggle('marking', marking);
+      });
+
+      // klik op lege kaartruimte in mark-modus = marker droppen (niet na een drag, niet op een node)
+      viewport.addEventListener('click', (e) => {
+        if (!marking) return;
+        const target = e.target as HTMLElement;
+        if (target.closest('.mnode') || target.closest('.fieldmark') || target.closest('.hud-btn') || target.closest('.hud')) return;
+        if (viewport.classList.contains('dragged')) return;
+        const rect = viewport.getBoundingClientRect();
+        const st = (window as any).__atlasView as { panX: number; panY: number; zoom: number } | undefined;
+        if (!st) return;
+        const wx = (e.clientX - rect.left - st.panX) / st.zoom;
+        const wy = (e.clientY - rect.top - st.panY) / st.zoom;
+        const marks = readMarks();
+        const n = marks.length ? Math.max(...marks.map((m) => m.n)) + 1 : 1;
+        marks.push({ x: Math.round(wx), y: Math.round(wy), n });
+        writeMarks(marks);
+        renderMarks();
+      });
+    })();
+  </script>
+</AtlasLayout>

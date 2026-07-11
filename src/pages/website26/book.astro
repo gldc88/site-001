@@ -1,0 +1,76 @@
+---
+/**
+ * EMBERLINE , Book (website26, round 2). Visit request -> validated -> toast (folds in the BTU estimate
+ * from the tools page if one was made).
+ */
+import EmberlineLayout from '../../layouts/EmberlineLayout.astro';
+import { JOBS, PHONE, TEL, EMAIL, AREA, HOURS } from '../../data/emberline';
+---
+
+<EmberlineLayout title="Book a Visit | Emberline Gas & Heating" description="Request a gas and heating visit. Tell us the essentials and we reply with a time.">
+  <section class="mx-auto max-w-6xl px-5 pt-16 pb-24 grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+    <div>
+      <div class="text-[11px] font-black uppercase tracking-[0.3em] text-[#f6a11a] mb-3">Book a visit</div>
+      <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9]">Tell us the essentials.</h1>
+      <p class="mt-6 max-w-md text-zinc-300 text-lg font-light leading-relaxed">Address, boiler make and model, and a short fault description , if it is intermittent, say when it happens. We reply with a time.</p>
+      <div id="btuNote" class="mt-6 text-[11px] font-mono uppercase tracking-widest text-zinc-500"></div>
+      <ul class="mt-10 space-y-4 text-sm text-zinc-200 font-bold uppercase tracking-wide">
+        <li><a href={`tel:${TEL}`} class="hover:text-[#f6a11a] transition-all">{PHONE}</a></li>
+        <li><a href={`mailto:${EMAIL}`} class="hover:text-[#f6a11a] transition-all normal-case tracking-normal">{EMAIL}</a></li>
+        <li class="text-zinc-500">{AREA}</li>
+      </ul>
+      <p class="mt-4 text-[11px] font-bold uppercase tracking-widest text-zinc-600">{HOURS}</p>
+    </div>
+
+    <form id="bookForm" novalidate class="rounded-xl border border-[#f6a11a]/20 bg-gradient-to-br from-[#f6a11a]/8 to-transparent p-8 md:p-10">
+      <div class="grid grid-cols-2 gap-4">
+        <label class="block"><span class="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Name</span><input name="name" class="w-full bg-white/5 border border-white/10 rounded px-3 py-3 text-sm text-white outline-none focus:border-[#f6a11a] transition-colors" /><div class="text-[10px] font-mono text-red-400 mt-1 min-h-[1em]" data-err-for="name"></div></label>
+        <label class="block"><span class="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Postcode</span><input name="postcode" class="w-full bg-white/5 border border-white/10 rounded px-3 py-3 text-sm text-white outline-none focus:border-[#f6a11a] transition-colors uppercase" /><div class="text-[10px] font-mono text-red-400 mt-1 min-h-[1em]" data-err-for="postcode"></div></label>
+      </div>
+      <label class="block mt-4"><span class="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Email</span><input name="email" type="email" class="w-full bg-white/5 border border-white/10 rounded px-3 py-3 text-sm text-white outline-none focus:border-[#f6a11a] transition-colors" /><div class="text-[10px] font-mono text-red-400 mt-1 min-h-[1em]" data-err-for="email"></div></label>
+      <label class="block mt-4"><span class="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">What's the job?</span>
+        <select name="job" class="w-full bg-[#0b0c12] border border-white/10 rounded px-3 py-3 text-sm text-white outline-none focus:border-[#f6a11a] transition-colors"><option value="">Select…</option>{JOBS.map((j) => <option>{j}</option>)}</select>
+        <div class="text-[10px] font-mono text-red-400 mt-1 min-h-[1em]" data-err-for="job"></div></label>
+      <button type="submit" class="mt-6 w-full bg-[#f6a11a] text-black py-4 text-sm font-black uppercase tracking-[0.2em] hover:bg-amber-400 transition-colors rounded-sm">Request a visit</button>
+      <p id="bkStatus" class="mt-4 text-[11px] font-mono uppercase tracking-widest text-zinc-600 text-center">Documented work · {AREA}</p>
+    </form>
+  </section>
+
+  <script>
+    const btuNote = document.getElementById('btuNote');
+    let btu = '';
+    try { btu = localStorage.getItem('emberline-btu') || ''; } catch (e) {}
+    if (btuNote) btuNote.textContent = btu && btu !== '-- BTU' ? `From your estimator: a room sized ~${btu} , we'll factor it in.` : '';
+    /* R3 Boiler Listener: het gekozen geluid reist mee. */
+    try {
+      const snd = JSON.parse(localStorage.getItem('emberline-sound') || 'null');
+      if (snd && btuNote) {
+        const urgentie = snd.urgency === 'today' ? 'call-out' : snd.urgency === 'soon' ? 'priority visit' : 'service visit';
+        btuNote.textContent = `${btuNote.textContent ? btuNote.textContent + ' ' : ''}You heard "${snd.sound}" , we've marked this as a ${urgentie}.`.trim();
+      }
+    } catch { /* private mode */ }
+
+    const form = document.getElementById('bookForm') as HTMLFormElement;
+    const status = document.getElementById('bkStatus')!;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err-for="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) (i as HTMLElement).style.borderColor = m ? '#f87171' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const postcode = String(d.get('postcode') || '').trim();
+      const job = String(d.get('job') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Need a name.'); ok = false; } else setErr('name', '');
+      if (postcode.length < 4) { setErr('postcode', 'A postcode.'); ok = false; } else setErr('postcode', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'Valid email.'); ok = false; } else setErr('email', '');
+      if (!job) { setErr('job', 'Pick the job.'); ok = false; } else setErr('job', '');
+      if (!ok) return;
+      const ref = 'EM-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      status.textContent = `Request ${ref} logged , we reply with a visit time.`;
+      (window as any).showToast?.(`Booked in, <b>${name.split(' ')[0] || 'there'}</b> , ref <b>${ref}</b>. We reply with a time for your ${job.toLowerCase()}${btu && btu !== '-- BTU' ? ` (room sized ~${btu})` : ''}.`);
+      form.reset();
+      ['name', 'email', 'postcode', 'job'].forEach((n) => setErr(n, ''));
+    });
+  </script>
+</EmberlineLayout>

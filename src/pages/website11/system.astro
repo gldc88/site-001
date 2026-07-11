@@ -1,0 +1,72 @@
+---
+/**
+ * ATLAS INTERFACE , System (website11, round 2). The model behind the map, explained.
+ */
+import AtlasLayout from '../../layouts/AtlasLayout.astro';
+
+const MODEL = [
+  { k: 'Surface', c: 'a1', d: 'The single canvas everything lives on. No tabs, no tree , one continuous space you pan and zoom. Position carries meaning.' },
+  { k: 'Node', c: 'a2', d: 'A capability or place in the system. Each node is small on the map and deep on selection: a name, field notes, and tags.' },
+  { k: 'Edge', c: 'a3', d: 'A relationship between two nodes. Select one node and its edges light up , you see what it touches before you read a word.' },
+  { k: 'Flow', c: 'a1', d: 'A path traced across several edges. Flows are how work actually moves: Observatory → Engine → Relay, for instance.' },
+  { k: 'Field Note', c: 'a2', d: 'The versioned record attached to any node , what changed, when, and what we observed. The map remembers.' },
+];
+const PRINCIPLES = [
+  { t: 'Read at a glance', d: 'The shape of the system should be legible before you read any text. Layout is the first explanation.' },
+  { t: 'Trace, don\'t search', d: 'You find things by following connections, not by querying a list. The map rewards wandering.' },
+  { t: 'Memory is versioned', d: 'Nothing is overwritten silently. Every node carries a history you can return to.' },
+];
+---
+
+<AtlasLayout title="System | Atlas Interface" description="The model behind Atlas Interface , surfaces, nodes, edges, flows, and field notes." active="system">
+  <div class="page-hero">
+    <span class="tag">System</span>
+    <h1>A map you <em>read</em>, not a menu you click.</h1>
+    <p class="sub">Atlas is built on five ideas. Once they click, the whole interface reads itself , the structure is the documentation.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="tag">The Model</span><h2>Five ideas, one surface.</h2></div></div>
+    <div class="model-grid">
+      {MODEL.map((m, i) => (
+        <div class={`model panel ${m.c}`} data-reveal="up">
+          <div class="model-top"><span class="model-n">{String(i + 1).padStart(2, '0')}</span><span class={`tag ${m.c === 'a2' ? 'v' : m.c === 'a3' ? 'm' : ''}`}>{m.k}</span></div>
+          <p>{m.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="tag v">Principles</span><h2>Three rules the surface keeps.</h2></div></div>
+    <div class="principles">
+      {PRINCIPLES.map((p, i) => (
+        <div class="principle" data-reveal="up"><span class="pr-n iri">{String(i + 1).padStart(2, '0')}</span><div><h3>{p.t}</h3><p>{p.d}</p></div></div>
+      ))}
+    </div>
+    <div class="sys-cta" data-reveal="up">
+      <a href="/website11" class="btn">Open the map</a>
+      <a href="/website11/modules" class="btn-ghost">Read the modules</a>
+    </div>
+  </section>
+
+  <style>
+    .model-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .model { padding: 30px 26px; transition: border-color 0.35s; }
+    .model.a1:hover { border-color: rgba(110,243,255,0.3); } .model.a2:hover { border-color: rgba(181,123,255,0.3); } .model.a3:hover { border-color: rgba(255,91,214,0.3); }
+    .model-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .model-n { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+    .model p { color: var(--muted); line-height: 1.65; font-size: 0.95rem; }
+    .model:nth-child(4), .model:nth-child(5) { grid-column: span 1; }
+
+    .principles { display: flex; flex-direction: column; gap: 2px; }
+    .principle { display: grid; grid-template-columns: 80px 1fr; gap: 24px; padding: 30px 0; border-top: 1px solid var(--hair); align-items: baseline; }
+    .principle:last-of-type { border-bottom: 1px solid var(--hair); }
+    .pr-n { font-family: var(--serif); font-size: 2.4rem; }
+    .principle h3 { font-size: 1.6rem; color: #fff; }
+    .principle p { color: var(--muted); margin-top: 8px; max-width: 60ch; }
+    .sys-cta { margin-top: 40px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+    @media (max-width: 900px) { .model-grid { grid-template-columns: 1fr; } .principle { grid-template-columns: 1fr; gap: 6px; } }
+  </style>
+</AtlasLayout>

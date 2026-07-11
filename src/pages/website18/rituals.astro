@@ -1,0 +1,77 @@
+---
+/**
+ * AURUM THERMAL HOUSE , Rituals (website18, round 2). The pre-set sequences + how a visit flows.
+ */
+import AurumLayout from '../../layouts/AurumLayout.astro';
+import { RITUALS } from '../../data/aurum';
+
+const FLOW = [
+  { t: 'Arrive', d: 'Robe, towel, and a still moment in the tea lounge before you start. No rush onto the floor.' },
+  { t: 'Circuit', d: 'Down through the heat , steam, sauna, baths , at your own pace, with the silent rule kept throughout.' },
+  { t: 'Contrast', d: 'The cellar, briefly. Cold on purpose, timed and guided, to reset the system after the heat.' },
+  { t: 'Rest', d: 'Back to the attic. Tea, hydration, and as long as you like before the city starts again.' },
+];
+---
+
+<AurumLayout title="Rituals | Aurum Thermal House" description="Pre-set routes through the house , the thermal circuit, deep steam, contrast reset, float silence, and a massage suite." active="rituals">
+  <div class="page-hero">
+    <span class="eyebrow jade">Rituals</span>
+    <h1>Routes through the <em>house</em>.</h1>
+    <p class="sub">Pick a pre-set sequence or build your own. Each ritual is a route through the floors, timed so the heat and the cold land in the right order , you never have to think about what comes next.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="rituals-list">
+      {RITUALS.map((r, i) => (
+        <article class="rit" data-reveal="up">
+          <span class="rit-n">{String(i + 1).padStart(2, '0')}</span>
+          <div class="rit-body"><div class="rit-top"><h2>{r.name}</h2><span class="rit-dur">{r.dur}</span></div><p>{r.note}</p></div>
+          <a href="/website18/reserve" class="rit-cta">Reserve →</a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow">The flow</span><h2>How a visit moves.</h2></div></div>
+    <div class="flow-grid">
+      {FLOW.map((f, i) => (
+        <div class="flow" data-reveal="up"><span class="fl-n">{String(i + 1).padStart(2, '0')}</span><h3>{f.t}</h3><p>{f.d}</p></div>
+      ))}
+    </div>
+    <div class="rituals-cta" data-reveal="up"><a href="/website18/reserve" class="btn-cta">Reserve a window</a></div>
+  </section>
+
+  <section class="section tight">
+    <div class="seal-row">
+      <button type="button" class="circuit-seal" data-station="steam">Stamp the steam</button>
+      <button type="button" class="circuit-seal" data-station="plunge">Stamp the plunge</button>
+    </div>
+  </section>
+
+  <style>
+    .seal-row { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .rituals-list { display: flex; flex-direction: column; }
+    .rit { display: grid; grid-template-columns: 70px 1fr auto; gap: 24px; align-items: center; padding: 30px 8px; border-top: 1px solid var(--line); transition: background 0.3s, padding-left 0.3s; }
+    .rit:last-child { border-bottom: 1px solid var(--line); }
+    .rit:hover { background: rgba(224,176,121,0.04); padding-left: 14px; }
+    .rit-n { font-family: var(--serif); font-size: 1.8rem; color: var(--gold-deep); }
+    .rit-top { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+    .rit-top h2 { font-size: clamp(1.6rem,3vw,2.2rem); color: #fff; }
+    .rit-dur { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--gold); border: 1px solid var(--line-gold); padding: 4px 10px; border-radius: 999px; }
+    .rit-body p { color: var(--muted); margin-top: 8px; line-height: 1.6; max-width: 64ch; }
+    .rit-cta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+    .rit-cta:hover { color: var(--gold-bright); }
+
+    .flow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .flow { padding: 28px 24px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); }
+    .fl-n { font-family: var(--mono); font-size: 11px; color: var(--jade); }
+    .flow h3 { font-size: 1.5rem; color: #fff; margin: 10px 0 8px; }
+    .flow p { color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .rituals-cta { margin-top: 36px; display: flex; justify-content: center; }
+
+    @media (max-width: 860px) { .rit { grid-template-columns: 50px 1fr; } .rit-cta { grid-column: 2; } .flow-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 540px) { .flow-grid { grid-template-columns: 1fr; } }
+  </style>
+</AurumLayout>

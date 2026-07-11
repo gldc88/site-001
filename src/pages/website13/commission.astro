@@ -1,0 +1,121 @@
+---
+/**
+ * LIGNUM ATELIER , Commission (website13, round 2). Signature: a commission request whose timber
+ * select previews live on the surface; generates a reference + toast + summary.
+ */
+import LignumLayout from '../../layouts/LignumLayout.astro';
+import { SPECIES } from '../../data/lignum';
+
+const TYPES = ['Furniture (single piece)', 'Fitted joinery', 'Architectural woodwork', 'Restoration / repair'];
+---
+
+<LignumLayout title="Commission | Lignum Atelier" description="Commission heirloom woodwork from Lignum Atelier. Choose a timber, describe the piece, and we'll reply with a price and timeline.">
+  <div class="page-hero">
+    <span class="overline">Commission</span>
+    <h1>Made to <em>order</em>, made to last.</h1>
+    <p class="sub">Tell us what you'd like made and in which timber , the surface previews your choice as you pick it. We reply with a price and an honest timeline; nothing is rushed.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="com-grid">
+      <form id="comForm" class="com-form panel brass" novalidate>
+        <div class="cf-row">
+          <div class="fld"><label for="type">Piece</label><select id="type" name="type">{TYPES.map((t) => <option>{t}</option>)}</select></div>
+          <div class="fld"><label for="timber">Timber</label><select id="timber" name="timber">{SPECIES.map((s) => <option value={s.key}>{s.name}</option>)}</select></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="dims">Approx. dimensions</label><input id="dims" name="dims" type="text" placeholder="e.g. 2400 × 1000 mm" /></div>
+          <div class="fld"><label for="when">Timeframe</label><select id="when" name="when"><option>No rush</option><option>Within 3 months</option><option>Within 6 months</option><option>For a specific date</option></select></div>
+        </div>
+        <div class="cf-row">
+          <div class="fld"><label for="cname">Name</label><input id="cname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="cemail">Email</label><input id="cemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="cnote">The piece (optional)</label><textarea id="cnote" name="note" rows="3" placeholder="What it's for, the room it lives in, any reference…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request this commission</button>
+        <p class="cf-fine">Price on request · confirmed before any board is cut.</p>
+        <p class="dry-note" id="dryNote" hidden></p>
+      </form>
+
+      <aside class="com-summary panel" id="summary">
+        <div class="cs-top"><span class="overline" style="font-size:9px;">Commission</span><span id="csRef" class="cs-ref">, , , ,</span></div>
+        <div class="cs-line"><span>Piece</span><b id="csType">Furniture (single piece)</b></div>
+        <div class="cs-line"><span>Timber</span><b id="csTimber">European Oak</b></div>
+        <div class="cs-line"><span>Dimensions</span><b id="csDims">,</b></div>
+        <div class="cs-line"><span>Timeframe</span><b id="csWhen">No rush</b></div>
+        <div class="cs-status" id="csStatus">Awaiting request</div>
+        <p class="cs-hint">The surface behind this page is previewing your chosen timber.</p>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .com-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .com-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .com-form textarea { resize: vertical; font-family: var(--sans); }
+    .cf-fine { font-family: var(--mono); font-size: 0.7rem; color: var(--faint); text-align: center; }
+    .com-summary { position: sticky; top: 90px; padding: clamp(24px,3vw,32px); }
+    .cs-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .cs-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--brass); }
+    .cs-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--hair-soft); }
+    .cs-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .cs-line b { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: #fff; text-align: right; }
+    .cs-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair-soft); border-radius: 4px; }
+    .com-summary.filed { border-color: var(--hair); }
+    .com-summary.filed .cs-status { color: #0e0a07; background: var(--brass); border-style: solid; border-color: var(--brass); }
+    .cs-hint { font-family: var(--mono); font-size: 9px; color: var(--faint); margin-top: 14px; text-align: center; letter-spacing: 0.04em; }
+    @media (max-width: 900px) { .com-grid { grid-template-columns: 1fr; } .com-summary { position: static; } }
+    @media (max-width: 560px) { .cf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 Drying Room: een droge plank reist mee naar de commissie. */
+    try {
+      const d = JSON.parse(localStorage.getItem('lignum-drying') || 'null');
+      if (d && Date.now() - d.start >= d.hours * 3600e3) {
+        const el = document.getElementById('dryNote');
+        if (el) { el.textContent = `Your ${d.sp} board is dry on our racks , we can start with it.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    import { SPECIES } from '../../data/lignum';
+    const byKey = Object.fromEntries(SPECIES.map((s) => [s.key, s]));
+    const form = document.getElementById('comForm') as HTMLFormElement;
+    const type = document.getElementById('type') as HTMLSelectElement;
+    const timber = document.getElementById('timber') as HTMLSelectElement;
+    const dims = document.getElementById('dims') as HTMLInputElement;
+    const when = document.getElementById('when') as HTMLSelectElement;
+    const cs = { type: document.getElementById('csType')!, timber: document.getElementById('csTimber')!, dims: document.getElementById('csDims')!, when: document.getElementById('csWhen')!, ref: document.getElementById('csRef')!, status: document.getElementById('csStatus')! };
+    const card = document.getElementById('summary');
+    const toast = document.getElementById('toast');
+    let tT = 0;
+
+    // initialise timber select to the persisted species, and preview live on change
+    const saved = localStorage.getItem('lignum-species') || 'walnut';
+    if (byKey[saved]) timber.value = saved;
+    const update = () => { cs.type.textContent = type.value; cs.timber.textContent = byKey[timber.value]?.name || timber.value; cs.dims.textContent = dims.value.trim() || ','; cs.when.textContent = when.value; };
+    timber.addEventListener('change', () => { (window as any).__lignumApply?.(timber.value); update(); });
+    [type, dims, when].forEach((el) => el.addEventListener('input', update));
+    update();
+
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#e0a07a' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('cname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('cemail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'LA-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      cs.ref.textContent = ref; cs.status.textContent = 'Logged · ' + ref; card?.classList.add('filed');
+      if (toast) { toast.textContent = `Thank you ${name.split(' ')[0]} , commission ${ref} in ${byKey[timber.value]?.name} received. We'll reply with a price and timeline.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+<style>
+  .dry-note { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #b8e6b8; border-top: 1px solid rgba(201, 168, 118, 0.25); padding-top: 12px; }
+</style>
+</LignumLayout>

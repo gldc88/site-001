@@ -1,0 +1,106 @@
+---
+/**
+ * DossierBuilder , CIVIL HOUSE's client dossier tool (website28, round 2). Builds a one-page brief
+ * (situation-specific document pack + first-week plan), copyable, and saves {lane,city} to localStorage
+ * so the callback page references it.
+ */
+import { LANES, TYPES, EMAIL } from '../../data/civilhouse';
+---
+<div class="grid lg:grid-cols-2 gap-6 items-start">
+  <form id="tool" class="spotlight rounded-2xl border border-[var(--line)] bg-white/[0.03] p-7" aria-label="Dossier builder form">
+    <div class="flex flex-col gap-5">
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Lane
+        <select id="lane" name="lane" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors">
+          {LANES.map((l) => <option value={l.value}>{l.label}</option>)}
+        </select></label>
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">City / area
+        <input id="city" name="city" type="text" value="Amsterdam" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors normal-case tracking-normal" /></label>
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Property type
+        <select id="type" name="type" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors">
+          {TYPES.map((t) => <option value={t}>{t}</option>)}
+        </select></label>
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Target timeline
+        <input id="timing" name="timing" type="text" value="Next 8–12 weeks" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors normal-case tracking-normal" /></label>
+      <label class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Notes (priorities, constraints, dealbreakers)
+        <textarea id="notes" name="notes" rows="2" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded-lg px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--brass)] transition-colors resize-y normal-case tracking-normal">Calm process. Clear updates. No surprises.</textarea></label>
+      <div class="flex items-center gap-4 flex-wrap">
+        <button id="build" type="button" class="bg-[var(--brass)] text-black px-6 py-3 text-[11px] font-bold uppercase tracking-[0.2em] rounded-md hover:bg-[var(--brass2)] transition-colors">Generate dossier</button>
+        <span id="status" class="text-[11px] text-[var(--mut)]">Generate to enable copy.</span>
+      </div>
+    </div>
+  </form>
+
+  <section class="spotlight rounded-2xl border border-[var(--line)] bg-black/30 overflow-hidden" aria-label="Generated dossier output">
+    <div class="flex items-center justify-between px-5 py-3 border-b border-[var(--line)]"><b class="text-sm">Dossier output</b><button id="copy" type="button" disabled class="text-[10px] font-semibold uppercase tracking-[0.2em] border border-[var(--line)] rounded px-3 py-1.5 text-[var(--mut)] disabled:opacity-40 hover:border-[var(--brass)]/50 hover:text-[var(--brass)] transition-colors">Copy</button></div>
+    <pre id="out" class="px-5 py-4 text-[13px] leading-relaxed text-[var(--mut)] whitespace-pre-wrap font-mono min-h-[280px]">Generate your dossier on the left.
+
+You'll get:
+- a one-page brief
+- a tailored document checklist
+- a first-week action plan</pre>
+  </section>
+</div>
+
+<script>
+  const text = (v: any) => String(v || '').trim();
+  const lane = document.getElementById('lane') as HTMLSelectElement | null;
+  const city = document.getElementById('city') as HTMLInputElement | null;
+  const type = document.getElementById('type') as HTMLSelectElement | null;
+  const timing = document.getElementById('timing') as HTMLInputElement | null;
+  const notes = document.getElementById('notes') as HTMLTextAreaElement | null;
+  const out = document.getElementById('out'), build = document.getElementById('build');
+  const copy = document.getElementById('copy') as HTMLButtonElement | null, status = document.getElementById('status');
+
+  const docPack = (s: string) => s === 'Sell' ? [
+    'Proof of ownership / title documents (what you have available)',
+    'Floor plan(s) and measurements (if available)',
+    'Energy performance document (where required)',
+    'Maintenance and renovation notes (receipts if relevant)',
+    'HOA / building documents (if applicable)',
+    'Utilities + practical handover details (meter readings, contracts)',
+  ] : s === 'Buy' ? [
+    'Non-negotiables + budget ceiling (your decision rules)',
+    'Financing posture + timeline (decision speed)',
+    'Preferred neighborhoods and dealbreakers',
+    'Viewing notes template (signal, not emotion)',
+    'Offer posture (walk-away line + terms)',
+  ] : [
+    'Target yield posture (what counts as a win)',
+    'Downside controls (vacancy, capex, exit)',
+    'Financing posture + timing constraints',
+    'Deal screening rules (yes/no gates)',
+    'Operating assumptions (rent, costs, risk)',
+  ];
+  const firstWeek = (s: string) => s === 'Sell' ? [
+    'Week plan: brief → media direction → pricing posture → viewing cadence',
+    'Prepare: access plan + keys + one clean narrative of the home',
+    'Stability: decide negotiation posture before the first viewing',
+  ] : s === 'Buy' ? [
+    'Week plan: shortlist → viewings → notes → offer posture',
+    'Speed: confirm decision lane and who signs off',
+    'Clarity: define dealbreakers before the first viewing',
+  ] : [
+    'Week plan: screening rules → shortlist → downside scan → bid posture',
+    'Discipline: write the walk-away line before you tour',
+    'Clarity: decide what you will not compromise on',
+  ];
+
+  if (lane && city && type && timing && notes && out && build && copy && status) {
+    const generate = () => {
+      const s = text(lane.value), c = text(city.value), t = text(type.value), ti = text(timing.value), n = text(notes.value);
+      const pack = docPack(s).map((x) => `- ${x}`).join('\n');
+      const week = firstWeek(s).map((x) => `- ${x}`).join('\n');
+      out.textContent = `CIVIL HOUSE , CLIENT DOSSIER\nSituation: ${s}\nCity / region: ${c}\nProperty type: ${t}\nTarget timeline: ${ti}\n\nNotes:\n${n}\n\nDocument pack:\n${pack}\n\nFirst-week execution:\n${week}\n\nContact:\n${'office@civilhouse.example'}\n`;
+      copy.disabled = false; status.textContent = 'Generated. Copy when ready.';
+      try { localStorage.setItem('civil-brief', JSON.stringify({ lane: s, city: c, type: t })); } catch (e) {}
+    };
+    build.addEventListener('click', generate);
+    copy.addEventListener('click', async () => {
+      const content = out.textContent || ''; if (!content.trim()) return;
+      try { await navigator.clipboard.writeText(content); status.textContent = 'Copied to clipboard.'; return; } catch (e) {}
+      const ta = document.createElement('textarea'); ta.value = content; ta.style.position = 'fixed'; ta.style.left = '-9999px'; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); status.textContent = 'Copied to clipboard.'; } catch (e) { status.textContent = 'Select text to copy manually.'; }
+      document.body.removeChild(ta);
+    });
+  }
+</script>

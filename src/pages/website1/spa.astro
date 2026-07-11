@@ -1,0 +1,245 @@
+---
+/**
+ * THE OBSIDIAN , Spa (website1, round 2).
+ * Signature: an interactive thermal circuit + treatment menu with live duration→price,
+ * feeding a validated treatment booking + toast.
+ */
+import ObsidianLayout from '../../layouts/ObsidianLayout.astro';
+
+const CIRCUIT = [
+  { n: '01', name: 'Caldarium', time: '15 min', body: 'Warm basalt and rising steam. The body softens before anything is asked of it.' },
+  { n: '02', name: 'Frigidarium', time: '60 sec', body: 'A short, deliberate cold plunge. The reset that makes the warmth mean something.' },
+  { n: '03', name: 'Salt Room', time: '20 min', body: 'Backlit Himalayan walls and slow breathing. Air you can feel clearing your chest.' },
+  { n: '04', name: 'Float Suite', time: '45 min', body: 'Body-temperature brine in total dark and silence. Weightless. Time loses its grip.' },
+  { n: '05', name: 'Rest', time: 'Unhurried', body: 'A heated stone bed, a blanket, a tisane. You leave when you are ready, not when a clock says.' },
+];
+
+const TREATMENTS = [
+  { id: 'deep', name: 'Deep Tissue Therapy', note: 'Pressure with intent , for travel, desks, and tension that has overstayed.', durations: [['60 min', 280], ['90 min', 390]] },
+  { id: 'hot', name: 'Hot Basalt Ritual', note: 'Warm stones tracing the spine, oils blended two streets away.', durations: [['75 min', 320], ['120 min', 480]] },
+  { id: 'float', name: 'Guided Float & Breath', note: 'A breath practitioner, then the float suite, then nothing at all.', durations: [['60 min', 240], ['90 min', 330]] },
+  { id: 'couple', name: 'The Pair, In Stone', note: 'A private wet room for two , steam, scrub, and rest, uninterrupted.', durations: [['120 min', 760]] },
+];
+---
+
+<ObsidianLayout title="Spa & Wellness | THE OBSIDIAN" description="Two levels below the street: a basalt thermal circuit, float suite, and treatments in low light at The Obsidian, Zürich." active="spa">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website1/spa.jpg" alt="The basalt thermal room, lit by a single crystal" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">, 2 Levels Below Street</span>
+      <h1>Basalt &amp; <em>Stillness</em></h1>
+      <p class="sub">Step down into warmth and shadow. Black basalt under your feet, steam in the air, and a single lit crystal to hold your eye. No bright distractions, no noise , just your body finally unclenching.</p>
+    </div>
+  </section>
+
+  <section class="section tight" id="circuit">
+    <div class="circuit-head" data-reveal="up">
+      <span class="overline">The Thermal Circuit</span>
+      <h2 class="section-title" style="margin-top:16px;">Five stations, one descent</h2>
+      <p>Move through it in order, or stay where your body wants to stay. Allow ninety minutes; most guests stay longer.</p>
+    </div>
+    <div class="circuit">
+      <div class="circuit-rail" role="tablist" aria-label="Circuit stations">
+        {CIRCUIT.map((c, i) => (
+          <button class={`circuit-node hover-target${i === 0 ? ' active' : ''}`} data-target={`st-${c.n}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+            <span class="cn-dot"></span>
+            <span class="cn-n">{c.n}</span>
+            <span class="cn-name">{c.name}</span>
+            <span class="cn-time">{c.time}</span>
+          </button>
+        ))}
+      </div>
+      <div class="circuit-detail">
+        {CIRCUIT.map((c, i) => (
+          <div class={`cd-panel${i === 0 ? ' active' : ''}`} id={`st-${c.n}`}>
+            <span class="cd-n">{c.n}</span>
+            <h3>{c.name}</h3>
+            <span class="cd-time">{c.time}</span>
+            <p>{c.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight" id="treatments">
+    <div class="circuit-head" data-reveal="up">
+      <span class="overline">Treatments</span>
+      <h2 class="section-title" style="margin-top:16px;">By hand, in low light</h2>
+      <p>Choose a duration; the price follows. Send the request and we hold a therapist and a room.</p>
+    </div>
+
+    <div class="treat-layout">
+      <div class="treat-list">
+        {TREATMENTS.map((t) => (
+          <article class="treat" data-id={t.id} data-name={t.name}>
+            <div class="treat-top">
+              <h3>{t.name}</h3>
+              <span class="treat-price" data-price>€{t.durations[0][1]}</span>
+            </div>
+            <p class="treat-note">{t.note}</p>
+            <div class="treat-durs">
+              {t.durations.map((d, i) => (
+                <button class={`dur hover-target${i === 0 ? ' active' : ''}`} data-dur={d[0]} data-cost={String(d[1])}>{d[0]}</button>
+              ))}
+              <button class="treat-add hover-target" data-add>Add to request →</button>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <aside class="treat-book">
+        <div class="tb-card">
+          <span class="overline">Your Ritual</span>
+          <ul id="ritualList" class="tb-list"><li class="tb-empty">Add a treatment to begin.</li></ul>
+          <div class="tb-total"><span>Estimated</span><span id="ritualTotal">€0</span></div>
+          <form id="spaForm" novalidate>
+            <label class="fld"><span>Name</span><input name="name" type="text" autocomplete="name" /><i class="err" data-err="name"></i></label>
+            <label class="fld"><span>Email</span><input name="email" type="email" autocomplete="email" /><i class="err" data-err="email"></i></label>
+            <label class="fld"><span>Preferred date</span><input name="date" type="date" /><i class="err" data-err="date"></i></label>
+            <button type="submit" class="btn-gold hover-target" style="width:100%;justify-content:center;text-align:center;">Request these times</button>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .circuit-head { max-width: 620px; margin-bottom: 56px; }
+    .circuit-head p { color: var(--c-muted); margin-top: 18px; line-height: 1.7; }
+    .circuit { display: grid; grid-template-columns: 0.9fr 1.3fr; gap: clamp(24px,4vw,60px); align-items: start; }
+    .circuit-rail { display: flex; flex-direction: column; }
+    .circuit-node { display: grid; grid-template-columns: 18px 30px 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 22px 6px; border-bottom: 1px solid var(--hair-soft); position: relative; transition: padding .4s var(--ease-lux); }
+    .circuit-node:first-child { border-top: 1px solid var(--hair-soft); }
+    .cn-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--c-faint); transition: all .4s var(--ease-lux); justify-self: center; }
+    .circuit-node.active .cn-dot { background: var(--c-gold); border-color: var(--c-gold); box-shadow: 0 0 14px var(--c-gold); }
+    .cn-n { font-family: var(--f-head); font-size: 15px; color: var(--c-faint); }
+    .cn-name { font-family: var(--f-head); font-size: clamp(1.2rem,1.8vw,1.6rem); color: #cfc8bb; transition: color .3s ease; }
+    .circuit-node.active .cn-name, .circuit-node:hover .cn-name { color: #fff; }
+    .cn-time { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--c-muted); }
+    .circuit-detail { position: relative; border: 1px solid var(--hair-soft); padding: clamp(30px,4vw,56px); min-height: 320px; background: linear-gradient(160deg, rgba(212,175,55,0.04), transparent 60%); display: flex; align-items: center; }
+    .cd-panel { display: none; }
+    .cd-panel.active { display: block; animation: fadeup .5s var(--ease-lux); }
+    .cd-n { font-family: var(--f-head); font-size: clamp(4rem,9vw,8rem); color: transparent; -webkit-text-stroke: 1px rgba(212,175,55,0.18); line-height: 1; }
+    .cd-panel h3 { font-size: clamp(2rem,3.5vw,3rem); color: #fff; margin-top: 6px; }
+    .cd-time { display: inline-block; margin-top: 12px; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--c-gold); }
+    .cd-panel p { color: var(--c-muted); line-height: 1.8; margin-top: 18px; max-width: 46ch; }
+
+    .treat-layout { display: grid; grid-template-columns: 1.4fr 0.9fr; gap: clamp(24px,4vw,50px); align-items: start; }
+    .treat-list { display: flex; flex-direction: column; }
+    .treat { padding: 32px 0; border-top: 1px solid var(--hair-soft); }
+    .treat:last-child { border-bottom: 1px solid var(--hair-soft); }
+    .treat-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+    .treat-top h3 { font-size: clamp(1.4rem,2.4vw,2rem); color: #fff; }
+    .treat-price { font-family: var(--f-head); font-size: 1.7rem; color: var(--c-gold); }
+    .treat-note { color: var(--c-muted); margin-top: 12px; line-height: 1.7; font-size: 0.9rem; max-width: 52ch; }
+    .treat-durs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; align-items: center; }
+    .dur { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-muted); border: 1px solid var(--hair-soft); padding: 10px 16px; transition: all .25s ease; }
+    .dur:hover { border-color: var(--hair); color: #fff; }
+    .dur.active { background: var(--c-gold); color: #050504; border-color: var(--c-gold); font-weight: 500; }
+    .treat-add { margin-left: auto; font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--c-gold); transition: opacity .3s ease; }
+    .treat-add:hover { opacity: 0.65; }
+
+    .treat-book { position: sticky; top: 100px; }
+    .tb-card { border: 1px solid var(--hair); background: linear-gradient(180deg, rgba(20,18,16,0.6), rgba(8,7,6,0.6)); padding: clamp(24px,3vw,34px); }
+    .tb-list { list-style: none; margin: 22px 0 0; display: flex; flex-direction: column; gap: 12px; min-height: 60px; }
+    .tb-empty { color: var(--c-faint); font-size: 0.85rem; font-style: italic; font-family: var(--f-head); }
+    .tb-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--hair-soft); font-size: 0.82rem; }
+    .tb-row .tb-x { color: var(--c-muted); font-size: 0.78rem; }
+    .tb-row .tb-x b { color: #fff; font-weight: 500; }
+    .tb-row .tb-rm { color: var(--c-faint); font-size: 16px; line-height: 1; transition: color .2s ease; }
+    .tb-row .tb-rm:hover { color: var(--c-gold); }
+    .tb-total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--hair); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--c-muted); }
+    .tb-total #ritualTotal { font-family: var(--f-head); font-size: 1.8rem; color: var(--c-gold); letter-spacing: 0; }
+    #spaForm { margin-top: 26px; display: flex; flex-direction: column; gap: 16px; }
+    .fld { display: flex; flex-direction: column; gap: 7px; }
+    .fld span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .fld input { background: rgba(255,255,255,0.03); border: 1px solid var(--hair-soft); color: #fff; padding: 12px; font: inherit; font-size: 0.9rem; transition: border-color .25s ease; }
+    .fld input:focus { outline: none; border-color: var(--c-gold); }
+    .fld input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(3) hue-rotate(5deg); opacity: 0.4; }
+    .err { font-size: 10px; color: #e0a; color: var(--c-gold); min-height: 1em; font-style: normal; }
+
+    #toast { position: fixed; left: 50%; bottom: 28px; z-index: 9000; transform: translate(-50%, 24px); opacity: 0; pointer-events: none; max-width: min(92vw, 460px); background: var(--c-gold); color: #050504; padding: 15px 22px; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.02em; box-shadow: 0 30px 70px -20px rgba(0,0,0,0.8); transition: opacity .5s var(--ease-lux), transform .5s var(--ease-lux); }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 900px) {
+      .circuit { grid-template-columns: 1fr; }
+      .treat-layout { grid-template-columns: 1fr; }
+      .treat-book { position: static; }
+    }
+  </style>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* circuit tabs */
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.circuit-node'));
+    const cdPanels = Array.from(document.querySelectorAll<HTMLElement>('.cd-panel'));
+    nodes.forEach((n) => n.addEventListener('click', () => {
+      const id = n.dataset.target;
+      nodes.forEach((x) => { const on = x === n; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); });
+      cdPanels.forEach((p) => p.classList.toggle('active', p.id === id));
+    }));
+    /* auto-advance circuit (gentle) */
+    if (!reduce) {
+      let idx = 0;
+      setInterval(() => { idx = (idx + 1) % nodes.length; nodes[idx].click(); }, 5200);
+    }
+
+    /* treatment duration -> price */
+    document.querySelectorAll<HTMLElement>('.treat').forEach((t) => {
+      const priceEl = t.querySelector<HTMLElement>('[data-price]');
+      const durs = Array.from(t.querySelectorAll<HTMLElement>('.dur'));
+      durs.forEach((d) => d.addEventListener('click', () => {
+        durs.forEach((x) => x.classList.toggle('active', x === d));
+        if (priceEl) priceEl.textContent = '€' + d.dataset.cost;
+      }));
+    });
+
+    /* ritual builder */
+    type Item = { id: string; name: string; dur: string; cost: number };
+    const ritual: Item[] = [];
+    const listEl = document.getElementById('ritualList')!;
+    const totalEl = document.getElementById('ritualTotal')!;
+    function render() {
+      if (!ritual.length) { listEl.innerHTML = '<li class="tb-empty">Add a treatment to begin.</li>'; totalEl.textContent = '€0'; return; }
+      listEl.innerHTML = ritual.map((r, i) => `<li class="tb-row"><span class="tb-x"><b>${r.name}</b> · ${r.dur}</span><span style="display:flex;gap:14px;align-items:center;"><span>€${r.cost}</span><button class="tb-rm hover-target" data-rm="${i}" aria-label="Remove">×</button></span></li>`).join('');
+      totalEl.textContent = '€' + ritual.reduce((a, r) => a + r.cost, 0).toLocaleString();
+      listEl.querySelectorAll<HTMLElement>('[data-rm]').forEach((b) => b.addEventListener('click', () => { ritual.splice(Number(b.dataset.rm), 1); render(); }));
+    }
+    document.querySelectorAll<HTMLElement>('.treat').forEach((t) => {
+      const add = t.querySelector<HTMLElement>('[data-add]');
+      add?.addEventListener('click', () => {
+        const active = t.querySelector<HTMLElement>('.dur.active') || t.querySelector<HTMLElement>('.dur');
+        ritual.push({ id: t.dataset.id!, name: t.dataset.name!, dur: active!.dataset.dur!, cost: Number(active!.dataset.cost) });
+        render();
+      });
+    });
+
+    /* booking form */
+    const form = document.getElementById('spaForm') as HTMLFormElement | null;
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5400); };
+    const setErr = (n: string, m: string) => { const e = form?.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form?.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--c-gold)' : ''; };
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const date = String(d.get('date') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name, please.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!date) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (!ritual.length) { showToast('Add at least one treatment to your ritual first.'); return; }
+      if (!ok) return;
+      const n = ritual.length;
+      form.reset(); ['name', 'email', 'date'].forEach((x) => setErr(x, ''));
+      showToast(`Thank you, ${name.split(' ')[0]}. The spa holds ${n} treatment${n > 1 ? 's' : ''} and replies within the day.`);
+    });
+  </script>
+</ObsidianLayout>

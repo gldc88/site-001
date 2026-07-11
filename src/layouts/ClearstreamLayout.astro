@@ -1,0 +1,147 @@
+---
+/**
+ * ClearstreamLayout , shared shell for CLEARSTREAM (website22, round 2). Tailwind, LIGHT industrial theme.
+ * Mix-blend nav, grid backdrop, footer, and a generalized power-wash init that wires every `.wash-bay`
+ * on the page (drag to clean, canvas reveal). Props: title, description, active.
+ */
+import '../styles/global.css';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const BRAND = 'CLEARSTREAM';
+const SERVICE_AREA = 'Amsterdam / Haarlem / Utrecht';
+const NAV = [
+  { key: 'services', label: 'Services', href: '/website22/services' },
+  { key: 'rig', label: 'The Rig', href: '/website22/rig' },
+  { key: 'results', label: 'Results', href: '/website22/results' },
+];
+const YEAR = new Date().getFullYear();
+const ret = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body class="bg-[#F0F2F5] text-[#111] font-sans antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden">
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 50px 50px;"></div>
+    </div>
+
+    <header class="fixed top-0 inset-x-0 z-50 mix-blend-difference text-white">
+      <div class="flex justify-between items-center p-6 lg:p-8">
+        <div class="flex items-center gap-6">
+          <a href="/" class="group flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest hover:text-blue-400 transition-colors">
+            <span class="group-hover:-translate-x-1 transition-transform duration-200"><Fragment set:html={ret} /></span> Index
+          </a>
+          <div class="h-4 w-px bg-white/30"></div>
+          <a href="/website22" class="flex items-center gap-3"><div class="w-2 h-2 bg-white animate-pulse"></div><span class="font-bold tracking-tighter text-xl">{BRAND}</span></a>
+        </div>
+        <div class="hidden lg:flex gap-8 text-[10px] font-mono uppercase tracking-widest">
+          {NAV.map((i) => <a href={i.href} class={`hover:text-blue-400 transition-colors ${active === i.key ? 'underline decoration-2 underline-offset-4' : ''}`}>{i.label}</a>)}
+        </div>
+        <a href="/website22/quote" class="text-xs font-bold uppercase tracking-widest hover:underline decoration-2 underline-offset-4 flex items-center gap-2 group">Request dispatch <span class="group-hover:translate-x-1 transition-transform">→</span></a>
+      </div>
+    </header>
+
+    <main class="relative z-10" id="top">
+      <slot />
+    </main>
+
+    <footer class="relative z-10 border-t-2 border-black bg-[#111] text-white">
+      <div class="max-w-7xl mx-auto px-6 lg:px-12 py-16 grid md:grid-cols-[2fr_1fr_1fr] gap-12">
+        <div>
+          <div class="flex items-center gap-3 mb-4"><div class="w-2 h-2 bg-blue-500 animate-pulse"></div><span class="font-bold tracking-tighter text-2xl">{BRAND}</span></div>
+          <p class="text-sm text-gray-400 max-w-xs">Hot-water pressure washing and soft wash , grime, algae, grease, and staining removed without wrecking the surface. {SERVICE_AREA}. Fictional brand, demonstration only.</p>
+        </div>
+        <div class="text-[11px] font-mono uppercase tracking-widest flex flex-col gap-3 text-gray-400">
+          <a href="/website22/services" class="hover:text-blue-400">Services</a>
+          <a href="/website22/rig" class="hover:text-blue-400">The Rig</a>
+          <a href="/website22/results" class="hover:text-blue-400">Results</a>
+          <a href="/website22/quote" class="hover:text-blue-400">Get a quote</a>
+        </div>
+        <div class="text-[11px] font-mono uppercase tracking-widest flex flex-col gap-3 text-gray-400">
+          <a href="mailto:hello@clearstream.example" class="hover:text-blue-400 normal-case tracking-normal">hello@clearstream.example</a>
+          <a href="tel:+31627491182" class="hover:text-blue-400">+31 6 2749 1182</a>
+          <a href="/" class="hover:text-blue-400">Return to index</a>
+        </div>
+      </div>
+      <div class="border-t border-white/10 py-5 text-center text-[10px] font-mono uppercase tracking-widest text-gray-500">© {YEAR} Clearstream · exterior cleaning protocol · demonstration only</div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[80] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none bg-blue-600 text-white border-2 border-black px-6 py-4 text-sm font-bold uppercase tracking-wide transition-all duration-500 shadow-[6px_6px_0_0_#000]" style="max-width:min(92vw,460px)"></div>
+
+    <style>.clip-button { clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%); }</style>
+
+    <script>
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function initBay(bay: HTMLElement) {
+        const grime = bay.querySelector<HTMLCanvasElement>('.wb-grime');
+        const spray = bay.querySelector<HTMLCanvasElement>('.wb-spray');
+        const cleanPct = bay.querySelector<HTMLElement>('.wb-pct');
+        const psiHud = bay.querySelector<HTMLElement>('.wb-psi');
+        const reSoil = bay.querySelector<HTMLElement>('.wb-resoil');
+        if (!grime || !spray) return;
+        const gctx = grime.getContext('2d')!; const sctx = spray.getContext('2d')!;
+        let W = 0, H = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
+        const paintGrime = () => {
+          gctx.setTransform(DPR, 0, 0, DPR, 0, 0); gctx.clearRect(0, 0, W, H);
+          gctx.fillStyle = '#5a5347'; gctx.fillRect(0, 0, W, H);
+          for (let i = 0; i < Math.round((W * H) / 1400); i++) {
+            const x = Math.random() * W, y = Math.random() * H, r = 6 + Math.random() * 34;
+            const g = gctx.createRadialGradient(x, y, 0, x, y, r);
+            const pick = Math.random(); const c = pick < 0.45 ? '58,74,48' : pick < 0.8 ? '74,58,40' : '40,46,38';
+            g.addColorStop(0, `rgba(${c},${0.5 + Math.random() * 0.4})`); g.addColorStop(1, `rgba(${c},0)`);
+            gctx.fillStyle = g; gctx.beginPath(); gctx.arc(x, y, r, 0, Math.PI * 2); gctx.fill();
+          }
+          gctx.strokeStyle = 'rgba(30,34,28,0.25)';
+          for (let i = 0; i < 18; i++) { gctx.lineWidth = 1 + Math.random() * 3; gctx.beginPath(); const x = Math.random() * W; gctx.moveTo(x, 0); gctx.lineTo(x + (Math.random() - 0.5) * 30, H); gctx.stroke(); }
+        };
+        const resize = () => {
+          W = bay.clientWidth; H = bay.clientHeight; DPR = Math.min(2, window.devicePixelRatio || 1);
+          [grime, spray].forEach((c) => { c.width = Math.floor(W * DPR); c.height = Math.floor(H * DPR); c.style.width = W + 'px'; c.style.height = H + 'px'; });
+          sctx.setTransform(DPR, 0, 0, DPR, 0, 0); paintGrime();
+        };
+        resize(); window.addEventListener('resize', resize, { passive: true });
+        const sampleEl = document.createElement('canvas'); sampleEl.width = 90; sampleEl.height = 68;
+        const sctxS = sampleEl.getContext('2d')!;
+        const measure = () => {
+          sctxS.clearRect(0, 0, 90, 68); sctxS.drawImage(grime, 0, 0, 90, 68);
+          const d = sctxS.getImageData(0, 0, 90, 68).data; let clear = 0;
+          for (let i = 3; i < d.length; i += 4) if (d[i] < 80) clear++;
+          if (cleanPct) cleanPct.textContent = String(Math.round((clear / (90 * 68)) * 100));
+        };
+        let down = false, lx = 0, ly = 0;
+        const erase = (x: number, y: number) => {
+          gctx.globalCompositeOperation = 'destination-out'; gctx.lineCap = 'round'; gctx.lineJoin = 'round'; gctx.lineWidth = 46;
+          gctx.beginPath(); gctx.moveTo(lx, ly); gctx.lineTo(x, y); gctx.stroke();
+          gctx.beginPath(); gctx.arc(x, y, 23, 0, Math.PI * 2); gctx.fill();
+          gctx.globalCompositeOperation = 'source-over'; lx = x; ly = y;
+        };
+        const drops: { x: number; y: number; vx: number; vy: number; l: number }[] = [];
+        const at = (e: PointerEvent) => { const r = bay.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+        bay.addEventListener('pointerdown', (e) => { down = true; const p = at(e); lx = p.x; ly = p.y; erase(p.x, p.y); if (psiHud) psiHud.textContent = '4000 PSI'; });
+        window.addEventListener('pointermove', (e) => { if (!down) return; const p = at(e); erase(p.x, p.y); for (let i = 0; i < 5; i++) drops.push({ x: p.x, y: p.y, vx: (Math.random() - 0.5) * 4, vy: 1 + Math.random() * 4, l: 1 }); }, { passive: true });
+        window.addEventListener('pointerup', () => { if (!down) return; down = false; if (psiHud) psiHud.textContent = '0 PSI'; measure(); });
+        let frame = 0;
+        const loop = () => {
+          requestAnimationFrame(loop);
+          sctx.clearRect(0, 0, W, H);
+          for (let i = drops.length - 1; i >= 0; i--) { const d = drops[i]; d.x += d.vx; d.y += d.vy; d.vy += 0.3; d.l -= 0.05; if (d.l <= 0) { drops.splice(i, 1); continue; } sctx.fillStyle = `rgba(120,180,255,${d.l * 0.7})`; sctx.beginPath(); sctx.arc(d.x, d.y, 1.6, 0, Math.PI * 2); sctx.fill(); }
+          if (++frame % 8 === 0) measure();
+        };
+        if (!reduce) loop(); else { gctx.clearRect(0, 0, W, H); if (cleanPct) cleanPct.textContent = '100'; }
+        reSoil?.addEventListener('click', () => { paintGrime(); measure(); });
+        measure();
+      }
+      document.querySelectorAll<HTMLElement>('.wash-bay').forEach(initBay);
+    </script>
+  </body>
+</html>

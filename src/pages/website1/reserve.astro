@@ -1,0 +1,171 @@
+---
+/**
+ * THE OBSIDIAN , Reserve (website1, round 2).
+ * Signature: a full booking flow , arrival/departure with night logic, room type with rates,
+ * a live estimate summary, and a validated submit → confirmation + toast.
+ */
+import ObsidianLayout from '../../layouts/ObsidianLayout.astro';
+
+const ROOMS = [
+  { id: 'onyx', name: 'The Onyx Suite', rate: 2400 },
+  { id: 'hammam', name: 'The Hammam Suite', rate: 3200 },
+  { id: 'royal', name: 'The Royal Penthouse', rate: 4800 },
+];
+---
+
+<ObsidianLayout title="Reserve a Stay | THE OBSIDIAN" description="Request availability at The Obsidian, Zürich. Choose your dates and suite; we hold the line and confirm by hand." active="reserve">
+  <section class="page-hero short">
+    <div class="page-hero-media"><img src="/website1/hero.jpg" alt="The Obsidian at night" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Reservations</span>
+      <h1>Begin Your <em>Stay</em></h1>
+      <p class="sub">A limited number of rooms, released quietly. Tell us when and which, and we hold the line for you , every booking confirmed by a person, not a machine.</p>
+    </div>
+  </section>
+
+  <section class="section tight" id="book">
+    <div class="reserve-grid">
+      <form id="resForm" class="res-form" novalidate>
+        <div class="rf-row">
+          <label class="fld"><span>Arrival</span><input name="arrival" id="arrival" type="date" /><i class="err" data-err="arrival"></i></label>
+          <label class="fld"><span>Departure</span><input name="departure" id="departure" type="date" /><i class="err" data-err="departure"></i></label>
+        </div>
+        <div class="rf-row">
+          <label class="fld"><span>Suite</span>
+            <select name="room" id="room">
+              {ROOMS.map((r) => <option value={r.id} data-rate={String(r.rate)}>{r.name} , €{r.rate.toLocaleString()}/night</option>)}
+            </select>
+          </label>
+          <label class="fld"><span>Guests</span>
+            <select name="guests" id="guests"><option value="2">02 guests</option><option value="1">01 guest</option><option value="3">03 guests</option><option value="4">04 guests</option></select>
+          </label>
+        </div>
+        <div class="rf-row">
+          <label class="fld"><span>Full name</span><input name="name" type="text" autocomplete="name" /><i class="err" data-err="name"></i></label>
+          <label class="fld"><span>Email</span><input name="email" type="email" autocomplete="email" /><i class="err" data-err="email"></i></label>
+        </div>
+        <label class="fld"><span>Requests for the house (optional)</span><textarea name="notes" rows="3" placeholder="Arrival time, occasion, dietary notes, the kind of quiet you need…"></textarea></label>
+        <button type="submit" class="btn-gold hover-target" style="width:100%;justify-content:center;text-align:center;">Request availability</button>
+        <p class="res-fine">No card required. We reply within the day to confirm and arrange the details.</p>
+      </form>
+
+      <aside class="res-summary">
+        <div class="rs-card">
+          <span class="overline">Your Stay</span>
+          <div class="rs-line"><span>Suite</span><b id="sumRoom">The Onyx Suite</b></div>
+          <div class="rs-line"><span>Dates</span><b id="sumDates">,</b></div>
+          <div class="rs-line"><span>Nights</span><b id="sumNights">,</b></div>
+          <div class="rs-line"><span>Rate</span><b id="sumRate">€2,400 / night</b></div>
+          <div class="rs-total"><span>Estimate</span><b id="sumTotal">,</b></div>
+          <p class="rs-note" id="sumNote">Choose your dates to see an estimate. Final pricing is confirmed with the house.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .page-hero.short { min-height: 56svh; }
+    .reserve-grid { display: grid; grid-template-columns: 1.4fr 0.9fr; gap: clamp(28px,4vw,56px); align-items: start; }
+    .res-form { display: flex; flex-direction: column; gap: 18px; }
+    .rf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .fld { display: flex; flex-direction: column; gap: 7px; }
+    .fld span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .fld input, .fld select, .fld textarea { background: rgba(255,255,255,0.03); border: 1px solid var(--hair-soft); color: #fff; padding: 13px 12px; font: inherit; font-size: 0.92rem; transition: border-color .25s ease; }
+    .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--c-gold); }
+    .fld textarea { resize: vertical; font-family: var(--f-body); }
+    .fld select option { background: #0c0b0a; }
+    .fld input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(3) hue-rotate(5deg); opacity: 0.4; }
+    .err { font-size: 10px; color: var(--c-gold); min-height: 1em; }
+    .res-fine { color: var(--c-faint); font-size: 0.78rem; text-align: center; font-style: italic; font-family: var(--f-head); }
+
+    .res-summary { position: sticky; top: 100px; }
+    .rs-card { border: 1px solid var(--hair); background: linear-gradient(180deg, rgba(20,18,16,0.7), rgba(8,7,6,0.7)); padding: clamp(26px,3vw,38px); }
+    .rs-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--hair-soft); font-size: 0.78rem; letter-spacing: 0.04em; }
+    .rs-line span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .rs-line b { font-family: var(--f-head); font-size: 1.15rem; font-weight: 400; color: #fff; text-align: right; }
+    .rs-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--hair); }
+    .rs-total span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-muted); }
+    .rs-total b { font-family: var(--f-head); font-size: 2.2rem; color: var(--c-gold); }
+    .rs-note { color: var(--c-faint); font-size: 0.78rem; line-height: 1.7; margin-top: 18px; }
+    .rs-card.confirmed { border-color: var(--c-gold); box-shadow: 0 0 50px -16px rgba(212,175,55,0.4); }
+
+    #toast { position: fixed; left: 50%; bottom: 28px; z-index: 9000; transform: translate(-50%, 24px); opacity: 0; pointer-events: none; max-width: min(92vw, 480px); background: var(--c-gold); color: #050504; padding: 15px 22px; font-size: 0.82rem; font-weight: 500; box-shadow: 0 30px 70px -20px rgba(0,0,0,0.8); transition: opacity .5s var(--ease-lux), transform .5s var(--ease-lux); }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 900px) { .reserve-grid { grid-template-columns: 1fr; } .res-summary { position: static; } }
+    @media (max-width: 560px) { .rf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('resForm') as HTMLFormElement | null;
+    const arrival = document.getElementById('arrival') as HTMLInputElement;
+    const departure = document.getElementById('departure') as HTMLInputElement;
+    const room = document.getElementById('room') as HTMLSelectElement;
+    const sumRoom = document.getElementById('sumRoom')!;
+    const sumDates = document.getElementById('sumDates')!;
+    const sumNights = document.getElementById('sumNights')!;
+    const sumRate = document.getElementById('sumRate')!;
+    const sumTotal = document.getElementById('sumTotal')!;
+    const card = document.querySelector<HTMLElement>('.rs-card');
+
+    const fmtMoney = (n: number) => '€' + n.toLocaleString('en-US');
+    const fmtDate = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+
+    /* sensible defaults */
+    const today = new Date();
+    const tmr = new Date(today); tmr.setDate(tmr.getDate() + 1);
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    arrival.min = iso(today);
+    departure.min = iso(tmr);
+
+    function nights(): number {
+      const a = arrival.value ? new Date(arrival.value + 'T00:00:00') : null;
+      const d = departure.value ? new Date(departure.value + 'T00:00:00') : null;
+      if (!a || !d) return 0;
+      const n = Math.round((d.getTime() - a.getTime()) / 86400000);
+      return n > 0 ? n : 0;
+    }
+    function rate(): number { return Number(room.selectedOptions[0].dataset.rate || '0'); }
+
+    function update() {
+      // keep departure after arrival
+      if (arrival.value) { const a = new Date(arrival.value + 'T00:00:00'); a.setDate(a.getDate() + 1); departure.min = iso(a); if (departure.value && departure.value < departure.min) departure.value = departure.min; }
+      sumRoom.textContent = room.selectedOptions[0].textContent!.split(' , ')[0];
+      sumRate.textContent = fmtMoney(rate()) + ' / night';
+      const n = nights();
+      if (n > 0 && arrival.value && departure.value) {
+        sumDates.textContent = `${fmtDate(new Date(arrival.value + 'T00:00:00'))} – ${fmtDate(new Date(departure.value + 'T00:00:00'))}`;
+        sumNights.textContent = `${n} night${n > 1 ? 's' : ''}`;
+        sumTotal.textContent = fmtMoney(rate() * n);
+      } else {
+        sumDates.textContent = ','; sumNights.textContent = ','; sumTotal.textContent = ',';
+      }
+    }
+    [arrival, departure, room].forEach((el) => el.addEventListener('input', update));
+    update();
+
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6000); };
+    const setErr = (n: string, m: string) => { const e = form?.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form?.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? 'var(--c-gold)' : ''; };
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (!arrival.value) { setErr('arrival', 'Arrival date.'); ok = false; } else setErr('arrival', '');
+      if (!departure.value || nights() <= 0) { setErr('departure', 'Must be after arrival.'); ok = false; } else setErr('departure', '');
+      if (name.length < 2) { setErr('name', 'Full name, please.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const n = nights();
+      card?.classList.add('confirmed');
+      showToast(`Held for you, ${name.split(' ')[0]} , ${sumRoom.textContent}, ${n} night${n > 1 ? 's' : ''}, est. ${sumTotal.textContent}. The house confirms within the day.`);
+    });
+  </script>
+</ObsidianLayout>

@@ -1,0 +1,20 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div aria-hidden="true" class:list={['factory-edge-frame pointer-events-none absolute inset-0', className]}></div>
+
+<style>
+  .factory-edge-frame {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background:
+      linear-gradient(90deg, rgba(34, 211, 238, 0.75), transparent 18%) top left / 42% 1px no-repeat,
+      linear-gradient(180deg, rgba(34, 211, 238, 0.75), transparent 18%) top left / 1px 42% no-repeat,
+      linear-gradient(270deg, rgba(244, 114, 182, 0.72), transparent 18%) bottom right / 42% 1px no-repeat,
+      linear-gradient(0deg, rgba(244, 114, 182, 0.72), transparent 18%) bottom right / 1px 42% no-repeat;
+  }
+</style>

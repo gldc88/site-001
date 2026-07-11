@@ -1,0 +1,105 @@
+---
+/**
+ * ObsidianMotorsLayout , shared shell for OBSIDIAN MOTORS (website30, round 2). Named -Motors to avoid
+ * colliding with website1's ObsidianLayout. Dark showroom aesthetic + blue spotlight. Nav with a live
+ * shortlist badge, footer, global #toast (window.showToast). Props: title, description, active.
+ */
+import '../styles/global.css';
+import { BRAND, TAGLINE, AREA, EMAIL, PHONE, TEL } from '../data/obsidian-motors';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'showroom', label: 'Showroom', href: '/website30/showroom' },
+  { key: 'house', label: 'The House', href: '/website30/house' },
+  { key: 'acquisition', label: 'Acquisition', href: '/website30/acquisition' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      :root { --bg0:#0b0c10; --bg1:#14161f; --ink:#f0f2f5; --mut:rgba(240,242,245,.68); --line:rgba(240,242,245,.14); --accent:#4d79ff; --mx:50%; --my:30%; }
+      body { color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased;
+        background: radial-gradient(900px 600px at var(--mx) var(--my), rgba(77,121,255,.10), transparent 60%), linear-gradient(180deg, var(--bg0), var(--bg1)); background-attachment: fixed; }
+      .accent { color: var(--accent); }
+      .reveal-on-scroll { opacity:0; transform: translateY(20px); transition: all .8s cubic-bezier(0.2,0.8,0.2,1); }
+      .reveal-visible { opacity:1; transform: translateY(0); }
+      .o-link { position:relative; }
+      .o-link::after { content:''; position:absolute; left:0; bottom:-4px; height:1px; width:0; background: var(--accent); transition: width .3s ease; }
+      .o-link:hover::after, .o-link.active::after { width:100%; }
+    </style>
+  </head>
+
+  <body class="min-h-screen overflow-x-hidden selection:bg-[#4d79ff] selection:text-white">
+    <header class="sticky top-0 z-50 border-b border-[var(--line)] bg-[#0b0c10]/85 backdrop-blur-md">
+      <div class="mx-auto max-w-[1320px] px-6 h-16 flex items-center justify-between">
+        <a href="/website30" class="flex items-center gap-2.5">
+          <span class="grid place-items-center w-7 h-7 rounded bg-[var(--accent)]/15 border border-[var(--accent)]/40"><span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span></span>
+          <span class="font-black tracking-[0.18em] text-sm uppercase">{BRAND}</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-7 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mut)]">
+          {NAV.map((i) => <a href={i.href} class={`o-link hover:text-[var(--ink)] transition-colors ${active === i.key ? 'active text-[var(--ink)]' : ''}`}>{i.label}</a>)}
+          <a href="/" class="hover:text-[var(--ink)]">Index</a>
+        </nav>
+        <a href="/website30/reserve" class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white bg-[var(--accent)] hover:bg-[#3d63d8] px-5 py-2.5 rounded transition-colors">Shortlist <span id="navCount" class="grid place-items-center min-w-[18px] h-[18px] px-1 rounded-full bg-white/25 text-[10px]">0</span></a>
+      </div>
+    </header>
+
+    <main id="top"><slot /></main>
+
+    <footer class="border-t border-[var(--line)] mt-12">
+      <div class="mx-auto max-w-[1320px] px-6 py-14 grid md:grid-cols-[2fr_1fr_1fr] gap-10">
+        <div>
+          <div class="flex items-center gap-2.5 mb-3"><span class="grid place-items-center w-7 h-7 rounded bg-[var(--accent)]/15 border border-[var(--accent)]/40"><span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span></span><span class="font-black tracking-[0.18em] text-sm uppercase">{BRAND}</span></div>
+          <p class="text-sm text-[var(--mut)] max-w-xs leading-relaxed">{TAGLINE} A private digital showroom for curated performance, touring, and executive vehicles. {AREA}. Fictional brand, demonstration only.</p>
+        </div>
+        <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mut)] flex flex-col gap-3">
+          <a href="/website30/showroom" class="hover:text-[var(--accent)]">Showroom</a>
+          <a href="/website30/house" class="hover:text-[var(--accent)]">The House</a>
+          <a href="/website30/acquisition" class="hover:text-[var(--accent)]">Acquisition</a>
+          <a href="/website30/reserve" class="hover:text-[var(--accent)]">Reserve</a>
+        </div>
+        <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mut)] flex flex-col gap-3">
+          <a href={`mailto:${EMAIL}`} class="hover:text-[var(--accent)] normal-case tracking-normal">{EMAIL}</a>
+          <a href={`tel:${TEL}`} class="hover:text-[var(--accent)]">{PHONE}</a>
+          <a href="/" class="hover:text-[var(--accent)]">Return to index</a>
+        </div>
+      </div>
+      <div class="border-t border-[var(--line)] py-5 text-center text-[10px] uppercase tracking-[0.25em] text-[var(--mut)]">© {YEAR} {BRAND} · private viewings by appointment · demonstration only</div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[80] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none rounded bg-[#161922] border border-[var(--accent)]/40 text-[var(--ink)] px-6 py-4 text-sm shadow-[0_0_40px_rgba(77,121,255,0.25)] transition-all duration-500" style="max-width:min(92vw,470px)"></div>
+
+    <script>
+      const SK = 'obsidian-shortlist';
+      const readCart = () => { try { return JSON.parse(localStorage.getItem(SK) || '[]'); } catch (e) { return []; } };
+      const refreshBadge = () => { const n = readCart().reduce((a: number, i: any) => a + (i.qty || 0), 0); const el = document.getElementById('navCount'); if (el) el.textContent = String(n); };
+      (window as any).obsidianRefreshBadge = refreshBadge;
+      refreshBadge();
+      window.addEventListener('storage', refreshBadge);
+      document.addEventListener('cart-change', refreshBadge);
+
+      document.addEventListener('mousemove', (e) => {
+        document.documentElement.style.setProperty('--mx', (e.clientX / window.innerWidth * 100) + '%');
+        document.documentElement.style.setProperty('--my', (e.clientY / window.innerHeight * 100) + '%');
+      });
+      const toastEl = document.getElementById('toast');
+      let tT = 0;
+      (window as any).showToast = (html: string) => {
+        if (!toastEl) return;
+        toastEl.innerHTML = html; toastEl.style.opacity = '1'; toastEl.style.transform = 'translate(-50%,0)';
+        window.clearTimeout(tT); tT = window.setTimeout(() => { toastEl.style.opacity = '0'; toastEl.style.transform = 'translate(-50%,24px)'; }, 5200);
+      };
+      const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>

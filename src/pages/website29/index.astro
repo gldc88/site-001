@@ -1,0 +1,78 @@
+---
+/**
+ * CALIBER STUDIO , Home (website29, round 2). Movement hero + thesis + platform / configurator teasers.
+ */
+import CaliberLayout from '../../layouts/CaliberLayout.astro';
+import { TAGLINE, SUBLINE, AREA, PLATFORMS, PHONE, TEL } from '../../data/caliber';
+---
+
+<CaliberLayout title="Caliber Studio , Bespoke Mechanical Watches" description="Bespoke watchmaking atelier in Amsterdam. Custom mechanical watches , designed, finished, regulated, and assembled by hand.">
+  <section class="mx-auto max-w-[1100px] px-6 pt-14 pb-12">
+    <div class="grid lg:grid-cols-[1fr_0.85fr] gap-10 items-center border-b border-[var(--line)] pb-12">
+      <div>
+        <span class="text-[10px] font-semibold uppercase tracking-[0.3em] accent">{AREA}</span>
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.02] mt-5">Built to be <span class="accent">kept.</span></h1>
+        <p class="mt-6 max-w-md text-[var(--mut)] leading-relaxed text-sm">{SUBLINE}</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="/website29/configurator" class="bg-[var(--accent)] text-black px-6 py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:bg-white transition-colors">Build a spec</a>
+          <a href="/website29/craft" class="border border-[var(--line)] px-6 py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">See the craft</a>
+        </div>
+      </div>
+      <figure class="rounded-2xl border border-[var(--line)] bg-black/40 p-5 m-0">
+        <svg viewBox="0 0 360 300" class="w-full h-auto" role="img" aria-label="Annotated mechanical movement: barrel, gear train, balance wheel">
+          <rect width="360" height="300" fill="#070a0e" rx="8"/>
+          <g stroke="var(--accent)" fill="none" stroke-width="1.4" opacity="0.9">
+            <circle cx="110" cy="120" r="48"/><circle cx="110" cy="120" r="40" stroke-dasharray="3 5"/>
+            <circle cx="210" cy="160" r="34"/><circle cx="210" cy="160" r="26" stroke-dasharray="2 4"/>
+            <circle cx="270" cy="110" r="22"/>
+            <circle cx="250" cy="215" r="40" stroke="#ff6b6b" opacity="0.8"/>
+            <g stroke="#ff6b6b" opacity="0.7"><line x1="250" y1="185" x2="250" y2="245"/><line x1="220" y1="215" x2="280" y2="215"/></g>
+          </g>
+          <g stroke="rgba(238,242,246,0.25)" stroke-width="1" fill="none"><circle cx="110" cy="120" r="3" fill="var(--accent)"/><circle cx="210" cy="160" r="3" fill="var(--accent)"/><circle cx="270" cy="110" r="2.5" fill="var(--accent)"/></g>
+          <g fill="rgba(238,242,246,0.7)" font-family="ui-monospace,monospace" font-size="9" letter-spacing="1">
+            <text x="78" y="60">BARREL</text><text x="190" y="118">GEAR TRAIN</text><text x="210" y="268">BALANCE</text>
+          </g>
+          <g stroke="rgba(238,242,246,0.2)" stroke-width="0.8" stroke-dasharray="2 3"><line x1="110" y1="68" x2="110" y2="72"/><line x1="250" y1="255" x2="250" y2="262"/></g>
+        </svg>
+        <figcaption class="mt-3 text-[10px] uppercase tracking-[0.12em] text-[var(--mut)]">Caliber reference movement · regulated in-house</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- thesis -->
+  <section class="mx-auto max-w-[1100px] px-6 py-14">
+    <div class="grid md:grid-cols-3 gap-6">
+      {[['Designed', 'A coherent system , case, dial, hands, movement chosen for balance and legibility.'], ['Regulated', 'Movements timed across positions in-house, documented before and after assembly.'], ['Verified', 'Sealed, pressure-tested, and function-checked before anything leaves the bench.']].map(([t, d]) => (
+        <div class="reveal-on-scroll rounded-xl border border-[var(--line)] bg-white/[0.02] p-6">
+          <div class="text-[10px] font-semibold uppercase tracking-[0.2em] accent">{t}</div>
+          <p class="mt-3 text-sm text-[var(--mut)] leading-relaxed">{d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- platforms teaser -->
+  <section class="mx-auto max-w-[1100px] px-6 py-14 border-t border-[var(--line)]">
+    <div class="flex items-end justify-between mb-8"><h2 class="text-2xl md:text-4xl font-bold tracking-tight">Platforms.</h2><a href="/website29/platforms" class="hidden sm:inline text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] k-link hover:text-[var(--ink)]">All platforms →</a></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {PLATFORMS.map((p) => (
+        <a href="/website29/platforms" class="reveal-on-scroll rounded-xl border border-[var(--line)] bg-white/[0.02] p-5 hover:border-[var(--accent)]/50 transition-colors block group">
+          <span class="text-[10px] font-mono accent">{p.id}</span>
+          <h3 class="text-lg font-bold mt-1 group-hover:text-[var(--accent)] transition-colors">{p.title}</h3>
+          <p class="text-[11px] text-[var(--mut)] uppercase tracking-[0.1em] mt-1">{p.sub}</p>
+          <p class="text-[11px] text-[var(--mut)] mt-3 font-mono">⌀ {p.specs.Diameter} · {p.specs.Caliber}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- configurator teaser -->
+  <section class="mx-auto max-w-[1100px] px-6 py-16 border-t border-[var(--line)] text-center">
+    <h2 class="text-3xl md:text-5xl font-bold tracking-tight">Configure yours.</h2>
+    <p class="mt-4 text-[var(--mut)] max-w-lg mx-auto text-sm leading-relaxed">Pick the case, dial, hands, and strap. Watch the piece update live, see the estimate, and generate a build ticket for the bench.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href="/website29/configurator" class="bg-[var(--accent)] text-black px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:bg-white transition-colors">Open the configurator</a>
+      <a href={`tel:${TEL}`} class="border border-[var(--line)] px-8 py-4 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:border-[var(--accent)] transition-all">Call {PHONE}</a>
+    </div>
+  </section>
+</CaliberLayout>

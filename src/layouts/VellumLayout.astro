@@ -1,0 +1,169 @@
+---
+/**
+ * VellumLayout , shared shell for VELLUM & OAK (website8, round 2).
+ * Persistent WebGL library light-shaft scene + grain behind all pages. Props: title, description, active.
+ */
+import '../styles/vellum-fonts.css';
+import '../styles/vellum.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'catalog', label: 'The Shelves', href: '/website8/catalog' },
+  { key: 'events', label: 'Events', href: '/website8/events' },
+  { key: 'services', label: 'Services', href: '/website8/services' },
+  { key: 'visit', label: 'Visit', href: '/website8/visit' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website8" class="brand">Vellum <span class="amp">&amp;</span> Oak</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website8/visit" class="cta">Visit the shop</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Vellum <em>&amp;</em> Oak</h3>
+          <p>An independent bookshop on Oxford's High Street , curated shelves, a quiet reading room, and a wax-sealed parcel for every gift. Fictional brand, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>The Shop</h4><a href="/website8/catalog">The Shelves</a><a href="/website8/events">Events</a><a href="/website8/services">Services</a><a href="/website8/visit">Visit</a></div>
+        <div class="f-col"><h4>Find Us</h4><a href="/website8/visit">14 High Street, Oxford</a><a href="tel:+441865555120">+44 1865 555 120</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Vellum &amp; Oak Booksellers. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a></span>
+      </div>
+    </footer>
+
+    <div class="bookstack" id="bookstack">
+      <button type="button" class="bs-chip" id="bsChip" aria-expanded="false" aria-controls="bsPanel">
+        <span class="bs-pile" id="bsPile" aria-hidden="true"></span>
+        <span class="bs-label">My stack</span>
+        <span class="bs-count" id="bsCount">0</span>
+      </button>
+      <div class="bs-panel" id="bsPanel" role="dialog" aria-label="Your stack at the counter" hidden>
+        <p class="bs-head">Set aside at the counter:</p>
+        <ul class="bs-list" id="bsList"></ul>
+        <p class="bs-empty" id="bsEmpty">Nothing yet , browse the <a href="/website8/catalog">catalog</a> and stack what catches you.</p>
+        <a class="bs-visit" href="/website8/visit">Book the reading room , we'll have them waiting →</a>
+      </div>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "The Stack" ---- */
+      type StackBook = { t: string; a: string };
+      let sceneSetStack: ((v: number) => void) | null = null;
+      const readStack = (): StackBook[] => { try { return JSON.parse(localStorage.getItem('vellum-stack') || '[]'); } catch { return []; } };
+      const writeStack = (st: StackBook[]) => { try { localStorage.setItem('vellum-stack', JSON.stringify(st)); } catch { /* private mode */ } };
+
+      const bsChip = document.getElementById('bsChip');
+      const bsPanel = document.getElementById('bsPanel');
+      const bsCount = document.getElementById('bsCount');
+      const bsList = document.getElementById('bsList');
+      const bsEmpty = document.getElementById('bsEmpty');
+      const bsPile = document.getElementById('bsPile');
+
+      function renderStack() {
+        const st = readStack();
+        if (bsCount) bsCount.textContent = String(st.length);
+        if (bsPile) bsPile.innerHTML = st.slice(0, 6).map(() => '<i></i>').join('');
+        if (bsList) bsList.innerHTML = st.map((b, i) => `<li><span class="bs-t">${b.t}</span> <span class="bs-a">${b.a}</span> <button type="button" class="bs-rm" data-i="${i}" aria-label="Remove ${b.t}">×</button></li>`).join('');
+        if (bsEmpty) bsEmpty.hidden = st.length > 0;
+        sceneSetStack?.(Math.min(1, st.length / 6));
+        document.documentElement.classList.toggle('has-stack', st.length > 0);
+      }
+      renderStack();
+
+      bsChip?.addEventListener('click', () => {
+        const open = bsPanel?.hasAttribute('hidden');
+        if (open) bsPanel?.removeAttribute('hidden'); else bsPanel?.setAttribute('hidden', '');
+        bsChip.setAttribute('aria-expanded', String(!!open));
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && bsPanel && !bsPanel.hasAttribute('hidden')) {
+          bsPanel.setAttribute('hidden', ''); bsChip?.setAttribute('aria-expanded', 'false');
+        }
+      });
+      bsList?.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('.bs-rm');
+        if (!btn) return;
+        const st = readStack();
+        st.splice(Number(btn.dataset.i), 1);
+        writeStack(st);
+        renderStack();
+      });
+      // event-gedelegeerd: catalogus (of elke pagina) kan .ct-add knoppen hebben
+      document.addEventListener('click', (e) => {
+        const add = (e.target as HTMLElement).closest<HTMLElement>('.ct-add');
+        if (!add) return;
+        const st = readStack();
+        const t = add.dataset.t || '';
+        if (t && !st.some((b) => b.t === t)) {
+          st.push({ t, a: add.dataset.a || '' });
+          writeStack(st);
+          renderStack();
+          add.classList.add('stacked');
+          add.textContent = 'Stacked ✓';
+        }
+      });
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/library-scene')
+          .then(({ initLibraryScene }) => {
+            const scene = initLibraryScene(canvas);
+            sceneSetStack = scene.setStack;
+            scene.setStack(Math.min(1, readStack().length / 6));
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

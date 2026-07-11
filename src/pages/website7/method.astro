@@ -1,0 +1,99 @@
+---
+/**
+ * GREENLINE TREE SURGERY , Method (website7, round 2). The process, safety credentials, reassurances.
+ */
+import GreenlineLayout from '../../layouts/GreenlineLayout.astro';
+
+const STEPS = [
+  { id: '01', t: 'Call or message', d: 'Tell us what you need, where you are, and send a photo or two. We usually reply the same day with next steps.' },
+  { id: '02', t: 'Site visit & assessment', d: 'We come and look properly , access, overhead lines, hazards, wildlife and nesting season, and any TPO or conservation-area constraints.' },
+  { id: '03', t: 'Fixed written quote', d: 'A clear scope and a fixed price, in writing. No day-rate surprises. We agree a date that suits you.' },
+  { id: '04', t: 'Job day', d: 'On-site risk assessment, set drop zones, rigging where needed, and controlled cuts. We clear up fully and leave it tidy.' },
+];
+const CREDS = [
+  { k: 'Qualified', v: 'NPTC / LANTRA certified climbers and chainsaw operators.' },
+  { k: 'Insured', v: '£10M public liability cover on every job.' },
+  { k: 'Rigging Certified', v: 'Trained in roped lowering and sectional dismantling.' },
+  { k: 'Surfaces Protected', v: 'Boards and mats for lawns, drives, and patios on request.' },
+  { k: 'Waste Handled', v: 'Arisings chipped on site and recycled, logs left if you want them.' },
+  { k: 'TPO Aware', v: 'We check protected-tree status and advise on any permissions.' },
+];
+const FAQ = [
+  { q: 'Do you remove all the waste?', a: 'Yes. We chip on site and take everything away, unless you ask us to leave logs or woodchip for you.' },
+  { q: 'Can you work on a tree with a TPO?', a: 'We can advise. If permission is needed, we tell you exactly what paperwork is required before any work starts.' },
+  { q: 'Will you protect my lawn and driveway?', a: 'We set drop zones, use rigging where needed, and protect surfaces with boards and mats on request.' },
+  { q: 'Can you come out in an emergency?', a: 'Yes. If a tree is unsafe after a storm, call us and we will prioritise make-safe work.' },
+];
+---
+
+<GreenlineLayout title="Our Method | Greenline Tree Surgery" description="How Greenline works , call, site visit, fixed quote, job day. Qualified, insured, rigging-certified, and tidy." active="method">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website7/arborB.jpg" alt="A Greenline climber working high in an oak in full harness" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="eyebrow">Our Method</span>
+      <h1>Careful by <em>default</em>.</h1>
+      <p class="sub">Tree work goes wrong when it's rushed. Here's exactly how we run a job , from your first message to a tidy site at the end.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><div><span class="eyebrow" data-reveal="fade">The process</span><h2 data-reveal="up">Four steps, no surprises.</h2></div></div>
+    <div class="steps">
+      {STEPS.map((s) => (
+        <div class="step" data-reveal="up">
+          <span class="st-id">{s.id}</span>
+          <div class="st-body"><h3>{s.t}</h3><p>{s.d}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow rope" data-reveal="fade">Safe by default</span><h2 data-reveal="up">The credentials behind the cut.</h2></div></div>
+    <div class="creds">
+      {CREDS.map((c) => (<div class="cred panel" data-reveal="up"><h4>{c.k}</h4><p>{c.v}</p></div>))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow" data-reveal="fade">Good to know</span><h2 data-reveal="up">Questions we get a lot.</h2></div></div>
+    <div class="faq">
+      {FAQ.map((f, i) => (
+        <details class="faq-item panel" open={i === 0}>
+          <summary><span>{f.q}</span><span class="fq-x">+</span></summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+    <div class="method-cta" data-reveal="up">
+      <a href="/website7/contact" class="btn-cta">Get a free quote</a>
+      <a href="tel:+447900123456" class="btn-call">Call 07 900 123 456</a>
+    </div>
+  </section>
+
+  <style>
+    .steps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .step { display: grid; grid-template-columns: 64px 1fr; gap: 18px; padding: 28px 26px; border: 1px solid var(--hair); border-radius: 14px; background: rgba(12,24,18,0.4); transition: border-color 0.35s; }
+    .step:hover { border-color: var(--hair-leaf); }
+    .st-id { font-family: var(--head); font-size: 2.4rem; color: var(--leaf-deep); line-height: 1; }
+    .st-body h3 { font-size: 1.4rem; color: #fff; }
+    .st-body p { color: var(--muted); margin-top: 10px; font-size: 0.92rem; line-height: 1.65; }
+
+    .creds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .cred { padding: 26px 24px; }
+    .cred h4 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--leaf); }
+    .cred p { color: var(--muted); margin-top: 12px; font-size: 0.9rem; line-height: 1.6; }
+
+    .faq { display: flex; flex-direction: column; gap: 10px; max-width: 820px; }
+    .faq-item { padding: 4px 26px; border-radius: 12px; }
+    .faq-item summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; cursor: pointer; list-style: none; font-family: var(--head); font-size: clamp(1.1rem,1.8vw,1.4rem); color: #fff; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .fq-x { font-family: var(--mono); font-size: 1.4rem; color: var(--leaf); transition: transform 0.3s; }
+    .faq-item[open] .fq-x { transform: rotate(45deg); }
+    .faq-item p { color: var(--muted); line-height: 1.7; padding: 0 0 22px; max-width: 64ch; }
+    .method-cta { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+    @media (max-width: 900px) { .steps { grid-template-columns: 1fr; } .creds { grid-template-columns: 1fr; } }
+  </style>
+</GreenlineLayout>

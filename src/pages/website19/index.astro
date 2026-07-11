@@ -1,0 +1,101 @@
+---
+/**
+ * MONARCH PRIVATE CHAUFFEUR , Home (website19, round 2 multi-page).
+ * Intro over the night-drive backdrop, service + fleet teasers, and a window-timeline dispatch CTA.
+ */
+import MonarchLayout from '../../layouts/MonarchLayout.astro';
+import { SERVICES, FLEET, WINDOWS, BUSY } from '../../data/monarch';
+---
+
+<MonarchLayout title="Monarch Private Chauffeur , Discreet Dispatch, Quiet Cabin" description="A discreet private-chauffeur dispatch, not a taxi. Pick an arrival window, a service class, and a fleet; confirm and the car departs. Quiet cabins, timed arrivals.">
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="kicker" id="heroKicker">Discreet dispatch · quiet cabin · 24h</span>
+      <h1 class="hero-title" id="heroTitle">Arrive, unannounced.</h1>
+      <p class="hero-copy" id="heroCopy">Not a taxi line , a dispatch. The same quiet car, the same chauffeur once we know you, timed to the minute and routed for calm. Pick a window and we take it from there.</p>
+      <div class="hero-actions" id="heroActions">
+        <a href="/website19/dispatch" class="btn-cta">Dispatch a car</a>
+        <a href="/website19/fleet" class="btn-ghost">See the fleet</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="kicker">Service</span><h2>Three ways to be driven.</h2></div><p>Each one quiet, private, and on your clock. <a class="inline-link" href="/website19/service">All service →</a></p></div>
+    <div class="svc-strip">
+      {SERVICES.map((s) => (
+        <a href="/website19/service" class="svc" data-reveal="up"><h3>{s.name}</h3><p>{s.line}</p><span class="svc-arw">→</span></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="kicker pl">Fleet</span><h2>Three quiet cars.</h2></div><p><a class="inline-link" href="/website19/fleet">All fleet →</a></p></div>
+    <div class="fleet-strip">
+      {FLEET.map((f) => (
+        <a href="/website19/fleet" class="flt" data-reveal="up"><h3>{f.name}</h3><span class="flt-meta">{f.meta}</span></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight dispatch-cta">
+    <div class="dc-inner panel ch" data-reveal="up">
+      <span class="kicker c">Dispatch</span>
+      <h2>Ready when you are.</h2>
+      <p>Pick an arrival window , the busy ones fill first , and confirm. The car departs the moment you do.</p>
+      <div class="window-preview" id="windowPreview">
+        {WINDOWS.map((w) => (<span class={`wp ${BUSY.includes(w) ? 'busy' : ''}`}>{w}</span>))}
+      </div>
+      <a href="/website19/dispatch" class="btn-cta" style="margin-top:24px;">Open the dispatch console</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 90px clamp(20px,5vw,56px) 40px; }
+    .hero-inner { position: relative; z-index: 10; max-width: 1260px; margin: 0 auto; width: 100%; }
+    .hero-title { font-size: clamp(3rem, 9vw, 7.5rem); line-height: 0.98; color: #fff; margin: 16px 0 18px; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-copy { color: var(--muted); max-width: 50ch; font-size: 1.1rem; }
+    .hero-actions { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .svc-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .svc { position: relative; padding: 30px 26px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); transition: border-color 0.3s, transform 0.3s; overflow: hidden; min-height: 150px; }
+    .svc:hover { border-color: var(--line-ch); transform: translateY(-4px); }
+    .svc h3 { font-size: 1.6rem; color: #fff; }
+    .svc p { color: var(--muted); margin-top: 12px; font-size: 0.9rem; line-height: 1.55; }
+    .svc-arw { position: absolute; bottom: 22px; right: 24px; color: var(--champagne); opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+    .svc:hover .svc-arw { opacity: 1; transform: translateX(4px); }
+
+    .fleet-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .flt { padding: 28px 26px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); transition: all 0.3s; }
+    .flt:hover { border-color: var(--line-ch); transform: translateY(-3px); }
+    .flt h3 { font-size: 1.7rem; color: var(--champ-bright); }
+    .flt-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); margin-top: 10px; display: block; }
+
+    .dispatch-cta { display: flex; justify-content: center; }
+    .dc-inner { text-align: center; padding: clamp(40px,6vw,68px) clamp(24px,4vw,56px); max-width: 760px; }
+    .dc-inner .kicker { justify-content: center; }
+    .dc-inner h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; margin-top: 14px; }
+    .dc-inner > p { color: var(--muted); margin-top: 14px; max-width: 48ch; margin-inline: auto; }
+    .window-preview { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 26px; }
+    .wp { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--muted); border: 1px solid var(--line); padding: 8px 12px; border-radius: 3px; }
+    .wp.busy { color: var(--champ-deep); border-color: var(--line-ch); text-decoration: line-through; opacity: 0.7; }
+
+    @media (max-width: 900px) { .svc-strip { grid-template-columns: 1fr; } .fleet-strip { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    import { gsap, SplitText, ScrollTrigger } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroTitle = document.getElementById('heroTitle');
+    const fades = ['heroKicker', 'heroCopy', 'heroActions'].map((id) => document.getElementById(id));
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (fades[0]) tl.to(fades[0], { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 120, opacity: 0, stagger: 0.04, duration: 0.9 }, 0.1);
+      tl.to(fades[1], { opacity: 1, duration: 0.8 }, 0.5).to(fades[2], { opacity: 1, duration: 0.8 }, 0.7);
+    }
+    ScrollTrigger.refresh();
+  </script>
+</MonarchLayout>

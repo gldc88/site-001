@@ -1,0 +1,213 @@
+---
+/**
+ * CosmosLayout , shared shell for ORBITAL ARCHIVE (website9, round 2).
+ * Persistent WebGL spiral-galaxy scene + grain behind all pages. Props: title, description, active.
+ */
+import '../styles/cosmos-fonts.css';
+import '../styles/archive.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'collections', label: 'Collections', href: '/website9/collections' },
+  { key: 'field', label: 'Field Map', href: '/website9/field' },
+  { key: 'anomalies', label: 'Anomalies', href: '/website9/anomalies' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website9" class="brand"><span class="mark"></span>Orbital Archive</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website9/access" class="cta">Request Access</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Orbital Archive</h3>
+          <p>A private observatory for research , deep-field briefings, system cartography, and an anomaly index, delivered with restraint and evidence. Fictional concept, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Archive</h4><a href="/website9/collections">Collections</a><a href="/website9/field">Field Map</a><a href="/website9/anomalies">Anomaly Index</a><a href="/website9/access">Request Access</a></div>
+        <div class="f-col"><h4>Channel</h4><a href="mailto:archive@orbital.example">archive@orbital.example</a><a href="/website9/access">Apply for entry</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Orbital Archive. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · RA 17h · DEC −29° · Z 0.0</span>
+      </div>
+    </footer>
+
+    <div class="nightwatch" id="nightwatch">
+      <button type="button" class="nw-chip" id="nwChip" aria-pressed="false">
+        <span class="nw-key">Night watch</span>
+        <span class="nw-count" id="nwCount">0/3</span>
+      </button>
+      <div class="nw-hint" id="nwHint" aria-live="polite"></div>
+    </div>
+    <div class="nw-overlay" id="nwOverlay" hidden aria-hidden="true">
+      <div class="nw-cross" id="nwCross">
+        <span class="nw-ring"></span>
+        <span class="nw-read" id="nwRead">RA --h-- | DEC --</span>
+        <span class="nw-sig" id="nwSig"></span>
+      </div>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "Night Watch" (telescoop-sweep) ---- */
+      let sceneFlare: (() => void) | null = null;
+      const SOURCES = [
+        { x: 0.22, y: 0.3, id: 'VLM-J0834+22', kind: 'faint maser' },
+        { x: 0.71, y: 0.24, id: 'ARC-Q1157+08', kind: 'quiet quasar echo' },
+        { x: 0.8, y: 0.72, id: 'HAL-T0093-14', kind: 'thermal halo' },
+      ];
+      const RADIUS = 0.055, DWELL_MS = 800;
+      const readObs = (): string[] => { try { return JSON.parse(localStorage.getItem('archive-obs') || '[]'); } catch { return []; } };
+      const writeObs = (o: string[]) => { try { localStorage.setItem('archive-obs', JSON.stringify(o)); } catch { /* private mode */ } };
+
+      const nwChip = document.getElementById('nwChip');
+      const nwCount = document.getElementById('nwCount');
+      const nwHint = document.getElementById('nwHint');
+      const nwOverlay = document.getElementById('nwOverlay');
+      const nwCross = document.getElementById('nwCross');
+      const nwRead = document.getElementById('nwRead');
+      const nwSig = document.getElementById('nwSig');
+
+      let watching = false;
+      let cx = 0.5, cy = 0.5;
+      let dwellStart = 0, dwellTarget = -1;
+
+      const fmtCoord = (x: number, y: number) => {
+        const ra = (x * 24).toFixed(1);
+        const dec = Math.round((0.5 - y) * 90);
+        return `RA ${ra}h | DEC ${dec >= 0 ? '+' : ''}${dec}`;
+      };
+      const syncCount = () => {
+        const found = readObs();
+        if (nwCount) nwCount.textContent = `${Math.min(found.length, 3)}/3`;
+        document.documentElement.classList.toggle('sweep-complete', found.length >= 3);
+      };
+      syncCount();
+
+      function positionCross() {
+        if (!nwCross) return;
+        nwCross.style.left = `${cx * 100}%`;
+        nwCross.style.top = `${cy * 100}%`;
+        if (nwRead) nwRead.textContent = fmtCoord(cx, cy);
+        const found = readObs();
+        let best = -1, bestD = 1;
+        SOURCES.forEach((src, i) => {
+          if (found.includes(src.id)) return;
+          const d = Math.hypot(cx - src.x, cy - src.y);
+          if (d < bestD) { bestD = d; best = i; }
+        });
+        const strength = best >= 0 && bestD < RADIUS ? 1 - bestD / RADIUS : 0;
+        if (nwSig) nwSig.textContent = strength > 0 ? `signal ${Math.round(strength * 100)}%` : '';
+        nwCross.classList.toggle('hot', strength > 0.35);
+        const nowTs = performance.now();
+        if (strength > 0.55) {
+          if (dwellTarget !== best) { dwellTarget = best; dwellStart = nowTs; }
+          else if (nowTs - dwellStart > DWELL_MS) {
+            const src = SOURCES[best];
+            const obs = readObs();
+            obs.push(src.id);
+            writeObs(obs);
+            sceneFlare?.();
+            if (nwHint) nwHint.textContent = `Logged: ${src.id} - ${src.kind}, ${fmtCoord(src.x, src.y)}`;
+            syncCount();
+            dwellTarget = -1;
+            if (obs.length >= 3 && nwHint) nwHint.textContent = 'Sweep complete - three sources logged. The Archive will want this.';
+          }
+        } else {
+          dwellTarget = -1;
+        }
+      }
+
+      const setWatching = (on: boolean) => {
+        watching = on;
+        nwChip?.setAttribute('aria-pressed', String(on));
+        if (nwOverlay) { if (on) nwOverlay.removeAttribute('hidden'); else nwOverlay.setAttribute('hidden', ''); }
+        document.documentElement.classList.toggle('watching', on);
+        if (on) {
+          cx = 0.5; cy = 0.5;
+          positionCross();
+          if (nwHint) nwHint.textContent = 'Sweep the sky - hold still on a signal to log it. Esc to stop. Arrow keys work too.';
+        } else if (nwHint && readObs().length < 3) {
+          nwHint.textContent = '';
+        }
+      };
+      nwChip?.addEventListener('click', () => setWatching(!watching));
+      window.addEventListener('keydown', (e) => {
+        if (!watching) return;
+        if (e.key === 'Escape') { setWatching(false); return; }
+        const step = 0.02;
+        if (e.key === 'ArrowLeft') { cx = Math.max(0, cx - step); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { cx = Math.min(1, cx + step); e.preventDefault(); }
+        else if (e.key === 'ArrowUp') { cy = Math.max(0, cy - step); e.preventDefault(); }
+        else if (e.key === 'ArrowDown') { cy = Math.min(1, cy + step); e.preventDefault(); }
+        else return;
+        positionCross();
+      });
+      nwOverlay?.addEventListener('pointermove', (e) => {
+        cx = e.clientX / window.innerWidth;
+        cy = e.clientY / window.innerHeight;
+        positionCross();
+      }, { passive: true });
+      // dwell telt ook door zonder muisbeweging
+      setInterval(() => { if (watching) positionCross(); }, 200);
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/cosmos-scene')
+          .then(({ initCosmosScene }) => {
+            const scene = initCosmosScene(canvas);
+            sceneFlare = scene.flare;
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

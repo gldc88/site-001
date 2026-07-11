@@ -1,0 +1,177 @@
+---
+/**
+ * VELLUM & OAK , Home (website8, round 2 multi-page).
+ * Library light-shaft WebGL hero, staff picks as spines, catalog/events/services/visit teasers.
+ */
+import VellumLayout from '../../layouts/VellumLayout.astro';
+
+const STAFF_PICKS = [
+  { title: 'Moby-Dick', author: 'Herman Melville', price: '£45', format: 'Clothbound', spine: '#23323f' },
+  { title: 'Frankenstein', author: 'Mary Shelley', price: '£38', format: 'Clothbound', spine: '#2f3a2e' },
+  { title: 'The Odyssey', author: 'Homer', price: '£52', format: 'Clothbound', spine: '#5d4037' },
+  { title: 'Pride & Prejudice', author: 'Jane Austen', price: '£32', format: 'Paperback', spine: '#6b4e34' },
+];
+const EVENTS = [
+  { date: 'Thu · 19:00', title: 'After-Hours Reading: Modern Classics', meta: 'Reading Room · 12 seats' },
+  { date: 'Sat · 16:30', title: 'Poetry & Tea', meta: 'Open mic · 5-minute slots' },
+  { date: 'Sun · 12:00', title: "Children's Story Hour", meta: 'Ground floor · families welcome' },
+];
+const SERVICES = [
+  { k: 'Special Orders', v: 'Request a specific edition; we source it and let you know.' },
+  { k: 'Holds & Pickup', v: 'Reserve a title for seven days, collected in store.' },
+  { k: 'Gift Wrap', v: 'Archival paper, a wax seal, and a hand-written note.' },
+  { k: 'Reading Room', v: 'A quiet seat and a pot of tea, by appointment.' },
+];
+---
+
+<VellumLayout title="Vellum & Oak , Independent Bookshop, Oxford" description="An independent bookshop on Oxford's High Street. Curated shelves, a quiet reading room, special orders, and wax-sealed gifts.">
+  <header class="hero" id="hero">
+    <div class="hero-inner">
+      <span class="label" id="heroEye">Independent Booksellers · Oxford · Est. 1971</span>
+      <h1 class="hero-title" id="heroTitle">A bookshop worth<br /><em>the detour.</em></h1>
+      <p class="hero-tag" id="heroTag">Curated shelves, clothbound classics, and a quiet reading room , kept by people who actually read what they sell.</p>
+      <div class="hero-actions" id="heroActions">
+        <a href="/website8/catalog" class="btn-cta">Browse the shelves</a>
+        <a href="/website8/visit" class="btn-ghost">Plan a visit</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section" id="picks">
+    <div class="sec-head">
+      <div><span class="label" data-reveal="fade">Staff Picks</span><h2 data-reveal="up">On the table this week.</h2></div>
+      <p data-reveal="up">Hand-chosen, often clothbound, always worth it. <a class="inline-link" href="/website8/catalog">The full catalog →</a></p>
+    </div>
+    <div class="picks-grid">
+      {STAFF_PICKS.map((b) => (
+        <a href="/website8/catalog" class="pick" data-reveal="up">
+          <div class="pk-spine" style={`--spine:${b.spine}`}><span>{b.title}</span></div>
+          <div class="pk-info">
+            <h3>{b.title}</h3><span class="pk-author">{b.author}</span>
+            <div class="pk-foot"><span class="pk-price">{b.price}</span><span class="pk-format">{b.format}</span></div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight shelves-band">
+    <div class="sb-media" data-reveal="fade"><img src="/website8/shelves.jpg" alt="A narrow aisle of crammed wooden bookshelves with a ladder" loading="lazy" /></div>
+    <div class="sb-copy">
+      <span class="label plain" data-reveal="fade">The Shop</span>
+      <h2 data-reveal="up">Thirty thousand titles, one ladder.</h2>
+      <p data-reveal="up">Two floors of fiction, poetry, philosophy, history, art, and a locked case of rare and signed editions. If it's in print we can get it; if it isn't, we'll go looking.</p>
+      <div class="sb-stats" data-reveal="up">
+        <div><b>30,000+</b><span>titles in store</span></div>
+        <div><b>8</b><span>curated sections</span></div>
+        <div><b>1971</b><span>on the High Street</span></div>
+      </div>
+      <a href="/website8/catalog" class="inline-link" data-reveal="fade">Search the catalog →</a>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="label" data-reveal="fade">This Week</span><h2 data-reveal="up">Events in the shop.</h2></div><p data-reveal="up"><a class="inline-link" href="/website8/events">All events →</a></p></div>
+    <div class="events-teaser">
+      {EVENTS.map((e) => (
+        <a href="/website8/events" class="ev" data-reveal="up"><span class="ev-date">{e.date}</span><div><h4>{e.title}</h4><span class="ev-meta">{e.meta}</span></div><span class="ev-arw">→</span></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="label" data-reveal="fade">More than a shop</span><h2 data-reveal="up">What we can do for you.</h2></div><p data-reveal="up"><a class="inline-link" href="/website8/services">All services →</a></p></div>
+    <div class="svc-teaser">
+      {SERVICES.map((s) => (<div class="svc panel" data-reveal="up"><h4>{s.k}</h4><p>{s.v}</p></div>))}
+    </div>
+  </section>
+
+  <section class="section visit-cta">
+    <div class="vc-inner panel foil" data-reveal="up">
+      <span class="label c">Open seven days</span>
+      <h2>Come and get lost for an afternoon.</h2>
+      <p>14 High Street, Oxford. Tea in the reading room, a wax seal on every gift.</p>
+      <a href="/website8/visit" class="btn-cta" style="margin-top:26px;">Plan your visit</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 0 clamp(20px,5vw,56px); }
+    .hero-inner { position: relative; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .hero .label { opacity: 0; transform: translateY(8px); }
+    .hero-title { font-size: clamp(3rem, 9.5vw, 8rem); line-height: 0.98; color: var(--paper); margin: 22px 0; }
+    .hero-title em { color: var(--gold); font-style: italic; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-tag { font-family: var(--body); font-size: clamp(1.1rem, 1.8vw, 1.45rem); color: rgba(236,227,208,0.82); max-width: 46ch; opacity: 0; line-height: 1.55; font-style: italic; }
+    .hero-actions { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; opacity: 0; }
+
+    .picks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .pick { display: flex; flex-direction: column; transition: transform 0.35s; }
+    .pick:hover { transform: translateY(-5px); }
+    .pk-spine { aspect-ratio: 3/4; border-radius: 3px; background: linear-gradient(110deg, var(--spine), color-mix(in srgb, var(--spine) 70%, #000)); border: 1px solid var(--hair-gold); display: flex; align-items: flex-end; padding: 18px; position: relative; overflow: hidden; box-shadow: inset -8px 0 18px -8px rgba(0,0,0,0.6); }
+    .pk-spine::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 1px; background: rgba(200,162,76,0.4); }
+    .pk-spine span { font-family: var(--display); font-style: italic; font-size: 1.05rem; color: rgba(243,234,214,0.92); line-height: 1.15; }
+    .pk-info { padding-top: 16px; }
+    .pk-info h3 { font-size: 1.3rem; color: var(--paper); }
+    .pk-author { font-style: italic; color: var(--muted); font-size: 0.98rem; }
+    .pk-foot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 10px; }
+    .pk-price { font-family: var(--display); font-size: 1.2rem; color: var(--gold); }
+    .pk-format { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+
+    .shelves-band { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(28px,5vw,60px); align-items: center; }
+    .sb-media { border-radius: 5px; overflow: hidden; aspect-ratio: 3/4; border: 1px solid var(--hair-gold); }
+    .sb-media img { width: 100%; height: 100%; object-fit: cover; }
+    .sb-copy { min-width: 0; }
+    .sb-copy h2 { font-size: clamp(2rem,3.6vw,3rem); color: var(--paper); margin: 12px 0 18px; }
+    .sb-copy > p { color: var(--muted); font-size: 1.08rem; line-height: 1.7; max-width: 50ch; }
+    .sb-stats { display: flex; gap: 32px; margin: 28px 0 24px; flex-wrap: wrap; }
+    .sb-stats b { font-family: var(--display); font-size: 1.9rem; color: var(--gold); display: block; }
+    .sb-stats span { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+    .events-teaser { display: flex; flex-direction: column; }
+    .ev { display: grid; grid-template-columns: 130px 1fr auto; gap: 22px; align-items: center; padding: 22px 8px; border-top: 1px solid var(--hair); transition: background 0.3s, padding-left 0.3s; }
+    .ev:last-child { border-bottom: 1px solid var(--hair); }
+    .ev:hover { background: rgba(200,162,76,0.05); padding-left: 16px; }
+    .ev-date { font-family: var(--display); font-style: italic; font-size: 1.15rem; color: var(--gold); }
+    .ev h4 { font-size: 1.35rem; color: var(--paper); }
+    .ev-meta { font-size: 0.98rem; color: var(--muted); font-style: italic; }
+    .ev-arw { color: var(--gold); opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+    .ev:hover .ev-arw { opacity: 1; transform: translateX(4px); }
+
+    .svc-teaser { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .svc { padding: 26px 24px; transition: border-color 0.35s; }
+    .svc:hover { border-color: var(--hair-gold); }
+    .svc h4 { font-size: 1.25rem; color: var(--paper); }
+    .svc p { color: var(--muted); margin-top: 10px; font-size: 0.98rem; line-height: 1.55; }
+
+    .visit-cta { display: flex; justify-content: center; }
+    .vc-inner { text-align: center; padding: clamp(40px,6vw,72px) clamp(24px,4vw,56px); max-width: 720px; }
+    .vc-inner .label { justify-content: center; }
+    .vc-inner h2 { font-size: clamp(2rem,4vw,3.2rem); color: var(--paper); margin-top: 14px; }
+    .vc-inner p { color: var(--muted); margin-top: 14px; font-style: italic; font-size: 1.1rem; }
+
+    @media (max-width: 900px) { .picks-grid { grid-template-columns: 1fr 1fr; } .shelves-band { grid-template-columns: 1fr; } .ev { grid-template-columns: 100px 1fr; } .ev-arw { display: none; } .svc-teaser { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .picks-grid, .svc-teaser { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .hero .label, .hero-tag, .hero-actions { opacity: 1 !important; transform: none !important; } }
+  </style>
+
+  <script>
+    import { gsap, ScrollTrigger, SplitText } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroTitle = document.getElementById('heroTitle');
+    const heroEye = document.getElementById('heroEye');
+    const heroTag = document.getElementById('heroTag');
+    const heroActions = document.getElementById('heroActions');
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'words,chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (heroEye) tl.to(heroEye, { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 120, opacity: 0, stagger: 0.035, duration: 1 }, 0.1);
+      if (heroTag) tl.to(heroTag, { opacity: 1, duration: 0.8 }, 0.6);
+      if (heroActions) tl.to(heroActions, { opacity: 1, duration: 0.8 }, 0.8);
+    } else {
+      [heroEye, heroTag, heroActions].forEach((el) => el && (el.style.opacity = '1'));
+    }
+    ScrollTrigger.refresh();
+  </script>
+</VellumLayout>

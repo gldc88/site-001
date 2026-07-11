@@ -1,0 +1,92 @@
+---
+/**
+ * AURUM THERMAL HOUSE , Membership (website18, round 2). The three tiers + a join request.
+ */
+import AurumLayout from '../../layouts/AurumLayout.astro';
+import { TIERS } from '../../data/aurum';
+---
+
+<AurumLayout title="Membership | Aurum Thermal House" description="Three ways to belong to Aurum , Day Pass, Resident, and House Key. Priority windows, guest credits, after-hours access." active="membership">
+  <div class="page-hero">
+    <span class="eyebrow">Membership</span>
+    <h1>Three ways to <em>belong</em>.</h1>
+    <p class="sub">From a single timed visit to an after-hours key. The house stays small on purpose, so membership is less about perks than about quieter windows and a room that already knows you.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="tiers">
+      {TIERS.map((t, i) => (
+        <div class={`tier-card panel ${i === 1 ? 'gold' : ''}`} data-reveal="up">
+          <span class="tc-i">{String(i + 1).padStart(2, '0')}</span>
+          <h2>{t.tier}</h2>
+          <p class="tc-line">{t.line}</p>
+          <ul>{t.bullets.map((b) => <li>{b}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="join-grid">
+      <div class="join-copy">
+        <span class="eyebrow jade">Join</span>
+        <h2>Ask about a key.</h2>
+        <p>Membership is by request , we keep the rolls short so the windows stay quiet. Tell us which tier suits you and we'll be in touch with the next available intake.</p>
+      </div>
+      <form id="joinForm" class="join-form panel gold" novalidate>
+        <div class="fld"><label for="tier">Tier</label><select id="tier" name="tier">{TIERS.map((t) => <option>{t.tier}</option>)}</select></div>
+        <div class="jf-row">
+          <div class="fld"><label for="jname">Name</label><input id="jname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="jemail">Email</label><input id="jemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request membership</button>
+        <p class="jf-fine" id="jfStatus">By request · short rolls · quiet windows.</p>
+      </form>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .tier-card { padding: 34px 28px; }
+    .tc-i { font-family: var(--mono); font-size: 11px; color: var(--gold); }
+    .tier-card h2 { font-size: 2rem; color: #fff; margin: 10px 0 6px; }
+    .tc-line { color: var(--muted); margin-bottom: 20px; font-style: italic; font-family: var(--serif); font-size: 1.1rem; }
+    .tier-card ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .tier-card li { font-size: 0.95rem; color: var(--ink); padding-left: 22px; position: relative; }
+    .tier-card li::before { content: '◇'; position: absolute; left: 0; color: var(--gold); font-size: 0.7em; top: 4px; }
+
+    .join-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px,4vw,46px); align-items: center; }
+    .join-copy h2 { font-size: clamp(2rem,3.8vw,3rem); color: #fff; margin: 12px 0 16px; }
+    .join-copy p { color: var(--muted); line-height: 1.8; max-width: 48ch; }
+    .join-form { padding: clamp(26px,3vw,38px); display: flex; flex-direction: column; gap: 16px; }
+    .jf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .jf-fine { font-family: var(--mono); font-size: 0.7rem; color: var(--faint); text-align: center; }
+
+    @media (max-width: 900px) { .tiers { grid-template-columns: 1fr; } .join-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 540px) { .jf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('joinForm') as HTMLFormElement;
+    const tier = document.getElementById('tier') as HTMLSelectElement;
+    const toast = document.getElementById('toast');
+    const fine = document.getElementById('jfStatus')!;
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#e8a07a' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('jname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('jemail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'MV-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      fine.textContent = `Request ${ref} received , we'll be in touch about the next intake.`; fine.style.color = 'var(--gold)';
+      if (toast) { toast.textContent = `Thank you ${name.split(' ')[0]} , ${tier.value} request ${ref} logged. We'll write with the next intake.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6400); }
+      form.reset();
+    });
+  </script>
+</AurumLayout>

@@ -1,0 +1,100 @@
+---
+/**
+ * AURELIA SKYPORT , Terminal (website4, round 2). Signature: a tabbed Lounge/Cabin/Dining selector.
+ */
+import AureliaLayout from '../../layouts/AureliaLayout.astro';
+
+const ZONES = [
+  { id: 'lounge', n: '01', name: 'The Lounge', tag: 'CLEARED', img: '/website4/lounge.jpg',
+    desc: 'A low-lit private room, not a gate. A drink poured before you ask, a desk that works, and the kind of quiet the airport version never had.',
+    specs: [['Capacity', 'By party'], ['Wifi', 'Private, fast'], ['Service', 'One host'], ['Wait', 'None'] ] },
+  { id: 'cabin', n: '02', name: 'The Cabin', tag: 'READY', img: '/website4/cabin.jpg',
+    desc: 'Your aircraft is staged like a suite, every time , temperature set, lighting dialed, linens turned, crew briefed before you reach the door.',
+    specs: [['Staging', 'Pre-arrival'], ['Crew', 'Briefed'], ['Lighting', 'Dialed'], ['Door', 'Closes the world'] ] },
+  { id: 'dining', n: '03', name: 'The Galley', tag: 'TEMP LOCK', img: '/website4/dining.jpg',
+    desc: 'Chef-prepared meals built for altitude and timing. Proper storage, fast service, and plating that still looks sharp at forty-one thousand feet.',
+    specs: [['Kitchen', 'Chef-prepared'], ['Storage', 'Temp-locked'], ['Pairings', 'On request'], ['Timing', 'Holds late'] ] },
+];
+---
+
+<AureliaLayout title="The Terminal | AURELIA SKYPORT" description="Inside the Aurelia Skyport terminal , the lounge, the staged cabin, and the galley built for altitude." active="terminal">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website4/cabin.jpg" alt="A private cabin, staged" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">The Terminal</span>
+      <h1>Staged like a <em>suite</em>.</h1>
+      <p class="sub">Three zones, one standard: ready before you arrive. Step through the lounge, the cabin, and the galley , each prepared so nothing about the day asks anything of you.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="zones">
+      <div class="z-list" role="tablist" aria-label="Terminal zones">
+        {ZONES.map((z, i) => (
+          <button class={`z-tab${i === 0 ? ' active' : ''}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-target={z.id}>
+            <span class="zt-n">{z.n}</span><span class="zt-name">{z.name}</span><span class="zt-tag">{z.tag}</span>
+          </button>
+        ))}
+      </div>
+      <div class="z-stage">
+        {ZONES.map((z, i) => (
+          <article class={`z-panel${i === 0 ? ' active' : ''}`} id={z.id} aria-hidden={i === 0 ? 'false' : 'true'}>
+            <div class="z-fig"><img src={z.img} alt={z.name} loading={i === 0 ? 'eager' : 'lazy'} /><span class="z-figtag">FIG_{z.n} // {z.name}</span></div>
+            <div class="z-info">
+              <span class="overline">Zone {z.n}</span>
+              <h2>{z.name}</h2>
+              <p class="z-desc">{z.desc}</p>
+              <div class="z-specs">
+                {z.specs.map(([k, v]) => <div class="z-spec"><span class="zs-k">{k}</span><span class="zs-v">{v}</span></div>)}
+              </div>
+              <a href="/website4/dispatch" class="btn-ghost" style="margin-top:30px; align-self:flex-start;">Request this experience</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .zones { display: grid; grid-template-columns: 0.7fr 1.6fr; gap: clamp(22px,4vw,50px); align-items: start; }
+    .z-list, .z-stage { min-width: 0; }
+    .z-list { display: flex; flex-direction: column; border-top: 1px solid var(--hair-soft); }
+    .z-tab { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 24px 12px; border-bottom: 1px solid var(--hair-soft); position: relative; transition: background 0.4s var(--ease), padding 0.4s var(--ease); }
+    .z-tab::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transform-origin: top; transition: transform 0.45s var(--ease); box-shadow: 0 0 12px var(--gold); }
+    .z-tab:hover { background: rgba(255,255,255,0.02); }
+    .z-tab.active { background: rgba(200,168,107,0.05); padding-left: 20px; }
+    .z-tab.active::before { transform: scaleY(1); }
+    .zt-n { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+    .z-tab.active .zt-n { color: var(--gold); }
+    .zt-name { font-family: var(--head); font-size: clamp(1.15rem,1.7vw,1.5rem); color: #fff; }
+    .zt-tag { font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.16em; color: var(--gold); white-space: nowrap; }
+
+    .z-panel { display: none; grid-template-columns: 1fr; gap: 28px; min-width: 0; }
+    .z-panel.active { display: grid; animation: fadeup 0.5s var(--ease); }
+    @media (min-width: 900px) { .z-panel { grid-template-columns: 1.25fr 1fr; gap: 40px; } }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .z-fig { position: relative; overflow: hidden; min-height: 360px; min-width: 0; border: 1px solid var(--hair-soft); }
+    @media (max-width: 899px) { .z-fig { aspect-ratio: 16/10; min-height: 0; } }
+    .z-fig img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.82) saturate(1.04); }
+    .z-figtag { position: absolute; left: 14px; top: 14px; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--champagne); background: rgba(4,4,6,0.55); backdrop-filter: blur(5px); padding: 6px 10px; }
+    .z-info { min-width: 0; display: flex; flex-direction: column; }
+    .z-info h2 { font-size: clamp(2rem,3.4vw,3rem); color: #fff; margin-top: 12px; }
+    .z-desc { color: var(--muted); line-height: 1.8; margin-top: 20px; font-size: 0.95rem; }
+    .z-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--hair-soft); border: 1px solid var(--hair-soft); margin-top: 28px; }
+    .z-spec { background: var(--bg); padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .zs-k { font-family: var(--mono); font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .zs-v { font-family: var(--head); font-size: 1.15rem; color: #fff; }
+    @media (max-width: 900px) { .zones { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.z-tab'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.z-panel'));
+    tabs.forEach((tab) => tab.addEventListener('click', () => {
+      const id = tab.dataset.target;
+      tabs.forEach((t) => { const on = t === tab; t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); });
+      panels.forEach((p) => { const on = p.id === id; p.classList.toggle('active', on); p.setAttribute('aria-hidden', String(!on)); });
+    }));
+  </script>
+</AureliaLayout>

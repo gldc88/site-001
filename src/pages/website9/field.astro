@@ -1,0 +1,153 @@
+---
+/**
+ * ORBITAL ARCHIVE , Field Map (website9, round 2). Signature: an interactive SVG star-map ,
+ * click a node to highlight its edges and open its dossier.
+ */
+import CosmosLayout from '../../layouts/CosmosLayout.astro';
+
+const NODES = [
+  { id: 'capital', label: 'Capital', x: 410, y: 285, r: 26, type: 'Core', cls: 'c1', coord: 'RA 17h 42m', sum: 'The gravitational centre. Everything in the field orbits where capital is allocated, and how patiently. Read this node first; the rest are forces acting on it.' },
+  { id: 'supply', label: 'Supply', x: 175, y: 150, r: 18, type: 'Force', cls: 'c2', coord: 'RA 02h 10m', sum: 'Where production sits on the cost curve and how fast it can move. The marginal unit, not the average, sets the price the rest of the field reacts to.' },
+  { id: 'demand', label: 'Demand', x: 650, y: 150, r: 18, type: 'Force', cls: 'c2', coord: 'RA 09h 30m', sum: 'Real consumption stripped of the sentiment layer. We track the durable component separately from the part that disappears the moment credit tightens.' },
+  { id: 'latency', label: 'Latency', x: 195, y: 430, r: 16, type: 'Force', cls: 'c2', coord: 'RA 21h 04m', sum: 'Time as an advantage. Where milliseconds or months compound into share, and where the gap is already being arbitraged to zero.' },
+  { id: 'regulation', label: 'Regulation', x: 645, y: 420, r: 16, type: 'Force', cls: 'c2', coord: 'RA 13h 55m', sum: 'The slow variable. Rarely the trigger, almost always the constraint. We map where a rule change reorders the whole field versus where it is noise.' },
+  { id: 'sentiment', label: 'Sentiment', x: 410, y: 92, r: 15, type: 'Signal', cls: 'c3', coord: 'RA 06h 18m', sum: 'The fastest and least reliable node. Useful only as a contrarian read against the durable forces , loudest exactly when it is least informative.' },
+  { id: 'anomaly', label: 'Anomaly', x: 410, y: 485, r: 15, type: 'Signal', cls: 'c3', coord: 'RA 19h 47m', sum: 'Where the model and the data disagree. Every entry in the Anomaly Index begins as a discrepancy here, with a chain of evidence and a confidence level.' },
+];
+const EDGES = [
+  ['capital', 'supply'], ['capital', 'demand'], ['capital', 'latency'], ['capital', 'regulation'],
+  ['capital', 'sentiment'], ['capital', 'anomaly'], ['supply', 'demand'], ['supply', 'latency'],
+  ['demand', 'regulation'], ['sentiment', 'supply'], ['sentiment', 'demand'], ['anomaly', 'latency'], ['anomaly', 'regulation'],
+];
+const pos = Object.fromEntries(NODES.map((n) => [n.id, n]));
+---
+
+<CosmosLayout title="Field Map | Orbital Archive" description="The Orbital Archive field map , an interactive system map of the forces and signals the archive tracks." active="field">
+  <section class="page-hero" style="min-height:48svh;">
+    <div class="page-hero-inner">
+      <span class="overline v">Field Map</span>
+      <h1>The forces, <em>mapped</em>.</h1>
+      <p class="sub">The field is the archive's working model of a system , a few forces acting on a centre of gravity. Select a node to highlight what it touches and read its dossier.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="field-grid">
+      <div class="map-wrap panel ticked">
+        <svg viewBox="0 0 820 560" class="starmap" role="img" aria-label="Interactive field map">
+          <g class="edges">
+            {EDGES.map(([a, b]) => (
+              <line class="edge" data-a={a} data-b={b} x1={pos[a].x} y1={pos[a].y} x2={pos[b].x} y2={pos[b].y} />
+            ))}
+          </g>
+          <g class="nodes">
+            {NODES.map((n, i) => (
+              <g class={`node ${n.cls} ${i === 0 ? 'active' : ''}`} data-id={n.id} tabindex="0" role="button" aria-label={n.label}>
+                <circle class="node-halo" cx={n.x} cy={n.y} r={n.r + 14} />
+                <circle class="node-dot" cx={n.x} cy={n.y} r={n.r} />
+                <text class="node-label" x={n.x} y={n.y + n.r + 22} text-anchor="middle">{n.label}</text>
+              </g>
+            ))}
+          </g>
+        </svg>
+        <div class="map-read"><span class="coord" id="mapRead">NODE ◇ CAPITAL · CORE</span></div>
+      </div>
+
+      <aside class="dossier" id="dossier">
+        {NODES.map((n, i) => (
+          <article class={`dos ${i === 0 ? 'active' : ''}`} id={`dos-${n.id}`}>
+            <div class="dos-top"><span class={`dos-type ${n.cls}`}>{n.type}</span><span class="coord">{n.coord}</span></div>
+            <h2>{n.label}</h2>
+            <p>{n.sum}</p>
+            <div class="dos-links" data-id={n.id}></div>
+          </article>
+        ))}
+        <a href="/website9/anomalies" class="btn-ghost" style="margin-top:8px; width:100%; text-align:center;">Open the Anomaly Index →</a>
+      </aside>
+    </div>
+  </section>
+
+  <style>
+    .field-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: clamp(20px,3vw,36px); align-items: start; }
+    .map-wrap { padding: 14px; min-width: 0; position: relative; }
+    .starmap { width: 100%; height: auto; display: block; touch-action: manipulation; }
+    .edge { stroke: var(--hair); stroke-width: 1; transition: stroke 0.4s, stroke-width 0.4s; }
+    .edge.lit { stroke: var(--c1); stroke-width: 1.6; filter: drop-shadow(0 0 4px rgba(98,245,255,0.6)); }
+    .node { cursor: pointer; outline: none; }
+    .node-halo { fill: transparent; opacity: 0; transition: opacity 0.4s; }
+    .node-dot { fill: var(--bg-2); stroke-width: 1.5; transition: all 0.35s; }
+    .node.c1 .node-dot { stroke: var(--c1); } .node.c2 .node-dot { stroke: var(--c2); } .node.c3 .node-dot { stroke: var(--c3); }
+    .node-label { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; fill: var(--muted); text-transform: uppercase; transition: fill 0.35s; }
+    .node:hover .node-dot { transform-box: fill-box; }
+    .node.c1 .node-halo { fill: radial-gradient(var(--c1), transparent); } /* fallback */
+    .node:hover .node-label, .node:focus .node-label { fill: #fff; }
+    .node.active .node-dot { fill: rgba(98,245,255,0.12); filter: drop-shadow(0 0 10px currentColor); }
+    .node.c1.active .node-dot { fill: rgba(98,245,255,0.16); }
+    .node.c2.active .node-dot { fill: rgba(180,107,255,0.16); }
+    .node.c3.active .node-dot { fill: rgba(255,94,168,0.16); }
+    .node.active .node-halo { opacity: 1; }
+    .node.c1.active .node-halo { fill: rgba(98,245,255,0.08); }
+    .node.c2.active .node-halo { fill: rgba(180,107,255,0.08); }
+    .node.c3.active .node-halo { fill: rgba(255,94,168,0.08); }
+    .node.active .node-label { fill: #fff; }
+    .node.dim { opacity: 0.4; transition: opacity 0.4s; }
+    .map-read { position: absolute; left: 18px; bottom: 14px; }
+
+    .dossier { position: sticky; top: 96px; min-width: 0; }
+    .dos { display: none; }
+    .dos.active { display: block; animation: fade 0.4s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .dos-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .dos-type { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; padding: 4px 9px; border-radius: 2px; }
+    .dos-type.c1 { color: var(--c1); border: 1px solid var(--hair-c1); }
+    .dos-type.c2 { color: var(--c2); border: 1px solid rgba(180,107,255,0.3); }
+    .dos-type.c3 { color: var(--c3); border: 1px solid rgba(255,94,168,0.3); }
+    .dos h2 { font-size: clamp(1.8rem,3.4vw,2.6rem); color: #fff; }
+    .dos p { color: var(--ink); margin-top: 16px; line-height: 1.7; font-size: 1.02rem; }
+    .dos-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .dos-links a { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--hair); padding: 7px 11px; border-radius: 100px; transition: all 0.25s; cursor: pointer; }
+    .dos-links a:hover { color: var(--c1); border-color: var(--hair-c1); }
+
+    @media (max-width: 900px) { .field-grid { grid-template-columns: 1fr; } .dossier { position: static; } }
+  </style>
+
+  <script>
+    const EDGES = Array.from(document.querySelectorAll<SVGLineElement>('.edge'));
+    const NODES = Array.from(document.querySelectorAll<SVGGElement>('.node'));
+    const dossiers = Array.from(document.querySelectorAll<HTMLElement>('.dos'));
+    const read = document.getElementById('mapRead');
+    const labelOf: Record<string, string> = {};
+    NODES.forEach((n) => { labelOf[n.dataset.id!] = n.querySelector('.node-label')?.textContent || n.dataset.id!; });
+
+    function select(id: string) {
+      const neighbours = new Set<string>([id]);
+      EDGES.forEach((e) => {
+        const a = e.dataset.a!, b = e.dataset.b!;
+        const lit = a === id || b === id;
+        e.classList.toggle('lit', lit);
+        if (lit) { neighbours.add(a); neighbours.add(b); }
+      });
+      NODES.forEach((n) => {
+        const nid = n.dataset.id!;
+        n.classList.toggle('active', nid === id);
+        n.classList.toggle('dim', !neighbours.has(nid));
+      });
+      dossiers.forEach((d) => d.classList.toggle('active', d.id === `dos-${id}`));
+      // build neighbour chips
+      const links = document.querySelector(`#dos-${id} .dos-links`);
+      if (links) {
+        const others = [...neighbours].filter((x) => x !== id);
+        links.innerHTML = '<span class="coord" style="align-self:center;margin-right:4px;">CONNECTS ◇</span>' + others.map((o) => `<a data-jump="${o}">${labelOf[o]}</a>`).join('');
+        links.querySelectorAll<HTMLElement>('a[data-jump]').forEach((a) => a.addEventListener('click', () => select(a.dataset.jump!)));
+      }
+      const node = NODES.find((n) => n.dataset.id === id);
+      const type = node?.querySelector('.dos-type')?.textContent || (document.querySelector(`#dos-${id} .dos-type`)?.textContent ?? '');
+      if (read) read.textContent = `NODE ◇ ${labelOf[id].toUpperCase()} · ${(document.querySelector(`#dos-${id} .dos-type`)?.textContent || '').toUpperCase()}`;
+    }
+    NODES.forEach((n) => {
+      n.addEventListener('click', () => select(n.dataset.id!));
+      n.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') { e.preventDefault(); select(n.dataset.id!); } });
+    });
+    select('capital');
+  </script>
+</CosmosLayout>

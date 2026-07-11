@@ -1,0 +1,87 @@
+---
+/**
+ * YOYOGI , The Ritual (website3, round 2). Signature: a clickable 7-step thermal journey stepper.
+ */
+import YoyogiLayout from '../../layouts/YoyogiLayout.astro';
+
+const STEPS = [
+  { n: '01', name: 'Disrobe & Rinse', time: '5 min', body: 'Phone in the locker, body under warm water. The transition is the point , you arrive only once you have washed the street off.' },
+  { n: '02', name: 'Warm Stone', time: '15 min', body: 'Dry cedar heat at a temperature you can think in. The shoulders drop first, then the jaw, then everything you carried in.' },
+  { n: '03', name: 'Steam', time: '12 min', body: 'Cedar-scented fog thick enough to lean on. Breathe slow; let the room do the work your mind keeps trying to.' },
+  { n: '04', name: 'Cold Plunge', time: '45 sec', body: 'One deliberate descent into cold. Sharp, complete, and over fast , the reset that makes all the heat mean something.' },
+  { n: '05', name: 'Rest', time: '20 min', body: 'A heated stone bed under a blanket, lights low. This is where the nervous system actually changes gear. Do nothing, well.' },
+  { n: '06', name: 'Breathwork', time: '10 min', body: 'A guided round, optional. Long exhales, a counted hold, and a quiet that lands somewhere behind the eyes.' },
+  { n: '07', name: 'Tea', time: 'Untimed', body: 'Hojicha, poured slow, in the washi room. You leave when you are ready , not when a clock says the session is up.' },
+];
+---
+
+<YoyogiLayout title="The Ritual | YOYOGI" description="Seven thermal steps to reset , heat, cold, rest, breath, tea , at Yoyogi urban bathhouse, Tokyo." active="ritual">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website3/sauna2.jpg" alt="Inside the thermal room" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">The Ritual</span>
+      <h1>Seven steps <em>down</em></h1>
+      <p class="sub">Heat, cold, rest, breath, tea , in an order designed to walk your nervous system from the street to true stillness. Allow ninety minutes; most guests stay longer.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="circuit">
+      <div class="c-rail" role="tablist" aria-label="Steps">
+        {STEPS.map((s, i) => (
+          <button class={`c-node${i === 0 ? ' active' : ''}`} data-target={`st-${s.n}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+            <span class="c-dot"></span><span class="c-num">{s.n}</span><span class="c-name">{s.name}</span><span class="c-time">{s.time}</span>
+          </button>
+        ))}
+      </div>
+      <div class="c-detail">
+        {STEPS.map((s, i) => (
+          <div class={`cd${i === 0 ? ' active' : ''}`} id={`st-${s.n}`}>
+            <span class="cd-n">{s.n}</span><h3>{s.name}</h3><span class="cd-time">{s.time}</span><p>{s.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div style="margin-top:48px; display:flex; gap:22px; flex-wrap:wrap; align-items:center;">
+      <a href="/website3/visit" class="btn-cta">Book the ritual</a>
+      <a href="/website3/rooms" class="inline-link" style="align-self:center;">Choose a room →</a>
+    </div>
+  </section>
+
+  <style>
+    .circuit { display: grid; grid-template-columns: 0.95fr 1.25fr; gap: clamp(22px,4vw,56px); align-items: start; }
+    .c-rail { display: flex; flex-direction: column; min-width: 0; }
+    .c-node { display: grid; grid-template-columns: 16px 28px 1fr auto; align-items: center; gap: 13px; text-align: left; padding: 18px 6px; border-bottom: 1px solid var(--hair); }
+    .c-node:first-child { border-top: 1px solid var(--hair); }
+    .c-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--faint); justify-self: center; transition: all 0.4s var(--ease); }
+    .c-node.active .c-dot { background: var(--ember-bright); border-color: var(--ember-bright); box-shadow: 0 0 14px var(--ember-bright); }
+    .c-num { font-family: var(--head); font-size: 14px; color: var(--faint); }
+    .c-name { font-family: var(--head); font-size: clamp(1.15rem,1.8vw,1.5rem); color: #cfc4b6; transition: color 0.3s; }
+    .c-node.active .c-name, .c-node:hover .c-name { color: #fff; }
+    .c-time { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .c-detail { position: relative; border: 1px solid var(--hair); border-radius: 16px; padding: clamp(28px,4vw,52px); min-height: 320px; background: linear-gradient(160deg, rgba(196,80,47,0.07), transparent 62%); display: flex; align-items: center; }
+    .cd { display: none; min-width: 0; }
+    .cd.active { display: block; animation: fadeup 0.5s var(--ease); }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .cd-n { font-family: var(--head); font-size: clamp(3.5rem,8vw,7rem); color: transparent; -webkit-text-stroke: 1px rgba(196,80,47,0.22); line-height: 1; }
+    .cd h3 { font-size: clamp(1.8rem,3.2vw,2.6rem); color: #fff; margin-top: 6px; }
+    .cd-time { display: inline-block; margin-top: 10px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ember-bright); }
+    .cd p { color: var(--muted); line-height: 1.8; margin-top: 16px; max-width: 48ch; }
+    @media (max-width: 900px) { .circuit { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.c-node'));
+    const cds = Array.from(document.querySelectorAll<HTMLElement>('.cd'));
+    let auto = !reduce;
+    nodes.forEach((n) => n.addEventListener('click', () => {
+      auto = false;
+      const id = n.dataset.target;
+      nodes.forEach((x) => { const on = x === n; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); });
+      cds.forEach((p) => p.classList.toggle('active', p.id === id));
+    }));
+    if (!reduce) { let i = 0; setInterval(() => { if (!auto) return; i = (i + 1) % nodes.length; const n = nodes[i]; const id = n.dataset.target; nodes.forEach((x) => { const on = x === n; x.classList.toggle('active', on); x.setAttribute('aria-selected', String(on)); }); cds.forEach((p) => p.classList.toggle('active', p.id === id)); }, 4800); }
+  </script>
+</YoyogiLayout>

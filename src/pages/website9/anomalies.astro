@@ -1,0 +1,112 @@
+---
+/**
+ * ORBITAL ARCHIVE , Anomaly Index (website9, round 2). Signature: a signal feed with confidence
+ * bars, evidence chains, and a severity filter.
+ */
+import CosmosLayout from '../../layouts/CosmosLayout.astro';
+
+const FILTERS = [
+  { id: 'all', label: 'All signals' },
+  { id: 'watch', label: 'Watch' },
+  { id: 'elevated', label: 'Elevated' },
+  { id: 'critical', label: 'Critical' },
+];
+const ALERTS = [
+  { id: 'AX-118', sev: 'elevated', date: '02 / 2026', conf: 76, title: 'Divergence at the margin', evidence: ['Marginal cost +9% QoQ in Region A', 'Two majors paused expansion guidance', 'Forward curve in backwardation 6 weeks'], watch: 'A third major following the pause , the difference between a wobble and a turn.' },
+  { id: 'AX-117', sev: 'critical', date: '02 / 2026', conf: 84, title: 'Liquidity routing through a single hub', evidence: ['68% of tracked flow via one intermediary', 'Redundant routes idle for 11 days', 'No public disclosure of the dependency'], watch: 'Any outage or policy change at the hub , concentrated risk with no visible hedge.' },
+  { id: 'AX-115', sev: 'watch', date: '01 / 2026', conf: 61, title: 'Sentiment decoupled from flows', evidence: ['Sentiment index +2σ above flow-implied', 'Retail participation at 14-month high', 'Allocator conviction flat'], watch: 'The gap closing downward rather than flows catching up.' },
+  { id: 'AX-112', sev: 'elevated', date: '01 / 2026', conf: 79, title: 'Regulatory lead indicator turned', evidence: ['Consultation reopened ahead of schedule', 'Two regulators citing the same precedent', 'Lobbying spend up sharply in one quarter'], watch: 'Draft language naming a specific threshold , that is when it becomes priceable.' },
+  { id: 'AX-109', sev: 'watch', date: '12 / 2025', conf: 68, title: 'Latency gap collapsing', evidence: ['Shared infrastructure announced', 'Incumbent edge down from 40ms to 6ms', 'New entrant matching fills'], watch: 'The moat reaching zero , the advantage was never on the balance sheet.' },
+];
+---
+
+<CosmosLayout title="Anomaly Index | Orbital Archive" description="The Orbital Archive anomaly index , early signals with evidence chains and confidence levels, filtered by severity." active="anomalies">
+  <section class="page-hero" style="min-height:48svh;">
+    <div class="page-hero-inner">
+      <span class="overline p">Anomaly Index</span>
+      <h1>Where the model <em>disagrees</em>.</h1>
+      <p class="sub">Each entry is a discrepancy between what should be true and what the data shows , with the evidence that flagged it, a confidence level, and the single thing worth watching next.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="ax-filters" id="axFilters">
+      {FILTERS.map((f, i) => (<button class={`ax-filter ${i === 0 ? 'active' : ''}`} data-filter={f.id}>{f.label}</button>))}
+    </div>
+    <div class="ax-count" id="axCount"></div>
+
+    <div class="ax-feed" id="axFeed">
+      {ALERTS.map((a) => (
+        <article class={`alert panel ticked sev-${a.sev}`} data-sev={a.sev}>
+          <div class="al-rail">
+            <span class={`al-sev ${a.sev}`}>{a.sev}</span>
+            <span class="coord">{a.id}</span>
+            <span class="coord">{a.date}</span>
+          </div>
+          <div class="al-body">
+            <h3>{a.title}</h3>
+            <div class="al-conf">
+              <span class="alc-label">Confidence</span>
+              <div class="alc-bar"><span style={`width:${a.conf}%`}></span></div>
+              <span class="alc-val">{a.conf}%</span>
+            </div>
+            <div class="al-evidence">
+              <span class="overline" style="font-size:9px;">Evidence chain</span>
+              <ul>{a.evidence.map((e) => <li>{e}</li>)}</ul>
+            </div>
+            <div class="al-watch"><span class="aw-k">Watch ◇</span><span>{a.watch}</span></div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="ax-empty" id="axEmpty" hidden>No signals at that severity right now.</p>
+  </section>
+
+  <style>
+    .ax-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .ax-filter { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--hair); padding: 10px 16px; border-radius: 100px; transition: all 0.25s; }
+    .ax-filter:hover { color: var(--ink); border-color: var(--hair-c1); }
+    .ax-filter.active { background: var(--c1); color: #050515; border-color: var(--c1); }
+    .ax-count { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-bottom: 22px; }
+
+    .ax-feed { display: flex; flex-direction: column; gap: 14px; }
+    .alert { display: grid; grid-template-columns: 150px 1fr; gap: 28px; padding: 28px 30px; align-items: start; }
+    .alert.hide { display: none; }
+    .al-rail { display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--hair); padding-right: 20px; }
+    .al-sev { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; padding: 5px 10px; border-radius: 2px; width: fit-content; }
+    .al-sev.watch { color: var(--c1); border: 1px solid var(--hair-c1); }
+    .al-sev.elevated { color: var(--c2); border: 1px solid rgba(180,107,255,0.4); }
+    .al-sev.critical { color: var(--c3); border: 1px solid rgba(255,94,168,0.5); background: rgba(255,94,168,0.08); }
+    .al-body { min-width: 0; }
+    .al-body h3 { font-size: 1.5rem; color: #fff; }
+    .al-conf { display: flex; align-items: center; gap: 12px; margin: 16px 0 20px; }
+    .alc-label { font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .alc-bar { flex: 1; max-width: 240px; height: 4px; background: var(--hair); border-radius: 100px; overflow: hidden; }
+    .alc-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--c1), var(--c3)); }
+    .alc-val { font-family: var(--mono); font-size: 12px; color: var(--c3); }
+    .al-evidence ul { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .al-evidence li { font-family: var(--mono); font-size: 0.82rem; color: var(--ink); padding-left: 18px; position: relative; line-height: 1.5; }
+    .al-evidence li::before { content: '·'; position: absolute; left: 4px; color: var(--c1); font-size: 1.4em; line-height: 0.6; }
+    .al-watch { margin-top: 20px; padding: 16px 18px; border-left: 2px solid var(--c3); background: rgba(255,94,168,0.04); border-radius: 0 4px 4px 0; display: flex; gap: 12px; }
+    .aw-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c3); white-space: nowrap; padding-top: 3px; }
+    .al-watch span:last-child { color: var(--ink); line-height: 1.55; }
+    .ax-empty { color: var(--muted); font-family: var(--mono); font-size: 0.85rem; padding: 30px 0; }
+
+    @media (max-width: 760px) { .alert { grid-template-columns: 1fr; gap: 18px; } .al-rail { flex-direction: row; align-items: center; border-right: none; border-bottom: 1px solid var(--hair); padding: 0 0 14px; } }
+  </style>
+
+  <script>
+    const filters = Array.from(document.querySelectorAll<HTMLElement>('.ax-filter'));
+    const alerts = Array.from(document.querySelectorAll<HTMLElement>('.alert'));
+    const empty = document.getElementById('axEmpty');
+    const count = document.getElementById('axCount')!;
+    function apply(sev: string) {
+      let shown = 0;
+      alerts.forEach((a) => { const show = sev === 'all' || a.dataset.sev === sev; a.classList.toggle('hide', !show); if (show) shown++; });
+      if (empty) empty.hidden = shown > 0;
+      count.textContent = `${shown} active signal${shown === 1 ? '' : 's'}${sev !== 'all' ? ' · ' + sev : ''}`;
+    }
+    filters.forEach((f) => f.addEventListener('click', () => { filters.forEach((x) => x.classList.toggle('active', x === f)); apply(f.dataset.filter || 'all'); }));
+    apply('all');
+  </script>
+</CosmosLayout>

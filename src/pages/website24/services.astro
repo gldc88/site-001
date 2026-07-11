@@ -1,0 +1,39 @@
+---
+/**
+ * NIGHTWATCH , Services (website24, round 2). The five service lines in full.
+ */
+import NightwatchLayout from '../../layouts/NightwatchLayout.astro';
+import { SERVICES, ICONS, PHONE, TEL } from '../../data/nightwatch';
+---
+
+<NightwatchLayout title="Services | Nightwatch" description="Emergency lockout entry, cylinder replacement, break-in repair, smart locks, and key cutting." active="services">
+  <section class="mx-auto max-w-[1800px] px-6 lg:px-24 pt-16 pb-12">
+    <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-4">/ Services</h2>
+    <h1 class="text-5xl lg:text-7xl font-black tracking-tighter text-white leading-[0.9]">Locksmith work, <br />done properly.</h1>
+    <p class="mt-6 max-w-lg text-zinc-400 text-lg">Five lines of work, one rule that runs through all of them: the least destructive method that actually solves it, and a price before the tools come out.</p>
+  </section>
+
+  <section class="mx-auto max-w-[1800px] px-6 lg:px-24 pb-20 grid md:grid-cols-2 gap-6">
+    {SERVICES.map((s) => (
+      <div class="reveal-on-scroll rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 hover:border-yellow-500/30 transition-colors">
+        <div class="flex items-start justify-between mb-6">
+          <div class="text-yellow-500 w-6 h-6"><Fragment set:html={ICONS[s.icon] || ICONS.bolt} /></div>
+          <span class="text-yellow-600/40 text-xs font-mono">{s.code}</span>
+        </div>
+        <h3 class="text-2xl font-black text-white tracking-tight mb-3">{s.title}</h3>
+        <p class="text-zinc-400 leading-relaxed">{s.detail}</p>
+      </div>
+    ))}
+  </section>
+
+  <section class="border-t border-white/5 bg-[#080808]">
+    <div class="mx-auto max-w-3xl px-6 py-20 text-center">
+      <h2 class="text-3xl lg:text-5xl font-black tracking-tighter text-white">Not sure which you need?</h2>
+      <p class="mt-4 text-zinc-400">Pick your situation in the scenario playbook, or just call , dispatch will work it out with you.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="/website24/scenarios" class="rounded border border-white/15 px-8 py-4 text-xs font-black uppercase tracking-widest text-white hover:border-yellow-500/50 hover:text-yellow-500 transition-all">Scenario playbook</a>
+        <a href={`tel:${TEL}`} class="rounded bg-yellow-500 px-8 py-4 text-xs font-black uppercase tracking-widest text-black hover:bg-yellow-400 transition-colors">Call {PHONE}</a>
+      </div>
+    </div>
+  </section>
+</NightwatchLayout>

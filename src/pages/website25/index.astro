@@ -1,0 +1,71 @@
+---
+/**
+ * GROUNDSPEC , Home (website25, round 2). Hero, what-we-do, and teasers into the estimator, standards,
+ * and work.
+ */
+import GroundspecLayout from '../../layouts/GroundspecLayout.astro';
+import { WORK, PAVING_STD, FENCING_STD } from '../../data/groundspec';
+---
+
+<GroundspecLayout title="Groundspec , Paving & Fencing · Pro Estimator" description="Paving and fencing, built square. Size your patio, driveway, path, or fence run in a live CAD estimator, then a clean quote.">
+  <section class="relative border-b border-white/5 py-24 lg:py-36 overflow-hidden">
+    <div class="absolute top-0 right-0 w-1/2 h-full opacity-5 pointer-events-none"><svg viewBox="0 0 100 100" class="w-full h-full text-white" fill="currentColor"><path d="M0 100 L100 0 L100 100 Z" /></svg></div>
+    <div class="mx-auto max-w-7xl px-6 relative z-10">
+      <h1 class="text-6xl md:text-8xl font-black text-white leading-[0.85] tracking-tighter">Accurate takeoffs <br /><span class="text-zinc-500">before we break ground.</span></h1>
+      <p class="text-xl md:text-2xl text-zinc-300 max-w-3xl leading-relaxed font-light mt-10">Size your patio, driveway, path, or fence run in minutes. Get area, perimeter, and an indicative budget instantly , then we convert it into a clean quote with materials, base prep, and labour.</p>
+      <div class="mt-12 flex flex-wrap gap-5">
+        <a href="/website25/estimator" class="inline-flex items-center gap-4 bg-yellow-500 text-black px-8 py-4 text-sm font-black uppercase tracking-[0.15em] hover:bg-white transition-colors">Open the estimator →</a>
+        <a href="/website25/work" class="inline-flex items-center gap-4 border border-white/15 text-white px-8 py-4 text-sm font-black uppercase tracking-[0.15em] hover:border-yellow-500 hover:text-yellow-500 transition-all">See the work</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- estimator teaser -->
+  <section class="border-b border-white/5 py-24">
+    <div class="mx-auto max-w-7xl px-6 grid lg:grid-cols-2 gap-16 items-center">
+      <div>
+        <span class="text-xs font-black text-yellow-500 uppercase tracking-[0.3em]">/ Estimator console</span>
+        <h2 class="mt-5 text-4xl lg:text-6xl font-black text-white tracking-tighter leading-none">Draw it. Price it. <br />Then we build it.</h2>
+        <p class="mt-6 text-zinc-400 text-lg max-w-md leading-relaxed font-light">A live CAD takeoff: pick a shape and finish, drag the dimensions, toggle a perimeter fence, and watch the area and indicative budget update in real time. Your spec travels straight to the quote.</p>
+        <a href="/website25/estimator" class="mt-8 inline-block text-white font-black uppercase tracking-tight border-b-2 border-yellow-500 pb-1 hover:text-yellow-500 transition-colors">Open the estimator →</a>
+      </div>
+      <div class="border border-white/10 bg-[#141414] p-8 grid grid-cols-2 gap-6">
+        <div><span class="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Live area</span><span class="text-3xl font-black text-yellow-500 font-mono">m²</span></div>
+        <div><span class="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Fence run</span><span class="text-3xl font-black text-emerald-500 font-mono">m</span></div>
+        <div class="col-span-2 border-t border-white/10 pt-5"><span class="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Indicative budget</span><span class="text-2xl font-black text-white font-mono">materials + base + labour</span></div>
+        <a href="/website25/estimator" class="col-span-2 block w-full bg-white text-black py-3.5 text-center text-xs font-black uppercase tracking-[0.2em] hover:bg-yellow-500 transition-colors">Launch console →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- work teaser -->
+  <section class="border-b border-white/5 py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="flex items-end justify-between mb-12"><h2 class="text-4xl lg:text-6xl font-black text-white tracking-tighter">What we build.</h2><a href="/website25/work" class="hidden sm:inline text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-yellow-500">All work →</a></div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5">
+        {WORK.map((w) => (
+          <a href="/website25/work" class="bg-[#0f0f0f] p-7 hover:bg-[#161616] transition-colors block group">
+            <span class={`text-[10px] font-black uppercase tracking-widest ${w.tag === 'FENCING' ? 'text-emerald-500' : 'text-yellow-500'}`}>{w.tag}</span>
+            <h3 class="mt-3 text-xl font-black text-white tracking-tight group-hover:text-yellow-500 transition-colors">{w.title}</h3>
+            <p class="mt-3 text-sm text-zinc-500 leading-relaxed font-light">{w.line}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- standards teaser -->
+  <section class="py-24">
+    <div class="mx-auto max-w-7xl px-6 grid md:grid-cols-2 gap-16">
+      <div class="reveal-on-scroll">
+        <h3 class="text-2xl font-black text-white uppercase mb-8 flex items-center gap-5"><span class="w-12 h-1.5 bg-yellow-500"></span> Paving standards</h3>
+        <ul class="space-y-6">{PAVING_STD.map((s) => <li class="flex gap-5"><span class="text-yellow-500 font-black text-xl opacity-60">{s.n}</span><div><strong class="block text-white uppercase tracking-tight">{s.t}</strong><p class="text-sm text-zinc-500 font-light mt-1 max-w-sm">{s.d}</p></div></li>)}</ul>
+      </div>
+      <div class="reveal-on-scroll">
+        <h3 class="text-2xl font-black text-white uppercase mb-8 flex items-center gap-5"><span class="w-12 h-1.5 bg-emerald-500"></span> Fencing standards</h3>
+        <ul class="space-y-6">{FENCING_STD.map((s) => <li class="flex gap-5"><span class="text-emerald-500 font-black text-xl opacity-60">{s.n}</span><div><strong class="block text-white uppercase tracking-tight">{s.t}</strong><p class="text-sm text-zinc-500 font-light mt-1 max-w-sm">{s.d}</p></div></li>)}</ul>
+      </div>
+    </div>
+    <div class="mx-auto max-w-7xl px-6 mt-14 flex justify-center"><a href="/website25/quote" class="bg-yellow-500 text-black px-10 py-5 text-sm font-black uppercase tracking-[0.2em] hover:bg-white transition-colors">Get a quote</a></div>
+  </section>
+</GroundspecLayout>

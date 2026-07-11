@@ -1,0 +1,71 @@
+---
+/**
+ * EMBERLINE , Home (website26, round 2). Hero, safety strip, service + tools teasers, book CTA.
+ */
+import EmberlineLayout from '../../layouts/EmberlineLayout.astro';
+import { TAGLINE, SERVICES, PHONE, TEL, AREA, HOURS } from '../../data/emberline';
+---
+
+<EmberlineLayout title="Emberline Gas & Heating , Boiler Service, Repair & Safety" description="Gas and heating engineers for boiler service, breakdown repair, controls, upgrades, and gas safety inspections. Calm, documented work.">
+  <section class="relative mx-auto max-w-6xl px-5 pt-16 pb-20">
+    <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#f6a11a] mb-6"><span class="w-2 h-2 rounded-full bg-[#f6a11a] ember-pulse"></span> {AREA}</div>
+    <h1 class="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter">Heat you can <br /><span class="text-[#f6a11a]">trust</span>, documented.</h1>
+    <p class="text-lg md:text-xl text-zinc-300 max-w-2xl leading-relaxed font-light mt-8">{TAGLINE} Gas boilers, central heating, controls, repairs, and safety inspections , handled with a calm, documented process. We log what we changed, what we tested, and what your system should do next.</p>
+    <div class="mt-10 flex flex-wrap gap-4">
+      <a href={`tel:${TEL}`} class="bg-[#f6a11a] text-black px-8 py-4 text-sm font-black uppercase tracking-widest hover:bg-amber-400 transition-colors shadow-[0_8px_30px_-8px_rgba(246,161,26,0.6)]">Call {PHONE}</a>
+      <a href="/website26/tools" class="border border-white/15 text-white px-8 py-4 text-sm font-black uppercase tracking-widest hover:border-[#f6a11a] hover:text-[#f6a11a] transition-all">Try the tools</a>
+    </div>
+    <p class="mt-6 text-[11px] font-bold uppercase tracking-widest text-zinc-600">{HOURS}</p>
+  </section>
+
+  <!-- safety strip -->
+  <section class="border-y border-white/10 bg-red-950/20">
+    <div class="mx-auto max-w-6xl px-5 py-7 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+      <p class="text-sm text-zinc-300"><strong class="text-red-400 uppercase tracking-wide">Smell gas?</strong> Treat it as urgent , fresh air, no flames, no switches. Use the <b class="text-white">Gas Alert</b> button (top right) for the full protocol.</p>
+      <a href="/website26/safety" class="shrink-0 text-[11px] font-black uppercase tracking-widest text-red-300 hover:text-white border-b border-red-400/40 pb-0.5">Safety guidance →</a>
+    </div>
+  </section>
+
+  <!-- services teaser -->
+  <section class="mx-auto max-w-6xl px-5 py-20">
+    <div class="flex items-end justify-between mb-10">
+      <div><div class="text-[11px] font-black uppercase tracking-[0.3em] text-[#f6a11a] mb-2">Core services</div><h2 class="text-3xl md:text-5xl font-black text-white tracking-tight">What we handle.</h2></div>
+      <a href="/website26/services" class="hidden sm:inline text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-[#f6a11a]">All services →</a>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {SERVICES.map((s) => (
+        <a href="/website26/services" class="group relative overflow-hidden rounded-lg border border-white/5 bg-white/5 p-6 transition-all duration-500 hover:border-[#f6a11a]/60 hover:-translate-y-1 hover:shadow-[0_0_40px_-10px_rgba(246,161,26,0.25)] block">
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#f6a11a]/12 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+          <h3 class="relative z-10 text-white font-black uppercase text-sm tracking-wide mb-2">{s.title}</h3>
+          <p class="relative z-10 text-zinc-400 text-sm leading-relaxed">{s.desc}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- tools teaser -->
+  <section class="border-t border-white/10 bg-black/30">
+    <div class="mx-auto max-w-6xl px-5 py-20 grid lg:grid-cols-[1fr_1fr] gap-12 items-center">
+      <div>
+        <div class="text-[11px] font-black uppercase tracking-[0.3em] text-[#f6a11a] mb-3">Interactive tools</div>
+        <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-none">Size it. Diagnose it. <br />Then we visit.</h2>
+        <p class="mt-6 text-zinc-400 text-lg max-w-md leading-relaxed font-light">A quick heat-output estimator, a boiler-type guide, and a fault-triage tool that walks you from symptom to next step , including when it is an emergency.</p>
+        <a href="/website26/tools" class="mt-8 inline-block text-white font-black uppercase tracking-tight border-b-2 border-[#f6a11a] pb-1 hover:text-[#f6a11a] transition-colors">Open the tools →</a>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="rounded-lg border border-white/10 bg-white/5 p-6"><div class="text-3xl font-black text-[#f6a11a]">BTU</div><p class="text-xs text-zinc-500 mt-2 uppercase tracking-widest">Heat output estimator</p></div>
+        <div class="rounded-lg border border-white/10 bg-white/5 p-6"><div class="text-3xl font-black text-blue-400">Type</div><p class="text-xs text-zinc-500 mt-2 uppercase tracking-widest">Boiler guide</p></div>
+        <div class="col-span-2 rounded-lg border border-white/10 bg-white/5 p-6"><div class="text-3xl font-black text-red-400">Triage</div><p class="text-xs text-zinc-500 mt-2 uppercase tracking-widest">Symptom → next step, safely</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 py-24 text-center">
+    <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter">Want a visit scheduled?</h2>
+    <p class="mt-5 text-zinc-400 max-w-lg mx-auto">Tell us the essentials , address, boiler make and model, and a short fault description. We reply with a time.</p>
+    <div class="mt-9 flex flex-wrap justify-center gap-4">
+      <a href="/website26/book" class="bg-[#f6a11a] text-black px-9 py-4 text-sm font-black uppercase tracking-widest hover:bg-amber-400 transition-colors">Book a visit</a>
+      <a href={`tel:${TEL}`} class="border border-white/15 text-white px-9 py-4 text-sm font-black uppercase tracking-widest hover:border-[#f6a11a] hover:text-[#f6a11a] transition-all">Call {PHONE}</a>
+    </div>
+  </section>
+</EmberlineLayout>

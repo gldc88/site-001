@@ -1,0 +1,28 @@
+---
+/**
+ * WashBay , a drag-to-power-wash canvas panel (CLEARSTREAM, website22). Self-contained; the layout's
+ * init wires every `.wash-bay` on the page. Props: title, sub, label.
+ */
+interface Props { title?: string; sub?: string; label?: string; }
+const { title = 'CLEARSTREAM', sub = 'SURFACE RESTORED', label = 'CONCRETE · 4000 PSI · HOT' } = Astro.props;
+---
+<div class="relative">
+  <div class="wash-bay relative w-full aspect-[4/3] border-2 border-black bg-[#e6e9ee] overflow-hidden cursor-crosshair select-none touch-none shadow-[10px_10px_0_0_#000]" data-washbay>
+    <div class="absolute inset-0 grid place-items-center" style="background: radial-gradient(120% 90% at 50% 30%, #fbfcfe, #e7ebf1 70%);">
+      <div class="text-center px-4">
+        <div class="text-[10px] font-mono tracking-[0.3em] text-blue-600 mb-2">{sub}</div>
+        <div class="text-3xl lg:text-4xl font-black tracking-tighter text-black">{title}</div>
+        <div class="text-[10px] font-mono tracking-[0.2em] text-gray-500 mt-2">{label}</div>
+      </div>
+    </div>
+    <canvas class="wb-grime absolute inset-0 w-full h-full"></canvas>
+    <canvas class="wb-spray absolute inset-0 w-full h-full pointer-events-none"></canvas>
+    <div class="absolute top-0 inset-x-0 flex justify-between items-center px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-white mix-blend-difference pointer-events-none">
+      <span>Wash bay // drag to clean</span><span class="wb-psi">0 PSI</span>
+    </div>
+    <div class="absolute bottom-0 inset-x-0 flex justify-between items-center px-4 py-3">
+      <span class="text-[11px] font-mono uppercase tracking-widest text-black bg-white/80 px-2 py-1 border border-black"><span class="wb-pct">0</span>% CLEANED</span>
+      <button type="button" class="wb-resoil text-[10px] font-mono uppercase tracking-widest text-white bg-black px-3 py-1.5 hover:bg-blue-600 transition-colors">Re-soil</button>
+    </div>
+  </div>
+</div>

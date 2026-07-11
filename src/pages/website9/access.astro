@@ -1,0 +1,100 @@
+---
+/**
+ * ORBITAL ARCHIVE , Request Access (website9, round 2). Signature: an application -> ref + toast.
+ */
+import CosmosLayout from '../../layouts/CosmosLayout.astro';
+
+const FOCUS = ['Markets & capital', 'Technology & infrastructure', 'Policy & regulation', 'Geopolitics', 'Science & frontier', 'Other'];
+const SPECS = [
+  { k: 'Entry', v: 'Applications reviewed weekly. No waitlist theatre , a yes or a no.' },
+  { k: 'Sessions', v: '45 minutes, timeboxed. One question, properly answered.' },
+  { k: 'Output', v: 'A briefing and a map packet you keep, not a slide deck.' },
+  { k: 'Channel', v: 'Private correspondence only. Nothing indexed, nothing forwarded.' },
+];
+---
+
+<CosmosLayout title="Request Access | Orbital Archive" description="Apply for access to the Orbital Archive. Applications reviewed weekly; sessions are private and timeboxed.">
+  <section class="page-hero" style="min-height:48svh;">
+    <div class="page-hero-inner">
+      <span class="overline">Request Access</span>
+      <h1>Tell us what you're <em>trying to see</em>.</h1>
+      <p class="sub">The archive is small and stays that way. Entry is by application, reviewed weekly. There's no fee to apply and no obligation if it isn't a fit , we'll just tell you.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="acc-grid">
+      <form id="accForm" class="acc-form panel lit ticked" novalidate>
+        <div class="af-row">
+          <div class="fld"><label for="aname">Name</label><input id="aname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="aff">Affiliation</label><input id="aff" name="affiliation" type="text" placeholder="fund, lab, desk, independent…" /></div>
+        </div>
+        <div class="af-row">
+          <div class="fld"><label for="focus">Focus area</label><select id="focus" name="focus">{FOCUS.map((f) => <option>{f}</option>)}</select></div>
+          <div class="fld"><label for="aemail">Email</label><input id="aemail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="intent">What are you trying to see?</label><textarea id="intent" name="intent" rows="4" placeholder="The decision in front of you, and the question the archive could help answer…"></textarea><span class="err" data-err="intent"></span></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Submit application</button>
+        <p class="af-fine" id="afStatus">Reviewed weekly · private correspondence · no fee to apply</p>
+      </form>
+
+      <aside class="acc-side">
+        <div class="acc-ticket panel" id="acc-ticket">
+          <div class="at-top"><span class="overline p" style="font-size:9px;">Application</span><span id="atRef" class="at-ref">, , , ,</span></div>
+          <div class="at-specs">
+            {SPECS.map((s) => (<div class="at-spec"><span class="ats-k">{s.k}</span><p>{s.v}</p></div>))}
+          </div>
+          <div class="at-status" id="atStatus">Awaiting submission</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .acc-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .acc-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .af-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .acc-form textarea { resize: vertical; font-family: var(--body); }
+    .af-fine { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; color: var(--faint); text-align: center; }
+    .acc-side { position: sticky; top: 96px; }
+    .acc-ticket { padding: clamp(24px,3vw,32px); }
+    .at-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .at-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--c1); }
+    .at-specs { margin-top: 14px; }
+    .at-spec { padding: 16px 0; border-bottom: 1px solid var(--hair); }
+    .at-spec:last-child { border-bottom: none; }
+    .ats-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--c3); }
+    .at-spec p { color: var(--muted); font-size: 0.88rem; margin-top: 7px; line-height: 1.5; }
+    .at-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair); border-radius: 4px; }
+    .acc-ticket.filed { border-color: var(--hair-c1); }
+    .acc-ticket.filed .at-status { color: #050515; background: var(--c1); border-style: solid; border-color: var(--c1); }
+    @media (max-width: 900px) { .acc-grid { grid-template-columns: 1fr; } .acc-side { position: static; } }
+    @media (max-width: 560px) { .af-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('accForm') as HTMLFormElement;
+    const toast = document.getElementById('toast');
+    const ref = document.getElementById('atRef')!, statusEl = document.getElementById('atStatus')!, fine = document.getElementById('afStatus')!, card = document.getElementById('acc-ticket');
+    let tT = 0;
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#ff5ea8' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      const intent = String(d.get('intent') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (intent.length < 12) { setErr('intent', 'A sentence or two , what are you trying to see?'); ok = false; } else setErr('intent', '');
+      if (!ok) return;
+      const r = 'OA-' + Math.floor(1000 + Math.random() * 9000);
+      ref.textContent = r; statusEl.textContent = 'Logged · ' + r; fine.textContent = `Application ${r} received , we review weekly.`; fine.style.color = 'var(--c1)';
+      card?.classList.add('filed');
+      if (toast) { toast.textContent = `Received, ${name.split(' ')[0]} , application ${r} is in the weekly review. We reply by private correspondence, yes or no.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+</CosmosLayout>

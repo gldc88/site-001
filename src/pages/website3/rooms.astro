@@ -1,0 +1,108 @@
+---
+/**
+ * YOYOGI , Rooms (website3, round 2). Signature: a tabbed ritual-room selector + rate.
+ */
+import YoyogiLayout from '../../layouts/YoyogiLayout.astro';
+
+const ROOMS = [
+  { id: 'cedar', n: '01', name: 'Cedar Pavilion', material: 'Cedar & Glass', rate: '85,000', img: '/website3/sauna1.jpg',
+    desc: 'A pale cedar room full of soft light. Dry heat, a cold rinse two steps away, and a quiet bed that turns your brain off. The gentlest way in.',
+    amen: ['Dry cedar heat', 'Cold rinse', 'Quiet bed', 'Glass to the garden', 'Solo or pair', 'Tea included'] },
+  { id: 'basalt', n: '02', name: 'Basalt Chamber', material: 'Raw Concrete', rate: '110,000', img: '/website3/sauna2.jpg',
+    desc: 'Heavy walls, warm steam, and silence thick enough to lean on. The deepest reset in the house , heat, plunge, and a long dark rest below the street.',
+    amen: ['Wet steam circuit', 'Deep cold plunge', 'Heated stone bed', 'Sound-isolated', 'Breathwork on request', 'Untimed'] },
+  { id: 'washi', n: '03', name: 'Washi Tea Room', material: 'Washi & Tatami', rate: '65,000', img: '/website3/tatami.jpg',
+    desc: 'Soft paper light over tatami. A slow pour, gentle breathwork, and a guided practice that drops you back into your body without any heat at all.',
+    amen: ['Tatami & washi', 'Hojicha service', 'Guided breathwork', 'No devices', 'Floor seating', 'Incense'] },
+];
+---
+
+<YoyogiLayout title="Rooms | YOYOGI" description="Three private ritual rooms , Cedar Pavilion, Basalt Chamber, Washi Tea Room , at Yoyogi urban bathhouse, Tokyo." active="rooms">
+  <section class="page-hero">
+    <div class="page-hero-media"><img src="/website3/tatami.jpg" alt="A ritual room at Yoyogi" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Private Ritual Rooms</span>
+      <h1>Three ways to <em>reset</em></h1>
+      <p class="sub">Each room is a complete ritual, held for one party at a time. Pick by how deep you want to go , a gentle cedar warmth, the full thermal descent, or a quiet hour of tea and breath.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="picker">
+      <div class="picker-list" role="tablist" aria-label="Choose a room">
+        {ROOMS.map((r, i) => (
+          <button class={`p-tab${i === 0 ? ' active' : ''}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-target={r.id}>
+            <span class="pt-n">{r.n}</span>
+            <span class="pt-b"><span class="pt-name">{r.name}</span><span class="pt-meta">{r.material}</span></span>
+            <span class="pt-rate">¥{r.rate}</span>
+          </button>
+        ))}
+      </div>
+      <div class="picker-stage">
+        {ROOMS.map((r, i) => (
+          <article class={`r-panel${i === 0 ? ' active' : ''}`} id={r.id} aria-hidden={i === 0 ? 'false' : 'true'}>
+            <div class="r-fig"><img src={r.img} alt={r.name} loading={i === 0 ? 'eager' : 'lazy'} /><span class="r-tag">{r.material}</span></div>
+            <div class="r-info">
+              <span class="overline ember">Room {r.n}</span>
+              <h2>{r.name}</h2>
+              <p class="r-desc">{r.desc}</p>
+              <div class="r-amen">{r.amen.map((a) => <span class="chip">{a}</span>)}</div>
+              <div class="r-foot">
+                <div class="r-rate"><span class="rl">Per session</span><span class="rv">¥{r.rate}</span></div>
+                <a href="/website3/visit" class="btn-cta">Book this room</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .picker { display: grid; grid-template-columns: 0.85fr 1.4fr; gap: clamp(22px,4vw,50px); align-items: start; }
+    .picker-list, .picker-stage { min-width: 0; }
+    .picker-list { display: flex; flex-direction: column; border-top: 1px solid var(--hair); }
+    .p-tab { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 24px 12px; border-bottom: 1px solid var(--hair); position: relative; transition: background 0.4s var(--ease), padding 0.4s var(--ease); }
+    .p-tab::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--ember-bright); transform: scaleY(0); transform-origin: top; transition: transform 0.45s var(--ease); box-shadow: 0 0 12px var(--ember-bright); }
+    .p-tab:hover { background: rgba(255,255,255,0.02); }
+    .p-tab.active { background: rgba(196,80,47,0.05); padding-left: 20px; }
+    .p-tab.active::before { transform: scaleY(1); }
+    .pt-n { font-family: var(--head); font-size: 17px; color: var(--faint); }
+    .p-tab.active .pt-n { color: var(--ember-bright); }
+    .pt-b { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .pt-name { font-family: var(--head); font-size: clamp(1.15rem,1.7vw,1.5rem); color: #fff; }
+    .pt-meta { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .pt-rate { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--beige); white-space: nowrap; }
+
+    .r-panel { display: none; grid-template-columns: 1fr; gap: 28px; min-width: 0; }
+    .r-panel.active { display: grid; animation: fadeup 0.5s var(--ease); }
+    @media (min-width: 900px) { .r-panel { grid-template-columns: 1.1fr 1fr; gap: 40px; } }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .r-fig { position: relative; overflow: hidden; border-radius: 14px; min-height: 340px; min-width: 0; border: 1px solid var(--hair); }
+    @media (max-width: 899px) { .r-fig { aspect-ratio: 16/10; min-height: 0; } }
+    .r-fig img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.88) saturate(1.05); }
+    .r-tag { position: absolute; left: 14px; bottom: 14px; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ember-bright); background: rgba(15,13,12,0.62); backdrop-filter: blur(6px); padding: 7px 11px; border-radius: 4px; }
+    .r-info { min-width: 0; display: flex; flex-direction: column; }
+    .r-info h2 { font-size: clamp(2rem,3.4vw,3rem); color: #fff; margin-top: 12px; }
+    .r-desc { color: var(--muted); line-height: 1.8; margin-top: 20px; font-size: 0.95rem; }
+    .r-amen { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+    .chip { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #cfc4b6; border: 1px solid var(--hair); padding: 8px 12px; border-radius: 999px; transition: border-color 0.3s, color 0.3s; }
+    .chip:hover { border-color: rgba(255,122,60,0.4); color: var(--ember-bright); }
+    .r-foot { margin-top: auto; padding-top: 32px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .r-rate { display: flex; flex-direction: column; gap: 4px; }
+    .r-rate .rl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .r-rate .rv { font-family: var(--head); font-size: 2rem; color: var(--ember-bright); }
+    @media (max-width: 900px) { .picker { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.p-tab'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.r-panel'));
+    tabs.forEach((tab) => tab.addEventListener('click', () => {
+      const id = tab.dataset.target;
+      tabs.forEach((t) => { const on = t === tab; t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); });
+      panels.forEach((p) => { const on = p.id === id; p.classList.toggle('active', on); p.setAttribute('aria-hidden', String(!on)); });
+    }));
+  </script>
+</YoyogiLayout>

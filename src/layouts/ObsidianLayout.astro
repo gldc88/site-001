@@ -1,0 +1,196 @@
+---
+/**
+ * ObsidianLayout , shared shell for THE OBSIDIAN multi-page hotel site (website1, round 2).
+ * Props: title, description, active (nav key), preload (home only).
+ */
+import '../styles/obsidian-fonts.css';
+import '../styles/obsidian.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  active?: string;
+  preload?: boolean;
+}
+const { title, description = '', active = '', preload = false } = Astro.props;
+
+const BRAND = 'THE OBSIDIAN';
+const NAV = [
+  { key: 'suites', label: 'Suites', href: '/website1/suites' },
+  { key: 'spa', label: 'Spa', href: '/website1/spa' },
+  { key: 'dining', label: 'Restaurant', href: '/website1/dining' },
+  { key: 'concierge', label: 'Concierge', href: '/website1/concierge' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <script is:inline>
+      // Pre-paint restore van de lichtstand (R3 pull-cord) , voorkomt flash bij navigatie.
+      try { if (localStorage.getItem('obsidian-lights') === 'low') document.documentElement.classList.add('lights-low'); } catch {}
+    </script>
+    <style is:inline>
+      /* R3: cross-document view transitions , MPA voelt als één doorlopend gebouw.
+         Progressive enhancement; browsers zonder support navigeren gewoon. */
+      @view-transition { navigation: auto; }
+      .brand-link { view-transition-name: obsidian-brand; }
+      .nav-cta { view-transition-name: obsidian-reserve; }
+      @media (prefers-reduced-motion: reduce) {
+        ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+      }
+    </style>
+    <link rel="preload" as="font" type="font/woff2" href="/website1/fonts/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/website1/fonts/JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" crossorigin />
+  </head>
+
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="lights-veil" aria-hidden="true"></div>
+    <button class="pull-cord hover-target" id="pullCord" type="button" aria-pressed="false" aria-label="Dim the lights">
+      <span class="cord-line" aria-hidden="true"></span>
+      <span class="cord-handle" aria-hidden="true"></span>
+      <span class="cord-hint" aria-hidden="true">Lights</span>
+    </button>
+    <div class="cursor-ring" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+
+    {preload && (
+      <div class="preloader" id="preloader" aria-hidden="true">
+        <div class="pre-mark" id="preMark">{BRAND}</div>
+        <div class="pre-line" id="preLine"></div>
+        <div class="pre-sub" id="preSub">Zürich · Switzerland</div>
+      </div>
+    )}
+
+    <nav class="navbar" id="navbar">
+      <div class="left">
+        <a href="/website1" class="brand-link hover-target" aria-label={`${BRAND} home`}>
+          <span class="brand-layer brand-def">{BRAND}</span>
+          <span class="brand-layer brand-hov">The House</span>
+        </a>
+        <a href="/" class="index-link hover-target">↩ Index</a>
+      </div>
+      <div class="nav-right">
+        <div class="nav-links">
+          {NAV.map((i) => (
+            <a href={i.href} class={`nav-item hover-target${active === i.key ? ' active' : ''}`}>{i.label}</a>
+          ))}
+        </div>
+        <a href="/website1/reserve" class={`nav-cta hover-target${active === 'reserve' ? ' active' : ''}`}>Reserve</a>
+      </div>
+    </nav>
+
+    <main id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h2>{BRAND}</h2>
+          <p class="f-desc">
+            A private quiet-luxury sanctuary in central Zürich, steps from Bahnhofstrasse and a short
+            walk to the lake. Quiet service, sharp details, zero spectacle.
+          </p>
+        </div>
+        <div class="f-col">
+          <h4>Explore</h4>
+          <a href="/website1/suites">Suites</a>
+          <a href="/website1/spa">Spa</a>
+          <a href="/website1/dining">Restaurant</a>
+          <a href="/website1/concierge">Concierge</a>
+        </div>
+        <div class="f-col">
+          <h4>Contact</h4>
+          <a href="tel:+41440000000">+41 44 000 00 00</a>
+          <a href="mailto:concierge@obsidian.example">concierge@obsidian.example</a>
+          <a href="/website1/reserve">Bahnhofstrasse 10, 8001 Zürich</a>
+        </div>
+        <div class="f-col">
+          <h4>Visit</h4>
+          <a href="/website1/reserve">Reserve a Stay</a>
+          <a href="/website1/dining">Book a Table</a>
+          <a href="/">Return to Index</a>
+        </div>
+      </div>
+      <div class="f-watermark" aria-hidden="true">OBSIDIAN</div>
+      <div class="f-copy">
+        <span>© {YEAR} {BRAND}. Fictional brand , crafted for demonstration.</span>
+        <div class="links"><a href="#top">Back to top</a><a href="/">Index</a></div>
+      </div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Pull-cord: lights down (persist over alle pagina's) ---- */
+      const cord = document.getElementById('pullCord');
+      const syncCord = () => {
+        const low = document.documentElement.classList.contains('lights-low');
+        cord?.setAttribute('aria-pressed', String(low));
+        cord?.setAttribute('aria-label', low ? 'Raise the lights' : 'Dim the lights');
+      };
+      syncCord();
+      cord?.addEventListener('click', () => {
+        const low = document.documentElement.classList.toggle('lights-low');
+        try { localStorage.setItem('obsidian-lights', low ? 'low' : 'on'); } catch { /* private mode */ }
+        if (!reduce) { cord.classList.add('pulled'); setTimeout(() => cord.classList.remove('pulled'), 500); }
+        syncCord();
+      });
+
+      /* ---- Nav scrolled state ---- */
+      const navbar = document.getElementById('navbar');
+      const onScroll = () => navbar?.classList.toggle('scrolled', window.scrollY > 40);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* ---- Custom cursor ---- */
+      if (window.matchMedia('(pointer: fine)').matches && !reduce) {
+        const ring = document.querySelector<HTMLElement>('.cursor-ring');
+        const dot = document.querySelector<HTMLElement>('.cursor-dot');
+        if (ring && dot) {
+          document.body.classList.add('cursor-on');
+          let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+          window.addEventListener('mousemove', (e) => {
+            mx = e.clientX; my = e.clientY;
+            dot.style.transform = `translate(${mx}px, ${my}px)`;
+          }, { passive: true });
+          const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+          const tick = () => { rx = lerp(rx, mx, 0.16); ry = lerp(ry, my, 0.16); ring.style.transform = `translate(${rx}px, ${ry}px)`; requestAnimationFrame(tick); };
+          requestAnimationFrame(tick);
+          const bind = () => document.querySelectorAll('.hover-target').forEach((el) => {
+            el.addEventListener('mouseenter', () => ring.classList.add('hover'), { passive: true });
+            el.addEventListener('mouseleave', () => ring.classList.remove('hover'), { passive: true });
+          });
+          bind();
+        }
+      }
+
+      /* ---- Magnetic buttons ---- */
+      if (window.matchMedia('(pointer: fine)').matches && !reduce) {
+        document.querySelectorAll<HTMLElement>('.magnetic').forEach((wrap) => {
+          const el = wrap.firstElementChild as HTMLElement | null;
+          if (!el) return;
+          wrap.addEventListener('mousemove', (e) => {
+            const r = wrap.getBoundingClientRect();
+            const x = e.clientX - (r.left + r.width / 2);
+            const y = e.clientY - (r.top + r.height / 2);
+            wrap.style.transform = `translate(${x * 0.28}px, ${y * 0.34}px)`;
+            el.style.transform = `translate(${x * 0.12}px, ${y * 0.16}px)`;
+          });
+          wrap.addEventListener('mouseleave', () => { wrap.style.transform = ''; el.style.transform = ''; });
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,146 @@
+---
+/**
+ * ORBITAL CRYPTO , Products (website6, round 2). Signature: a live RFQ quote demo + product list.
+ */
+import OrbitalLayout from '../../layouts/OrbitalLayout.astro';
+
+const ASSETS = [
+  { sym: 'BTC', mid: 68420 },
+  { sym: 'ETH', mid: 3585 },
+  { sym: 'SOL', mid: 172.4 },
+  { sym: 'USDC', mid: 1.0 },
+];
+const PRODUCTS = [
+  { k: 'OTC Trading Desk', tag: 'EXECUTION', v: 'Request-for-quote execution for BTC, ETH, and the majors. Transparent spreads, timestamped quotes, and a desk that holds your fill while you decide.' },
+  { k: 'Smart Order Routing', tag: 'EXECUTION', v: 'For larger clips, orders are split across venues to reduce slippage and market impact, with a single blended fill and a full child-order trail.' },
+  { k: 'Custody + Settlement', tag: 'CUSTODY', v: 'Controlled settlement flows with policy checks, address whitelists, and step-by-step confirmations before any asset leaves the perimeter.' },
+  { k: 'Treasury Operations', tag: 'TREASURY', v: 'Role-based approvals, velocity limits, and scheduled transfers , the controls a corporate treasury needs to hold crypto on the balance sheet.' },
+  { k: 'Reporting + Exports', tag: 'REPORTING', v: 'Balances, fills, fees, and transfers, exportable to CSV and your ledger for accounting, audit, and reconciliation without manual stitching.' },
+  { k: 'API + FIX Access', tag: 'CONNECTIVITY', v: 'Programmatic trading and reporting endpoints, plus FIX for desks and funds wiring Orbital into their own internal tooling.' },
+];
+---
+
+<OrbitalLayout title="Products | ORBITAL CRYPTO" description="OTC execution, smart routing, custody, treasury, reporting, and API/FIX access , the Orbital Crypto product stack." active="products">
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <span class="eyebrow">Products</span>
+      <h1>Execution to <em>audit</em>, in one stack.</h1>
+      <p class="sub">Price a block below to see how the desk quotes, then read the full stack , execution, custody, treasury, and reporting, all built to hand off to each other cleanly.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="rfq-grid">
+      <div class="rfq panel glow">
+        <div class="rfq-head"><span class="eyebrow">RFQ · Demo Quote</span><span class="rfq-live"><span class="dot"></span>indicative</span></div>
+        <div class="rfq-controls">
+          <div class="side-toggle" role="group" aria-label="Side">
+            <button class="side active" data-side="buy">Buy</button>
+            <button class="side" data-side="sell">Sell</button>
+          </div>
+          <div class="fld"><label for="asset">Asset</label><select id="asset" name="asset">{ASSETS.map((a) => <option value={a.sym} data-mid={String(a.mid)}>{a.sym}</option>)}</select></div>
+          <div class="fld"><label for="size">Size</label><input id="size" name="size" type="number" min="0" step="0.1" value="10" /></div>
+        </div>
+        <div class="rfq-out">
+          <div class="ro-line"><span>Mid</span><b id="roMid">,</b></div>
+          <div class="ro-line"><span>Quote (8 bps)</span><b id="roQuote" class="cyan">,</b></div>
+          <div class="ro-line"><span>Notional</span><b id="roTotal">,</b></div>
+          <div class="ro-line small"><span>Quote ID</span><b id="roId">,</b></div>
+        </div>
+        <button class="btn-cta" id="rfqBtn" style="width:100%; text-align:center;">Request firm quote</button>
+      </div>
+
+      <div class="rfq-copy">
+        <span class="eyebrow">How it works</span>
+        <h2>Quote, hold, fill.</h2>
+        <p>The desk returns a timestamped, indicative price the moment you size a block. Accept and it becomes a firm quote, held for a short window while you confirm , no slippage between the screen and the fill.</p>
+        <ul class="rfq-notes">
+          <li>Transparent, fixed spread by tier</li>
+          <li>Firm quotes held to a deadline</li>
+          <li>Every quote and fill is logged</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow violet">The Stack</span><h2 style="font-size:clamp(1.9rem,3.4vw,3rem);">Six products, one ledger.</h2></div></div>
+    <div class="prod-list">
+      {PRODUCTS.map((p, i) => (
+        <div class="prod">
+          <span class="pr-i">{String(i + 1).padStart(2, '0')}</span>
+          <div class="pr-main"><div class="pr-top"><h3>{p.k}</h3><span class="pr-tag">{p.tag}</span></div><p>{p.v}</p></div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .rfq-grid { display: grid; grid-template-columns: 0.95fr 1fr; gap: clamp(24px,4vw,50px); align-items: center; }
+    .rfq { padding: clamp(24px,3vw,34px); min-width: 0; }
+    .rfq-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .rfq-live { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; }
+    .rfq-live .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); animation: pulse 2s ease-in-out infinite; }
+    .rfq-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .side-toggle { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--hair); border-radius: 4px; overflow: hidden; }
+    .side { padding: 11px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: all 0.25s; }
+    .side.active { background: var(--cyan); color: #040610; font-weight: 500; }
+    .side:nth-child(2) { border-left: 1px solid var(--hair); }
+    .rfq-out { margin: 24px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); padding: 8px 0; }
+    .ro-line { display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; }
+    .ro-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .ro-line b { font-family: var(--mono); font-size: 1.05rem; color: #fff; font-variant-numeric: tabular-nums; }
+    .ro-line b.cyan { color: var(--cyan); }
+    .ro-line.small b { font-size: 0.8rem; color: var(--muted); }
+    .rfq-copy { min-width: 0; }
+    .rfq-copy h2 { font-size: clamp(1.8rem,3.4vw,2.8rem); color: #fff; margin-top: 12px; }
+    .rfq-copy p { color: var(--muted); line-height: 1.8; margin-top: 18px; max-width: 46ch; }
+    .rfq-notes { list-style: none; margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+    .rfq-notes li { font-size: 0.85rem; color: #cdd4de; padding-left: 20px; position: relative; }
+    .rfq-notes li::before { content: '◇'; position: absolute; left: 0; color: var(--cyan); font-size: 0.7em; top: 4px; }
+
+    .prod-list { display: flex; flex-direction: column; }
+    .prod { display: grid; grid-template-columns: 56px 1fr; gap: 22px; padding: 26px 0; border-top: 1px solid var(--hair); }
+    .prod:last-child { border-bottom: 1px solid var(--hair); }
+    .pr-i { font-family: var(--mono); font-size: 12px; color: var(--cyan); }
+    .pr-main { min-width: 0; }
+    .pr-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .pr-top h3 { font-size: clamp(1.3rem,2.2vw,1.8rem); color: #fff; }
+    .pr-tag { font-family: var(--mono); font-size: 8px; letter-spacing: 0.16em; color: var(--violet); border: 1px solid rgba(167,123,255,0.3); padding: 4px 8px; border-radius: 3px; }
+    .prod p { color: var(--muted); margin-top: 10px; line-height: 1.7; max-width: 70ch; font-size: 0.92rem; }
+
+    @media (max-width: 900px) { .rfq-grid { grid-template-columns: 1fr; } .prod { grid-template-columns: 1fr; gap: 8px; } }
+  </style>
+
+  <script>
+    const asset = document.getElementById('asset') as HTMLSelectElement;
+    const size = document.getElementById('size') as HTMLInputElement;
+    const sides = Array.from(document.querySelectorAll<HTMLElement>('.side'));
+    const roMid = document.getElementById('roMid')!, roQuote = document.getElementById('roQuote')!, roTotal = document.getElementById('roTotal')!, roId = document.getElementById('roId')!;
+    let side = 'buy';
+    const usd = (n: number) => '$' + n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+    function quote() {
+      const mid = Number(asset.selectedOptions[0].dataset.mid || '0');
+      const sz = Math.max(0, Number(size.value) || 0);
+      const spread = 0.0008;
+      const px = side === 'buy' ? mid * (1 + spread) : mid * (1 - spread);
+      roMid.textContent = usd(mid);
+      roQuote.textContent = usd(px);
+      roTotal.textContent = usd(px * sz);
+      roId.textContent = 'Q-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+    }
+    sides.forEach((s) => s.addEventListener('click', () => { sides.forEach((x) => x.classList.toggle('active', x === s)); side = s.dataset.side || 'buy'; quote(); }));
+    [asset, size].forEach((el) => el.addEventListener('input', quote));
+    quote();
+
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    document.getElementById('rfqBtn')?.addEventListener('click', () => {
+      const sym = asset.value, sz = size.value || '0';
+      if (toast) { toast.textContent = `Firm quote ${roId.textContent} held , ${side.toUpperCase()} ${sz} ${sym} @ ${roQuote.textContent}. Accept on the desk within 30s.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 5600); }
+    });
+  </script>
+</OrbitalLayout>

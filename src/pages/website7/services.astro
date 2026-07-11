@@ -1,0 +1,89 @@
+---
+/**
+ * GREENLINE TREE SURGERY , Services (website7, round 2). Signature: a service selector with detail.
+ */
+import GreenlineLayout from '../../layouts/GreenlineLayout.astro';
+
+const SERVICES = [
+  { id: 'reduction', t: 'Crown Reduction', meta: 'Pruning & Balance', d: 'Reduce a tree\'s height and spread while keeping its natural shape, so it stays healthy and in proportion with the garden.', inc: ['A shape plan agreed on site', 'Controlled, even cuts', 'All arisings chipped & removed'], when: 'When a tree has grown too large, is overshadowing the house, or feels top-heavy.' },
+  { id: 'lift', t: 'Crown Lift & Thin', meta: 'Light & Clearance', d: 'Raise the canopy and thin out density to let more light and air through, and to clear paths, drives, and windows.', inc: ['Lift to an agreed clearance height', 'Selective thinning of the canopy', 'More light into the garden'], when: 'When low branches block access or the garden feels dark and closed-in.' },
+  { id: 'removal', t: 'Tree Removal', meta: 'Safe Removal', d: 'A straight fell where there\'s room, or a careful sectional dismantle with rigging over buildings, fences, and drives.', inc: ['Rigging & roped lowering', 'Protected drop zone', 'Full clear-up & waste removal'], when: 'When a tree is dead, dangerous, diseased, or simply needs to go.' },
+  { id: 'stump', t: 'Stump Grinding', meta: 'Ground Works', d: 'Grind stumps out below ground level so the area is clear to re-turf, replant, or pave over.', inc: ['Ground out below surface', 'Backfilled with the grindings', 'Area left tidy'], when: 'When a leftover stump is a trip hazard or in the way of new planting.' },
+  { id: 'hedge', t: 'Hedge Cutting', meta: 'Hedges & Screens', d: 'Annual trims, hard reductions, and boundary reshaping to keep hedges dense, neat, and the right size.', inc: ['Trim, reduce, or reshape', 'Tidy, level finish', 'Clippings removed'], when: 'When a hedge is overgrown, uneven, or pushing past the boundary.' },
+  { id: 'emergency', t: 'Emergency Call-outs', meta: 'Rapid Response', d: 'Fast make-safe work for storm damage, split limbs, and trees or branches that have become an immediate hazard.', inc: ['Priority response', 'Hazard removed or made safe', 'Debris cleared'], when: 'After a storm, or any time a tree suddenly becomes unsafe.' },
+];
+---
+
+<GreenlineLayout title="Services | Greenline Tree Surgery" description="Crown reduction, crown lift & thin, tree removal, stump grinding, hedge cutting, and emergency call-outs , Greenline tree surgery services." active="services">
+  <section class="page-hero" style="min-height:56svh;">
+    <div class="page-hero-media"><img src="/website7/canopy.jpg" alt="Light through a mature tree canopy" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="eyebrow">Services</span>
+      <h1>Every job, done <em>properly</em>.</h1>
+      <p class="sub">Pick a service to see what's involved and what's included. Not sure which you need? Send a photo and we'll tell you straight.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="svc-picker">
+      <div class="picker-list" id="pickerList">
+        {SERVICES.map((s, i) => (
+          <button class={`pick ${i === 0 ? 'active' : ''}`} data-id={s.id}>
+            <span class="pk-t">{s.t}</span><span class="pk-meta">{s.meta}</span>
+          </button>
+        ))}
+      </div>
+      <div class="picker-stage">
+        {SERVICES.map((s, i) => (
+          <article class={`svc-detail ${i === 0 ? 'active' : ''}`} id={s.id}>
+            <span class="sd-meta">{s.meta}</span>
+            <h2>{s.t}</h2>
+            <p class="sd-lead">{s.d}</p>
+            <div class="sd-cols">
+              <div class="sd-inc"><span class="sd-h">What's included</span><ul>{s.inc.map((x) => <li>{x}</li>)}</ul></div>
+              <div class="sd-when"><span class="sd-h">When you need it</span><p>{s.when}</p></div>
+            </div>
+            <a href="/website7/contact" class="btn-cta" style="margin-top:6px;">Get a quote for this</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .svc-picker { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(20px,3vw,40px); align-items: start; }
+    .picker-list { display: flex; flex-direction: column; gap: 8px; min-width: 0; position: sticky; top: 96px; }
+    .pick { display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 16px 18px; border: 1px solid var(--hair); border-radius: 10px; transition: all 0.3s; background: rgba(12,24,18,0.4); }
+    .pick:hover { border-color: var(--hair-leaf); }
+    .pick.active { border-color: var(--leaf); background: rgba(124,192,147,0.08); }
+    .pk-t { font-family: var(--head); font-size: 1.2rem; color: #fff; }
+    .pk-meta { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .pick.active .pk-meta { color: var(--leaf); }
+
+    .picker-stage { position: relative; min-width: 0; }
+    .svc-detail { display: none; }
+    .svc-detail.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .sd-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--leaf); }
+    .svc-detail h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; margin: 12px 0 18px; }
+    .sd-lead { color: rgba(238,243,238,0.82); font-size: 1.08rem; line-height: 1.7; max-width: 56ch; }
+    .sd-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 32px 0; }
+    .sd-h { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rope); display: block; margin-bottom: 14px; }
+    .sd-inc ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .sd-inc li { color: var(--ink); font-size: 0.95rem; padding-left: 22px; position: relative; }
+    .sd-inc li::before { content: '❧'; position: absolute; left: 0; color: var(--leaf); font-size: 0.85em; }
+    .sd-when p { color: var(--muted); line-height: 1.7; font-size: 0.95rem; }
+
+    @media (max-width: 900px) { .svc-picker { grid-template-columns: 1fr; } .picker-list { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 6px; } .pick { min-width: 200px; } .sd-cols { grid-template-columns: 1fr; gap: 22px; } }
+  </style>
+
+  <script>
+    const picks = Array.from(document.querySelectorAll<HTMLElement>('.pick'));
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.svc-detail'));
+    picks.forEach((p) => p.addEventListener('click', () => {
+      picks.forEach((x) => x.classList.toggle('active', x === p));
+      details.forEach((d) => d.classList.toggle('active', d.id === p.dataset.id));
+    }));
+  </script>
+</GreenlineLayout>

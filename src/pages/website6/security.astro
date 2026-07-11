@@ -1,0 +1,139 @@
+---
+/**
+ * ORBITAL CRYPTO , Security (website6, round 2). Signature: a role-separated approval-flow
+ * simulator (request → approve → execute) with an audit log; plus the security pillars.
+ */
+import OrbitalLayout from '../../layouts/OrbitalLayout.astro';
+
+const PILLARS = [
+  { k: 'MPC Key Management', v: 'Keys are never whole. Distributed signing across parties, with enforced policy checks before any high-value movement is allowed to proceed.' },
+  { k: 'Role-Based Controls', v: 'Request, approve, and execute are separated by role and by person. No single operator can move funds alone, by design.' },
+  { k: 'Auditable Events', v: 'Every order, approval, and transfer is written to an immutable action history, built for review, reconciliation, and incident response.' },
+];
+---
+
+<OrbitalLayout title="Security | ORBITAL CRYPTO" description="MPC key management, role-based controls, and an immutable audit trail , the Orbital Crypto security model." active="security">
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <span class="eyebrow violet">Security</span>
+      <h1>No single point of <em>trust</em>.</h1>
+      <p class="sub">The controls assume mistakes and adversaries. Run the approval flow below to see how a transfer is separated across three roles , no one person can move funds, and everything is logged.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="flow-grid">
+      <div class="flow panel glow">
+        <div class="flow-head"><span class="eyebrow">Transfer · Demo</span><button id="resetFlow" class="flow-reset">Reset</button></div>
+        <div class="flow-amount">250.00 <span>BTC</span> → <span class="cold">Cold Storage</span></div>
+        <div class="flow-steps">
+          <div class="fstep" data-step="1">
+            <div class="fs-role"><span class="fs-n">01</span><span class="fs-r">Trader</span></div>
+            <div class="fs-name">Request</div>
+            <button class="fs-btn" data-act="request">Submit request</button>
+          </div>
+          <div class="fstep locked" data-step="2">
+            <div class="fs-role"><span class="fs-n">02</span><span class="fs-r">Compliance</span></div>
+            <div class="fs-name">Approve</div>
+            <button class="fs-btn" data-act="approve" disabled>Approve</button>
+          </div>
+          <div class="fstep locked" data-step="3">
+            <div class="fs-role"><span class="fs-n">03</span><span class="fs-r">Operations</span></div>
+            <div class="fs-name">Execute</div>
+            <button class="fs-btn" data-act="execute" disabled>Execute</button>
+          </div>
+        </div>
+        <div class="flow-status" id="flowStatus">Awaiting request from Trader.</div>
+      </div>
+
+      <div class="audit panel">
+        <div class="audit-head"><span class="eyebrow">Audit Log</span><span class="audit-imm">immutable</span></div>
+        <ul id="auditLog" class="audit-list"><li class="audit-empty">No events yet. Start the flow.</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="eyebrow">The Model</span><h2 style="font-size:clamp(1.9rem,3.4vw,3rem);">Three layers, no shortcuts.</h2></div></div>
+    <div class="pillars">
+      {PILLARS.map((p, i) => (
+        <div class="pillar panel"><span class="pl-i">{String(i + 1).padStart(2, '0')}</span><h3>{p.k}</h3><p>{p.v}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .flow-grid { display: grid; grid-template-columns: 1.2fr 0.85fr; gap: clamp(20px,4vw,40px); align-items: start; }
+    .flow { padding: clamp(24px,3vw,34px); min-width: 0; }
+    .flow-head { display: flex; justify-content: space-between; align-items: center; }
+    .flow-reset { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--hair); padding: 7px 12px; border-radius: 3px; transition: all 0.25s; }
+    .flow-reset:hover { color: var(--cyan); border-color: var(--hair-cyan); }
+    .flow-amount { font-family: var(--head); font-size: clamp(1.4rem,2.6vw,2rem); color: #fff; margin: 22px 0 26px; }
+    .flow-amount span { color: var(--muted); font-size: 0.7em; }
+    .flow-amount .cold { color: var(--cyan); }
+    .flow-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .fstep { border: 1px solid var(--hair); border-radius: 6px; padding: 18px 14px; display: flex; flex-direction: column; gap: 12px; transition: all 0.35s; position: relative; }
+    .fstep.locked { opacity: 0.45; }
+    .fstep.active { border-color: var(--hair-cyan); box-shadow: inset 0 0 30px -16px rgba(53,241,255,0.5); }
+    .fstep.done { border-color: rgba(68,224,160,0.4); opacity: 1; }
+    .fs-role { display: flex; align-items: center; gap: 8px; }
+    .fs-n { font-family: var(--mono); font-size: 10px; color: var(--cyan); }
+    .fs-r { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .fs-name { font-family: var(--head); font-size: 1.2rem; color: #fff; }
+    .fs-btn { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #040610; background: var(--cyan); padding: 10px; border-radius: 4px; transition: all 0.25s; }
+    .fs-btn:disabled { background: rgba(255,255,255,0.06); color: var(--faint); cursor: not-allowed; }
+    .fstep.done .fs-btn { background: rgba(68,224,160,0.16); color: var(--green); }
+    .flow-status { margin-top: 24px; padding: 13px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--muted); border: 1px dashed var(--hair); border-radius: 4px; }
+    .flow-status.complete { color: #040610; background: var(--green); border-style: solid; border-color: var(--green); }
+
+    .audit { padding: clamp(22px,3vw,30px); }
+    .audit-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .audit-imm { font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--violet); border: 1px solid rgba(167,123,255,0.3); padding: 4px 7px; border-radius: 3px; }
+    .audit-list { list-style: none; display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+    .audit-empty { font-family: var(--mono); font-size: 0.78rem; color: var(--faint); }
+    .audit-item { font-family: var(--mono); font-size: 0.74rem; color: #cdd4de; display: flex; flex-direction: column; gap: 3px; padding-bottom: 10px; border-bottom: 1px solid var(--hair); }
+    .audit-item .ai-t { color: var(--cyan); }
+    .audit-item .ai-a { color: var(--muted); font-size: 0.68rem; }
+
+    .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .pillar { padding: 30px 26px; }
+    .pl-i { font-family: var(--mono); font-size: 11px; color: var(--violet); }
+    .pillar h3 { font-size: 1.25rem; color: #fff; margin-top: 14px; }
+    .pillar p { color: var(--muted); margin-top: 12px; font-size: 0.86rem; line-height: 1.65; }
+
+    @media (max-width: 900px) { .flow-grid { grid-template-columns: 1fr; } .flow-steps { grid-template-columns: 1fr; } .pillars { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const steps = Array.from(document.querySelectorAll<HTMLElement>('.fstep'));
+    const status = document.getElementById('flowStatus')!;
+    const log = document.getElementById('auditLog')!;
+    const order = ['request', 'approve', 'execute'];
+    const roles: Record<string, string> = { request: 'Trader', approve: 'Compliance', execute: 'Operations' };
+    const labels: Record<string, string> = { request: 'Request submitted', approve: 'Approval granted', execute: 'Transfer executed' };
+    let stage = 0;
+    const events: { t: string; a: string }[] = [];
+
+    function paint() {
+      steps.forEach((s, i) => { s.classList.toggle('active', i === stage); s.classList.toggle('locked', i > stage); s.classList.toggle('done', i < stage); const b = s.querySelector('button') as HTMLButtonElement; b.disabled = i !== stage; });
+      if (stage === 0) status.textContent = 'Awaiting request from Trader.';
+      else if (stage === 1) status.textContent = 'Awaiting approval from Compliance.';
+      else if (stage === 2) status.textContent = 'Awaiting execution by Operations.';
+      else { status.textContent = '✓ Transfer complete , three approvals, fully logged.'; status.classList.add('complete'); }
+    }
+    function renderLog() {
+      if (!events.length) { log.innerHTML = '<li class="audit-empty">No events yet. Start the flow.</li>'; return; }
+      log.innerHTML = events.map((e) => `<li class="audit-item"><span class="ai-t">${e.t}</span><span>${e.a}</span></li>`).join('');
+    }
+    steps.forEach((s) => s.querySelector('button')!.addEventListener('click', () => {
+      const act = (s.querySelector('button') as HTMLButtonElement).dataset.act!;
+      if (order[stage] !== act) return;
+      const now = new Date().toLocaleTimeString('en-GB');
+      events.push({ t: now + ' · ' + roles[act], a: labels[act] + ' , 250.00 BTC → Cold Storage' });
+      stage++;
+      paint(); renderLog();
+    }));
+    document.getElementById('resetFlow')?.addEventListener('click', () => { stage = 0; events.length = 0; status.classList.remove('complete'); paint(); renderLog(); });
+    paint(); renderLog();
+  </script>
+</OrbitalLayout>

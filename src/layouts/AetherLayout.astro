@@ -1,0 +1,75 @@
+---
+/**
+ * AetherLayout , shared shell for AETHER CRYSTALWORKS (website12, round 2).
+ * Calm ice-glow backdrop + grain always; a named `bg` slot lets Home inject the interactive
+ * 3D crystal-slider canvas on top. Props: title, description, active.
+ */
+import '../styles/aether-fonts.css';
+import '../styles/aether.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'collection', label: 'Collection', href: '/website12/collection' },
+  { key: 'craft', label: 'Craft', href: '/website12/craft' },
+  { key: 'specs', label: 'Specs', href: '/website12/specs' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <div class="bg-fallback" aria-hidden="true"></div>
+    <slot name="bg" />
+    <div class="grain" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website12" class="brand"><span class="gem"></span>Aether</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website12/commission" class="cta">Commission</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>Aether Crystalworks</h3>
+          <p>Lab-grown optical crystal objects , annealed, cold-cut, and hand-polished for controlled refraction. Each piece is made to hold light. Fictional brand, built for demonstration.</p>
+        </div>
+        <div class="f-col"><h4>Studio</h4><a href="/website12/collection">Collection</a><a href="/website12/craft">Craft</a><a href="/website12/specs">Specs</a><a href="/website12/commission">Commission</a></div>
+        <div class="f-col"><h4>Contact</h4><a href="mailto:studio@aether.example">studio@aether.example</a><a href="/website12/commission">Acquire a piece</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Aether Crystalworks. Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a> · optical K9 · lab-grown</span>
+      </div>
+    </footer>
+
+    <MotionRuntime />
+
+    <script>
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    </script>
+  </body>
+</html>

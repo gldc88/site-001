@@ -1,0 +1,155 @@
+---
+/**
+ * GreenlineLayout , shared shell for GREENLINE TREE SURGERY (website7, round 2).
+ * Persistent WebGL golden-hour canopy scene behind all pages. Props: title, description, active.
+ */
+import '../styles/greenline-fonts.css';
+import '../styles/greenline.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const PHONE_DISPLAY = '07 900 123 456';
+const PHONE_HREF = 'tel:+447900123456';
+const NAV = [
+  { key: 'services', label: 'Services', href: '/website7/services' },
+  { key: 'method', label: 'Method', href: '/website7/method' },
+  { key: 'work', label: 'Our Work', href: '/website7/work' },
+  { key: 'contact', label: 'Contact', href: '/website7/contact' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website7" class="brand"><span class="leaf">❧</span>GREENLINE</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href={PHONE_HREF} class="cta">Call {PHONE_DISPLAY}</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>❧ Greenline Tree Surgery</h3>
+          <p>A local, fully insured tree surgeon , pruning, removals, stump grinding, hedges, and emergency call-outs. Qualified, careful, and tidy. Fictional brand for demonstration.</p>
+          <a href={PHONE_HREF} class="btn-call f-call">Call {PHONE_DISPLAY}</a>
+        </div>
+        <div class="f-col"><h4>Work</h4><a href="/website7/services">Services</a><a href="/website7/method">Our Method</a><a href="/website7/work">Recent Jobs</a><a href="/website7/contact">Get a Quote</a></div>
+        <div class="f-col"><h4>Greenline</h4><a href={PHONE_HREF}>{PHONE_DISPLAY}</a><a href="mailto:hello@greenlinetrees.example">hello@greenlinetrees.example</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} Greenline Tree Surgery. Insured · NPTC / LANTRA qualified · Demonstration only.</span>
+        <span><a href="#top" class="inline-link">Top ↑</a></span>
+      </div>
+    </footer>
+
+    <div class="windtest" id="windtest">
+      <button type="button" class="wt-btn" id="wtBtn" aria-describedby="wtRead">Test the wind , hold</button>
+      <div class="wt-read" id="wtRead" aria-live="off">Bft 0 · calm</div>
+      <div class="wt-note" id="wtNote" aria-live="polite"></div>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "Test the wind" (hold-to-gust) ---- */
+      let sceneSetWind: ((v: number) => void) | null = null;
+      const wtBtn = document.getElementById('wtBtn');
+      const wtRead = document.getElementById('wtRead');
+      const wtNote = document.getElementById('wtNote');
+      const BFT = ['calm', 'light air', 'light breeze', 'gentle breeze', 'moderate', 'fresh breeze', 'strong breeze', 'near gale', 'gale'];
+      let wind = 0, holding = false, windRaf = 0, stormShown = false, lastT = 0;
+      const stormTested = () => { try { return localStorage.getItem('greenline-storm-tested') === '1'; } catch { return false; } };
+      if (stormTested() && wtNote) wtNote.textContent = 'A managed crown lets the storm through.';
+
+      function windLoop(ts?: number) {
+        // tijd-gebaseerd (framerate-onafhankelijk): gale na ~4s vasthouden, uitraas ~2.5s
+        const nowTs = ts ?? performance.now();
+        const dt = lastT ? Math.min(0.1, (nowTs - lastT) / 1000) : 0.016;
+        lastT = nowTs;
+        wind = Math.max(0, Math.min(1, wind + (holding ? 0.24 : -0.4) * dt));
+        sceneSetWind?.(wind);
+        const bft = Math.round(wind * 8);
+        if (wtRead) wtRead.textContent = `Bft ${bft} · ${BFT[bft]}`;
+        if (bft >= 8 && !stormShown) {
+          stormShown = true;
+          try { localStorage.setItem('greenline-storm-tested', '1'); } catch { /* private mode */ }
+          if (wtNote) wtNote.textContent = 'Your crown felt that. A managed crown lets the storm through.';
+        }
+        if (wind > 0 || holding) windRaf = requestAnimationFrame(windLoop);
+        else lastT = 0;
+      }
+      const startHold = () => {
+        if (reduce) {
+          // reduced: geen continue animatie , één statische demonstratie-tekst
+          if (wtRead) wtRead.textContent = 'Bft 8 · gale (simulated)';
+          if (wtNote) wtNote.textContent = 'In a NW gale, an unmanaged crown catches it all. A reduced crown lets it through.';
+          try { localStorage.setItem('greenline-storm-tested', '1'); } catch { /* private mode */ }
+          return;
+        }
+        if (holding) return;
+        holding = true;
+        cancelAnimationFrame(windRaf);
+        lastT = 0;
+        windLoop();
+      };
+      const endHold = () => {
+        holding = false;
+      };
+      wtBtn?.addEventListener('pointerdown', startHold);
+      window.addEventListener('pointerup', endHold, { passive: true });
+      wtBtn?.addEventListener('pointerleave', endHold);
+      wtBtn?.addEventListener('keydown', (e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); startHold(); } });
+      wtBtn?.addEventListener('keyup', (e) => { if (e.key === ' ' || e.key === 'Enter') endHold(); });
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/forest-scene')
+          .then(({ initForestScene }) => {
+            const scene = initForestScene(canvas);
+            sceneSetWind = scene.setWind;
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

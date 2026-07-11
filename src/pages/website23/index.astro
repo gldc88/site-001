@@ -1,0 +1,68 @@
+---
+/**
+ * RIDGELINE ROOFING , Home (website23, round 2). Hero + the interactive roof-section diagnostic, plus
+ * services / roof-type / process teasers.
+ */
+import RidgelineLayout from '../../layouts/RidgelineLayout.astro';
+import RoofDiagnostic from '../../components/ridgeline/RoofDiagnostic.astro';
+import { TAGLINE, SERVICES, ROOF_TYPES, PROCESS, SERVICE_AREA } from '../../data/ridgeline';
+---
+
+<RidgelineLayout title="Ridgeline Roofing , Diagnose. Repair. Seal. Verify." description="Leak diagnostics and full-system roofing. Inspect the roof section, find the failure point, seal it, and verify it stays watertight.">
+  <section class="relative mx-auto max-w-7xl px-6 pt-16 pb-20 grid lg:grid-cols-[1fr_1fr] gap-12 lg:gap-16 items-center">
+    <div>
+      <span class="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-amber-700">Leak diagnostics · {SERVICE_AREA}</span>
+      <h1 class="mt-6 text-5xl lg:text-7xl font-black tracking-tighter leading-[0.92]">Roofs fail at the <span class="text-amber-600">details.</span></h1>
+      <p class="mt-6 max-w-md text-base text-slate-600 leading-relaxed">{TAGLINE} We trace the leak to its entry point, fix the detail that caused it, and verify the assembly holds , not just patch the symptom.</p>
+      <div class="mt-9 flex flex-wrap gap-4">
+        <a href="/website23/contact" class="rounded-sm bg-slate-900 px-7 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors">Request estimate</a>
+        <a href="/website23/services" class="rounded-sm border border-slate-300 px-7 py-4 text-xs font-black uppercase tracking-widest text-slate-900 hover:bg-slate-900 hover:text-white transition-all">See services</a>
+      </div>
+      <p class="mt-6 text-[11px] font-mono uppercase tracking-widest text-slate-400">Try the panel → tap each hotspot, seal it, then run the storm test.</p>
+    </div>
+    <RoofDiagnostic />
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-16 border-t border-stone-200">
+    <div class="flex items-end justify-between mb-10 reveal-on-scroll">
+      <div><span class="text-amber-600 font-bold uppercase tracking-widest text-xs block mb-2">What we handle</span><h2 class="text-3xl md:text-5xl font-black tracking-tight">Repairs & replacement.</h2></div>
+      <a href="/website23/services" class="hidden sm:inline text-xs font-black uppercase tracking-widest hover:text-amber-600">All services →</a>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {SERVICES.slice(0, 6).map((s) => (
+        <a href="/website23/services" class="hover-lift reveal-on-scroll rounded-xl border border-stone-200 bg-white p-7 block">
+          <div class="text-lg font-bold mb-4">{s.title}</div>
+          <ul class="space-y-2.5">{s.bullets.slice(0, 3).map((b) => <li class="flex items-start gap-3 text-sm text-slate-600"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span><span>{b}</span></li>)}</ul>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-16 border-t border-stone-200">
+    <div class="grid lg:grid-cols-[1fr_1.4fr] gap-10 lg:gap-16">
+      <div class="reveal-on-scroll">
+        <span class="text-amber-600 font-bold uppercase tracking-widest text-xs block mb-2">Every roof, its own rules</span>
+        <h2 class="text-3xl md:text-5xl font-black tracking-tight">Roof types.</h2>
+        <p class="mt-5 text-sm text-slate-600 max-w-sm">Tile, shingle, metal, or flat membrane , each fails differently, so each is repaired differently.</p>
+        <a href="/website23/roof-types" class="mt-6 inline-block text-xs font-black uppercase tracking-widest hover:text-amber-600">Compare roof types →</a>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-px bg-stone-200 border border-stone-200 rounded-xl overflow-hidden">
+        {ROOF_TYPES.map((r) => (<div class="bg-white p-6"><div class="text-base font-bold">{r.name}</div><p class="mt-2 text-sm text-slate-600">{r.note}</p></div>))}
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-16 border-t border-stone-200">
+    <div class="mb-10 reveal-on-scroll"><span class="text-amber-600 font-bold uppercase tracking-widest text-xs block mb-2">How we work</span><h2 class="text-3xl md:text-5xl font-black tracking-tight">{TAGLINE}</h2></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      {PROCESS.map((p, i) => (
+        <div class="reveal-on-scroll rounded-xl border border-stone-200 bg-white p-6">
+          <div class="text-2xl font-black text-amber-600">{String(i + 1).padStart(2, '0')}</div>
+          <div class="mt-3 text-base font-bold">{p.step}</div>
+          <p class="mt-2 text-sm text-slate-600">{p.line}</p>
+        </div>
+      ))}
+    </div>
+    <div class="mt-12 flex justify-center"><a href="/website23/contact" class="rounded-sm bg-amber-600 px-10 py-5 text-xs font-black uppercase tracking-widest text-white hover:bg-slate-900 transition-colors">Book an inspection</a></div>
+  </section>
+</RidgelineLayout>

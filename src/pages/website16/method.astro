@@ -1,0 +1,59 @@
+---
+/**
+ * FIELD STUDIO , Method (website16, round 2). The field trail , wind, water, light , long-form, each
+ * block overlays its mood on the live field as you read it.
+ */
+import FieldLayout from '../../layouts/FieldLayout.astro';
+import { TRAIL } from '../../data/field';
+---
+
+<FieldLayout title="Method | Field Studio" description="How Field Studio works , wind, water, and light as a method. Read for direction, design for time, edit with contrast." active="method">
+  <section class="intro">
+    <span class="eyebrow">Method · field trail</span>
+    <h1>Three things a field <em>teaches</em>.</h1>
+    <p>We don't have a process so much as a trail we follow every time , wind, then water, then light. Read each below; the field behind the page takes on its mood as you go.</p>
+  </section>
+
+  <section class="sec">
+    <div class="trail-long">
+      {TRAIL.map((t, i) => (
+        <article class="tl-block" data-flow={t.type} tabindex="0">
+          <span class="tl-n">{String(i + 1).padStart(2, '0')}</span>
+          <div class="tl-body">
+            <h2>{t.title}</h2>
+            <p class="tl-line">{t.line}</p>
+            <p class="tl-long">{t.long}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec tight">
+    <div class="method-cta card">
+      <span class="eyebrow">The standard</span>
+      <h2>Less shown. More meant.</h2>
+      <p>Everything we build holds to the same line a field at dusk holds: show less, mean more. If a thing needs explaining twice, we have not finished reading it yet.</p>
+      <div class="mc-actions"><a href="/website16/archive" class="btn-line">See the archive</a><a href="/website16/intake" class="btn">Start an intake</a></div>
+    </div>
+  </section>
+
+  <style>
+    .trail-long { display: flex; flex-direction: column; }
+    .tl-block { display: grid; grid-template-columns: 120px 1fr; gap: clamp(20px,4vw,48px); padding: 44px 0; border-top: 1px solid var(--line); align-items: start; transition: border-color 0.3s; outline: none; cursor: default; }
+    .tl-block:last-child { border-bottom: 1px solid var(--line); }
+    .tl-block:hover, .tl-block:focus { border-color: var(--accent); }
+    .tl-n { font-family: var(--mono); font-size: 13px; letter-spacing: 0.14em; color: var(--accent); padding-top: 14px; transition: color 0.6s ease; }
+    .tl-body h2 { font-size: clamp(2.2rem,4.6vw,3.6rem); color: #fff; }
+    .tl-line { font-family: var(--serif); font-style: italic; font-size: clamp(1.2rem,2vw,1.6rem); color: var(--accent); margin: 14px 0 18px; transition: color 0.6s ease; }
+    .tl-long { color: var(--muted); line-height: 1.85; max-width: 64ch; font-size: 1.05rem; }
+
+    .method-cta { padding: clamp(30px,4vw,46px); max-width: 760px; }
+    .method-cta .eyebrow { margin-bottom: 16px; }
+    .method-cta h2 { font-size: clamp(2rem,3.8vw,3rem); color: #fff; }
+    .method-cta p { color: var(--muted); margin: 16px 0 24px; line-height: 1.8; max-width: 56ch; }
+    .mc-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    @media (max-width: 860px) { .tl-block { grid-template-columns: 1fr; gap: 8px; } }
+  </style>
+</FieldLayout>

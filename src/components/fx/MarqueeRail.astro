@@ -1,0 +1,39 @@
+---
+interface Props {
+  items: string[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+const repeatedItems = [...items, ...items];
+---
+
+<div class:list={['factory-marquee overflow-hidden border-y border-white/10 py-4', className]}>
+  <div class="factory-marquee__track flex w-max gap-8">
+    {
+      repeatedItems.map((item) => (
+        <span class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">{item}</span>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .factory-marquee__track {
+    animation: factory-marquee 26s linear infinite;
+  }
+
+  @keyframes factory-marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .factory-marquee__track {
+      animation: none;
+      flex-wrap: wrap;
+      width: auto;
+    }
+  }
+</style>

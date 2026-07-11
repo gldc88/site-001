@@ -1,0 +1,31 @@
+---
+/**
+ * RIDGELINE ROOFING , Process (website23, round 2). The five steps, Inspect -> Verify.
+ */
+import RidgelineLayout from '../../layouts/RidgelineLayout.astro';
+import { PROCESS, TAGLINE } from '../../data/ridgeline';
+---
+
+<RidgelineLayout title="Process | Ridgeline Roofing" description="How Ridgeline works: inspect, diagnose, scope, execute, verify , details first." active="process">
+  <section class="mx-auto max-w-7xl px-6 pt-16 pb-12">
+    <span class="text-amber-600 font-bold uppercase tracking-widest text-xs block mb-3">How we work</span>
+    <h1 class="text-5xl lg:text-7xl font-black tracking-tighter leading-[0.92]">{TAGLINE}</h1>
+    <p class="mt-6 max-w-lg text-base text-slate-600">No guesswork, no blind patching. We find the failure point, write down the scope, fix the detail first, and verify the result.</p>
+  </section>
+
+  <section class="mx-auto max-w-4xl px-6 pb-20">
+    <ol class="relative border-l-2 border-stone-200 ml-4">
+      {PROCESS.map((p, i) => (
+        <li class="relative pl-10 pb-12 last:pb-0 reveal-on-scroll">
+          <span class="absolute -left-[17px] grid h-8 w-8 place-items-center rounded-full bg-slate-900 text-amber-400 text-xs font-black">{String(i + 1).padStart(2, '0')}</span>
+          <h2 class="text-2xl font-black tracking-tight">{p.step}</h2>
+          <p class="mt-2 text-slate-600 max-w-xl">{p.line}</p>
+        </li>
+      ))}
+    </ol>
+    <div class="mt-8 rounded-2xl border border-stone-200 bg-white p-8 flex flex-col sm:flex-row items-center justify-between gap-5">
+      <p class="text-sm text-slate-600 max-w-md">Want to see the inspect-and-seal logic for yourself? The home page has an interactive roof-section diagnostic.</p>
+      <div class="flex gap-4 shrink-0"><a href="/website23" class="rounded-sm border border-slate-300 px-6 py-3.5 text-xs font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all">Diagnostic</a><a href="/website23/contact" class="rounded-sm bg-amber-600 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-white hover:bg-amber-500 transition-colors">Book inspection</a></div>
+    </div>
+  </section>
+</RidgelineLayout>

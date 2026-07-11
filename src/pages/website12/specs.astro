@@ -1,0 +1,74 @@
+---
+/**
+ * AETHER CRYSTALWORKS , Specs (website12, round 2). The technical spec sheet.
+ */
+import AetherLayout from '../../layouts/AetherLayout.astro';
+
+const SPEC = [
+  { k: 'Material', v: 'Optical K9 glass' },
+  { k: 'Refractive index', v: '1.5168 nd' },
+  { k: 'Clarity', v: 'VVS1 standard' },
+  { k: 'Cut', v: 'Brilliant facet · cold-cut' },
+  { k: 'Origin', v: 'Lab-grown blank' },
+  { k: 'Finish', v: 'Hand-polished to vanishing edges' },
+  { k: 'Dimensions', v: '100 – 180 mm, by series' },
+  { k: 'Weight', v: '0.9 – 2.4 kg' },
+  { k: 'Base', v: 'Optional blackened-steel plinth' },
+  { k: 'Care', v: 'Microfibre only · no solvents' },
+  { k: 'Packaging', v: 'Foam-cradled · numbered' },
+  { k: 'Lead time', v: '4 – 6 weeks · made to order' },
+];
+---
+
+<AetherLayout title="Specs | Aether Crystalworks" description="The full specification for Aether optical crystal objects , material, refractive index, clarity, finish, and care." active="specs">
+  <section class="page-hero" style="min-height:54svh;">
+    <div class="page-hero-media"><img src="/website12/crystals.jpg" alt="Macro of sharp optical crystals" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Specification</span>
+      <h1>Optical, not <em>ornamental</em>.</h1>
+      <p class="sub">No marketing in the numbers. This is exactly what each piece is made of, made to, and how to keep it.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="spec-grid">
+      <div class="spec-sheet panel">
+        <div class="ss-bar"><span class="overline">Spec sheet</span><span class="ss-id">AE · K9</span></div>
+        <div class="ss-rows">
+          {SPEC.map((s) => (<div class="ss-row"><span class="ss-k">{s.k}</span><span class="ss-v">{s.v}</span></div>))}
+        </div>
+      </div>
+      <aside class="spec-aside">
+        <div class="sa-card panel lit">
+          <h3>Held to one index.</h3>
+          <p>Because every blank is grown to the same refractive index, two pieces of a series behave identically in the same light. Predictable optics , that's the whole point of optical glass.</p>
+        </div>
+        <div class="sa-card panel">
+          <h3>Care, briefly.</h3>
+          <p>A dry microfibre cloth and nothing else. No glass cleaner, no solvents , the polish is a physical surface, not a coating, and it lasts as long as you treat it gently.</p>
+        </div>
+        <a href="/website12/commission" class="btn-cta" style="text-align:center;">Commission a piece</a>
+      </aside>
+    </div>
+  </section>
+
+  <style>
+    .spec-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: clamp(20px,3vw,36px); align-items: start; }
+    .spec-sheet { overflow: hidden; }
+    .ss-bar { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid var(--hair-soft); }
+    .ss-id { font-family: var(--mono); font-size: 11px; color: var(--ice); letter-spacing: 0.1em; }
+    .ss-rows { padding: 6px 24px 12px; }
+    .ss-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 15px 0; border-bottom: 1px solid var(--hair-soft); }
+    .ss-row:last-child { border-bottom: none; }
+    .ss-k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .ss-v { font-family: var(--serif); font-size: 1.25rem; color: #fff; text-align: right; }
+
+    .spec-aside { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .sa-card { padding: clamp(24px,3vw,30px); }
+    .sa-card h3 { font-size: 1.6rem; color: var(--ice-soft); }
+    .sa-card p { color: var(--muted); margin-top: 12px; line-height: 1.65; font-size: 0.95rem; }
+
+    @media (max-width: 860px) { .spec-grid { grid-template-columns: 1fr; } .spec-aside { position: static; } }
+  </style>
+</AetherLayout>

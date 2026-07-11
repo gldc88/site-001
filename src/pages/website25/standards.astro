@@ -1,0 +1,155 @@
+---
+/**
+ * GROUNDSPEC , Standards (website25, round 2). How paving and fencing are actually built to last.
+ */
+import GroundspecLayout from '../../layouts/GroundspecLayout.astro';
+import { PAVING_STD, FENCING_STD } from '../../data/groundspec';
+---
+
+<GroundspecLayout title="Standards | Groundspec" description="The build standards behind every Groundspec job , base and drainage, edge restraint, footings, and straight lines." active="standards">
+  <section class="py-16 px-6 mx-auto max-w-7xl">
+    <span class="text-xs font-black text-yellow-500 uppercase tracking-[0.3em]">/ Standards</span>
+    <h1 class="mt-4 text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.85]">Built square.</h1>
+    <p class="mt-6 text-zinc-400 text-lg md:text-xl max-w-2xl font-light leading-relaxed">The difference between paving that lasts and paving that dips is all under the surface. Here is what we do that you do not see.</p>
+  </section>
+
+  <section class="pb-28 px-6">
+    <div class="mx-auto max-w-7xl grid md:grid-cols-2 gap-20">
+      <div>
+        <h2 class="text-3xl font-black text-white uppercase mb-12 flex items-center gap-6"><span class="w-16 h-1.5 bg-yellow-500"></span> Paving standards</h2>
+        <ul class="space-y-14">
+          {PAVING_STD.map((s) => (
+            <li class="flex gap-8 group reveal-on-scroll"><span class="text-yellow-500 font-black text-3xl opacity-60 group-hover:opacity-100 transition-opacity">{s.n}</span><div><strong class="block text-white uppercase text-xl tracking-tight group-hover:text-yellow-500 transition-colors">{s.t}</strong><p class="text-base text-zinc-400 leading-relaxed font-light mt-2 max-w-md">{s.d}</p></div></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-3xl font-black text-white uppercase mb-12 flex items-center gap-6"><span class="w-16 h-1.5 bg-emerald-500"></span> Fencing standards</h2>
+        <ul class="space-y-14">
+          {FENCING_STD.map((s) => (
+            <li class="flex gap-8 group reveal-on-scroll"><span class="text-emerald-500 font-black text-3xl opacity-60 group-hover:opacity-100 transition-opacity">{s.n}</span><div><strong class="block text-white uppercase text-xl tracking-tight group-hover:text-emerald-500 transition-colors">{s.t}</strong><p class="text-base text-zinc-400 leading-relaxed font-light mt-2 max-w-md">{s.d}</p></div></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <div class="mx-auto max-w-7xl mt-20 flex flex-wrap justify-center gap-5">
+      <a href="/website25/estimator" class="border border-white/15 text-white px-9 py-4 text-sm font-black uppercase tracking-[0.15em] hover:border-yellow-500 hover:text-yellow-500 transition-all">Size your job</a>
+      <a href="/website25/quote" class="bg-yellow-500 text-black px-9 py-4 text-sm font-black uppercase tracking-[0.15em] hover:bg-white transition-colors">Get a quote</a>
+    </div>
+  </section>
+
+  <section class="section" id="digprofile">
+    <div class="dp-head">
+      <span class="kicker">The Dig Profile</span>
+      <h2>Your ground decides the build-up.</h2>
+      <p>Pick the soil under your garden and watch the section redraw itself , every layer,
+        every depth. Paving fails from below, never from above.</p>
+    </div>
+    <div class="dp-stage">
+      <div class="dp-soils" role="radiogroup" aria-label="Choose your soil type">
+        <button type="button" class="dp-soil" data-soil="sand" role="radio" aria-checked="false">Sand</button>
+        <button type="button" class="dp-soil" data-soil="clay" role="radio" aria-checked="false">Clay</button>
+        <button type="button" class="dp-soil" data-soil="peat" role="radio" aria-checked="false">Peat</button>
+        <button type="button" class="dp-soil" data-soil="mixed" role="radio" aria-checked="false">Mixed / unknown</button>
+      </div>
+      <div class="dp-section-wrap">
+        <svg viewBox="0 0 460 240" class="dp-svg" aria-hidden="true">
+          <g id="dpLayers"></g>
+          <g id="dpLabels"></g>
+        </svg>
+        <p class="dp-note" id="dpNote" aria-live="polite">The section is waiting for its soil.</p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #digprofile .dp-head { max-width: 640px; margin-bottom: 24px; }
+    #digprofile h2 { margin: 10px 0 12px; }
+    .dp-stage { display: grid; grid-template-columns: auto 1fr; gap: clamp(22px,4vw,48px); align-items: start; border: 1px solid rgba(230, 210, 60, 0.2); border-radius: 6px; padding: clamp(20px,3vw,34px); background: rgba(12, 14, 10, 0.6); }
+    .dp-soils { display: flex; flex-direction: column; gap: 8px; min-width: 170px; }
+    .dp-soil { font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.08em; text-align: left; padding: 10px 14px; border: 1px solid rgba(230, 210, 60, 0.3); border-radius: 4px; background: rgba(230, 210, 60, 0.05); color: rgba(235, 235, 210, 0.85); cursor: pointer; transition: background .3s, border-color .3s; }
+    .dp-soil[aria-checked='true'] { background: rgba(230, 210, 60, 0.18); border-color: rgba(230, 210, 60, 0.7); }
+    .dp-soil:focus-visible { outline: 1px solid rgba(230, 210, 60, 0.9); outline-offset: 2px; }
+    .dp-svg { width: 100%; height: auto; display: block; }
+    .dp-svg rect { transition: y 0.6s ease, height 0.6s ease, opacity 0.6s ease; }
+    @media (prefers-reduced-motion: reduce) { .dp-svg rect { transition: none; } }
+    .dp-note { font-family: ui-monospace, monospace; font-size: 11.5px; line-height: 1.6; margin-top: 12px; color: rgba(235, 235, 210, 0.85); min-height: 32px; }
+    .dp-note.warn { color: #e0963c; }
+    @media (max-width: 720px) { .dp-stage { grid-template-columns: 1fr; } .dp-soils { flex-direction: row; flex-wrap: wrap; } }
+  </style>
+
+  <script>
+    /* R3 "The Dig Profile" , grondsoort bepaalt de opbouw. */
+    (() => {
+      type Layer = { name: string; mm: number; fill: string };
+      const PROFILES: Record<string, { layers: Layer[]; note: string; warn?: boolean }> = {
+        sand: {
+          layers: [
+            { name: 'Paving 80mm', mm: 80, fill: 'rgba(200, 200, 190, 0.85)' },
+            { name: 'Bedding sand 50mm', mm: 50, fill: 'rgba(225, 205, 130, 0.8)' },
+            { name: 'Crushed base 150mm', mm: 150, fill: 'rgba(150, 145, 130, 0.8)' },
+          ],
+          note: 'Sand drains itself. 150mm of compacted base and it will not move for decades.',
+        },
+        clay: {
+          layers: [
+            { name: 'Paving 80mm', mm: 80, fill: 'rgba(200, 200, 190, 0.85)' },
+            { name: 'Bedding sand 50mm', mm: 50, fill: 'rgba(225, 205, 130, 0.8)' },
+            { name: 'Crushed base 250mm', mm: 250, fill: 'rgba(150, 145, 130, 0.8)' },
+            { name: 'Geotextile', mm: 18, fill: 'rgba(90, 190, 220, 0.75)' },
+          ],
+          note: 'Clay holds water and heaves. Deeper base on a separation layer, or the frost will write its own pattern in your paving.',
+        },
+        peat: {
+          layers: [
+            { name: 'Paving 80mm', mm: 80, fill: 'rgba(200, 200, 190, 0.85)' },
+            { name: 'Bedding sand 50mm', mm: 50, fill: 'rgba(225, 205, 130, 0.8)' },
+            { name: 'Bound base 300mm', mm: 300, fill: 'rgba(120, 120, 135, 0.85)' },
+            { name: 'Geogrid + geotextile', mm: 24, fill: 'rgba(90, 190, 220, 0.75)' },
+          ],
+          note: 'Peat settles , always. We build 300mm of bound foundation on geogrid, or we do not lay. That is the standard.',
+          warn: true,
+        },
+        mixed: {
+          layers: [
+            { name: 'Paving 80mm', mm: 80, fill: 'rgba(200, 200, 190, 0.85)' },
+            { name: 'Bedding sand 50mm', mm: 50, fill: 'rgba(225, 205, 130, 0.8)' },
+            { name: 'Crushed base 200mm', mm: 200, fill: 'rgba(150, 145, 130, 0.8)' },
+            { name: 'Geotextile', mm: 18, fill: 'rgba(90, 190, 220, 0.75)' },
+          ],
+          note: 'Unknown ground gets a probe dig first , then the section above, sized to what we find.',
+        },
+      };
+      const layersG = document.getElementById('dpLayers');
+      const labelsG = document.getElementById('dpLabels');
+      const note = document.getElementById('dpNote');
+      const soils = Array.from(document.querySelectorAll<HTMLButtonElement>('.dp-soil'));
+      if (!layersG || !labelsG || !note || !soils.length) return;
+      const KEY = 'groundspec-soil';
+
+      const apply = (soil: string) => {
+        const prof = PROFILES[soil];
+        if (!prof) return;
+        soils.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.soil === soil)));
+        const total = prof.layers.reduce((a, l) => a + l.mm, 0);
+        const scale = 190 / Math.max(total, 400);
+        let y = 20;
+        let rects = '';
+        let labels = '';
+        prof.layers.forEach((l) => {
+          const h = Math.max(8, l.mm * scale);
+          rects += `<rect x="30" y="${y.toFixed(1)}" width="270" height="${h.toFixed(1)}" fill="${l.fill}" stroke="rgba(10,12,8,0.6)" />`;
+          labels += `<text x="312" y="${(y + h / 2 + 4).toFixed(1)}" font-family="monospace" font-size="11" fill="rgba(235,235,210,0.85)">${l.name}</text>`;
+          y += h;
+        });
+        layersG.innerHTML = rects;
+        labelsG.innerHTML = labels;
+        note.textContent = prof.note;
+        note.classList.toggle('warn', !!prof.warn);
+        try { localStorage.setItem(KEY, soil); } catch { /* private mode */ }
+      };
+      soils.forEach((b) => b.addEventListener('click', () => apply(b.dataset.soil || 'mixed')));
+      try { const saved = localStorage.getItem(KEY); if (saved) apply(saved); } catch { /* private mode */ }
+    })();
+  </script>
+</GroundspecLayout>

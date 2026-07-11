@@ -1,0 +1,165 @@
+---
+/**
+ * ORBITAL CRYPTO , Home (website6, round 2 multi-page).
+ * Orbital WebGL hero, live mock ticker, teasers to Products / Security / Platform / Access.
+ */
+import OrbitalLayout from '../../layouts/OrbitalLayout.astro';
+
+const TICKER = [
+  { sym: 'BTC', px: 68420, dp: 1.24 },
+  { sym: 'ETH', px: 3585, dp: -0.42 },
+  { sym: 'SOL', px: 172.4, dp: 2.81 },
+  { sym: 'USDC', px: 1.0, dp: 0.01 },
+];
+const CAPS = [
+  { k: 'OTC Trading Desk', v: 'RFQ execution for BTC, ETH, and majors , transparent spreads, timestamped quotes.' },
+  { k: 'Smart Order Routing', v: 'Splits orders across venues to cut slippage and avoid market impact.' },
+  { k: 'Custody + Settlement', v: 'Controlled settlement with policy checks, whitelists, and step confirmations.' },
+  { k: 'Treasury Operations', v: 'Role-based approvals, velocity limits, scheduled transfers for corporate treasury.' },
+  { k: 'Reporting + Exports', v: 'Balances, fills, fees, transfers , exportable for accounting and audit.' },
+  { k: 'API + FIX Access', v: 'Programmatic trading and reporting endpoints for funds and desks.' },
+];
+const SEC = [
+  { k: 'MPC Key Management', v: 'Distributed signing with enforced policy before any high-value movement.' },
+  { k: 'Role-Based Controls', v: 'Separate request, approve, and execute , no single operator moves funds.' },
+  { k: 'Auditable Events', v: 'Immutable action history for orders and transfers, built for review.' },
+];
+---
+
+<OrbitalLayout title="ORBITAL CRYPTO | OTC, Custody, Treasury" description="Orbital Crypto , an institutional crypto platform concept. OTC execution, custody controls, treasury approvals, and audit-ready reporting.">
+  <header class="hero" id="hero">
+    <span class="eyebrow c" id="heroEye">OTC · Custody · Treasury · Reporting</span>
+    <h1 class="hero-title" id="heroTitle">Move size,<br /><em>quietly.</em></h1>
+    <p class="hero-tag" id="heroTag">An institutional desk for digital assets , RFQ execution, controlled custody, and treasury approvals, on one audited platform.</p>
+    <div class="hero-actions" id="heroActions">
+      <a href="/website6/access" class="btn-cta">Get access</a>
+      <a href="/website6/platform" class="btn-ghost">See the platform</a>
+    </div>
+  </header>
+
+  <div class="ticker-wrap" id="ticker">
+    <div class="ticker panel glow">
+      {TICKER.map((t) => (
+        <div class="tk" data-sym={t.sym} data-px={String(t.px)}>
+          <span class="tk-sym">{t.sym}</span>
+          <span class="tk-px">,</span>
+          <span class="tk-dp">,</span>
+        </div>
+      ))}
+      <div class="tk tk-live"><span class="dot"></span><span class="tk-sym" style="color:var(--muted);">desk live</span></div>
+    </div>
+  </div>
+
+  <section class="section" id="caps">
+    <div class="sec-head">
+      <div><span class="eyebrow" data-reveal="fade">Products</span><h2 data-reveal="up">One platform, full stack.</h2></div>
+      <p data-reveal="up">Execution, custody, treasury, and reporting , built to work together. <a class="inline-link" href="/website6/products">All products →</a></p>
+    </div>
+    <div class="cap-grid">
+      {CAPS.map((c, i) => (
+        <a href="/website6/products" class="cap panel" data-reveal="up">
+          <span class="cap-i">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{c.k}</h3><p>{c.v}</p>
+          <span class="cap-arw">→</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight" id="sec">
+    <div class="sec-head">
+      <div><span class="eyebrow violet" data-reveal="fade">Security</span><h2 data-reveal="up">No single point of trust.</h2></div>
+      <p data-reveal="up">Controls that assume mistakes and adversaries. <a class="inline-link" href="/website6/security">The security model →</a></p>
+    </div>
+    <div class="sec-row">
+      {SEC.map((s) => (
+        <div class="sec-card panel" data-reveal="up"><h3>{s.k}</h3><p>{s.v}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section access-cta" id="cta">
+    <span class="eyebrow c" data-reveal="fade" style="display:flex;justify-content:center;">Get Access</span>
+    <h2 data-reveal="up">Built for desks, funds, and treasuries.</h2>
+    <p data-reveal="up">Access is granted to verified institutions. Tell us about your desk and we set up a controlled walkthrough.</p>
+    <a href="/website6/access" class="btn-cta" data-reveal="up" style="margin-top:32px;">Request access</a>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; }
+    .hero .eyebrow { opacity: 0; transform: translateY(8px); }
+    .hero-title { font-size: clamp(3rem, 9.5vw, 8.5rem); letter-spacing: -0.03em; line-height: 0.98; color: #f3f6fb; margin: 22px 0; }
+    .hero-title em { color: var(--cyan); font-style: normal; text-shadow: 0 0 60px rgba(53,241,255,0.4); }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-tag { font-size: clamp(0.95rem, 1.7vw, 1.25rem); color: var(--muted); max-width: 50ch; opacity: 0; line-height: 1.6; }
+    .hero-actions { margin-top: 38px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; opacity: 0; }
+
+    .ticker-wrap { position: relative; z-index: 20; display: flex; justify-content: center; padding: 0 18px; margin-top: -30px; }
+    .ticker { width: 100%; max-width: 960px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 30px; padding: 18px clamp(20px,3vw,34px); justify-content: space-between; }
+    .tk { display: flex; align-items: baseline; gap: 10px; font-family: var(--mono); }
+    .tk-sym { font-size: 12px; letter-spacing: 0.06em; color: #fff; font-weight: 500; }
+    .tk-px { font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .tk-dp { font-size: 11px; font-variant-numeric: tabular-nums; }
+    .tk-dp.up { color: var(--green); } .tk-dp.down { color: #ff7a9c; }
+    .tk-live { gap: 8px; } .tk-live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2s ease-in-out infinite; }
+
+    .cap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .cap { position: relative; padding: 30px 26px; overflow: hidden; transition: border-color 0.35s, transform 0.35s; min-height: 180px; }
+    .cap:hover { border-color: var(--hair-cyan); transform: translateY(-4px); }
+    .cap-i { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 0.14em; }
+    .cap h3 { font-size: 1.3rem; color: #fff; margin-top: 14px; }
+    .cap p { color: var(--muted); margin-top: 12px; font-size: 0.86rem; line-height: 1.6; }
+    .cap-arw { position: absolute; bottom: 22px; right: 24px; color: var(--cyan); opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+    .cap:hover .cap-arw { opacity: 1; transform: translateX(4px); }
+
+    .sec-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .sec-card { padding: 30px 26px; transition: border-color 0.35s; }
+    .sec-card:hover { border-color: rgba(167,123,255,0.3); }
+    .sec-card h3 { font-size: 1.2rem; color: #fff; }
+    .sec-card p { color: var(--muted); margin-top: 12px; font-size: 0.86rem; line-height: 1.6; }
+
+    .access-cta { text-align: center; }
+    .access-cta h2 { font-size: clamp(2rem, 4.4vw, 3.8rem); color: #fff; margin-top: 18px; }
+    .access-cta p { color: var(--muted); margin-top: 18px; max-width: 52ch; margin-inline: auto; }
+
+    @media (max-width: 900px) { .cap-grid, .sec-row { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .hero .eyebrow, .hero-tag, .hero-actions { opacity: 1 !important; transform: none !important; } .tk-live .dot { animation: none; } }
+  </style>
+
+  <script>
+    import { gsap, ScrollTrigger, SplitText } from '../../lib/motion/gsap-plus';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const heroTitle = document.getElementById('heroTitle');
+    const heroEye = document.getElementById('heroEye');
+    const heroTag = document.getElementById('heroTag');
+    const heroActions = document.getElementById('heroActions');
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'words,chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (heroEye) tl.to(heroEye, { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 130, opacity: 0, stagger: 0.04, duration: 1 }, 0.1);
+      if (heroTag) tl.to(heroTag, { opacity: 1, duration: 0.8 }, 0.6);
+      if (heroActions) tl.to(heroActions, { opacity: 1, duration: 0.8 }, 0.8);
+    } else {
+      [heroEye, heroTag, heroActions].forEach((el) => el && (el.style.opacity = '1'));
+    }
+    ScrollTrigger.refresh();
+
+    /* live mock ticker */
+    const tks = Array.from(document.querySelectorAll<HTMLElement>('.tk[data-sym]'));
+    const state = tks.map((el) => ({ el, px: Number(el.dataset.px), base: Number(el.dataset.px) }));
+    const fmt = (n: number) => n >= 100 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toFixed(n >= 1 ? 1 : 4);
+    function tick() {
+      state.forEach((s) => {
+        s.px = s.px * (1 + (Math.random() - 0.5) * 0.004);
+        const dp = ((s.px - s.base) / s.base) * 100;
+        const pxEl = s.el.querySelector('.tk-px')!; const dpEl = s.el.querySelector('.tk-dp')!;
+        pxEl.textContent = '$' + fmt(s.px);
+        dpEl.textContent = (dp >= 0 ? '+' : '') + dp.toFixed(2) + '%';
+        dpEl.className = 'tk-dp ' + (dp >= 0 ? 'up' : 'down');
+      });
+    }
+    tick();
+    if (!reduce) setInterval(tick, 1400);
+  </script>
+</OrbitalLayout>

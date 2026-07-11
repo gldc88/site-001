@@ -1,0 +1,138 @@
+---
+/**
+ * AURELIA SKYPORT , Dispatch (website4, round 2). Signature: a flight-request builder with a live
+ * ticket summary + a generated dispatch reference + toast.
+ */
+import AureliaLayout from '../../layouts/AureliaLayout.astro';
+
+const AIRCRAFT = [
+  { v: 'light', label: 'Light jet · up to 6', range: '~3.0 hr legs' },
+  { v: 'mid', label: 'Midsize · up to 8', range: '~4.5 hr legs' },
+  { v: 'heavy', label: 'Heavy · up to 14', range: 'transcontinental' },
+];
+---
+
+<AureliaLayout title="Dispatch | AURELIA SKYPORT" description="Request a flight from Aurelia Skyport. Tell us where and when; the flight desk files the rest." active="">
+  <section class="page-hero" style="min-height:52svh;">
+    <div class="page-hero-media"><img src="/website4/jet.jpg" alt="Aircraft on the apron at dusk" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Dispatch</span>
+      <h1>Tell us where, and <em>when</em>.</h1>
+      <p class="sub">One message to the 24/7 flight desk. We file the slot, brief the crew, set the catering, and put a car at both ends. You get a reference and a single name to call.</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="dispatch-grid">
+      <form id="flightForm" class="d-form panel ticked" novalidate>
+        <div class="df-row">
+          <div class="fld"><label for="from">From</label><input id="from" name="from" type="text" placeholder="City or code" autocomplete="off" /><span class="err" data-err="from"></span></div>
+          <div class="fld"><label for="to">To</label><input id="to" name="to" type="text" placeholder="City or code" autocomplete="off" /><span class="err" data-err="to"></span></div>
+        </div>
+        <div class="df-row">
+          <div class="fld"><label for="ddate">Date</label><input id="ddate" name="date" type="date" /><span class="err" data-err="date"></span></div>
+          <div class="fld"><label for="dwin">Window</label><select id="dwin" name="window"><option>Morning</option><option selected>Midday</option><option>Evening</option><option>Flexible</option></select></div>
+        </div>
+        <div class="df-row">
+          <div class="fld"><label for="pax">Passengers</label><select id="pax" name="pax"><option>1</option><option selected>2</option><option>4</option><option>6</option><option>8</option><option>10+</option></select></div>
+          <div class="fld"><label for="craft">Aircraft</label><select id="craft" name="craft">{AIRCRAFT.map((a) => <option value={a.v}>{a.label}</option>)}</select></div>
+        </div>
+        <div class="df-row">
+          <div class="fld"><label for="dname">Name</label><input id="dname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="demail">Email</label><input id="demail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">File the request</button>
+      </form>
+
+      <aside class="ticket panel ticked">
+        <div class="tk-top"><span class="overline">Flight Ticket</span><span id="tkRef" class="tk-ref">, , , ,</span></div>
+        <div class="tk-route">
+          <div class="tk-port"><span id="tkFrom">···</span><small>FROM</small></div>
+          <div class="tk-arc" aria-hidden="true"><span class="tk-plane">✈</span></div>
+          <div class="tk-port"><span id="tkTo">···</span><small>TO</small></div>
+        </div>
+        <div class="tk-line"><span>Date</span><b id="tkDate">,</b></div>
+        <div class="tk-line"><span>Window</span><b id="tkWin">Midday</b></div>
+        <div class="tk-line"><span>Passengers</span><b id="tkPax">2</b></div>
+        <div class="tk-line"><span>Aircraft</span><b id="tkCraft">Midsize</b></div>
+        <div class="tk-status" id="tkStatus">Awaiting details</div>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .dispatch-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .d-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .df-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .ticket { position: sticky; top: 96px; padding: clamp(24px,3vw,34px); }
+    .tk-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .tk-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; color: var(--gold); }
+    .tk-route { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; margin: 26px 0; }
+    .tk-port { display: flex; flex-direction: column; gap: 6px; }
+    .tk-port span { font-family: var(--head); font-size: clamp(1.6rem,3vw,2.4rem); color: #fff; text-transform: uppercase; word-break: break-word; }
+    .tk-port small { font-family: var(--mono); font-size: 8px; letter-spacing: 0.2em; color: var(--muted); }
+    .tk-port:last-child { text-align: right; }
+    .tk-arc { position: relative; width: clamp(40px,8vw,90px); height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .tk-plane { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--champagne); font-size: 14px; }
+    .tk-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--hair-soft); }
+    .tk-line span { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .tk-line b { font-family: var(--head); font-size: 1.1rem; font-weight: 400; color: #fff; }
+    .tk-status { margin-top: 20px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--hair-soft); }
+    .ticket.filed { border-color: var(--gold); }
+    .ticket.filed .tk-status { color: #040406; background: var(--gold); border-style: solid; border-color: var(--gold); }
+    @media (max-width: 900px) { .dispatch-grid { grid-template-columns: 1fr; } .ticket { position: static; } }
+    @media (max-width: 560px) { .df-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    const form = document.getElementById('flightForm') as HTMLFormElement;
+    const from = document.getElementById('from') as HTMLInputElement;
+    const to = document.getElementById('to') as HTMLInputElement;
+    const ddate = document.getElementById('ddate') as HTMLInputElement;
+    const dwin = document.getElementById('dwin') as HTMLSelectElement;
+    const pax = document.getElementById('pax') as HTMLSelectElement;
+    const craft = document.getElementById('craft') as HTMLSelectElement;
+    const tk = { from: document.getElementById('tkFrom')!, to: document.getElementById('tkTo')!, date: document.getElementById('tkDate')!, win: document.getElementById('tkWin')!, pax: document.getElementById('tkPax')!, craft: document.getElementById('tkCraft')!, status: document.getElementById('tkStatus')!, ref: document.getElementById('tkRef')! };
+    const card = document.querySelector<HTMLElement>('.ticket');
+
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    ddate.min = iso(new Date());
+
+    function update() {
+      tk.from.textContent = from.value.trim().slice(0, 14) || '···';
+      tk.to.textContent = to.value.trim().slice(0, 14) || '···';
+      tk.date.textContent = ddate.value ? new Date(ddate.value + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ',';
+      tk.win.textContent = dwin.value;
+      tk.pax.textContent = pax.value;
+      tk.craft.textContent = craft.selectedOptions[0].textContent!.split(' · ')[0];
+    }
+    [from, to, ddate, dwin, pax, craft].forEach((el) => el.addEventListener('input', update));
+    update();
+
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    const showToast = (m: string) => { if (!toast) return; toast.textContent = m; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6500); };
+    const setErr = (n: string, m: string) => { const e = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (e) e.textContent = m; if (i) i.style.borderColor = m ? '#e8927a' : ''; };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('dname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('demail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (from.value.trim().length < 2) { setErr('from', 'Origin.'); ok = false; } else setErr('from', '');
+      if (to.value.trim().length < 2) { setErr('to', 'Destination.'); ok = false; } else setErr('to', '');
+      if (!ddate.value) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'AUR-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      tk.ref.textContent = ref;
+      tk.status.textContent = 'Filed · ' + ref;
+      card?.classList.add('filed');
+      showToast(`Filed, ${name.split(' ')[0]}. ${tk.from.textContent} → ${tk.to.textContent}, ref ${ref}. The flight desk confirms slot and crew within the hour.`);
+    });
+  </script>
+</AureliaLayout>

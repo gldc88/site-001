@@ -1,0 +1,162 @@
+---
+/**
+ * OverseasLayout , shared shell for OVERSEAS LINE (website5, round 2).
+ * Persistent WebGL night-sea (gold moon-path) behind all pages; gold-on-void, system fonts.
+ * Props: title, description, active.
+ */
+import '../styles/overseas.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const BRAND = 'OVERSEAS LINE';
+const NAV = [
+  { key: 'crossings', label: 'Crossings', href: '/website5/crossings' },
+  { key: 'ship', label: 'The Ship', href: '/website5/suites' },
+  { key: 'onboard', label: 'Onboard', href: '/website5/onboard' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website5" class="brand">{BRAND}</a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website5/concierge" class="cta">Concierge</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>{BRAND}</h3>
+          <p>Private overseas crossings on an all-suite liner. Quiet, recovery-first onboard life, concierge embarkation, and a gold horizon at night.</p>
+        </div>
+        <div class="f-col"><h4>Voyage</h4><a href="/website5/crossings">Crossings</a><a href="/website5/suites">The Ship</a><a href="/website5/onboard">Onboard</a><a href="/website5/concierge">Concierge</a></div>
+        <div class="f-col"><h4>Reservations</h4><a href="tel:+10000000000">+1 000 000 0000</a><a href="mailto:concierge@overseasline.example">concierge@overseasline.example</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} {BRAND}. Fictional brand , demonstration only.</span>
+        <span><a href="#top">Back to deck ↑</a> · A gold horizon at night</span>
+      </div>
+    </footer>
+
+    <div class="shipslog" id="shipslog">
+      <button type="button" class="sl-chip" id="slChip" aria-expanded="false" aria-controls="slPanel">
+        <span class="sl-key">Ship's log</span>
+        <span class="sl-count" id="slCount">0</span>
+        <span class="sl-route" aria-hidden="true">
+          <span class="sl-leg" data-leg="index"></span><span class="sl-leg" data-leg="suites"></span><span class="sl-leg" data-leg="crossings"></span><span class="sl-leg" data-leg="onboard"></span><span class="sl-leg" data-leg="concierge"></span>
+        </span>
+      </button>
+      <div class="sl-panel" id="slPanel" role="dialog" aria-label="Ship's log" hidden>
+        <ol class="sl-lines" id="slLines"></ol>
+      </div>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* ---- R3 "The Crossing Log" ---- */
+      type LogEntry = { key: string; time: string; line: string };
+      const LINES: Record<string, string> = {
+        index: 'Boarded by the aft gangway.',
+        suites: 'Walked the suite decks, ocean-side.',
+        crossings: 'Charted the winter crossings.',
+        onboard: 'Dined at the midnight grill.',
+        concierge: 'Left word with the concierge.',
+      };
+      const LEGS = ['index', 'suites', 'crossings', 'onboard', 'concierge'];
+      const readLog = (): LogEntry[] => { try { return JSON.parse(localStorage.getItem('overseas-log') || '[]'); } catch { return []; } };
+
+      const pageKey = (() => {
+        const p = location.pathname.replace(/\/$/, '');
+        if (p.endsWith('/website5')) return 'index';
+        const last = p.split('/').pop() || '';
+        return LEGS.includes(last) ? last : null;
+      })();
+
+      let log = readLog();
+      if (pageKey && !log.some((e) => e.key === pageKey)) {
+        const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        log.push({ key: pageKey, time, line: LINES[pageKey] });
+        if (log.length === LEGS.length && !log.some((e) => e.key === 'landfall')) {
+          log.push({ key: 'landfall', time, line: 'Landfall at dawn.' });
+        }
+        try { localStorage.setItem('overseas-log', JSON.stringify(log)); } catch { /* private mode */ }
+      }
+
+      const crossingProgress = () => Math.min(1, log.filter((e) => LEGS.includes(e.key)).length / LEGS.length);
+      const landfall = log.some((e) => e.key === 'landfall');
+      document.documentElement.classList.toggle('landfall', landfall);
+
+      const slCount = document.getElementById('slCount');
+      const slLines = document.getElementById('slLines');
+      const slChip = document.getElementById('slChip');
+      const slPanel = document.getElementById('slPanel');
+      if (slCount) slCount.textContent = String(log.length);
+      if (slLines) slLines.innerHTML = log.map((e) => `<li><span class="sl-t">${e.time}</span> ${e.line}</li>`).join('');
+      document.querySelectorAll<HTMLElement>('.sl-leg').forEach((d) => d.classList.toggle('done', log.some((e) => e.key === d.dataset.leg)));
+
+      slChip?.addEventListener('click', () => {
+        const open = slPanel?.hasAttribute('hidden');
+        if (open) slPanel?.removeAttribute('hidden'); else slPanel?.setAttribute('hidden', '');
+        slChip.setAttribute('aria-expanded', String(!!open));
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && slPanel && !slPanel.hasAttribute('hidden')) {
+          slPanel.setAttribute('hidden', '');
+          slChip?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/overseas-scene')
+          .then(({ initOverseasScene }) => {
+            const scene = initOverseasScene(canvas);
+            scene.setCrossing(crossingProgress());
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

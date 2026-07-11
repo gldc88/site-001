@@ -1,0 +1,120 @@
+---
+/**
+ * VULCANIC ATELIER , Reserve (website15, round 2). Signature: a reservation request whose stratum
+ * select raises the magma live; generates a reference + toast + summary.
+ */
+import VulcanLayout from '../../layouts/VulcanLayout.astro';
+import { STRATA } from '../../data/vulcan';
+---
+
+<VulcanLayout title="Reserve | Vulcanic Atelier" description="Request a night at Vulcanic Atelier. Capped at twenty-four guests; every booking confirmed by hand.">
+  <div class="page-hero">
+    <span class="kicker">Reserve</span>
+    <h1>A night is <em>held</em>, not sold.</h1>
+    <p class="sub">Capacity is capped at twenty-four guests across five strata. Pick the stratum you want the night to sit on , the magma rises to it as you choose , and we confirm every request by hand.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="res-grid">
+      <form id="resForm" class="res-form panel ember" novalidate>
+        <div class="rf-row">
+          <div class="fld"><label for="stratum">Stratum</label><select id="stratum" name="stratum">{STRATA.map((s) => <option value={s.key}>{s.name}</option>)}</select></div>
+          <div class="fld"><label for="guests">Guests</label><select id="guests" name="guests"><option>2 guests</option><option>1 guest</option><option>3 guests</option><option>4 guests</option></select></div>
+        </div>
+        <div class="rf-row">
+          <div class="fld"><label for="night">Night</label><input id="night" name="night" type="date" /><span class="err" data-err="night"></span></div>
+          <div class="fld"><label for="time">Arrival</label><select id="time" name="time"><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option></select></div>
+        </div>
+        <div class="rf-row">
+          <div class="fld"><label for="rname">Name</label><input id="rname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+          <div class="fld"><label for="remail">Email</label><input id="remail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        </div>
+        <div class="fld"><label for="rnote">Notes (optional)</label><textarea id="rnote" name="note" rows="3" placeholder="Dietary notes, occasion, the heat you want the night to sit on…"></textarea></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Request this night</button>
+        <p class="rf-fine">Capped at 24 · confirmed by hand · no card held now.</p>
+        <p class="of-ref" id="ofRef" hidden>You surrendered enough. The mountain will have you , name your night.</p>
+      </form>
+
+      <aside class="res-summary panel" id="summary">
+        <div class="rs-top"><span class="kicker" style="font-size:9px;">Request</span><span id="rsRef" class="rs-ref">, , , ,</span></div>
+        <div class="rs-line"><span>Stratum</span><b id="rsStratum">Thermal Deck</b></div>
+        <div class="rs-line"><span>Heat</span><b id="rsHeat">84°</b></div>
+        <div class="rs-line"><span>Guests</span><b id="rsGuests">2 guests</b></div>
+        <div class="rs-line"><span>Night</span><b id="rsNight">,</b></div>
+        <div class="rs-status" id="rsStatus">Awaiting request</div>
+        <p class="rs-hint">The surface is previewing your chosen heat.</p>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .res-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .res-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .rf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .res-form textarea { resize: vertical; font-family: var(--body); }
+    .rf-fine { font-family: var(--mono); font-size: 0.7rem; color: var(--faint); text-align: center; }
+    .res-summary { position: sticky; top: 90px; padding: clamp(24px,3vw,32px); }
+    .rs-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .rs-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--magma2); }
+    .rs-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line2); }
+    .rs-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .rs-line b { font-family: var(--disp); font-size: 1.1rem; font-weight: 400; color: #fff; text-align: right; }
+    .rs-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line2); border-radius: 4px; }
+    .res-summary.filed { border-color: var(--line); }
+    .res-summary.filed .rs-status { color: #08060a; background: var(--magma1); border-style: solid; border-color: var(--magma1); }
+    .rs-hint { font-family: var(--mono); font-size: 9px; color: var(--faint); margin-top: 14px; text-align: center; }
+    @media (max-width: 900px) { .res-grid { grid-template-columns: 1fr; } .res-summary { position: static; } }
+    @media (max-width: 560px) { .rf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 Offering: acceptatie reist mee naar de reservering. */
+    try {
+      const offers = JSON.parse(localStorage.getItem('vulcan-offers') || '[]');
+      if (offers.length >= 3) {
+        const el = document.getElementById('ofRef');
+        if (el) el.hidden = false;
+      }
+    } catch { /* private mode */ }
+
+    import { STRATA } from '../../data/vulcan';
+    const byKey = Object.fromEntries(STRATA.map((s) => [s.key, s]));
+    const form = document.getElementById('resForm') as HTMLFormElement;
+    const stratum = document.getElementById('stratum') as HTMLSelectElement;
+    const guests = document.getElementById('guests') as HTMLSelectElement;
+    const night = document.getElementById('night') as HTMLInputElement;
+    const rs = { stratum: document.getElementById('rsStratum')!, heat: document.getElementById('rsHeat')!, guests: document.getElementById('rsGuests')!, night: document.getElementById('rsNight')!, ref: document.getElementById('rsRef')!, status: document.getElementById('rsStatus')! };
+    const card = document.getElementById('summary');
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    night.min = new Date().toISOString().split('T')[0];
+
+    const saved = localStorage.getItem('vulcan-suite') || 'thermal';
+    if (byKey[saved]) stratum.value = saved;
+    const update = () => { const s = byKey[stratum.value]; rs.stratum.textContent = s?.name || stratum.value; rs.heat.textContent = (Number(localStorage.getItem('vulcan-heat') || s?.heat || 84)) + '°'; rs.guests.textContent = guests.value; rs.night.textContent = night.value ? new Date(night.value + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : ','; };
+    stratum.addEventListener('change', () => { (window as any).__vulcanSuite?.(stratum.value); update(); });
+    [guests, night].forEach((el) => el.addEventListener('input', update));
+    document.addEventListener('vulcan:heat', () => { rs.heat.textContent = (document.body.dataset.heat || '84') + '°'; });
+    update();
+
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#ff8a6a' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('rname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('remail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (!night.value) { setErr('night', 'Pick a night.'); ok = false; } else setErr('night', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'VA-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      rs.ref.textContent = ref; rs.status.textContent = 'Held · ' + ref; card?.classList.add('filed');
+      if (toast) { toast.textContent = `Held for you, ${name.split(' ')[0]} , ${byKey[stratum.value]?.name}, ref ${ref}. We confirm by hand within the day.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+<style>
+  .of-ref { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #ffc79b; border-top: 1px solid rgba(255, 120, 50, 0.25); padding-top: 12px; }
+</style>
+</VulcanLayout>

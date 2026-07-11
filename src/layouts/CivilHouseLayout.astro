@@ -1,0 +1,102 @@
+---
+/**
+ * CivilHouseLayout , shared shell for CIVIL HOUSE MAKELAARS (website28, round 2). Dark "execution desk"
+ * aesthetic (near-black + brass, cold/warm radial wash, cursor spotlight). Nav, footer, global #toast
+ * (window.showToast). Props: title, description, active.
+ */
+import '../styles/global.css';
+import { BRAND, SHORT, TAGLINE, AREA, EMAIL, PHONE, TEL } from '../data/civilhouse';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const NAV = [
+  { key: 'approach', label: 'Approach', href: '/website28/approach' },
+  { key: 'dossier', label: 'Dossier', href: '/website28/dossier' },
+  { key: 'offer-signal', label: 'Offer Signal', href: '/website28/offer-signal' },
+];
+const YEAR = new Date().getFullYear();
+const mark = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      :root { --bg0:#07080b; --bg1:#0c0e14; --ink:#f4f6fb; --mut:rgba(244,246,251,.70); --line:rgba(244,246,251,.14); --brass:#caa86d; --brass2:#ead7b5; --mouse-x:50%; --mouse-y:50%; }
+      body { color: var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased;
+        background: radial-gradient(1100px 680px at 14% 18%, rgba(202,168,109,.12), transparent 60%), radial-gradient(980px 640px at 86% 72%, rgba(170,210,255,.10), transparent 62%), linear-gradient(180deg, var(--bg0), var(--bg1)); background-attachment: fixed; }
+      .brass-text { color: var(--brass); }
+      .spotlight { position: relative; isolation: isolate; }
+      .spotlight::before { content:''; position:absolute; inset:0; border-radius: inherit; pointer-events:none; opacity:0; transition: opacity .4s ease; z-index:-1;
+        background: radial-gradient(420px circle at var(--mouse-x) var(--mouse-y), rgba(202,168,109,.10), transparent 45%); }
+      .spotlight:hover::before { opacity:1; }
+      .reveal-on-scroll { opacity:0; transform: translateY(20px); transition: all .8s cubic-bezier(0.2,0.8,0.2,1); }
+      .reveal-visible { opacity:1; transform: translateY(0); }
+      .c-link { position:relative; }
+      .c-link::after { content:''; position:absolute; left:0; bottom:-3px; height:1px; width:0; background: var(--brass); transition: width .3s ease; }
+      .c-link:hover::after, .c-link.active::after { width:100%; }
+    </style>
+  </head>
+
+  <body class="min-h-screen overflow-x-hidden selection:bg-[#caa86d] selection:text-black">
+    <header class="sticky top-0 z-50 border-b border-[var(--line)] bg-[#07080b]/85 backdrop-blur-md">
+      <div class="mx-auto max-w-[1480px] px-6 h-20 flex items-center justify-between">
+        <a href="/website28" class="flex items-center gap-3">
+          <span class="text-[var(--brass)] w-6 h-6"><Fragment set:html={mark} /></span>
+          <span class="font-black tracking-tight text-lg">{SHORT}</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-8 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">
+          {NAV.map((i) => <a href={i.href} class={`c-link hover:text-[var(--ink)] transition-colors ${active === i.key ? 'active text-[var(--ink)]' : ''}`}>{i.label}</a>)}
+          <a href="/" class="hover:text-[var(--ink)]">Index</a>
+        </nav>
+        <a href="/website28/callback" class="text-[11px] font-bold uppercase tracking-[0.2em] text-black bg-[var(--brass)] hover:bg-[var(--brass2)] px-5 py-2.5 rounded-md transition-colors">Request a call</a>
+      </div>
+    </header>
+
+    <main id="top"><slot /></main>
+
+    <footer class="border-t border-[var(--line)] mt-10">
+      <div class="mx-auto max-w-[1480px] px-6 py-14 grid md:grid-cols-[2fr_1fr_1fr] gap-10">
+        <div>
+          <div class="flex items-center gap-3 mb-3"><span class="text-[var(--brass)] w-6 h-6"><Fragment set:html={mark} /></span><span class="font-black tracking-tight">{BRAND}</span></div>
+          <p class="text-sm text-[var(--mut)] max-w-xs leading-relaxed">{TAGLINE} A real estate office , sell, buy, invest. {AREA}. Fictional brand, demonstration only.</p>
+        </div>
+        <div class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] flex flex-col gap-3">
+          <a href="/website28/approach" class="hover:text-[var(--brass)]">Approach</a>
+          <a href="/website28/dossier" class="hover:text-[var(--brass)]">Dossier builder</a>
+          <a href="/website28/offer-signal" class="hover:text-[var(--brass)]">Offer signal</a>
+          <a href="/website28/callback" class="hover:text-[var(--brass)]">Request a call</a>
+        </div>
+        <div class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] flex flex-col gap-3">
+          <a href={`tel:${TEL}`} class="hover:text-[var(--brass)]">{PHONE}</a>
+          <a href={`mailto:${EMAIL}`} class="hover:text-[var(--brass)] normal-case tracking-normal">{EMAIL}</a>
+          <a href="/" class="hover:text-[var(--brass)]">Return to index</a>
+        </div>
+      </div>
+      <div class="border-t border-[var(--line)] py-5 text-center text-[10px] uppercase tracking-[0.25em] text-[var(--mut)]">© {YEAR} {BRAND} · by appointment · demonstration only</div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" class="fixed left-1/2 bottom-8 z-[80] -translate-x-1/2 translate-y-6 opacity-0 pointer-events-none rounded-lg bg-[#11141c] border border-[var(--brass)]/40 text-[var(--ink)] px-6 py-4 text-sm shadow-[0_0_40px_rgba(202,168,109,0.2)] transition-all duration-500" style="max-width:min(92vw,470px)"></div>
+
+    <script>
+      document.addEventListener('mousemove', (e) => {
+        document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
+        document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
+      });
+      const toastEl = document.getElementById('toast');
+      let tT = 0;
+      (window as any).showToast = (html: string) => {
+        if (!toastEl) return;
+        toastEl.innerHTML = html; toastEl.style.opacity = '1'; toastEl.style.transform = 'translate(-50%,0)';
+        window.clearTimeout(tT); tT = window.setTimeout(() => { toastEl.style.opacity = '0'; toastEl.style.transform = 'translate(-50%,24px)'; }, 5400);
+      };
+      const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal-visible'); obs.unobserve(e.target); } }), { threshold: 0.1 });
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>

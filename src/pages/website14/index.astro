@@ -1,0 +1,140 @@
+---
+/**
+ * NEON DISTRICT , Home (website14, round 2 multi-page).
+ * The live control surface: channel tiles re-tint the persistent neon-city + recolor the UI, a gain
+ * slider drives intensity, a district preview, access steps. The active channel persists across pages.
+ */
+import NeonLayout from '../../layouts/NeonLayout.astro';
+import { CHANNELS, NODES, ACCESS } from '../../data/neon';
+---
+
+<NeonLayout title="Neon District , Live Operator Control Surface" description="A live operator control surface with a neon-city backdrop you can drive: switch channels, set the signal gain, select district nodes, open a secure channel.">
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="kicker" id="heroKicker">Live operator control surface</span>
+      <h1 class="hero-title" id="heroTitle">Ship after dark.</h1>
+      <p class="hero-copy" id="heroCopy">Neon-stained UI, quiet surgical control. Pick a channel , the city behind everything re-tints to it and follows you across the surface. Set the gain to your shift.</p>
+
+      <div class="surface" id="heroActions">
+        <div class="channels" role="group" aria-label="Channels">
+          {CHANNELS.map((c) => (
+            <button class="channel" data-channel data-key={c.key} data-accent={c.accent} aria-pressed="false" style={`--ca:${c.accent}`}>
+              <div class="ch-top"><span class="ch-code">{c.code}</span><span class="ch-led"></span></div>
+              <span class="ch-name">{c.name}</span>
+              <span class="ch-desc">{c.desc}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="gain panel ticked">
+          <div class="gain-head"><span class="kicker">Signal gain</span><b id="gainVal">60%</b></div>
+          <input id="gainSlider" class="gain" type="range" min="0" max="100" value="60" aria-label="Signal gain" />
+          <div class="gain-foot"><span>noise floor</span><span>full pulse</span></div>
+          <div class="active-line"><span>DRIVING ◇</span><b id="activeName">Identity</b></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="kicker">District</span><h2>Five live nodes.</h2></div><p>Ingress to egress, watched edge to edge. <a class="inline-link" href="/website14/district">Open the map →</a></p></div>
+    <div class="node-strip">
+      {NODES.map((n) => (
+        <a href="/website14/district" class={`node-mini ${n.c}`}><span class="nm-id">{n.id}</span><div class="nm-meta"><span>lat {n.latency}</span><span>load {n.load}</span></div></a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="sec-head"><div><span class="kicker">Access</span><h2>Three steps to live.</h2></div><p><a class="inline-link" href="/website14/connect">Open a channel →</a></p></div>
+    <div class="access-row">
+      {ACCESS.map((a, i) => (<div class="access panel" data-reveal="up"><span class="ac-n">{String(i + 1).padStart(2, '0')}</span><h3>{a.t}</h3><p>{a.d}</p></div>))}
+    </div>
+  </section>
+
+  <section class="section tight connect-cta">
+    <div class="cc-inner panel lit ticked" data-reveal="up">
+      <span class="kicker c">Open Channel</span>
+      <h2>Take the surface for a shift.</h2>
+      <p>Request access and we'll spin up a sandbox district with your channels live. No card, no theatre.</p>
+      <a href="/website14/connect" class="btn" style="margin-top:26px;">Open a channel</a>
+    </div>
+  </section>
+
+  <style>
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: 90px clamp(18px,5vw,52px) 40px; }
+    .hero-inner { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; width: 100%; }
+    .hero-title { font-size: clamp(3rem, 10vw, 8.5rem); line-height: 0.94; color: #fff; margin: 16px 0 18px; text-transform: uppercase; letter-spacing: -0.02em; }
+    .hero-title .ch { display: inline-block; will-change: transform; }
+    .hero-copy { color: var(--muted); max-width: 52ch; font-size: 1.08rem; }
+    .surface { margin-top: 36px; display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; align-items: stretch; }
+    .channels { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
+    .channel { text-align: left; padding: 18px 18px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); transition: all 0.3s; position: relative; overflow: hidden; }
+    .channel:hover { border-color: color-mix(in srgb, var(--ca) 50%, transparent); }
+    .channel[aria-pressed='true'] { border-color: var(--ca); box-shadow: inset 0 0 40px -22px var(--ca); }
+    .ch-top { display: flex; justify-content: space-between; align-items: center; }
+    .ch-code { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: var(--ca); }
+    .ch-led { width: 8px; height: 8px; border-radius: 50%; background: var(--ca); box-shadow: 0 0 8px var(--ca); opacity: 0.4; transition: opacity 0.3s; }
+    .channel[aria-pressed='true'] .ch-led { opacity: 1; }
+    .ch-name { font-family: var(--disp); font-size: 1.4rem; color: #fff; display: block; margin: 8px 0 6px; }
+    .ch-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+
+    .gain { padding: 22px; display: flex; flex-direction: column; }
+    .gain-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .gain-head b { font-family: var(--mono); font-size: 1.1rem; color: var(--accent); }
+    .gain-foot { display: flex; justify-content: space-between; margin-top: 10px; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+    .active-line { margin-top: auto; padding-top: 20px; display: flex; align-items: baseline; gap: 10px; }
+    .active-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; color: var(--muted); }
+    .active-line b { font-family: var(--disp); font-size: 1.5rem; color: #fff; }
+
+    .node-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .node-mini { padding: 18px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); transition: all 0.3s; }
+    .node-mini:hover { transform: translateY(-3px); }
+    .node-mini.cyan:hover { border-color: rgba(47,252,255,0.4); } .node-mini.mag:hover { border-color: rgba(255,43,214,0.4); } .node-mini.lime:hover { border-color: rgba(183,255,60,0.4); }
+    .nm-id { font-family: var(--disp); font-weight: 600; font-size: 1.05rem; color: #fff; }
+    .nm-meta { display: flex; flex-direction: column; gap: 3px; margin-top: 10px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+    .access-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .access { padding: 28px 24px; }
+    .ac-n { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+    .access h3 { font-size: 1.5rem; color: #fff; margin: 10px 0 8px; }
+    .access p { color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+
+    .connect-cta { display: flex; justify-content: center; }
+    .cc-inner { text-align: center; padding: clamp(40px,6vw,72px) clamp(24px,4vw,56px); max-width: 720px; }
+    .cc-inner .kicker { justify-content: center; }
+    .cc-inner h2 { font-size: clamp(2rem,4vw,3.2rem); color: #fff; margin-top: 14px; text-transform: uppercase; }
+    .cc-inner p { color: var(--muted); margin-top: 14px; }
+
+    @media (max-width: 900px) { .surface { grid-template-columns: 1fr; } .node-strip { grid-template-columns: 1fr 1fr; } .access-row { grid-template-columns: 1fr; } }
+    @media (max-width: 540px) { .channels { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    import { gsap, SplitText, ScrollTrigger } from '../../lib/motion/gsap-plus';
+    import { CHANNELS } from '../../data/neon';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const byKey = Object.fromEntries(CHANNELS.map((c) => [c.key, c]));
+
+    const heroTitle = document.getElementById('heroTitle');
+    const fades = ['heroKicker', 'heroCopy', 'heroActions'].map((id) => document.getElementById(id));
+    if (heroTitle && !reduce) {
+      const split = new SplitText(heroTitle, { type: 'chars', charsClass: 'ch' });
+      const tl = gsap.timeline({ delay: 0.15, defaults: { ease: 'power4.out' } });
+      if (fades[0]) tl.to(fades[0], { opacity: 1, y: 0, duration: 0.7 }, 0);
+      tl.from(split.chars, { yPercent: 120, opacity: 0, stagger: 0.04, duration: 0.9 }, 0.1);
+      tl.to(fades[1], { opacity: 1, duration: 0.8 }, 0.5).to(fades[2], { opacity: 1, duration: 0.8 }, 0.7);
+    }
+    ScrollTrigger.refresh();
+
+    const activeName = document.getElementById('activeName')!;
+    const setName = (k: string) => { activeName.textContent = byKey[k]?.name || k; };
+    setName(localStorage.getItem('neon-channel') || 'identity');
+    document.addEventListener('neon:channel', (e) => setName((e as CustomEvent).detail));
+
+    const gainVal = document.getElementById('gainVal')!;
+    const slider = document.getElementById('gainSlider') as HTMLInputElement;
+    if (slider) { slider.value = String(Number(localStorage.getItem('neon-gain') || '60')); gainVal.textContent = slider.value + '%'; }
+    document.addEventListener('neon:gain', (e) => { gainVal.textContent = (e as CustomEvent).detail + '%'; });
+  </script>
+</NeonLayout>

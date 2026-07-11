@@ -1,0 +1,83 @@
+---
+/**
+ * MotionRuntime.astro , site-001 shared motion baseline (ported from Astro_factory).
+ *
+ * Drop this ONCE, just before </body>, on any standalone page to opt into the
+ * factory motion contract:
+ *   - Lenis smooth scroll (anchors still work, reduced-motion falls back to native)
+ *   - GSAP ScrollTrigger choreography via data attributes:
+ *       data-reveal[="up|fade|scale|left|right"], data-stagger[="0.08"],
+ *       data-parallax="0.15", data-pin / data-pin-end
+ *
+ * Keep semantic headings (H1/H2) static , do not wrap them in client islands.
+ * Animate them with data-reveal or page-scoped GSAP instead.
+ */
+---
+
+<script is:inline>
+  /* FOUC guard: let [data-reveal] start hidden without a flash, but never trap
+     content if the motion module fails to initialize. */
+  (function () {
+    var de = document.documentElement;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    de.classList.add('has-motion-js');
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (de.dataset.motionReveal !== 'active') de.classList.remove('has-motion-js');
+      }, 1200);
+    });
+  })();
+</script>
+
+<script>
+  import { initSmoothScroll } from '../../lib/motion/lenis';
+  import { initScrollAnimations, killScrollAnimations } from '../../lib/motion/scroll';
+  import { ScrollTrigger } from '../../lib/motion/gsap';
+
+  function initFactoryMotion() {
+    initSmoothScroll();
+    initScrollAnimations(document);
+    ScrollTrigger.refresh();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFactoryMotion, { once: true });
+  } else {
+    initFactoryMotion();
+  }
+
+  // View Transitions safe (harmless if ClientRouter is never enabled).
+  document.addEventListener('astro:before-swap', () => killScrollAnimations());
+  document.addEventListener('astro:page-load', () => initFactoryMotion());
+</script>
+
+<style is:global>
+  /* Lenis required base CSS */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+
+  /* Pre-hide reveal targets only when motion JS is present and motion is allowed. */
+  @media (prefers-reduced-motion: no-preference) {
+    html.has-motion-js [data-reveal] {
+      opacity: 0;
+    }
+    html.has-motion-js [data-stagger] > * {
+      opacity: 0;
+    }
+  }
+</style>

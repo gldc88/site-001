@@ -1,0 +1,134 @@
+---
+/**
+ * OrbitalLayout , shared shell for ORBITAL CRYPTO (website6, round 2).
+ * Persistent WebGL orbital-network scene + holographic grid behind all pages.
+ * Props: title, description, active.
+ */
+import '../styles/orbital-fonts.css';
+import '../styles/orbital.css';
+import MotionRuntime from '../components/motion/MotionRuntime.astro';
+
+interface Props { title: string; description?: string; active?: string; }
+const { title, description = '', active = '' } = Astro.props;
+
+const BRAND = 'ORBITAL';
+const NAV = [
+  { key: 'products', label: 'Products', href: '/website6/products' },
+  { key: 'security', label: 'Security', href: '/website6/security' },
+  { key: 'platform', label: 'Platform', href: '/website6/platform' },
+];
+const YEAR = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body>
+    <canvas id="bg-gl" class="bg-gl" aria-hidden="true"></canvas>
+    <div class="bg-fallback" id="bgFallback" aria-hidden="true"></div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+
+    <nav class="topnav" id="nav">
+      <div class="tb-left">
+        <a href="/" class="nav-index">← Index</a>
+        <a href="/website6" class="brand"><span class="dot"></span>{BRAND} <span style="color:var(--muted);font-weight:400;">CRYPTO</span></a>
+      </div>
+      <div class="nav-links">
+        {NAV.map((i) => <a href={i.href} class={active === i.key ? 'active' : ''}>{i.label}</a>)}
+      </div>
+      <a href="/website6/access" class="cta">Get Access</a>
+    </nav>
+
+    <main class="content" id="top">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="f-grid">
+        <div class="f-brand">
+          <h3>ORBITAL CRYPTO</h3>
+          <p>An institutional crypto platform concept , OTC execution, custody and settlement controls, treasury approvals, and audit-ready reporting. Demonstration only; not an offer of services.</p>
+        </div>
+        <div class="f-col"><h4>Platform</h4><a href="/website6/products">Products</a><a href="/website6/security">Security</a><a href="/website6/platform">Platform</a><a href="/website6/access">Get Access</a></div>
+        <div class="f-col"><h4>Contact</h4><a href="mailto:desk@orbital.example">desk@orbital.example</a><a href="/website6/access">Request access</a><a href="/">Return to Index</a></div>
+      </div>
+      <div class="f-copy">
+        <span>© {YEAR} ORBITAL CRYPTO. Fictional brand , demonstration only.</span>
+        <span><a href="#top">Top ↑</a> · OTC · Custody · Treasury</span>
+      </div>
+    </footer>
+
+    <div class="deskconsole" id="deskconsole">
+      <button type="button" class="dc-btn" id="dcBtn">Test settlement</button>
+      <div class="dc-result" id="dcResult" aria-live="polite"></div>
+      <div class="dc-meta" id="dcMeta" aria-hidden="true"></div>
+    </div>
+
+    <MotionRuntime />
+
+    <script>
+      import { supportsWebGL } from '../lib/three/webgl';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- R3 "Test Settlement" ---- */
+      let scenePulse: (() => void) | null = null;
+      const dcBtn = document.getElementById('dcBtn') as HTMLButtonElement | null;
+      const dcResult = document.getElementById('dcResult');
+      const dcMeta = document.getElementById('dcMeta');
+      const readDesk = (): { count: number; block: number } => {
+        try { return JSON.parse(localStorage.getItem('orbital-desk') || '{"count":0,"block":84210}'); }
+        catch { return { count: 0, block: 84210 }; }
+      };
+      const syncMeta = () => {
+        const d = readDesk();
+        if (dcMeta) dcMeta.textContent = d.count ? `${d.count} test settlement${d.count === 1 ? '' : 's'} logged` : 'No settlements yet';
+      };
+      syncMeta();
+      dcBtn?.addEventListener('click', () => {
+        if (dcBtn.disabled) return;
+        dcBtn.disabled = true;
+        if (dcResult) dcResult.textContent = 'Routing…';
+        const latency = 280 + Math.floor(Math.random() * 340);
+        setTimeout(() => {
+          const d = readDesk();
+          d.count += 1; d.block += 1 + Math.floor(Math.random() * 3);
+          try { localStorage.setItem('orbital-desk', JSON.stringify(d)); } catch { /* private mode */ }
+          scenePulse?.();
+          if (dcResult) dcResult.textContent = `Settled in ${latency} ms · block #${d.block.toLocaleString('en-US')}`;
+          syncMeta();
+          dcBtn.disabled = false;
+        }, reduce ? 60 : latency);
+      });
+
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 30);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      const canvas = document.getElementById('bg-gl');
+      const fallback = document.getElementById('bgFallback');
+      if (!reduce && canvas instanceof HTMLCanvasElement && supportsWebGL()) {
+        import('../scenes/orbital-scene')
+          .then(({ initOrbitalScene }) => {
+            const scene = initOrbitalScene(canvas);
+            scenePulse = scene.pulse;
+            if (fallback) fallback.style.display = 'none';
+            const max = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+            const update = () => scene.setScroll(window.scrollY / max());
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('pagehide', () => scene.dispose(), { once: true });
+          })
+          .catch(() => { if (canvas) canvas.style.display = 'none'; });
+      } else if (canvas instanceof HTMLCanvasElement) {
+        canvas.style.display = 'none';
+      }
+    </script>
+  </body>
+</html>

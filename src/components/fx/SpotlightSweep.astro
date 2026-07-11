@@ -1,0 +1,49 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div aria-hidden="true" class:list={['factory-spotlight-sweep pointer-events-none absolute inset-0', className]}></div>
+
+<style>
+  .factory-spotlight-sweep {
+    overflow: hidden;
+  }
+
+  .factory-spotlight-sweep::before {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    transform: translateX(-42%) skewX(-16deg);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      rgba(34, 211, 238, 0.14),
+      transparent
+    );
+    animation: factory-spotlight-sweep 9s ease-in-out infinite;
+  }
+
+  @keyframes factory-spotlight-sweep {
+    0%,
+    18% {
+      transform: translateX(-42%) skewX(-16deg);
+    }
+    70%,
+    100% {
+      transform: translateX(42%) skewX(-16deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .factory-spotlight-sweep::before {
+      animation: none;
+      transform: translateX(0) skewX(-16deg);
+      opacity: 0.4;
+    }
+  }
+</style>

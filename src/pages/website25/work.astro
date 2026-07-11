@@ -1,0 +1,32 @@
+---
+/**
+ * GROUNDSPEC , Work (website25, round 2). The four kinds of job, paving and fencing.
+ */
+import GroundspecLayout from '../../layouts/GroundspecLayout.astro';
+import { WORK } from '../../data/groundspec';
+---
+
+<GroundspecLayout title="Work | Groundspec" description="Patios and terraces, driveways, paths and steps, and garden fencing , built square, on a proper base." active="work">
+  <section class="py-16 px-6 mx-auto max-w-7xl">
+    <span class="text-xs font-black text-yellow-500 uppercase tracking-[0.3em]">/ Work</span>
+    <h1 class="mt-4 text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.85]">What we build.</h1>
+    <p class="mt-6 text-zinc-400 text-lg md:text-xl max-w-2xl font-light leading-relaxed">Paving and fencing across residential and small commercial. Every job starts with an accurate takeoff and ends square.</p>
+  </section>
+
+  <section class="pb-28 px-6">
+    <div class="mx-auto max-w-7xl grid md:grid-cols-2 gap-px bg-white/5 border border-white/5">
+      {WORK.map((w, i) => (
+        <div class="bg-[#0f0f0f] p-10 lg:p-14 reveal-on-scroll">
+          <div class="flex items-center justify-between mb-6">
+            <span class={`text-[10px] font-black uppercase tracking-[0.3em] ${w.tag === 'FENCING' ? 'text-emerald-500' : 'text-yellow-500'}`}>{w.tag}</span>
+            <span class="text-zinc-700 font-black text-2xl font-mono">{String(i + 1).padStart(2, '0')}</span>
+          </div>
+          <h2 class="text-3xl font-black text-white tracking-tight mb-4">{w.title}</h2>
+          <p class="text-zinc-400 leading-relaxed font-light max-w-md">{w.line}</p>
+          <a href="/website25/estimator" class="mt-7 inline-block text-xs font-black uppercase tracking-widest text-white border-b-2 border-yellow-500 pb-1 hover:text-yellow-500 transition-colors">Estimate this →</a>
+        </div>
+      ))}
+    </div>
+    <div class="mx-auto max-w-7xl mt-16 flex justify-center"><a href="/website25/quote" class="bg-yellow-500 text-black px-10 py-5 text-sm font-black uppercase tracking-[0.2em] hover:bg-white transition-colors">Get a quote</a></div>
+  </section>
+</GroundspecLayout>

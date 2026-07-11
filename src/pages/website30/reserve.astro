@@ -1,0 +1,95 @@
+---
+/**
+ * OBSIDIAN MOTORS , Reserve (website30, round 2). Shortlist review (from localStorage) + a private-viewing
+ * request -> validated -> toast referencing the shortlist.
+ */
+import ObsidianMotorsLayout from '../../layouts/ObsidianMotorsLayout.astro';
+import { PHONE, TEL, EMAIL, AREA } from '../../data/obsidian-motors';
+---
+
+<ObsidianMotorsLayout title="Reserve | Obsidian Motors" description="Review your shortlist and reserve a private viewing. We prepare exactly the cars you shortlisted for your slot.">
+  <section class="mx-auto max-w-[1320px] px-6 pt-14 pb-24 grid lg:grid-cols-[1.1fr_1fr] gap-12 items-start">
+    <div>
+      <span class="text-[11px] font-semibold uppercase tracking-[0.3em] accent">Reserve a viewing</span>
+      <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-[0.92] mt-4">Your <span class="accent">shortlist.</span></h1>
+      <p class="mt-6 max-w-md text-[var(--mut)] leading-relaxed">Reserve a private viewing and we prepare exactly these cars for your slot , inspected, documented, and ready at the desk.</p>
+
+      <div id="cartBox" class="mt-8 rounded-2xl border border-[var(--line)] bg-white/[0.02] divide-y divide-[var(--line)]">
+        <div id="emptyMsg" class="p-8 text-center text-[var(--mut)] text-sm">Your shortlist is empty. <a href="/website30/showroom" class="accent hover:underline">Browse the floor →</a></div>
+        <ul id="cartItems" class="hidden"></ul>
+        <div id="cartFoot" class="hidden p-5 flex items-center justify-between">
+          <button id="clearCart" class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)] hover:text-[#ff8a7a] transition-colors">Clear</button>
+          <div class="text-right"><span class="block text-[10px] uppercase tracking-[0.2em] text-[var(--mut)]">Indicative total</span><span id="cartTotal" class="text-2xl font-black accent">€0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <form id="reserveForm" class="rounded-2xl border border-[var(--line)] bg-black/40 p-8" novalidate>
+      <div class="text-[10px] font-semibold uppercase tracking-[0.2em] accent mb-5">Private viewing request</div>
+      <div class="flex flex-col gap-5">
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Name<input id="rsvName" name="name" type="text" class="mt-2 w-full bg-white/[0.04] border border-[var(--line)] rounded px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] transition-colors" /></label>
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Email<input id="rsvEmail" name="email" type="email" class="mt-2 w-full bg-white/[0.04] border border-[var(--line)] rounded px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] transition-colors" /></label>
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Preferred timing (optional)<input id="rsvWhen" name="when" type="text" placeholder="e.g. Saturday morning" class="mt-2 w-full bg-white/[0.04] border border-[var(--line)] rounded px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] transition-colors" /></label>
+        <div id="rsvErr" class="text-[11px] text-[#ff8a7a] min-h-[1em]"></div>
+        <button type="submit" class="bg-[var(--accent)] text-white py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] rounded hover:bg-[#3d63d8] transition-colors">Reserve a private viewing</button>
+      </div>
+      <p id="rsvStatus" class="mt-4 text-[11px] font-mono uppercase tracking-widest text-[var(--mut)] text-center">Confirmed within a day · {AREA}</p>
+      <p class="mt-4 text-[11px] text-[var(--mut)] text-center">Or <a href={`tel:${TEL}`} class="accent hover:underline">call {PHONE}</a> · <a href={`mailto:${EMAIL}`} class="accent hover:underline">email the desk</a></p>
+      <p class="font-mono text-xs text-sky-400 border-t border-white/10 pt-3 mt-2" id="rvRef" hidden>You pulled this week's cover , mention it and the car will be on the floor when you arrive.</p>
+      </form>
+  </section>
+
+  <script>
+    /* R3 Reveal: de onthulling reist mee. */
+    try {
+      if (localStorage.getItem('obsidian-reveal')) {
+        const el = document.getElementById('rvRef');
+        if (el) el.hidden = false;
+      }
+    } catch { /* private mode */ }
+
+    const SK = 'obsidian-shortlist';
+    const readCart = () => { try { return JSON.parse(localStorage.getItem(SK) || '[]'); } catch (e) { return []; } };
+    const writeCart = (items: any[]) => { localStorage.setItem(SK, JSON.stringify(items)); document.dispatchEvent(new Event('cart-change')); render(); };
+    const money = (n: number) => '€' + Number(n).toLocaleString('nl-NL');
+
+    const itemsEl = document.getElementById('cartItems')!, emptyEl = document.getElementById('emptyMsg')!, footEl = document.getElementById('cartFoot')!, totalEl = document.getElementById('cartTotal')!;
+    function render() {
+      const items = readCart();
+      if (!items.length) { emptyEl.classList.remove('hidden'); itemsEl.classList.add('hidden'); footEl.classList.add('hidden'); return; }
+      emptyEl.classList.add('hidden'); itemsEl.classList.remove('hidden'); footEl.classList.remove('hidden');
+      itemsEl.innerHTML = items.map((it: any) => `<li class="p-5 flex items-center justify-between gap-4">
+        <div><div class="font-bold text-sm">${it.name}</div><div class="text-[11px] text-[var(--mut)] mt-0.5">€${(it.price / 1000).toFixed(0)}k · ${it.body}</div></div>
+        <div class="flex items-center gap-3"><button data-dec="${it.id}" class="w-7 h-7 rounded border border-[var(--line)] hover:border-[var(--accent)] transition-colors">−</button><span class="w-5 text-center text-sm">${it.qty}</span><button data-inc="${it.id}" class="w-7 h-7 rounded border border-[var(--line)] hover:border-[var(--accent)] transition-colors">+</button></div>
+      </li>`).join('');
+      totalEl.textContent = money(items.reduce((a: number, i: any) => a + i.price * i.qty, 0));
+      itemsEl.querySelectorAll('[data-inc]').forEach((b) => b.addEventListener('click', () => changeQty((b as HTMLElement).dataset.inc!, 1)));
+      itemsEl.querySelectorAll('[data-dec]').forEach((b) => b.addEventListener('click', () => changeQty((b as HTMLElement).dataset.dec!, -1)));
+    }
+    function changeQty(id: string, delta: number) {
+      const items = readCart(); const idx = items.findIndex((i: any) => i.id === id); if (idx === -1) return;
+      items[idx].qty += delta; if (items[idx].qty <= 0) items.splice(idx, 1);
+      writeCart(items);
+    }
+    document.getElementById('clearCart')!.addEventListener('click', () => writeCart([]));
+    render();
+
+    const form = document.getElementById('reserveForm') as HTMLFormElement;
+    const err = document.getElementById('rsvErr')!, status = document.getElementById('rsvStatus')!;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('rsvName') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('rsvEmail') as HTMLInputElement).value.trim();
+      if (name.length < 2) { err.textContent = 'Add your name.'; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Add a valid email.'; return; }
+      err.textContent = '';
+      const n = readCart().reduce((a: number, i: any) => a + i.qty, 0);
+      const ref = 'OM-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      status.textContent = `Reservation ${ref} logged , confirmed within a day.`;
+      (window as any).showToast?.(n > 0
+        ? `Reserved, <b>${name.split(' ')[0]}</b> , ref ${ref}. The desk confirms a private viewing of your ${n} shortlisted vehicle${n > 1 ? 's' : ''} within a day.`
+        : `Reserved, <b>${name.split(' ')[0]}</b> , ref ${ref}. The desk will arrange a private showroom viewing.`);
+      form.reset();
+    });
+  </script>
+</ObsidianMotorsLayout>

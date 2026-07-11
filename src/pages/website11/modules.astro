@@ -1,0 +1,95 @@
+---
+/**
+ * ATLAS INTERFACE , Modules (website11, round 2). Signature: the 7 nodes as a list -> detail browser.
+ */
+import AtlasLayout from '../../layouts/AtlasLayout.astro';
+
+const MODULES = [
+  { id: 'N01', name: 'Observatory', c: 'a1', role: 'Signal layer', d: 'Ingests signals, watches patterns, and flags anomalies without the noise. The Observatory decides what is worth waking you up for , and stays quiet about the rest.', tags: ['signal', 'analysis'], links: ['Archive', 'Engine', 'Lighthouse'] },
+  { id: 'N02', name: 'Archive', c: 'a2', role: 'Versioned memory', d: 'Snapshots you can trust, trace, and return to later. Nothing is overwritten silently; every state is addressable, so you can ask not just what is true now but what was true then.', tags: ['history', 'integrity'], links: ['Observatory', 'Engine'] },
+  { id: 'N03', name: 'Engine', c: 'a1', role: 'Runtime', d: 'Turns intent into deterministic runs, routing tasks to clean outputs. Same inputs, same results , the Engine is the part of the system you can reason about.', tags: ['compute', 'runtime'], links: ['Archive', 'Sanctum', 'Forge', 'Observatory'] },
+  { id: 'N04', name: 'Sanctum', c: 'a3', role: 'Private space', d: 'A restricted space for high-trust work: fewer sessions, higher signal. The Sanctum is where the sensitive runs happen, with access narrowed by design.', tags: ['private', 'access'], links: ['Engine', 'Relay'] },
+  { id: 'N05', name: 'Relay', c: 'a2', role: 'Delivery', d: 'Dispatch and delivery: multi-channel output with throttled bursts. The Relay decides how results leave the system , to whom, on which channel, at what pace.', tags: ['delivery', 'routing'], links: ['Sanctum'] },
+  { id: 'N06', name: 'Forge', c: 'a1', role: 'Prototype lab', d: 'Iterate quickly, contain risk, and promote only what holds up. The Forge is deliberately messy so the rest of the map can stay clean.', tags: ['build', 'iterate'], links: ['Engine', 'Lighthouse'] },
+  { id: 'N07', name: 'Lighthouse', c: 'a3', role: 'Orientation', d: 'Heuristics, wayfinding, and clarity when it gets messy. The Lighthouse does not do the work; it makes sure you can find your way back to it.', tags: ['guidance', 'clarity'], links: ['Forge', 'Observatory'] },
+];
+---
+
+<AtlasLayout title="Modules | Atlas Interface" description="The seven modules of Atlas Interface , Observatory, Archive, Engine, Sanctum, Relay, Forge, and Lighthouse." active="modules">
+  <div class="page-hero">
+    <span class="tag">Modules</span>
+    <h1>Seven nodes, read as <em>capabilities</em>.</h1>
+    <p class="sub">Each node on the map is a module in the system. Select one to read what it does, what it touches, and where it sits in the flow.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="mod-browser">
+      <div class="mod-list" id="modList">
+        {MODULES.map((m, i) => (
+          <button class={`mod-item ${m.c} ${i === 0 ? 'active' : ''}`} data-id={m.id}>
+            <span class="mi-dot"></span>
+            <span class="mi-main"><span class="mi-name">{m.name}</span><span class="mi-role">{m.role}</span></span>
+            <span class="mi-id">{m.id}</span>
+          </button>
+        ))}
+      </div>
+      <div class="mod-stage">
+        {MODULES.map((m, i) => (
+          <article class={`mod-detail ${i === 0 ? 'active' : ''}`} id={`mod-${m.id}`}>
+            <div class="md-head"><span class={`tag ${m.c === 'a2' ? 'v' : m.c === 'a3' ? 'm' : ''}`}>{m.role}</span><span class="md-id">{m.id}</span></div>
+            <h2>{m.name}</h2>
+            <p class="md-d">{m.d}</p>
+            <div class="md-meta">
+              <div class="md-tags"><span class="md-k">Tags</span>{m.tags.map((t) => <span class="md-tag">{t}</span>)}</div>
+              <div class="md-links"><span class="md-k">Connects</span><span class="md-conn">{m.links.join(' · ')}</span></div>
+            </div>
+            <a href="/website11" class="btn-ghost" style="margin-top:6px;">Find it on the map →</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .mod-browser { display: grid; grid-template-columns: 0.85fr 1.4fr; gap: clamp(18px,3vw,36px); align-items: start; }
+    .mod-list { display: flex; flex-direction: column; gap: 6px; position: sticky; top: 80px; }
+    .mod-item { display: grid; grid-template-columns: 16px 1fr auto; gap: 14px; align-items: center; text-align: left; padding: 14px 16px; border: 1px solid var(--hair); border-radius: 10px; transition: all 0.3s; background: rgba(11,15,26,0.4); }
+    .mod-item:hover { border-color: var(--line); }
+    .mod-item.active.a1 { border-color: rgba(110,243,255,0.4); background: rgba(110,243,255,0.05); }
+    .mod-item.active.a2 { border-color: rgba(181,123,255,0.4); background: rgba(181,123,255,0.05); }
+    .mod-item.active.a3 { border-color: rgba(255,91,214,0.4); background: rgba(255,91,214,0.05); }
+    .mi-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .mod-item.a1 .mi-dot { background: var(--a1); box-shadow: 0 0 8px var(--a1); }
+    .mod-item.a2 .mi-dot { background: var(--a2); box-shadow: 0 0 8px var(--a2); }
+    .mod-item.a3 .mi-dot { background: var(--a3); box-shadow: 0 0 8px var(--a3); }
+    .mi-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .mi-name { font-family: var(--serif); font-size: 1.2rem; color: #fff; }
+    .mi-role { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .mi-id { font-family: var(--mono); font-size: 10px; color: var(--faint); }
+
+    .mod-stage { min-width: 0; }
+    .mod-detail { display: none; }
+    .mod-detail.active { display: block; animation: fade 0.4s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .md-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .md-id { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+    .mod-detail h2 { font-size: clamp(2.2rem,4.4vw,3.4rem); color: #fff; }
+    .md-d { color: var(--ink); font-size: 1.12rem; line-height: 1.75; margin: 20px 0 28px; max-width: 60ch; }
+    .md-meta { display: flex; flex-direction: column; gap: 16px; padding: 22px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); margin-bottom: 26px; }
+    .md-tags, .md-links { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .md-k { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); margin-right: 6px; }
+    .md-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--a1); border: 1px solid rgba(110,243,255,0.3); padding: 5px 10px; border-radius: 100px; }
+    .md-conn { font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+    @media (max-width: 860px) { .mod-browser { grid-template-columns: 1fr; } .mod-list { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 4px; } .mod-item { min-width: 210px; } }
+  </style>
+
+  <script>
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.mod-item'));
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.mod-detail'));
+    items.forEach((it) => it.addEventListener('click', () => {
+      items.forEach((x) => x.classList.toggle('active', x === it));
+      details.forEach((d) => d.classList.toggle('active', d.id === `mod-${it.dataset.id}`));
+    }));
+  </script>
+</AtlasLayout>

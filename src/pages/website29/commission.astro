@@ -1,0 +1,86 @@
+---
+/**
+ * CALIBER STUDIO , Commission (website29, round 2). Lead-time + an inquiry that carries the configured
+ * build (from localStorage) -> validated -> toast.
+ */
+import CaliberLayout from '../../layouts/CaliberLayout.astro';
+import { PHONE, TEL, EMAIL, AREA } from '../../data/caliber';
+---
+
+<CaliberLayout title="Commission | Caliber Studio" description="Start a bespoke commission. Typical lead time 8–12 weeks. Your configured build travels with the request.">
+  <section class="mx-auto max-w-[1100px] px-6 pt-14 pb-24 grid lg:grid-cols-2 gap-12 items-start">
+    <div>
+      <span class="text-[10px] font-semibold uppercase tracking-[0.3em] accent">Commission desk</span>
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.02] mt-4">8–12 weeks, <br />done <span class="accent">right.</span></h1>
+      <p class="mt-6 max-w-md text-[var(--mut)] text-sm leading-relaxed">Typical lead time for a bespoke commission is 8–12 weeks. We cap output to protect finishing quality and communication. Configure a spec first, then send it here , the build ticket travels with your request.</p>
+      <div id="buildCard" class="mt-7 rounded-xl border border-[var(--accent)]/30 bg-white/[0.02] p-5 hidden">
+        <div class="text-[10px] font-semibold uppercase tracking-[0.2em] accent mb-3">Attached build ticket</div>
+        <div class="flex flex-col gap-1.5 text-sm" id="buildLines"></div>
+        <div id="buildRef" class="mt-3 text-[11px] font-mono text-[var(--mut)] tracking-widest"></div>
+      </div>
+      <p id="noBuild" class="mt-7 text-[11px] font-mono uppercase tracking-widest text-[var(--mut)]">No build yet , <a href="/website29/configurator" class="accent hover:underline">configure one</a> and it attaches here.</p>
+      <ul class="mt-8 space-y-3 text-sm text-[var(--mut)]">
+        <li><a href={`tel:${TEL}`} class="hover:text-[var(--accent)]">{PHONE}</a></li>
+        <li><a href={`mailto:${EMAIL}`} class="hover:text-[var(--accent)]">{EMAIL}</a></li>
+        <li>{AREA}</li>
+      </ul>
+    </div>
+
+    <form id="commissionForm" class="rounded-2xl border border-[var(--line)] bg-white/[0.02] p-8" novalidate>
+      <div class="flex flex-col gap-5">
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Name<input id="cName" name="name" type="text" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] transition-colors" /><span class="text-[11px] text-[#ff8a7a] mt-1 block min-h-[1em]" data-err-for="name"></span></label>
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Email<input id="cEmail" name="email" type="email" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] transition-colors" /><span class="text-[11px] text-[#ff8a7a] mt-1 block min-h-[1em]" data-err-for="email"></span></label>
+        <label class="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mut)]">Notes (wrist size, deadline, references)<textarea id="cNotes" name="notes" rows="3" class="mt-2 w-full bg-black/40 border border-[var(--line)] rounded px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--accent)] transition-colors resize-y"></textarea></label>
+        <div class="flex items-center gap-4 flex-wrap mt-1">
+          <button type="submit" class="bg-[var(--accent)] text-black px-7 py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded hover:bg-white transition-colors">Request a quote</button>
+          <a id="mailFallback" href={`mailto:${EMAIL}`} class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--mut)] k-link hover:text-[var(--ink)]">or email directly</a>
+        </div>
+      </div>
+      <p id="cStatus" class="mt-5 text-[11px] font-mono uppercase tracking-widest text-[var(--mut)]">Lead time 8–12 weeks · deposit on confirmation</p>
+      <p class="rg-ref" id="rgRef" hidden></p>
+      </form>
+  </section>
+
+  <script>
+    /* R3 Regulator: jouw meting reist mee. */
+    try {
+      const r = JSON.parse(localStorage.getItem('caliber-regulator') || 'null');
+      if (r) {
+        const el = document.getElementById('rgRef');
+        if (el) { el.textContent = `From the bench: your hand ran ${r.dev >= 0 ? '+' : ''}${r.dev} ms/beat (±${r.sd} ms). The escapement will not.`; el.hidden = false; }
+      }
+    } catch { /* private mode */ }
+
+    let build = null;
+    try { build = JSON.parse(localStorage.getItem('caliber-build') || 'null'); } catch (e) {}
+    if (build && build.ref) {
+      const card = document.getElementById('buildCard'), lines = document.getElementById('buildLines'), refEl = document.getElementById('buildRef'), noBuild = document.getElementById('noBuild');
+      if (card) card.classList.remove('hidden');
+      if (noBuild) noBuild.classList.add('hidden');
+      if (lines) lines.innerHTML = ['case', 'dial', 'hands', 'strap'].map((k) => `<div class="flex justify-between"><span class="text-[var(--mut)] capitalize">${k}</span><span>${build[k] || ','}</span></div>`).join('') + `<div class="flex justify-between pt-2 mt-1 border-t border-[var(--line)]"><span class="text-[var(--mut)]">Estimate</span><span class="accent">${build.price || ''}</span></div>`;
+      if (refEl) refEl.textContent = build.ref;
+    }
+
+    const form = document.getElementById('commissionForm') as HTMLFormElement;
+    const status = document.getElementById('cStatus')!;
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err-for="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) (i as HTMLElement).style.borderColor = m ? 'rgba(255,138,122,0.6)' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const name = String(d.get('name') || '').trim();
+      const email = String(d.get('email') || '').trim();
+      let ok = true;
+      if (name.length < 2) { setErr('name', 'Need a name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'Valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ctx = build && build.ref ? ` Build ${build.ref} (${build.price}) is attached.` : '';
+      status.textContent = `Logged , the bench replies within two business days.`;
+      (window as any).showToast?.(`Thanks, <b>${name.split(' ')[0] || 'there'}</b>. The bench replies within two business days.${ctx}`);
+      form.reset();
+      ['name', 'email'].forEach((n) => setErr(n, ''));
+    });
+  </script>
+<style>
+  .rg-ref { font-family: ui-monospace, monospace; font-size: 11px; color: #9cc2ea; border-top: 1px solid rgba(90, 140, 200, 0.25); padding-top: 12px; }
+</style>
+</CaliberLayout>

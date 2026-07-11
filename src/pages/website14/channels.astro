@@ -1,0 +1,81 @@
+---
+/**
+ * NEON DISTRICT , Channels (website14, round 2). Signature: a channel selector that re-tints the
+ * persistent city + recolors the UI, with a detail panel per channel.
+ */
+import NeonLayout from '../../layouts/NeonLayout.astro';
+import { CHANNELS } from '../../data/neon';
+---
+
+<NeonLayout title="Channels | Neon District" description="The four channels of the Neon District control surface , Identity, Ops, Security, and Telemetry. Switch one to re-tint the city." active="channels">
+  <div class="page-hero">
+    <span class="kicker">Channels</span>
+    <h1>Four <em>channels</em>, one surface.</h1>
+    <p class="sub">Each channel is a way of seeing the same district. Select one , the city behind the page re-tints to it, the whole UI recolors, and your choice follows you everywhere.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="ch-browser">
+      <div class="ch-list">
+        {CHANNELS.map((c, i) => (
+          <button class={`chx ${i === 0 ? 'active' : ''}`} data-channel data-key={c.key} data-accent={c.accent} aria-pressed="false" style={`--ca:${c.accent}`}>
+            <span class="chx-led"></span>
+            <span class="chx-main"><span class="chx-code">{c.code}</span><span class="chx-name">{c.name}</span></span>
+          </button>
+        ))}
+      </div>
+      <div class="ch-stage">
+        {CHANNELS.map((c, i) => (
+          <article class={`ch-detail ${i === 0 ? 'active' : ''}`} id={`chd-${c.key}`} style={`--ca:${c.accent}`}>
+            <div class="cd-head"><span class="cd-code">{c.code}</span><span class="cd-dot"></span></div>
+            <h2>{c.name}</h2>
+            <p class="cd-long">{c.long}</p>
+            <ul class="cd-caps">{c.caps.map((cap) => <li>{cap}</li>)}</ul>
+            <a href="/website14/connect" class="btn" style="margin-top:6px;">Open this channel</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .ch-browser { display: grid; grid-template-columns: 0.7fr 1.3fr; gap: clamp(18px,3vw,40px); align-items: start; }
+    .ch-list { display: flex; flex-direction: column; gap: 8px; position: sticky; top: 76px; }
+    .chx { display: flex; align-items: center; gap: 14px; text-align: left; padding: 16px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); transition: all 0.3s; }
+    .chx:hover { border-color: color-mix(in srgb, var(--ca) 40%, transparent); }
+    .chx[aria-pressed='true'] { border-color: var(--ca); box-shadow: inset 0 0 40px -24px var(--ca); }
+    .chx-led { width: 10px; height: 10px; border-radius: 50%; background: var(--ca); box-shadow: 0 0 10px var(--ca); flex-shrink: 0; opacity: 0.5; }
+    .chx[aria-pressed='true'] .chx-led { opacity: 1; }
+    .chx-main { display: flex; flex-direction: column; gap: 2px; }
+    .chx-code { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; color: var(--ca); }
+    .chx-name { font-family: var(--disp); font-size: 1.3rem; color: #fff; }
+
+    .ch-stage { min-width: 0; }
+    .ch-detail { display: none; }
+    .ch-detail.active { display: block; animation: fade 0.4s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .cd-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .cd-code { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--ca); }
+    .cd-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ca); box-shadow: 0 0 10px var(--ca); }
+    .ch-detail h2 { font-size: clamp(2.2rem,4.6vw,3.6rem); color: #fff; text-transform: uppercase; }
+    .cd-long { color: var(--ink); font-size: 1.12rem; line-height: 1.75; margin: 20px 0 28px; max-width: 60ch; }
+    .cd-caps { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+    .cd-caps li { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); padding-left: 20px; position: relative; }
+    .cd-caps li::before { content: '▸'; position: absolute; left: 0; color: var(--ca); }
+
+    @media (max-width: 860px) { .ch-browser { grid-template-columns: 1fr; } .ch-list { position: static; flex-direction: row; overflow-x: auto; padding-bottom: 4px; } .chx { min-width: 190px; } .cd-caps { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    // layout delegation re-tints + recolors; here we swap the page detail
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.ch-detail'));
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.chx'));
+    function show(k: string) {
+      details.forEach((d) => d.classList.toggle('active', d.id === `chd-${k}`));
+      items.forEach((it) => it.classList.toggle('active', it.dataset.key === k));
+    }
+    items.forEach((it) => it.addEventListener('click', () => show(it.dataset.key!)));
+    document.addEventListener('neon:channel', (e) => show((e as CustomEvent).detail));
+    show(localStorage.getItem('neon-channel') || 'identity');
+  </script>
+</NeonLayout>

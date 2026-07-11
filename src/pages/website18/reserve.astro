@@ -1,0 +1,123 @@
+---
+/**
+ * AURUM THERMAL HOUSE , Reserve (website18, round 2). Signature: a timed-entry reservation whose room
+ * select warms the caustics live; generates a reference + summary + toast.
+ */
+import AurumLayout from '../../layouts/AurumLayout.astro';
+import { ROOMS, RITUALS } from '../../data/aurum';
+
+const WINDOWS = ['09:00 – 11:15', '11:30 – 13:45', '14:00 – 16:15', '16:30 – 18:45', '19:00 – 21:15'];
+const PARTY = ['1 guest', '2 guests', '3 guests', '4 guests'];
+---
+
+<AurumLayout title="Reserve | Aurum Thermal House" description="Reserve a timed window at Aurum Thermal House. Capped capacity; choose a ritual, a room to begin in, and a window.">
+  <div class="page-hero">
+    <span class="eyebrow">Reserve</span>
+    <h1>Hold a <em>window</em>.</h1>
+    <p class="sub">Entry is timed and capacity is capped, which is why it stays quiet. Choose a ritual and the room you'd like to begin in , the water warms to it as you pick , and we hold the window for you.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="res-grid">
+      <form id="resForm" class="res-form panel gold" novalidate>
+        <div class="rf-row">
+          <div class="fld"><label for="ritual">Ritual</label><select id="ritual" name="ritual">{RITUALS.map((r) => <option value={r.name}>{r.name} · {r.dur}</option>)}</select></div>
+          <div class="fld"><label for="room">Begin in</label><select id="room" name="room">{ROOMS.map((r) => <option value={r.id}>{r.name}</option>)}</select></div>
+        </div>
+        <div class="rf-row">
+          <div class="fld"><label for="date">Date</label><input id="date" name="date" type="date" /><span class="err" data-err="date"></span></div>
+          <div class="fld"><label for="window">Window</label><select id="window" name="window">{WINDOWS.map((w) => <option>{w}</option>)}</select></div>
+        </div>
+        <div class="rf-row">
+          <div class="fld"><label for="guests">Party</label><select id="guests" name="guests">{PARTY.map((p) => <option>{p}</option>)}</select></div>
+          <div class="fld"><label for="rname">Name</label><input id="rname" name="name" type="text" autocomplete="name" /><span class="err" data-err="name"></span></div>
+        </div>
+        <div class="fld"><label for="remail">Email</label><input id="remail" name="email" type="email" autocomplete="email" /><span class="err" data-err="email"></span></div>
+        <button type="submit" class="btn-cta" style="width:100%; text-align:center;">Hold this window</button>
+        <p class="rf-fine">Timed entry · capped capacity · silent rule throughout.</p>
+        <p class="cc-ref" id="ccRef" hidden>Your circuit card is complete , source, pool, steam, plunge. We will time your entry to it.</p>
+      </form>
+
+      <aside class="res-summary panel" id="summary">
+        <div class="rs-top"><span class="eyebrow" style="font-size:9px;">Window</span><span id="rsRef" class="rs-ref">, , , ,</span></div>
+        <div class="rs-line"><span>Ritual</span><b id="rsRitual">Thermal Circuit</b></div>
+        <div class="rs-line"><span>Begin in</span><b id="rsRoom">Mineral Bath Hall</b></div>
+        <div class="rs-line"><span>Date</span><b id="rsDate">,</b></div>
+        <div class="rs-line"><span>Window</span><b id="rsWindow">09:00 – 11:15</b></div>
+        <div class="rs-status" id="rsStatus">Awaiting reservation</div>
+        <p class="rs-hint">The water is warming to your chosen room.</p>
+      </aside>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <style>
+    .res-grid { display: grid; grid-template-columns: 1.4fr 0.85fr; gap: clamp(24px,4vw,46px); align-items: start; }
+    .res-form { padding: clamp(26px,3vw,40px); display: flex; flex-direction: column; gap: 18px; }
+    .rf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .rf-fine { font-family: var(--mono); font-size: 0.7rem; color: var(--faint); text-align: center; }
+    .res-summary { position: sticky; top: 90px; padding: clamp(24px,3vw,32px); }
+    .rs-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .rs-ref { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--gold); }
+    .rs-line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .rs-line span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .rs-line b { font-family: var(--serif); font-size: 1.05rem; color: #fff; text-align: right; }
+    .rs-status { margin-top: 18px; padding: 12px; text-align: center; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); border-radius: 3px; }
+    .res-summary.filed { border-color: var(--line-gold); }
+    .res-summary.filed .rs-status { color: #07080a; background: var(--gold); border-style: solid; border-color: var(--gold); }
+    .rs-hint { font-family: var(--mono); font-size: 9px; color: var(--faint); margin-top: 14px; text-align: center; }
+    @media (max-width: 900px) { .res-grid { grid-template-columns: 1fr; } .res-summary { position: static; } }
+    @media (max-width: 560px) { .rf-row { grid-template-columns: 1fr; } }
+  </style>
+
+  <script>
+    /* R3 Circuit Card: het voltooide circuit reist mee naar de reservering. */
+    try {
+      const c = JSON.parse(localStorage.getItem('aurum-circuit') || '[]');
+      if (c.length === 4) {
+        const el = document.getElementById('ccRef');
+        if (el) el.hidden = false;
+      }
+    } catch { /* private mode */ }
+
+    import { ROOMS } from '../../data/aurum';
+    const byId = Object.fromEntries(ROOMS.map((r) => [r.id, r]));
+    const form = document.getElementById('resForm') as HTMLFormElement;
+    const ritual = document.getElementById('ritual') as HTMLSelectElement;
+    const room = document.getElementById('room') as HTMLSelectElement;
+    const date = document.getElementById('date') as HTMLInputElement;
+    const windowSel = document.getElementById('window') as HTMLSelectElement;
+    const rs = { ritual: document.getElementById('rsRitual')!, room: document.getElementById('rsRoom')!, date: document.getElementById('rsDate')!, window: document.getElementById('rsWindow')!, ref: document.getElementById('rsRef')!, status: document.getElementById('rsStatus')! };
+    const card = document.getElementById('summary');
+    const toast = document.getElementById('toast');
+    let tT = 0;
+    date.min = new Date().toISOString().split('T')[0];
+
+    const saved = localStorage.getItem('aurum-room') || 'mineral';
+    if (byId[saved]) room.value = saved;
+    const update = () => { rs.ritual.textContent = ritual.value; rs.room.textContent = byId[room.value]?.name || room.value; rs.window.textContent = windowSel.value; rs.date.textContent = date.value ? new Date(date.value + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long' }) : ','; };
+    room.addEventListener('change', () => { (window as any).__aurumRoom?.(room.value); update(); });
+    [ritual, windowSel, date].forEach((el) => el.addEventListener('input', update));
+    document.addEventListener('aurum:room', (e) => { const k = (e as CustomEvent).detail; if (byId[k]) { room.value = k; update(); } });
+    update();
+
+    const setErr = (n: string, m: string) => { const el = form.querySelector<HTMLElement>(`[data-err="${n}"]`); const i = form.querySelector<HTMLElement>(`[name="${n}"]`); if (el) el.textContent = m; if (i) i.style.borderColor = m ? '#e8a07a' : ''; };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('rname') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('remail') as HTMLInputElement).value.trim();
+      let ok = true;
+      if (!date.value) { setErr('date', 'Pick a date.'); ok = false; } else setErr('date', '');
+      if (name.length < 2) { setErr('name', 'Your name.'); ok = false; } else setErr('name', '');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'A valid email.'); ok = false; } else setErr('email', '');
+      if (!ok) return;
+      const ref = 'AU-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+      rs.ref.textContent = ref; rs.status.textContent = 'Held · ' + ref; card?.classList.add('filed');
+      if (toast) { toast.textContent = `Held for you, ${name.split(' ')[0]} , ${ritual.value}, ref ${ref}. ${windowSel.value}. The silent rule applies throughout.`; toast.classList.add('show'); clearTimeout(tT); tT = window.setTimeout(() => toast.classList.remove('show'), 6800); }
+    });
+  </script>
+<style>
+  .cc-ref { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #cfe8c9; border-top: 1px solid rgba(212, 180, 100, 0.25); padding-top: 12px; }
+</style>
+</AurumLayout>

@@ -1,0 +1,93 @@
+---
+/**
+ * AETHER CRYSTALWORKS , Collection (website12, round 2). Signature: a piece selector with
+ * per-piece photography + detail.
+ */
+import AetherLayout from '../../layouts/AetherLayout.astro';
+
+const PIECES = [
+  { id: 'glacial', name: 'Glacial Monolith', series: 'Series 04', img: 'prism', d: 'A weighty optical block with a slow, blue refraction. Held at the light, it does not sparkle so much as glow , the way ice holds winter inside it. The deepest, quietest piece in the collection.', dims: '180 × 90 × 90 mm · 2.4 kg', facets: 'Deep-cut · 12 faces', light: 'Slow blue refraction' },
+  { id: 'alpha', name: 'Prism Alpha', series: 'Series 09', img: 'crystal', d: 'Knife-clean geometry tuned for dispersion. Set it in a single beam and it throws a full, ordered spectrum across the wall , a small object built to do one dramatic thing perfectly.', dims: '120 × 60 × 60 mm · 0.9 kg', facets: 'Spectral edge · 8 faces', light: 'Full dispersion' },
+  { id: 'ice', name: 'Ice Stone', series: 'Series 12', img: 'crystals', d: 'Near-invisible internal structure, finished entirely by hand. Built for pure transmission , quiet highlights, crisp shadows, and edges polished until they vanish. The most restrained of the three.', dims: '100 × 100 × 70 mm · 1.1 kg', facets: 'Hand-finished · freeform', light: 'Pure transmission' },
+];
+---
+
+<AetherLayout title="Collection | Aether Crystalworks" description="The Aether Crystalworks collection , Glacial Monolith, Prism Alpha, and Ice Stone. Lab-grown optical crystal objects." active="collection">
+  <section class="page-hero" style="min-height:56svh;">
+    <div class="page-hero-media"><img src="/website12/prism.jpg" alt="An optical glass monolith refracting light" fetchpriority="high" /></div>
+    <div class="page-hero-scrim" aria-hidden="true"></div>
+    <div class="page-hero-inner">
+      <span class="overline">Collection</span>
+      <h1>Three studies in <em>light</em>.</h1>
+      <p class="sub">A small collection by design. Each piece is a different answer to the same question , what can a single object do with a single beam of light?</p>
+    </div>
+  </section>
+
+  <section class="section tight">
+    <div class="coll-browser">
+      <div class="coll-stage">
+        {PIECES.map((p, i) => (
+          <figure class={`stage-fig ${i === 0 ? 'active' : ''}`} id={`fig-${p.id}`}>
+            <img src={`/website12/${p.img}.jpg`} alt={p.name} loading={i === 0 ? 'eager' : 'lazy'} />
+          </figure>
+        ))}
+      </div>
+      <div class="coll-detail">
+        <div class="coll-pills" id="collPills">
+          {PIECES.map((p, i) => (<button class={`coll-pill ${i === 0 ? 'active' : ''}`} data-id={p.id}>{p.name}</button>))}
+        </div>
+        {PIECES.map((p, i) => (
+          <article class={`piece-detail ${i === 0 ? 'active' : ''}`} id={`pd-${p.id}`}>
+            <span class="pd-series">{p.series}</span>
+            <h2>{p.name}</h2>
+            <p class="pd-d">{p.d}</p>
+            <div class="pd-specs">
+              <div><span>Dimensions</span><b>{p.dims}</b></div>
+              <div><span>Facets</span><b>{p.facets}</b></div>
+              <div><span>Light</span><b>{p.light}</b></div>
+            </div>
+            <a href="/website12/commission" class="btn-cta" style="margin-top:6px;">Commission this piece</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .coll-browser { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px,4vw,50px); align-items: start; }
+    .coll-stage { position: sticky; top: 90px; border-radius: 10px; overflow: hidden; border: 1px solid var(--hair-soft); aspect-ratio: 4/5; background: #03040700; }
+    .stage-fig { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s var(--ease); margin: 0; }
+    .stage-fig.active { opacity: 1; }
+    .stage-fig img { width: 100%; height: 100%; object-fit: cover; }
+    .coll-detail { min-width: 0; }
+    .coll-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; }
+    .coll-pill { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--hair-soft); padding: 9px 15px; border-radius: 100px; transition: all 0.25s; }
+    .coll-pill:hover { color: var(--ink); border-color: var(--hair); }
+    .coll-pill.active { background: var(--ice); color: #05060a; border-color: var(--ice); }
+
+    .piece-detail { display: none; }
+    .piece-detail.active { display: block; animation: fade 0.45s var(--ease); }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .pd-series { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ice); }
+    .piece-detail h2 { font-size: clamp(2.4rem,5vw,3.8rem); color: #fff; margin: 10px 0 20px; }
+    .pd-d { color: var(--ink); font-size: 1.12rem; line-height: 1.75; max-width: 54ch; }
+    .pd-specs { display: flex; flex-direction: column; gap: 0; margin: 30px 0; border-top: 1px solid var(--hair-soft); }
+    .pd-specs > div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 15px 0; border-bottom: 1px solid var(--hair-soft); }
+    .pd-specs span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .pd-specs b { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: #fff; }
+
+    @media (max-width: 860px) { .coll-browser { grid-template-columns: 1fr; } .coll-stage { position: static; } }
+  </style>
+
+  <script>
+    const pills = Array.from(document.querySelectorAll<HTMLElement>('.coll-pill'));
+    const figs = Array.from(document.querySelectorAll<HTMLElement>('.stage-fig'));
+    const details = Array.from(document.querySelectorAll<HTMLElement>('.piece-detail'));
+    pills.forEach((p) => p.addEventListener('click', () => {
+      const id = p.dataset.id;
+      pills.forEach((x) => x.classList.toggle('active', x === p));
+      figs.forEach((f) => f.classList.toggle('active', f.id === `fig-${id}`));
+      details.forEach((d) => d.classList.toggle('active', d.id === `pd-${id}`));
+    }));
+  </script>
+</AetherLayout>
