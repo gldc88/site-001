@@ -5,10 +5,13 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "preview": "npm run build && wrangler dev",
+    "astro": "astro",
+    "generate-types": "wrangler types",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.2.2",
     "@astrojs/react": "^5.0.2",
     "@astrojs/vue": "^6.0.1",
     "@tailwindcss/vite": "^4.1.18",
@@ -28,6 +31,7 @@
     "esbuild": "^0.28.1"
   },
   "devDependencies": {
-    "@types/three": "^0.184.1"
+    "@types/three": "^0.184.1",
+    "wrangler": "^4.110.0"
   }
 }
